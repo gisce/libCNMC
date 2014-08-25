@@ -51,6 +51,8 @@ class F1(MultiprocessBased):
 
             o_utmx = ''
             o_utmy = ''
+            o_utmz = ''
+            o_nom_node = ''
             o_linia = ''
             o_tensio = ''
             if cups and cups['id_escomesa']:
@@ -73,8 +75,10 @@ class F1(MultiprocessBased):
                                               bloc_escomesa['node'][0])]
                             edge_id = O.GiscegisEdge.search(search_params)
                         if edge_id:
-                            edge = O.GiscegisEdge.read(edge_id[0],
-                                                       ['id_linktemplate'])
+                            edge = O.GiscegisEdge.read(
+                                edge_id[0], ['name', 'id_linktemplate']
+                            )
+                            o_nom_node = edge['name']
                             search_params = [('name', '=', edge['id_linktemplate'])]
                             bt_id = O.GiscedataBtElement.search(search_params)
                             if bt_id:
@@ -89,34 +93,51 @@ class F1(MultiprocessBased):
             polissa_id = O.GiscedataPolissa.search(search_params, 0, 0, False,
                                                    context_glob)
             o_potencia = ''
+            o_cnae = ''
             o_pot_ads = ''
             o_equip = 'MEC'
+            tg_instalat = False
             if polissa_id:
-                fields_to_read = ['potencia']
+                fields_to_read = ['potencia', 'cnae', 'tarifa']
                 if 'butlletins' in O.GiscedataPolissa.fields_get():
                     fields_to_read += ['butlletins']
+                if 'tg' in O.GiscedataLecturesComptador.fields_get():
+                    tg_instalat = True
+                    fields_to_read += ['comptadors']
+
                 polissa = O.GiscedataPolissa.read(polissa_id[0], fields_to_read,
                          context_glob)
                 o_potencia = polissa['potencia']
+                if polissa['cnae']:
+                    o_cnae = polissa['cnae'][1]
                 # Mirem si té l'actualització dels butlletins
                 if polissa['butlletins']:
                     butlleti = O.GiscedataButlleti.read(polissa['butlletins'][-1],
                                                         ['pot_max_admisible'])
                     o_pot_ads = butlleti['pot_max_admisible']
+                if tg_instalat:
+                    comptadors = O.GiscedataLecturesComptador.read(
+                        polissa['comptadors'], ['tg', 'active'])
+                    for comptador in comptadors:
+                        if comptador['active'] and comptador['tg']:
+                            o_equip = 'SMT'
             else:
                 #Si no trobem polissa activa, considerem "Contrato no activo (CNA)"
                 o_equip = 'CNA'
+
             #energies consumides
             o_anual_activa = cups['cne_anual_activa'] or 0.0
             o_anual_reactiva = cups['cne_anual_reactiva'] or 0.0
             self.output_q.put([
-               o_codi_r1,
-               o_name,
+               o_nom_node,
                o_utmx,
                o_utmy,
+               o_utmz,
+               o_cnae,
+               o_equip,
+               o_codi_r1,
                o_codi_prov,
                o_codi_ine,
-               o_equip,
                o_linia,
                o_tensio,
                o_potencia,
