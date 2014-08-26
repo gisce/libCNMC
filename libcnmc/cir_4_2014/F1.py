@@ -39,6 +39,30 @@ class F1(MultiprocessBased):
                         self.cts[codi_ct] = zona_qualitat
         return zona_qualitat
 
+    def get_tipus_connexio(self, id_escomesa):
+        O = self.connection
+        bloc = O.GiscegisBlocsEscomeses.search([('escomesa', '=', id_escomesa)])
+        tipus = ''
+        if bloc:
+            bloc = O.GiscegisBlocsEscomeses.read(bloc[0], ['node'])
+            if bloc['node']:
+                node = bloc['node'][0]
+                edge = O.GiscegisEdge.search(['|',
+                    ('start_node', '=', node),
+                    ('end_node', '=', node)
+                ])
+                if edge:
+                    edge = O.GiscegisEdge.read(edge[0], ['id_linktemplate'])
+                    if edge['id_linktemplate']:
+                        bt = O.GiscedataBtElement.search([('id', '=', edge['id_linktemplate'])])
+                        if bt:
+                            bt = O.GiscedataBtElement.read(bt[0], ['tipus_linia'])
+                            if bt['tipus_linia']:
+                                if bt['tipus_linia'][0] == 1:
+                                    tipus = 'A'
+                                else:
+                                    tipus = 'S'
+        return tipus
 
     def consumer(self):
         o_codi_r1 = 'R1-%s' % self.codi_r1[-3:]
@@ -84,7 +108,9 @@ class F1(MultiprocessBased):
             o_nom_node = ''
             o_linia = ''
             o_tensio = ''
+            o_connexio = ''
             if cups and cups['id_escomesa']:
+                o_connexio = self.get_tipus_connexio(cups['id_escomesa'][0])
                 search_params = [('escomesa', '=', cups['id_escomesa'][0])]
                 bloc_escomesa_id = O.GiscegisBlocsEscomeses.search(search_params)
                 if bloc_escomesa_id:
@@ -172,6 +198,7 @@ class F1(MultiprocessBased):
                o_codi_r1,
                o_codi_ine,
                o_codi_prov,
+               o_connexio,
                o_linia,
                o_tensio,
                o_potencia,
