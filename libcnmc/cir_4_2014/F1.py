@@ -189,6 +189,7 @@ class F1(MultiprocessBased):
             #energies consumides
             o_anual_activa = cups['cne_anual_activa'] or 0.0
             o_anual_reactiva = cups['cne_anual_reactiva'] or 0.0
+            o_any_incorporacio = self.year + 1
             self.output_q.put([
                o_nom_node,
                o_utmx,
@@ -209,7 +210,8 @@ class F1(MultiprocessBased):
                o_potencia_facturada,
                o_pot_ads or o_potencia,
                o_anual_activa,
-               o_anual_reactiva
+               o_anual_reactiva,
+               o_any_incorporacio
             ])
             self.input_q.task_done()
 
