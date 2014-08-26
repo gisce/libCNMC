@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from multiprocessing import Manager
+import traceback
 
 import click
 from libcnmc.utils import N_PROC, CODIS_TARIFA, CODIS_ZONA
@@ -14,6 +15,8 @@ class F1(MultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         manager = Manager()
         self.cts = manager.dict()
+        self.base_object = 'CUPS'
+        self.report_name = 'F1 - CUPS'
 
     def get_codi_tarifa(self, codi_tarifa):
         return CODIS_TARIFA[codi_tarifa]
@@ -77,143 +80,147 @@ class F1(MultiprocessBased):
         ]
         context_glob = {'date': ultim_dia_any, 'active_test': False}
         while True:
-            item = self.input_q.get()
-            self.progress_q.put(item)
-            fields_to_read = ['name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
-                              'cne_anual_reactiva', 'cnmc_potencia_facturada']
-            if 'et' in O.GiscedataCupsPs.fields_get():
-                fields_to_read += ['et']
+            try:
+                item = self.input_q.get()
+                self.progress_q.put(item)
+                fields_to_read = ['name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
+                                  'cne_anual_reactiva', 'cnmc_potencia_facturada']
+                if 'et' in O.GiscedataCupsPs.fields_get():
+                    fields_to_read += ['et']
 
-            cups = O.GiscedataCupsPs.read(item, fields_to_read)
-            if not cups or not cups.get('name'):
-                self.input_q.task_done()
-                continue
-            o_name = cups['name'][:22]
-            o_codi_ine = ''
-            o_codi_prov = ''
-            o_zona = ''
-            o_potencia_facturada = cups['cnmc_potencia_facturada']
-            if 'et' in cups:
-                o_zona = self.get_zona_qualitat(cups['et'])
-            if cups['id_municipi']:
-                municipi = O.ResMunicipi.read(cups['id_municipi'][0], ['ine', 'state', 'dc'])
-                ine = municipi['ine'] + municipi['dc']
-                if municipi['state']:
-                    provincia = O.ResCountryState.read(municipi['state'][0], ['code'])
-                    o_codi_prov = provincia['code']
-                o_codi_ine = ine[2:]
+                cups = O.GiscedataCupsPs.read(item, fields_to_read)
+                if not cups or not cups.get('name'):
+                    self.input_q.task_done()
+                    continue
+                o_name = cups['name'][:22]
+                o_codi_ine = ''
+                o_codi_prov = ''
+                o_zona = ''
+                o_potencia_facturada = cups['cnmc_potencia_facturada']
+                if 'et' in cups:
+                    o_zona = self.get_zona_qualitat(cups['et'])
+                if cups['id_municipi']:
+                    municipi = O.ResMunicipi.read(cups['id_municipi'][0], ['ine', 'state', 'dc'])
+                    ine = municipi['ine'] + municipi['dc']
+                    if municipi['state']:
+                        provincia = O.ResCountryState.read(municipi['state'][0], ['code'])
+                        o_codi_prov = provincia['code']
+                    o_codi_ine = ine[2:]
 
-            o_utmx = ''
-            o_utmy = ''
-            o_utmz = ''
-            o_nom_node = ''
-            o_tensio = ''
-            o_connexio = ''
-            if cups and cups['id_escomesa']:
-                o_connexio = self.get_tipus_connexio(cups['id_escomesa'][0])
-                search_params = [('escomesa', '=', cups['id_escomesa'][0])]
-                bloc_escomesa_id = O.GiscegisBlocsEscomeses.search(search_params)
-                if bloc_escomesa_id:
-                    bloc_escomesa = O.GiscegisBlocsEscomeses.read(
-                                            bloc_escomesa_id[0], ['node', 'vertex'])
-                    if bloc_escomesa['vertex']:
-                        vertex = O.GiscegisVertex.read(bloc_escomesa['vertex'][0],
-                                                       ['x', 'y'])
-                        o_utmx = round(vertex['x'], 3)
-                        o_utmy = round(vertex['y'], 3)
-                    if bloc_escomesa['node']:
-                        search_params = [('start_node', '=',
-                                          bloc_escomesa['node'][0])]
-                        edge_id = O.GiscegisEdge.search(search_params)
-                        if not edge_id:
-                            search_params = [('end_node', '=',
+                o_utmx = ''
+                o_utmy = ''
+                o_utmz = ''
+                o_nom_node = ''
+                o_tensio = ''
+                o_connexio = ''
+                if cups and cups['id_escomesa']:
+                    o_connexio = self.get_tipus_connexio(cups['id_escomesa'][0])
+                    search_params = [('escomesa', '=', cups['id_escomesa'][0])]
+                    bloc_escomesa_id = O.GiscegisBlocsEscomeses.search(search_params)
+                    if bloc_escomesa_id:
+                        bloc_escomesa = O.GiscegisBlocsEscomeses.read(
+                                                bloc_escomesa_id[0], ['node', 'vertex'])
+                        if bloc_escomesa['vertex']:
+                            vertex = O.GiscegisVertex.read(bloc_escomesa['vertex'][0],
+                                                           ['x', 'y'])
+                            o_utmx = round(vertex['x'], 3)
+                            o_utmy = round(vertex['y'], 3)
+                        if bloc_escomesa['node']:
+                            search_params = [('start_node', '=',
                                               bloc_escomesa['node'][0])]
                             edge_id = O.GiscegisEdge.search(search_params)
-                        if edge_id:
-                            edge = O.GiscegisEdge.read(
-                                edge_id[0], ['name', 'id_linktemplate']
-                            )
-                            o_nom_node = edge['name']
-                            search_params = [('name', '=', edge['id_linktemplate'])]
-                            bt_id = O.GiscedataBtElement.search(search_params)
-                            if bt_id:
-                                bt = O.GiscedataBtElement.read(bt_id[0],
-                                                                    ['tipus_linia',
-                                                                     'voltatge'])
-                                if bt['tipus_linia']:
-                                    o_linia = bt['tipus_linia'][1][0]
-                                o_tensio = float(bt['voltatge']) / 1000.0
+                            if not edge_id:
+                                search_params = [('end_node', '=',
+                                                  bloc_escomesa['node'][0])]
+                                edge_id = O.GiscegisEdge.search(search_params)
+                            if edge_id:
+                                edge = O.GiscegisEdge.read(
+                                    edge_id[0], ['name', 'id_linktemplate']
+                                )
+                                o_nom_node = edge['name']
+                                search_params = [('name', '=', edge['id_linktemplate'])]
+                                bt_id = O.GiscedataBtElement.search(search_params)
+                                if bt_id:
+                                    bt = O.GiscedataBtElement.read(bt_id[0],
+                                                                        ['tipus_linia',
+                                                                         'voltatge'])
+                                    if bt['tipus_linia']:
+                                        o_linia = bt['tipus_linia'][1][0]
+                                    o_tensio = float(bt['voltatge']) / 1000.0
 
-            search_params = [('cups', '=', cups['id'])] + search_glob
-            polissa_id = O.GiscedataPolissa.search(search_params, 0, 0, False,
-                                                   context_glob)
-            o_potencia = ''
-            o_cnae = ''
-            o_pot_ads = ''
-            o_equip = 'MEC'
-            o_cod_tfa = ''
-            tg_instalat = False
-            o_estat_contracte = 0
-            if polissa_id:
-                fields_to_read = ['potencia', 'cnae', 'tarifa']
-                if 'butlletins' in O.GiscedataPolissa.fields_get():
-                    fields_to_read += ['butlletins']
-                if 'tg' in O.GiscedataLecturesComptador.fields_get():
-                    tg_instalat = True
-                    fields_to_read += ['comptadors']
+                search_params = [('cups', '=', cups['id'])] + search_glob
+                polissa_id = O.GiscedataPolissa.search(search_params, 0, 0, False,
+                                                       context_glob)
+                o_potencia = ''
+                o_cnae = ''
+                o_pot_ads = ''
+                o_equip = 'MEC'
+                o_cod_tfa = ''
+                tg_instalat = False
+                o_estat_contracte = 0
+                if polissa_id:
+                    fields_to_read = ['potencia', 'cnae', 'tarifa']
+                    if 'butlletins' in O.GiscedataPolissa.fields_get():
+                        fields_to_read += ['butlletins']
+                    if 'tg' in O.GiscedataLecturesComptador.fields_get():
+                        tg_instalat = True
+                        fields_to_read += ['comptadors']
 
-                polissa = O.GiscedataPolissa.read(polissa_id[0], fields_to_read,
-                         context_glob)
-                o_potencia = polissa['potencia']
-                if polissa['cnae']:
-                    o_cnae = polissa['cnae'][1]
-                # Mirem si té l'actualització dels butlletins
-                if polissa['butlletins']:
-                    butlleti = O.GiscedataButlleti.read(polissa['butlletins'][-1],
-                                                        ['pot_max_admisible'])
-                    o_pot_ads = butlleti['pot_max_admisible']
-                if tg_instalat:
-                    comptadors = O.GiscedataLecturesComptador.read(
-                        polissa['comptadors'], ['tg', 'active'])
-                    for comptador in comptadors:
-                        if comptador['active'] and comptador['tg']:
-                            o_equip = 'SMT'
-                if polissa['tarifa']:
-                    o_cod_tfa = self.get_codi_tarifa(polissa['tarifa'][1])
-            else:
-                #Si no trobem polissa activa, considerem "Contrato no activo (CNA)"
-                o_equip = 'CNA'
-                o_estat_contracte = 1
+                    polissa = O.GiscedataPolissa.read(polissa_id[0], fields_to_read,
+                             context_glob)
+                    o_potencia = polissa['potencia']
+                    if polissa['cnae']:
+                        o_cnae = polissa['cnae'][1]
+                    # Mirem si té l'actualització dels butlletins
+                    if polissa['butlletins']:
+                        butlleti = O.GiscedataButlleti.read(polissa['butlletins'][-1],
+                                                            ['pot_max_admisible'])
+                        o_pot_ads = butlleti['pot_max_admisible']
+                    if tg_instalat:
+                        comptadors = O.GiscedataLecturesComptador.read(
+                            polissa['comptadors'], ['tg', 'active'])
+                        for comptador in comptadors:
+                            if comptador['active'] and comptador['tg']:
+                                o_equip = 'SMT'
+                    if polissa['tarifa']:
+                        o_cod_tfa = self.get_codi_tarifa(polissa['tarifa'][1])
+                else:
+                    #Si no trobem polissa activa, considerem "Contrato no activo (CNA)"
+                    o_equip = 'CNA'
+                    o_estat_contracte = 1
 
 
-            #energies consumides
-            o_anual_activa = cups['cne_anual_activa'] or 0.0
-            o_anual_reactiva = cups['cne_anual_reactiva'] or 0.0
-            o_any_incorporacio = self.year + 1
-            self.output_q.put([
-               o_nom_node,
-               o_utmx,
-               o_utmy,
-               o_utmz,
-               o_cnae,
-               o_equip,
-               o_cod_tfa,
-               o_zona,
-               o_name,
-               o_codi_r1,
-               o_codi_ine,
-               o_codi_prov,
-               o_connexio,
-               o_tensio,
-               o_estat_contracte,
-               o_potencia,
-               o_potencia_facturada,
-               o_pot_ads or o_potencia,
-               o_anual_activa,
-               o_anual_reactiva,
-               o_any_incorporacio
-            ])
-            self.input_q.task_done()
+                #energies consumides
+                o_anual_activa = cups['cne_anual_activa'] or 0.0
+                o_anual_reactiva = cups['cne_anual_reactiva'] or 0.0
+                o_any_incorporacio = self.year + 1
+                self.output_q.put([
+                   o_nom_node,
+                   o_utmx,
+                   o_utmy,
+                   o_utmz,
+                   o_cnae,
+                   o_equip,
+                   o_cod_tfa,
+                   o_zona,
+                   o_name,
+                   o_codi_r1,
+                   o_codi_ine,
+                   o_codi_prov,
+                   o_connexio,
+                   o_tensio,
+                   o_estat_contracte,
+                   o_potencia,
+                   o_potencia_facturada,
+                   o_pot_ads or o_potencia,
+                   o_anual_activa,
+                   o_anual_reactiva,
+                   o_any_incorporacio
+                ])
+            except Exception, e:
+                traceback.print_exc()
+            finally:
+                self.input_q.task_done()
 
 
 @click.command()
