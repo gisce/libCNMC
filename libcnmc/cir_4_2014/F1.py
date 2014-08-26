@@ -237,7 +237,7 @@ class F1(MultiprocessBased):
 @click.option('-w', '--password', default='admin',
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
-@click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('--num-proc', default=N_PROC+1, type=click.INT)
 def main(**kwargs):
     from ooop import OOOP
     O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
@@ -248,7 +248,7 @@ def main(**kwargs):
         interactive=kwargs['interactive'],
         output=kwargs['output'],
         connection=O,
-        n_proc=kwargs['num_proc'],
+        num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year']
     )
