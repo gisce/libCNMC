@@ -64,6 +64,22 @@ class F11(MultiprocessBased):
             tipus = cne['codi']
         return tipus
 
+    def get_saturacio(self, ct_id):
+        O = self.connection
+        saturacio = ''
+        if 'giscedata.transformadors.saturacio' in O.models:
+            sat_obj = O.GiscedataTransformadorsSaturacio
+            trafo_obj = O.GiscedataTransformadorTrafo
+            sat = sat_obj.search([
+                ('ct.id', '=', ct_id)
+            ])
+            saturacio = 0
+            for sat in sat_obj.read(sat, ['b1_b2', 'trafo']):
+                trafo = trafo_obj.read(sat['trafo'][0], ['potencia_nominal'])
+                saturacio += trafo['potencia_nominal'] * sat['b1_b2']
+            saturacio *= 0.9
+        return saturacio
+
     def consumer(self):
         o_codi_r1 = self.codi_r1
         O = self.connection
