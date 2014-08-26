@@ -80,7 +80,7 @@ class F1(MultiprocessBased):
             item = self.input_q.get()
             self.progress_q.put(item)
             fields_to_read = ['name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
-                               'cne_anual_reactiva']
+                              'cne_anual_reactiva', 'cnmc_potencia_facturada']
             if 'et' in O.GiscedataCupsPs.fields_get():
                 fields_to_read += ['et']
 
@@ -92,6 +92,7 @@ class F1(MultiprocessBased):
             o_codi_ine = ''
             o_codi_prov = ''
             o_zona = ''
+            o_potencia_facturada = cups['cnmc_potencia_facturada']
             if 'et' in cups:
                 o_zona = self.get_zona_qualitat(cups['et'])
             if cups['id_municipi']:
@@ -106,7 +107,6 @@ class F1(MultiprocessBased):
             o_utmy = ''
             o_utmz = ''
             o_nom_node = ''
-            o_linia = ''
             o_tensio = ''
             o_connexio = ''
             if cups and cups['id_escomesa']:
@@ -206,6 +206,7 @@ class F1(MultiprocessBased):
                o_tensio,
                o_estat_contracte,
                o_potencia,
+               o_potencia_facturada,
                o_pot_ads or o_potencia,
                o_anual_activa,
                o_anual_reactiva
