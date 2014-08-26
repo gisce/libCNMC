@@ -25,6 +25,7 @@ class MultiprocessBased(object):
         self.progress_q = multiprocessing.Queue()
         self.quiet = kwargs.pop('quiet', False)
         self.interactive = kwargs.pop('interactive', False)
+        self.report_name = ''
 
     def get_sequence(self):
         raise NotImplementedError()
@@ -38,7 +39,8 @@ class MultiprocessBased(object):
     def progress(self, total):
         """Rendering del progressbar de l'informe.
         """
-        widgets = ['GeoRef informe: ', Percentage(), ' ', Bar(), ' ', ETA()]
+        widgets = ['Informe %s: ' % self.report_name,
+                   Percentage(), ' ', Bar(), ' ', ETA()]
         pbar = ProgressBar(widgets=widgets, maxval=total).start()
         done = 0
         while True:
