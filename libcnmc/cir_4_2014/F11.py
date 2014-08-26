@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from multiprocessing import Manager
 
 import click
 from libcnmc.utils import N_PROC
@@ -12,9 +11,7 @@ class F11(MultiprocessBased):
         super(F11, self).__init__(**kwargs)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.manager = Manager()
-
-        self.connection.ResMunicipi.search()
+        self.report_name = 'F11 - CTS'
 
     def get_sequence(self):
         search_params = []
@@ -28,8 +25,8 @@ class F11(MultiprocessBased):
             bloc = O.GiscegisBlocsCtat.read(bloc[0], ['node', 'vertex'])
             node = bloc['node'][0]
             vertex = ('', '')
-            if node['vertex']:
-                v = O.GiscegisVertex.read(node['vertex'][0], ['x', 'y'])
+            if bloc['vertex']:
+                v = O.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
                 vertex = (v['x'], v['y'])
         return node, vertex
 
@@ -69,10 +66,15 @@ class F11(MultiprocessBased):
     def consumer(self):
         o_codi_r1 = self.codi_r1
         O = self.connection
+        fields_to_read = [
+            'name', 'cini', 'id_municipi',   'tensio_p', 'id_subtipus',
+            'perc_financament', 'propietari', 'numero_maxim_maquines',
+            'potencia'
+        ]
         while True:
             item = self.input_q.get()
             self.progress_q.put(item)
-            ct = O.GiscedataCts.read(item, ['name', 'tensio_p', 'id_subtipus', 'perc_financament', 'propietari', 'numero_maxim_maquines', 'potencia'])
+            ct = O.GiscedataCts.read(item, fields_to_read)
             o_node, vertex = self.get_node_vertex(item)
             o_ct = ct['name']
             o_cini = ct['cini']
@@ -107,14 +109,14 @@ class F11(MultiprocessBased):
                 '',
                 o_ine_muni,
                 o_ine_prov,
-                o_tensio_p
+                o_tensio_p,
                 o_tipo,
                 o_potencia,
                 o_energia,
                 o_pic_activa,
                 o_pic_reactiva,
                 o_s_utilitades,
-                o_s_utilitades
+                o_s_utilitades,
                 o_codi_r1,
                 o_financament,
                 o_propietari,
@@ -148,7 +150,7 @@ def main(**kwargs):
         interactive=kwargs['interactive'],
         output=kwargs['output'],
         connection=O,
-        n_proc=kwargs['num_proc'],
+        num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year']
     )
