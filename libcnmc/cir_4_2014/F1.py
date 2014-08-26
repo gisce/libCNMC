@@ -88,7 +88,7 @@ class F1(MultiprocessBased):
             if not cups or not cups.get('name'):
                 self.input_q.task_done()
                 continue
-            o_name = cups['name'][:20]
+            o_name = cups['name'][:22]
             o_codi_ine = ''
             o_codi_prov = ''
             o_zona = ''
@@ -195,6 +195,7 @@ class F1(MultiprocessBased):
                o_equip,
                o_cod_tfa,
                o_zona,
+               o_name,
                o_codi_r1,
                o_codi_ine,
                o_codi_prov,
