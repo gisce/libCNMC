@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
+from multiprocessing import Manager
 
 import click
-from libcnmc.utils import N_PROC, CODIS_TARIFA
+from libcnmc.utils import N_PROC, CODIS_TARIFA, CODIS_ZONA
 from libcnmc.core import MultiprocessBased
 
 
@@ -11,6 +12,8 @@ class F1(MultiprocessBased):
         super(F1, self).__init__(**kwargs)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.year = kwargs.pop('year', datetime.now().year - 1)
+        manager = Manager()
+        self.cts = manager.dict()
 
     def get_codi_tarifa(self, codi_tarifa):
         return CODIS_TARIFA[codi_tarifa]
@@ -18,6 +21,24 @@ class F1(MultiprocessBased):
     def get_sequence(self):
         search_params = []
         return self.connection.GiscedataCupsPs.search(search_params)
+
+    def get_zona_qualitat(self, codi_ct):
+        zona_qualitat = ''
+        if codi_ct:
+            if codi_ct in self.cts:
+                return self.cts[codi_ct]
+            else:
+                ct_ids = self.connection.GiscedataCts.search(
+                    [('name', '=', codi_ct)])
+                if ct_ids:
+                    dades_ct = self.connection.GiscedataCts.read(
+                        ct_ids[0], ['zona_id'])
+                    zona_desc = dades_ct['zona_id'][1].upper().replace(' ', '')
+                    if zona_desc in CODIS_ZONA:
+                        zona_qualitat = CODIS_ZONA[zona_desc]
+                        self.cts[codi_ct] = zona_qualitat
+        return zona_qualitat
+
 
     def consumer(self):
         o_codi_r1 = 'R1-%s' % self.codi_r1[-3:]
@@ -34,16 +55,21 @@ class F1(MultiprocessBased):
         while True:
             item = self.input_q.get()
             self.progress_q.put(item)
-            cups = O.GiscedataCupsPs.read(item, [
-                'name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
-                'cne_anual_reactiva'
-            ])
+            fields_to_read = ['name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
+                               'cne_anual_reactiva']
+            if 'et' in O.GiscedataCupsPs.fields_get():
+                fields_to_read += ['et']
+
+            cups = O.GiscedataCupsPs.read(item, fields_to_read)
             if not cups or not cups.get('name'):
                 self.input_q.task_done()
                 continue
             o_name = cups['name'][:20]
             o_codi_ine = ''
             o_codi_prov = ''
+            o_zona = ''
+            if 'et' in cups:
+                o_zona = self.get_zona_qualitat(cups['et'])
             if cups['id_municipi']:
                 municipi = O.ResMunicipi.read(cups['id_municipi'][0], ['ine', 'state', 'dc'])
                 ine = municipi['ine'] + municipi['dc']
@@ -142,9 +168,10 @@ class F1(MultiprocessBased):
                o_cnae,
                o_equip,
                o_cod_tfa,
+               o_zona,
                o_codi_r1,
-               o_codi_prov,
                o_codi_ine,
+               o_codi_prov,
                o_linia,
                o_tensio,
                o_potencia,
