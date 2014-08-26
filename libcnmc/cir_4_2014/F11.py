@@ -12,6 +12,7 @@ class F11(MultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1')
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.report_name = 'F11 - CTS'
+        self.base_object = 'CTS'
 
     def get_sequence(self):
         search_params = []
