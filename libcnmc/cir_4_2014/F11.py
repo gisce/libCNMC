@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
+import traceback
 
 import click
 from libcnmc.utils import N_PROC
@@ -89,57 +90,61 @@ class F11(MultiprocessBased):
             'potencia'
         ]
         while True:
-            item = self.input_q.get()
-            self.progress_q.put(item)
-            ct = O.GiscedataCts.read(item, fields_to_read)
-            o_node, vertex = self.get_node_vertex(item)
-            o_ct = ct['name']
-            o_cini = ct['cini']
-            if ct['id_municipi']:
-                o_ine_muni, o_ine_prov = self.get_ine(ct['id_municipi'][0])
-            else:
-                o_ine_muni, o_ine_prov = '', ''
-            o_tensio_p = ct['tensio_p']
-            if ct['id_subtipus']:
-                o_tipo = self.get_tipus(ct['id_subtipus'][0])
-            else:
-                o_tipo = ''
-            o_potencia = ct['potencia']
-            cups = O.GiscedataCupsPs.search([('et', '=', ct['name'])])
-            o_energia = sum(
-                x['cne_anual_activa']
-                    for x in O.GiscedataCupsPs.read(cups, ['cne_anual_activa'])
-            )
-            o_pic_activa = ''
-            o_pic_reactiva = ''
-            o_s_utilitades, o_s_disponibles = self.get_sortides_ct(ct['name'])
-            o_financament = ct['perc_financament']
-            o_propietari = int(ct['propietari'])
-            o_num_max_maquines = ct['numero_maxim_maquines']
+            try:
+                item = self.input_q.get()
+                self.progress_q.put(item)
+                ct = O.GiscedataCts.read(item, fields_to_read)
+                o_node, vertex = self.get_node_vertex(item)
+                o_ct = ct['name']
+                o_cini = ct['cini']
+                if ct['id_municipi']:
+                    o_ine_muni, o_ine_prov = self.get_ine(ct['id_municipi'][0])
+                else:
+                    o_ine_muni, o_ine_prov = '', ''
+                o_tensio_p = ct['tensio_p']
+                if ct['id_subtipus']:
+                    o_tipo = self.get_tipus(ct['id_subtipus'][0])
+                else:
+                    o_tipo = ''
+                o_potencia = ct['potencia']
+                cups = O.GiscedataCupsPs.search([('et', '=', ct['name'])])
+                o_energia = sum(
+                    x['cne_anual_activa']
+                        for x in O.GiscedataCupsPs.read(cups, ['cne_anual_activa'])
+                )
+                o_pic_activa = self.get_saturacio(ct['id'])
+                o_pic_reactiva = ''
+                o_s_utilitades, o_s_disponibles = self.get_sortides_ct(ct['name'])
+                o_financament = ct['perc_financament']
+                o_propietari = int(ct['propietari'])
+                o_num_max_maquines = ct['numero_maxim_maquines']
 
-            self.output_q.put([
-                o_node,
-                o_ct,
-                o_cini,
-                vertex[0],
-                vertex[1],
-                '',
-                o_ine_muni,
-                o_ine_prov,
-                o_tensio_p,
-                o_tipo,
-                o_potencia,
-                o_energia,
-                o_pic_activa,
-                o_pic_reactiva,
-                o_s_utilitades,
-                o_s_utilitades,
-                o_codi_r1,
-                o_financament,
-                o_propietari,
-                o_num_max_maquines
-            ])
-            self.input_q.task_done()
+                self.output_q.put([
+                    o_node,
+                    o_ct,
+                    o_cini,
+                    vertex[0],
+                    vertex[1],
+                    '',
+                    o_ine_muni,
+                    o_ine_prov,
+                    o_tensio_p,
+                    o_tipo,
+                    o_potencia,
+                    o_energia,
+                    o_pic_activa,
+                    o_pic_reactiva,
+                    o_s_utilitades,
+                    o_s_utilitades,
+                    o_codi_r1,
+                    o_financament,
+                    o_propietari,
+                    o_num_max_maquines
+                ])
+            except:
+                traceback.print_exc()
+            finally:
+                self.input_q.task_done()
 
 
 @click.command()
