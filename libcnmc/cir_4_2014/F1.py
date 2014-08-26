@@ -2,7 +2,7 @@
 from datetime import datetime
 
 import click
-from libcnmc.utils import N_PROC
+from libcnmc.utils import N_PROC, CODIS_TARIFA
 from libcnmc.core import MultiprocessBased
 
 
@@ -11,6 +11,9 @@ class F1(MultiprocessBased):
         super(F1, self).__init__(**kwargs)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.year = kwargs.pop('year', datetime.now().year - 1)
+
+    def get_codi_tarifa(self, codi_tarifa):
+        return CODIS_TARIFA[codi_tarifa]
 
     def get_sequence(self):
         search_params = []
@@ -96,6 +99,7 @@ class F1(MultiprocessBased):
             o_cnae = ''
             o_pot_ads = ''
             o_equip = 'MEC'
+            o_cod_tfa = ''
             tg_instalat = False
             if polissa_id:
                 fields_to_read = ['potencia', 'cnae', 'tarifa']
@@ -121,6 +125,8 @@ class F1(MultiprocessBased):
                     for comptador in comptadors:
                         if comptador['active'] and comptador['tg']:
                             o_equip = 'SMT'
+                if polissa['tarifa']:
+                    o_cod_tfa = self.get_codi_tarifa(polissa['tarifa'][1])
             else:
                 #Si no trobem polissa activa, considerem "Contrato no activo (CNA)"
                 o_equip = 'CNA'
@@ -135,6 +141,7 @@ class F1(MultiprocessBased):
                o_utmz,
                o_cnae,
                o_equip,
+               o_cod_tfa,
                o_codi_r1,
                o_codi_prov,
                o_codi_ine,
