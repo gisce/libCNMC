@@ -18,7 +18,7 @@ class MultiprocessBased(object):
         self.file_output = kwargs.pop('output', False)
         self.content = None
         self.connection = kwargs.pop('connection')
-        self.n_proc = kwargs.pop('n_proc', N_PROC)
+        self.num_proc = kwargs.pop('num_proc', N_PROC)
         self.content = None
         self.input_q = multiprocessing.JoinableQueue()
         self.output_q = multiprocessing.Queue()
@@ -66,7 +66,7 @@ class MultiprocessBased(object):
             sys.stderr.flush()
         start = datetime.now()
         processes = [multiprocessing.Process(target=self.consumer)
-                     for _ in range(0, N_PROC)]
+                     for _ in range(0, self.num_proc)]
         if not self.quiet:
             processes += [
                 multiprocessing.Process(
