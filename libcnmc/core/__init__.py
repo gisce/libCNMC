@@ -18,7 +18,7 @@ class MultiprocessBased(object):
         self.file_output = kwargs.pop('output', False)
         self.content = None
         self.connection = kwargs.pop('connection')
-        self.num_proc = kwargs.pop('num_proc', N_PROC)
+        self.num_proc = max(1, kwargs.pop('num_proc', N_PROC))
         self.content = None
         self.input_q = multiprocessing.JoinableQueue()
         self.output_q = multiprocessing.Queue()
