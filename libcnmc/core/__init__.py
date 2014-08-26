@@ -26,6 +26,7 @@ class MultiprocessBased(object):
         self.quiet = kwargs.pop('quiet', False)
         self.interactive = kwargs.pop('interactive', False)
         self.report_name = ''
+        self.base_object = ''
 
     def get_sequence(self):
         raise NotImplementedError()
@@ -57,7 +58,7 @@ class MultiprocessBased(object):
         sequence = []
         sequence += self.get_sequence()
         if not self.quiet or self.interactive:
-            sys.stderr.write("S'han trobat %s CUPS.\n" % len(sequence))
+            sys.stderr.write("S'han trobat %s %s.\n" % (self.base_object, len(sequence)))
             sys.stderr.write("Any %d.\n" % self.year)
             sys.stderr.flush()
         if self.interactive:
