@@ -153,6 +153,7 @@ class F1(MultiprocessBased):
             o_equip = 'MEC'
             o_cod_tfa = ''
             tg_instalat = False
+            o_estat_contracte = 0
             if polissa_id:
                 fields_to_read = ['potencia', 'cnae', 'tarifa']
                 if 'butlletins' in O.GiscedataPolissa.fields_get():
@@ -182,6 +183,8 @@ class F1(MultiprocessBased):
             else:
                 #Si no trobem polissa activa, considerem "Contrato no activo (CNA)"
                 o_equip = 'CNA'
+                o_estat_contracte = 1
+
 
             #energies consumides
             o_anual_activa = cups['cne_anual_activa'] or 0.0
@@ -200,8 +203,8 @@ class F1(MultiprocessBased):
                o_codi_ine,
                o_codi_prov,
                o_connexio,
-               o_linia,
                o_tensio,
+               o_estat_contracte,
                o_potencia,
                o_pot_ads or o_potencia,
                o_anual_activa,
