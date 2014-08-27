@@ -96,12 +96,12 @@ class F11(MultiprocessBased):
                 ct = O.GiscedataCts.read(item, fields_to_read)
                 o_node, vertex = self.get_node_vertex(item)
                 o_ct = ct['name']
-                o_cini = ct['cini']
+                o_cini = ct['cini'] or ''
                 if ct['id_municipi']:
                     o_ine_muni, o_ine_prov = self.get_ine(ct['id_municipi'][0])
                 else:
                     o_ine_muni, o_ine_prov = '', ''
-                o_tensio_p = ct['tensio_p']
+                o_tensio_p = ct['tensio_p'] or ''
                 if ct['id_subtipus']:
                     o_tipo = self.get_tipus(ct['id_subtipus'][0])
                 else:
