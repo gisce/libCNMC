@@ -26,6 +26,9 @@ setup(name='libcnmc',
       packages=find_packages(),
       package_data=PACKAGES_DATA,
       entry_points={
-          'console_scripts': ['f1 = libcnmc.cir_4_2014.F1:main']
+          'console_scripts': [
+              'f1 = libcnmc.cir_4_2014.F1:main',
+              'f11 = libcnmc.cir_4_2014.F11:main'
+          ]
       })
 
