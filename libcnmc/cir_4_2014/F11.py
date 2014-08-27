@@ -143,6 +143,8 @@ class F11(MultiprocessBased):
                 ])
             except:
                 traceback.print_exc()
+                if self.raven:
+                    self.raven.captureException()
             finally:
                 self.input_q.task_done()
 
