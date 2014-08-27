@@ -28,6 +28,7 @@ setup(name='libcnmc',
       entry_points={
           'console_scripts': [
               'f1 = libcnmc.cir_4_2014.F1:main',
+              'f1bis = libcnmc.cir_4_2014.F1bis:main',
               'f11 = libcnmc.cir_4_2014.F11:main'
           ]
       })
