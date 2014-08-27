@@ -217,8 +217,10 @@ class F1(MultiprocessBased):
                    o_anual_reactiva,
                    o_any_incorporacio
                 ])
-            except Exception, e:
+            except:
                 traceback.print_exc()
+                if self.raven:
+                    self.raven.captureException()
             finally:
                 self.input_q.task_done()
 
