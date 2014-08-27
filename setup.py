@@ -23,7 +23,7 @@ setup(name='libcnmc',
       long_description='''Long description''',
       provides=['libcnmc'],
       install_requires=INSTALL_REQUIRES,
-      packages=find_packages(),
+      packages=find_packages(exclude=['tests']),
       package_data=PACKAGES_DATA,
       entry_points={
           'console_scripts': [
