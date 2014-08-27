@@ -37,6 +37,7 @@ class MultiprocessBased(object):
             self.raven.tags_context({'version': VERSION})
         else:
             self.raven = None
+        self.content = ''
 
     def get_sequence(self):
         raise NotImplementedError()
@@ -97,12 +98,14 @@ class MultiprocessBased(object):
             sys.stderr.write("Time Elapsed: %s\n" % (datetime.now() - start))
             sys.stderr.flush()
         if self.file_output:
-            self.content = open(self.file_output, 'wb')
+            self.file = open(self.file_output, 'wb')
         else:
-            self.content = StringIO()
-        fitxer = csv.writer(self.content, delimiter=';', lineterminator='\n')
+            self.file = StringIO()
+        fitxer = csv.writer(self.file, delimiter=';', lineterminator='\n')
         while not self.output_q.empty():
             msg = self.output_q.get()
             msg = map(lambda x: type(x)==unicode and x.encode('utf-8') or x, msg)
             fitxer.writerow(msg)
-        self.content.close()
+        if not self.file_output:
+            self.content = self.file.getvalue()
+        self.file.close()
