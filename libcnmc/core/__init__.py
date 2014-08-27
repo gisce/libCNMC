@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 import csv
 import multiprocessing
+import os
 import sys
 from datetime import datetime
 try:
     from cStringIO import StringIO
 except:
     from StringIO import StringIO
-
+try:
+    from raven import Client
+except:
+    Client = None
 from progressbar import ProgressBar, ETA, Percentage, Bar
 from libcnmc.utils import N_PROC
 
@@ -27,6 +31,10 @@ class MultiprocessBased(object):
         self.interactive = kwargs.pop('interactive', False)
         self.report_name = ''
         self.base_object = ''
+        if 'SENTRY_DSN' in os.environ and Client:
+            self.raven = Client()
+        else:
+            self.raven = None
 
     def get_sequence(self):
         raise NotImplementedError()
