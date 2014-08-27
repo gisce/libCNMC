@@ -14,6 +14,7 @@ except:
     Client = None
 from progressbar import ProgressBar, ETA, Percentage, Bar
 from libcnmc.utils import N_PROC
+from libcnmc import VERSION
 
 
 class MultiprocessBased(object):
@@ -33,6 +34,7 @@ class MultiprocessBased(object):
         self.base_object = ''
         if 'SENTRY_DSN' in os.environ and Client:
             self.raven = Client()
+            self.raven.tags_context({'version': VERSION})
         else:
             self.raven = None
 
