@@ -19,7 +19,11 @@ class F1(MultiprocessBased):
         self.report_name = 'F1 - CUPS'
 
     def get_codi_tarifa(self, codi_tarifa):
-        return CODIS_TARIFA[codi_tarifa]
+        try:
+            codi = CODIS_TARIFA[codi_tarifa]
+        except:
+            codi = ''
+        return codi
 
     def get_sequence(self):
         search_params = []
