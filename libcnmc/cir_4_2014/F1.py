@@ -96,7 +96,7 @@ class F1(MultiprocessBased):
                 o_codi_ine = ''
                 o_codi_prov = ''
                 o_zona = ''
-                o_potencia_facturada = cups['cnmc_potencia_facturada']
+                o_potencia_facturada = cups['cnmc_potencia_facturada'] or ''
                 if 'et' in cups:
                     o_zona = self.get_zona_qualitat(cups['et'])
                 if cups['id_municipi']:
