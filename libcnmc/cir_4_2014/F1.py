@@ -4,7 +4,7 @@ from multiprocessing import Manager
 import traceback
 
 import click
-from libcnmc.utils import N_PROC, CODIS_TARIFA, CODIS_ZONA
+from libcnmc.utils import N_PROC, CODIS_TARIFA, CODIS_ZONA, CINI_TELEGESTIO
 from libcnmc.core import MultiprocessBased
 
 
@@ -176,16 +176,26 @@ class F1(MultiprocessBased):
                         butlleti = O.GiscedataButlleti.read(polissa['butlletins'][-1],
                                                             ['pot_max_admisible'])
                         o_pot_ads = butlleti['pot_max_admisible']
-                    if tg_instalat:
-                        comptadors = O.GiscedataLecturesComptador.read(
-                            polissa['comptadors'], ['tg', 'active'])
-                        for comptador in comptadors:
-                            if comptador['active'] and comptador['tg']:
-                                o_equip = 'SMT'
+                    comptador_actiu = O.GiscedataLecturesComptador.search([
+                        ('polissa', '=', polissa['id']),
+                        ('active', '=', 1)
+                    ], 0, 1, 'data alta desc')
+                    if comptador_actiu:
+                        comptador_actiu = comptador_actiu[0]
+                        comptador = O.GiscedataLecturesComptador.read(
+                                comptador_actiu, ['cini', 'tg']
+                        )
+                        if comptador.get('tg', False):
+                            o_equip = 'SMT'
+                        elif comptador['cini'] == CINI_TELEGESTIO:
+                            o_equip = 'SMT'
+                        else:
+                            o_equip = 'MEC'
                     if polissa['tarifa']:
                         o_cod_tfa = self.get_codi_tarifa(polissa['tarifa'][1])
                 else:
-                    #Si no trobem polissa activa, considerem "Contrato no activo (CNA)"
+                    # Si no trobem polissa activa, considerem
+                    # "Contrato no activo (CNA)"
                     o_equip = 'CNA'
                     o_estat_contracte = 1
 
