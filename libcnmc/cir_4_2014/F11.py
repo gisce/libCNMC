@@ -29,7 +29,7 @@ class F11(MultiprocessBased):
             vertex = ('', '')
             if bloc['vertex']:
                 v = O.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
-                vertex = (v['x'], v['y'])
+                vertex = (round(v['x'], 3), round(v['y'], 3))
         return node, vertex
 
     def get_ine(self, municipi_id):
