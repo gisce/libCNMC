@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from multiprocessing import Manager
+import re
 import traceback
 
-import click
-from libcnmc.utils import N_PROC, CODIS_TARIFA, CODIS_ZONA, CINI_TELEGESTIO
+from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP
 from libcnmc.core import MultiprocessBased
 
 
@@ -181,7 +181,7 @@ class F1(MultiprocessBased):
                         )
                         if comptador.get('tg', False):
                             o_equip = 'SMT'
-                        elif comptador['cini'] == CINI_TELEGESTIO:
+                        elif re.findall(CINI_TG_REGEXP, comptador['cini']):
                             o_equip = 'SMT'
                         else:
                             o_equip = 'MEC'
