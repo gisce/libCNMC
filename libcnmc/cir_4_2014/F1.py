@@ -156,15 +156,9 @@ class F1(MultiprocessBased):
                 o_pot_ads = ''
                 o_equip = 'MEC'
                 o_cod_tfa = ''
-                tg_instalat = False
                 o_estat_contracte = 0
                 if polissa_id:
-                    fields_to_read = ['potencia', 'cnae', 'tarifa']
-                    if 'butlletins' in O.GiscedataPolissa.fields_get():
-                        fields_to_read += ['butlletins']
-                    if 'tg' in O.GiscedataLecturesComptador.fields_get():
-                        tg_instalat = True
-                        fields_to_read += ['comptadors']
+                    fields_to_read = ['potencia', 'cnae', 'tarifa', 'butlletins']
 
                     polissa = O.GiscedataPolissa.read(polissa_id[0], fields_to_read,
                              context_glob)
@@ -172,7 +166,7 @@ class F1(MultiprocessBased):
                     if polissa['cnae']:
                         o_cnae = polissa['cnae'][1]
                     # Mirem si té l'actualització dels butlletins
-                    if polissa['butlletins']:
+                    if polissa.get('butlletins', []):
                         butlleti = O.GiscedataButlleti.read(polissa['butlletins'][-1],
                                                             ['pot_max_admisible'])
                         o_pot_ads = butlleti['pot_max_admisible']
