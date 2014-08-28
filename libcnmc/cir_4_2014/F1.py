@@ -173,7 +173,7 @@ class F1(MultiprocessBased):
                     comptador_actiu = O.GiscedataLecturesComptador.search([
                         ('polissa', '=', polissa['id']),
                         ('active', '=', 1)
-                    ], 0, 1, 'data alta desc')
+                    ], 0, 1, 'data_alta desc')
                     if comptador_actiu:
                         comptador_actiu = comptador_actiu[0]
                         comptador = O.GiscedataLecturesComptador.read(
