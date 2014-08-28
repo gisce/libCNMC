@@ -30,7 +30,8 @@ setup(name='libcnmc',
               'f1 = libcnmc.cli:cir_4_2014_f1',
               'f1bis = libcnmc.cli:cir_4_2014_f1bis',
               'f11 = libcnmc.cli:cir_4_2014_f11',
-              'update_cnmc_stats = libcnmc.cli:update_cnmc_stats'
+              'update_cnmc_stats = libcnmc.cli:update_cnmc_stats',
+              'update_cinis_comptador = libcnmc.cli:update_cinis_comptador'
           ]
       })
 
