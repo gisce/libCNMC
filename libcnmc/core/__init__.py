@@ -8,6 +8,8 @@ try:
     from cStringIO import StringIO
 except:
     from StringIO import StringIO
+import traceback
+
 try:
     from raven import Client
 except:
@@ -32,6 +34,7 @@ class MultiprocessBased(object):
         self.interactive = kwargs.pop('interactive', False)
         self.report_name = ''
         self.base_object = ''
+        self.year = None
         if 'SENTRY_DSN' in os.environ and Client:
             self.raven = Client()
             self.raven.tags_context({'version': VERSION})
@@ -65,12 +68,17 @@ class MultiprocessBased(object):
     def consumer(self):
         raise NotImplementedError()
 
+    def execute(self):
+        # Alias for calc
+        self.calc()
+
     def calc(self):
         sequence = []
         sequence += self.get_sequence()
         if not self.quiet or self.interactive:
             sys.stderr.write("S'han trobat %s %s.\n" % (self.base_object, len(sequence)))
-            sys.stderr.write("Any %d.\n" % self.year)
+            if self.year:
+                sys.stderr.write("Any %d.\n" % self.year)
             sys.stderr.flush()
         if self.interactive:
             sys.stderr.write("Correcte? ")
@@ -109,3 +117,58 @@ class MultiprocessBased(object):
         if not self.file_output:
             self.content = self.file.getvalue()
         self.file.close()
+
+
+class UpdateFile(MultiprocessBased):
+    def __init__(self, **kwargs):
+        super(UpdateFile, self).__init__(**kwargs)
+        self.file_input = kwargs.pop('file_input')
+        self.header = []
+        self.search_keys = []
+
+    def get_sequence(self):
+        energies_file = open(self.file_input)
+        sequence = energies_file.readlines()
+        energies_file.close()
+        return sequence
+
+    def search_and_update(self, vals):
+        search_params = []
+        for header_key, bbdd_key in self.search_keys:
+            value = vals.pop(header_key)
+            search_params += [(bbdd_key, '=', value)]
+        ids = self.object.search(search_params)
+        if ids:
+            self.object.write(ids, vals)
+
+    def build_vals(self, values):
+        vals = {}
+        for val in zip(self.header, values):
+            vals[val[0]] = val[1]
+        return vals
+
+    def consumer(self):
+        while True:
+            try:
+                item = self.input_q.get()
+                self.progress_q.put(item)
+                values = item.split(';')
+                vals = self.build_vals(values)
+                self.search_and_update(vals)
+            except:
+                traceback.print_exc()
+                if self.raven:
+                    self.raven.captureException()
+            finally:
+                self.input_q.task_done()
+
+
+class UpdateCNMCStats(UpdateFile):
+    def __init__(self, **kwargs):
+        super(UpdateCNMCStats, self).__init__(**kwargs)
+        self.header = [
+            'cups', 'cne_anual_activa', 'cne_anual_reactiva',
+            'cnmc_potencia_facturada', 'cnmc_numero_lectures'
+        ]
+        self.search_keys = [('cups', 'name')]
+        self.object = self.connection.GiscedataCupsPs
