@@ -152,7 +152,7 @@ class UpdateFile(MultiprocessBased):
             try:
                 item = self.input_q.get()
                 self.progress_q.put(item)
-                values = item.split(';')
+                values = item.rstrip().split(';')
                 vals = self.build_vals(values)
                 self.search_and_update(vals)
             except:
