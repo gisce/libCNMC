@@ -83,10 +83,10 @@ class F1(MultiprocessBased):
             try:
                 item = self.input_q.get()
                 self.progress_q.put(item)
-                fields_to_read = ['name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
-                                  'cne_anual_reactiva', 'cnmc_potencia_facturada']
-                if 'et' in O.GiscedataCupsPs.fields_get():
-                    fields_to_read += ['et']
+                fields_to_read = [
+                    'name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
+                    'cne_anual_reactiva', 'cnmc_potencia_facturada', 'et'
+                ]
 
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 if not cups or not cups.get('name'):
