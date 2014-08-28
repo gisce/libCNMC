@@ -172,3 +172,13 @@ class UpdateCNMCStats(UpdateFile):
         ]
         self.search_keys = [('cups', 'name')]
         self.object = self.connection.GiscedataCupsPs
+
+
+class UpdateCINISComptador(UpdateFile):
+    def __init__(self, **kwargs):
+        super(UpdateCINISComptador, self).__init__(**kwargs)
+        self.header = [
+            'numero_comtador', 'cini'
+        ]
+        self.search_keys = [('numero_comtador', 'name')]
+        self.object = self.connection.GiscedataLecturesComptador
