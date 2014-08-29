@@ -82,7 +82,7 @@ class F11(MultiprocessBased):
         return saturacio
 
     def consumer(self):
-        o_codi_r1 = self.codi_r1
+        o_codi_r1 = 'R1-%s' % self.codi_r1[-3:]
         O = self.connection
         fields_to_read = [
             'name', 'cini', 'id_municipi',   'tensio_p', 'id_subtipus',
