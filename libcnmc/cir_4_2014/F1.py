@@ -4,7 +4,7 @@ from multiprocessing import Manager
 import re
 import traceback
 
-from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP
+from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP, get_ine
 from libcnmc.core import MultiprocessBased
 
 
@@ -100,12 +100,9 @@ class F1(MultiprocessBased):
                 if 'et' in cups:
                     o_zona = self.get_zona_qualitat(cups['et'])
                 if cups['id_municipi']:
-                    municipi = O.ResMunicipi.read(cups['id_municipi'][0], ['ine', 'state', 'dc'])
-                    ine = municipi['ine'] + municipi['dc']
-                    if municipi['state']:
-                        provincia = O.ResCountryState.read(municipi['state'][0], ['code'])
-                        o_codi_prov = provincia['code']
-                    o_codi_ine = ine[2:]
+                    municipi = O.ResMunicipi.read(cups['id_municipi'][0], ['ine'])
+                    ine = get_ine(self.connection, municipi['ine'])
+                    o_codi_ine = ine[1]
 
                 o_utmx = ''
                 o_utmy = ''
