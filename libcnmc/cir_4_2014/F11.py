@@ -97,7 +97,7 @@ class F11(MultiprocessBased):
                 o_ct = ct['name']
                 o_cini = ct['cini'] or ''
                 if ct['id_municipi']:
-                    o_ine_muni, o_ine_prov = self.get_ine(ct['id_municipi'][0])
+                    o_ine_prov, o_ine_muni = self.get_ine(ct['id_municipi'][0])
                 else:
                     o_ine_muni, o_ine_prov = '', ''
                 o_tensio_p = ct['tensio_p'] or ''
