@@ -22,10 +22,10 @@ class F11(MultiprocessBased):
         O = self.connection
         bloc = O.GiscegisBlocsCtat.search([('ct', '=', ct_id)])
         node = ''
+        vertex = ('', '')
         if bloc:
             bloc = O.GiscegisBlocsCtat.read(bloc[0], ['node', 'vertex'])
             node = bloc['node'][0]
-            vertex = ('', '')
             if bloc['vertex']:
                 v = O.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
                 vertex = (round(v['x'], 3), round(v['y'], 3))
