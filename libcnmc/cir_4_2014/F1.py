@@ -103,6 +103,7 @@ class F1(MultiprocessBased):
                     municipi = O.ResMunicipi.read(cups['id_municipi'][0], ['ine'])
                     ine = get_ine(self.connection, municipi['ine'])
                     o_codi_ine = ine[1]
+                    o_codi_prov = ine[0]
 
                 o_utmx = ''
                 o_utmy = ''
