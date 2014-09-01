@@ -179,6 +179,8 @@ class F1(MultiprocessBased):
                         comptador = O.GiscedataLecturesComptador.read(
                                 comptador_actiu, ['cini', 'tg']
                         )
+                        if not comptador['cini']:
+                            comptador['cini'] = ''
                         if comptador.get('tg', False):
                             o_equip = 'SMT'
                         elif re.findall(CINI_TG_REGEXP, comptador['cini']):
