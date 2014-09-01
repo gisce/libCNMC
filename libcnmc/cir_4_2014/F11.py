@@ -117,6 +117,7 @@ class F11(MultiprocessBased):
                 o_financament = ct['perc_financament']
                 o_propietari = int(ct['propietari'])
                 o_num_max_maquines = ct['numero_maxim_maquines']
+                o_incorporacio = str(datetime.now().year)
 
                 self.output_q.put([
                     o_node,
@@ -138,6 +139,7 @@ class F11(MultiprocessBased):
                     o_codi_r1,
                     o_financament,
                     o_propietari,
+                    o_incorporacio,
                     o_num_max_maquines
                 ])
             except:
