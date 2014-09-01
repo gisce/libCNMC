@@ -34,7 +34,7 @@ class F11(MultiprocessBased):
     def get_ine(self, municipi_id):
         O = self.connection
         muni = O.ResMunicipi.read(municipi_id, ['ine', 'dc'])
-        return get_ine(O, muni['ine'])[1]
+        return get_ine(O, muni['ine'])
 
 
     def get_sortides_ct(self, ct_name):
