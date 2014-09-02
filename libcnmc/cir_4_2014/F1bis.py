@@ -32,10 +32,14 @@ class F1bis(MultiprocessBased):
     def get_data_comptador(self, polissa_id):
         O = self.connection
         comp_obj = O.GiscedataLecturesComptador
-        pol = O.GiscedataPolissa.read(polissa_id, ['comptadors'])
+        comp_id = comp_obj.search([
+            ('polissa', '=', polissa_id),
+            ('data_alta', '<', '%s-01-01' % (self.year + 1))
+        ], 0, 1, 'data_alta desc', {'active_test': False})
         data = ''
-        if pol['comptadors']:
-            comp = comp_obj.read(pol['comptadors'][-1], ['data_alta'])
+        if comp_id:
+            comp_id = comp_id[0]
+            comp = comp_obj.read(comp_id, ['data_alta'])
             data = comp['data_alta'].split('-')
             # Format MM/YYYY
             data = '%s/%s' % (data[1], data[0])
