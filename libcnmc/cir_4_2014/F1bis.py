@@ -19,23 +19,26 @@ class F1bis(MultiprocessBased):
         search_params = [('polissa_polissa', '!=', False)]
         return self.connection.GiscedataCupsPs.search(search_params)
 
-    def get_comptador_cini(self, comptador_name):
-        O = self.connection
-        cini = ''
-        comp_obj = O.GiscedataLecturesComptador
-        cid = comp_obj.search([('name', '=', comptador_name)])
-        if cid:
-            comptador = comp_obj.read(cid[0], ['cini'])
-            cini = comptador['cini'] or ''
-        return cini
-
-    def get_data_comptador(self, polissa_id):
+    def get_comptador(self, polissa_id):
         O = self.connection
         comp_obj = O.GiscedataLecturesComptador
         comp_id = comp_obj.search([
             ('polissa', '=', polissa_id),
             ('data_alta', '<', '%s-01-01' % (self.year + 1))
         ], 0, 1, 'data_alta desc', {'active_test': False})
+        return comp_id
+
+    def get_comptador_cini(self, polissa_id):
+        comp_obj = self.connection.GiscedataLecturesComptador
+        cid = self.get_comptador(polissa_id)
+        if cid:
+            comptador = comp_obj.read(cid[0], ['cini'])
+            cini = comptador['cini'] or ''
+        return cini
+
+    def get_data_comptador(self, polissa_id):
+        comp_obj = self.connection.GiscedataLecturesComptador
+        comp_id = self.get_comptador(polissa_id)
         data = ''
         if comp_id:
             comp_id = comp_id[0]
@@ -82,21 +85,18 @@ class F1bis(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
                 fields_to_read = [
-                    'name', 'polissa_comptador', 'polissa_polissa',
-                    'cnmc_numero_lectures'
+                    'name', 'polissa_polissa', 'cnmc_numero_lectures'
                 ]
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
 
                 o_cups = cups['name'][:22]
-                if cups['polissa_comptador']:
-                    comptador = cups['polissa_comptador']
-                    o_comptador_cini = self.get_comptador_cini(comptador)
-                else:
-                    o_comptador_cini = ''
+
                 if cups['polissa_polissa']:
                     polissa_id = cups['polissa_polissa'][0]
+                    o_comptador_cini = self.get_comptador_cini(polissa_id)
                     o_comptador_data = self.get_data_comptador(polissa_id)
                 else:
+                    o_comptador_cini = ''
                     o_comptador_data = ''
                 o_num_lectures = cups['cnmc_numero_lectures'] or ''
                 o_titular = self.get_cambio_titularidad(cups['id'])
