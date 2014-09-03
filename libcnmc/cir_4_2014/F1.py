@@ -133,18 +133,10 @@ class F1(MultiprocessBased):
                                 edge_id = O.GiscegisEdge.search(search_params)
                             if edge_id:
                                 edge = O.GiscegisEdge.read(
-                                    edge_id[0], ['name', 'id_linktemplate']
+                                    edge_id[0], ['name']
                                 )
                                 o_nom_node = edge['name']
-                                search_params = [('name', '=', edge['id_linktemplate'])]
-                                bt_id = O.GiscedataBtElement.search(search_params)
-                                if bt_id:
-                                    bt = O.GiscedataBtElement.read(bt_id[0],
-                                                                        ['tipus_linia',
-                                                                         'voltatge'])
-                                    if bt['tipus_linia']:
-                                        o_linia = bt['tipus_linia'][1][0]
-                                    o_tensio = float(bt['voltatge']) / 1000.0
+
 
                 search_params = [('cups', '=', cups['id'])] + search_glob
                 polissa_id = O.GiscedataPolissa.search(search_params, 0, 0, False,
@@ -156,10 +148,14 @@ class F1(MultiprocessBased):
                 o_cod_tfa = ''
                 o_estat_contracte = 0
                 if polissa_id:
-                    fields_to_read = ['potencia', 'cnae', 'tarifa', 'butlletins']
+                    fields_to_read = [
+                        'potencia', 'cnae', 'tarifa', 'butlletins', 'tensio'
+                    ]
 
                     polissa = O.GiscedataPolissa.read(polissa_id[0], fields_to_read,
                              context_glob)
+                    if polissa['tensio']:
+                        o_tensio = polissa['tensio'] / 1000.0
                     o_potencia = polissa['potencia']
                     if polissa['cnae']:
                         o_cnae = polissa['cnae'][1]
