@@ -31,6 +31,7 @@ class F1bis(MultiprocessBased):
     def get_comptador_cini(self, polissa_id):
         comp_obj = self.connection.GiscedataLecturesComptador
         cid = self.get_comptador(polissa_id)
+        cini = ''
         if cid:
             comptador = comp_obj.read(cid[0], ['cini'])
             cini = comptador['cini'] or ''
