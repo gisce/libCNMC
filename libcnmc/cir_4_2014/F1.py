@@ -155,7 +155,7 @@ class F1(MultiprocessBased):
                     polissa = O.GiscedataPolissa.read(polissa_id[0], fields_to_read,
                              context_glob)
                     if polissa['tensio']:
-                        o_tensio = polissa['tensio']
+                        o_tensio = polissa['tensio'] / 1000.0
                     o_potencia = polissa['potencia']
                     if polissa['cnae']:
                         o_cnae = polissa['cnae'][1]
