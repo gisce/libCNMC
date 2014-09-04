@@ -15,7 +15,7 @@ class F1bis(MultiprocessBased):
         self.base_object = 'CUPS'
 
     def get_sequence(self):
-        search_params = [('polissa_polissa', '!=', False)]
+        search_params = []
         return self.connection.GiscedataCupsPs.search(search_params)
 
     def get_comptador(self, polissa_id):
