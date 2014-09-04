@@ -5,7 +5,7 @@ import re
 import traceback
 
 from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP
-from libcnmc.utils import  get_ine, get_comptador
+from libcnmc.utils import get_ine, get_comptador
 from libcnmc.core import MultiprocessBased
 
 

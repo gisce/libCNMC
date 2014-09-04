@@ -2,8 +2,7 @@
 from datetime import datetime
 import traceback
 
-import click
-from libcnmc.utils import N_PROC, get_comptador
+from libcnmc.utils import get_comptador
 from libcnmc.core import MultiprocessBased
 
 
@@ -16,7 +15,7 @@ class F1bis(MultiprocessBased):
         self.base_object = 'CUPS'
 
     def get_sequence(self):
-        search_params = [('polissa_polissa', '!=', False)]
+        search_params = []
         return self.connection.GiscedataCupsPs.search(search_params)
 
     def get_comptador(self, polissa_id):
