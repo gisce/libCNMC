@@ -49,6 +49,20 @@ class F1bis(MultiprocessBased):
             data = '%s/%s' % (data[1], data[0])
         return data
 
+    def get_polissa(self, cups_id):
+        polissa_obj = self.connection.GiscedataPolissa
+        ultim_dia_any = '%s-12-31' % self.year
+        context = {'date': ultim_dia_any, 'active_test': False}
+        polissa_id = polissa_obj.search([
+            ('cups', '=', cups_id),
+            ('state', 'not in', ('esborrany', 'validar')),
+            ('data_alta', '<=', ultim_dia_any),
+            '|',
+            ('data_baixa', '>=', ultim_dia_any),
+            ('data_baixa', '=', False)
+        ], 0, 1, 'data_alta desc', context)
+        return polissa_id
+
     def get_cambio_titularidad(self, cups_id):
         O = self.connection
         intervals = O.GiscedataCupsPs.get_modcontractual_intervals
@@ -89,11 +103,10 @@ class F1bis(MultiprocessBased):
                     'name', 'polissa_polissa', 'cnmc_numero_lectures'
                 ]
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
-
                 o_cups = cups['name'][:22]
-
-                if cups['polissa_polissa']:
-                    polissa_id = cups['polissa_polissa'][0]
+                polissa_id = self.get_polissa(cups['id'])
+                if polissa_id:
+                    polissa_id = polissa_id[0]
                     o_comptador_cini = self.get_comptador_cini(polissa_id)
                     o_comptador_data = self.get_data_comptador(polissa_id)
                 else:
