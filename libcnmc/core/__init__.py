@@ -28,7 +28,7 @@ class MultiprocessBased(object):
         self.num_proc = max(1, kwargs.pop('num_proc', N_PROC))
         self.content = None
         self.input_q = multiprocessing.JoinableQueue()
-        self.output_q = multiprocessing.Queue()
+        self.output_q = multiprocessing.JoinableQueue()
         self.progress_q = multiprocessing.Queue()
         self.quiet = kwargs.pop('quiet', False)
         self.interactive = kwargs.pop('interactive', False)
@@ -41,6 +41,7 @@ class MultiprocessBased(object):
         else:
             self.raven = None
         self.content = ''
+
 
     def get_sequence(self):
         raise NotImplementedError()
@@ -64,6 +65,30 @@ class MultiprocessBased(object):
             pbar.update(done)
             if done >= total:
                 pbar.finish()
+
+    def writer(self):
+        if self.file_output:
+            fio = open(self.file_output, 'wb')
+        else:
+            fio = StringIO()
+        fitxer = csv.writer(fio, delimiter=';', lineterminator='\n')
+        while True:
+            try:
+                item = self.output_q.get()
+                if item == 'STOP':
+                    break
+                msg = map(lambda x: type(x)==unicode and x.encode('utf-8') or x, item)
+                fitxer.writerow(msg)
+            except:
+                traceback.print_exc()
+                if self.raven:
+                    self.raven.captureException()
+            finally:
+                self.output_q.task_done()
+
+        if not self.file_output:
+            self.content = fio.getvalue()
+        fio.close()
 
     def consumer(self):
         raise NotImplementedError()
@@ -93,6 +118,8 @@ class MultiprocessBased(object):
                     target=self.progress, args=(len(sequence),)
                 )
             ]
+        processes.append(multiprocessing.Process(target=self.writer))
+        self.producer(sequence)
         for proc in processes:
             proc.daemon = True
             proc.start()
@@ -100,23 +127,15 @@ class MultiprocessBased(object):
                 sys.stderr.write("^Starting process PID (%s): %s\n" %
                                  (proc.name, proc.pid))
         sys.stderr.flush()
-        self.producer(sequence)
         self.input_q.join()
+        self.output_q.put('STOP')
         if not self.quiet:
             sys.stderr.write("Time Elapsed: %s\n" % (datetime.now() - start))
             sys.stderr.flush()
-        if self.file_output:
-            self.file = open(self.file_output, 'wb')
-        else:
-            self.file = StringIO()
-        fitxer = csv.writer(self.file, delimiter=';', lineterminator='\n')
-        while not self.output_q.empty():
-            msg = self.output_q.get()
-            msg = map(lambda x: type(x)==unicode and x.encode('utf-8') or x, msg)
-            fitxer.writerow(msg)
-        if not self.file_output:
-            self.content = self.file.getvalue()
-        self.file.close()
+        self.output_q.join()
+        self.output_q.close()
+        self.input_q.close()
+
 
 
 class UpdateFile(MultiprocessBased):
