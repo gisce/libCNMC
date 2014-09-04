@@ -2,8 +2,7 @@
 from datetime import datetime
 import traceback
 
-import click
-from libcnmc.utils import N_PROC, get_comptador
+from libcnmc.utils import get_comptador
 from libcnmc.core import MultiprocessBased
 
 
