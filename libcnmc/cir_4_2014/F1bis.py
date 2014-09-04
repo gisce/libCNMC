@@ -3,7 +3,7 @@ from datetime import datetime
 import traceback
 
 import click
-from libcnmc.utils import N_PROC
+from libcnmc.utils import N_PROC, get_comptador
 from libcnmc.core import MultiprocessBased
 
 
@@ -30,7 +30,7 @@ class F1bis(MultiprocessBased):
 
     def get_comptador_cini(self, polissa_id):
         comp_obj = self.connection.GiscedataLecturesComptador
-        cid = self.get_comptador(polissa_id)
+        cid = get_comptador(self.connection, polissa_id, self.year)
         cini = ''
         if cid:
             comptador = comp_obj.read(cid[0], ['cini'])
@@ -39,7 +39,7 @@ class F1bis(MultiprocessBased):
 
     def get_data_comptador(self, polissa_id):
         comp_obj = self.connection.GiscedataLecturesComptador
-        comp_id = self.get_comptador(polissa_id)
+        comp_id = get_comptador(self.connection, polissa_id, self.year)
         data = ''
         if comp_id:
             comp_id = comp_id[0]

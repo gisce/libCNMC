@@ -4,7 +4,8 @@ from multiprocessing import Manager
 import re
 import traceback
 
-from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP, get_ine
+from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP
+from libcnmc.utils import  get_ine, get_comptador
 from libcnmc.core import MultiprocessBased
 
 
@@ -164,10 +165,8 @@ class F1(MultiprocessBased):
                         butlleti = O.GiscedataButlleti.read(polissa['butlletins'][-1],
                                                             ['pot_max_admisible'])
                         o_pot_ads = butlleti['pot_max_admisible']
-                    comptador_actiu = O.GiscedataLecturesComptador.search([
-                        ('polissa', '=', polissa['id']),
-                        ('active', '=', 1)
-                    ], 0, 1, 'data_alta desc')
+                    comptador_actiu = get_comptador(
+                        self.connection, polissa_id, self.year)
                     if comptador_actiu:
                         comptador_actiu = comptador_actiu[0]
                         comptador = O.GiscedataLecturesComptador.read(
