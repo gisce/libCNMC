@@ -4,11 +4,11 @@ from libcomxml.core import XmlModel, XmlField
 
 
 class Linea(XmlModel):
-    _sort_order = ('linea', 'identificador', 'cini', 'origen', 
-		   'destino', 'codigo_tipo_linea', 'codigo_ccaa_1',
-		   'codigo_ccaa_2', 'participacion', 'fecha_aps',
-		   'fecha_baja', 'numero_circuitos', 'numero_conductores',
-      		'longitud', 'seccion', 'capacidad')
+    _sort_order = ('linea', 'identificador', 'cini', 'origen',
+                   'destino', 'codigo_tipo_linea', 'codigo_ccaa_1',
+                   'codigo_ccaa_2', 'participacion', 'fecha_aps',
+                   'fecha_baja', 'numero_circuitos', 'numero_conductores',
+                   'longitud', 'seccion', 'capacidad')
 
     def __init__(self):
         self.linea = XmlField('LINEA')
@@ -31,11 +31,10 @@ class Linea(XmlModel):
         super(Linea, self).__init__('LINEA', 'linea')
 
 
-
 class Subestacion(XmlModel):
-    _sort_order = ('identificador', 'cini', 'denominacion', 'codigo_tipo_posicion',
-		   'codigo_ccaa', 'participacion', 'fecha_aps', 'fecha_baja',
-		   'posiciones')
+    _sort_order = ('identificador', 'cini', 'denominacion',
+                   'codigo_tipo_posicion', 'codigo_ccaa', 'participacion',
+                   'fecha_aps', 'fecha_baja', 'posiciones')
 
     def __init__(self):
         self.subestacion = XmlField('SUBESTACION')
@@ -51,10 +50,11 @@ class Subestacion(XmlModel):
 
         super(Subestacion, self).__init__('SUBESTACION', 'subestacion')
 
+
 class Posicion(XmlModel):
     _sort_order = ('identificador', 'cini', 'denominacion',
-		   'codigo_tipo_posicion', 'codigo_ccaa', 'participacion',
-		   'fecha_aps', 'fecha_baja')
+                   'codigo_tipo_posicion', 'codigo_ccaa', 'participacion',
+                   'fecha_aps', 'fecha_baja')
 
     def __init__(self):
         self.posicion = XmlField('POSICION') 
@@ -69,10 +69,11 @@ class Posicion(XmlModel):
 
         super(Posicion, self).__init__('POSICION', 'posicion')
 
+
 class Maquina(XmlModel):
-    _sort_order = ('identificador', 'cini', 'denominacion', 'codigo_tipo_maquina',
-		   'codigo_zona', 'codigo_ccaa', 'participacion', 'fecha_aps',
-		   'fecha_baja', 'capacidad')
+    _sort_order = ('identificador', 'cini', 'denominacion',
+                   'codigo_tipo_maquina', 'codigo_zona', 'codigo_ccaa',
+                   'participacion', 'fecha_aps', 'fecha_baja', 'capacidad')
 
     def __init__(self):
         self.maquina = XmlField('MAQUINA')
@@ -87,11 +88,11 @@ class Maquina(XmlModel):
         self.fecha_baja = XmlField('FECHA_BAJA')
         self.capacidad = XmlField('CAPACIDAD')
         
-	super(Maquina, self).__init__('MAQUINA', 'maquina')
+        super(Maquina, self).__init__('MAQUINA', 'maquina')
+
 
 class Despacho(XmlModel):
-    _sort_order = ('identificador', 'cini', 'denominacion', 
-		   'anyo_ps', 'vai')
+    _sort_order = ('identificador', 'cini', 'denominacion', 'anyo_ps', 'vai')
 
     def __init__(self):
         self.despacho = XmlField('DESPACHO')
@@ -103,10 +104,10 @@ class Despacho(XmlModel):
 
         super(Despacho, self).__init__('DESPACHO', 'despacho')
 
+
 class Fiabilidad(XmlModel):
     _sort_order = ('identificador', 'cini', 'denominacion',
-		   'codigo_tipo_inst', 'codigo_ccaa', 'fecha_aps',
-		   'fecha_baja')
+                   'codigo_tipo_inst', 'codigo_ccaa', 'fecha_aps', 'fecha_baja')
 
     def __init__(self):
         self.fiabilidad = XmlField('FIABILIDAD')
@@ -117,13 +118,13 @@ class Fiabilidad(XmlModel):
         self.codigo_ccaa = XmlField('CODIGO_CCAA')
         self.fecha_aps = XmlField('FECHA_APS')
         self.fecha_baja = XmlField('FECHA_BAJA')
-	
-	super(Fiabilidad, self).__init__('FIABILIDAD', 'fiabilidad')
+
+        super(Fiabilidad, self).__init__('FIABILIDAD', 'fiabilidad')
+
 
 class Transformacion(XmlModel):
-    _sort_order = ('identificacion', 'cini', 'denominacion',
-		   'codigo_tipo_ct', 'codigo_ccaa', 'participacion',
-		   'fecha_aps', 'fecha_baja')
+    _sort_order = ('identificacion', 'cini', 'denominacion', 'codigo_tipo_ct',
+                   'codigo_ccaa', 'participacion', 'fecha_aps', 'fecha_baja')
 
     def __init__(self):
         self.transformacion = XmlField('TRANSFORMACION')
@@ -135,14 +136,15 @@ class Transformacion(XmlModel):
         self.participacion = XmlField('PARTICIPACION')
         self.fecha_aps = XmlField('FECHA_APS')
         self.fecha_baja = XmlField('FECHA_BAJA')
-	
-	super(Transformacion, self).__init__('TRANSFORMACION','transformacion')
+
+        super(Transformacion, self).__init__('TRANSFORMACION', 'transformacion')
 
 
 
 class Empresa(XmlModel):
-    _sort_order = ('root', 'linea', 'posicion', 'maquina','despacho',
-		   'fiabilidad', 'transformacion')
+    _sort_order = ('root', 'linea', 'posicion', 'maquina', 'despacho',
+                   'fiabilidad', 'transformacion')
+
     def __init__(self, codigo=''):
         self.root = XmlField('EMPRESA', attributes={'CODIGO': codigo})
         self.linea = []
@@ -153,7 +155,7 @@ class Empresa(XmlModel):
         self.fiabilidad = []
         self.transformacion = []
         
-	super(Empresa, self).__init__('EMPRESA','root')
+        super(Empresa, self).__init__('EMPRESA', 'root')
 
     def set_codigo(self, codigo):
         self.root.attributes.update({'CODIGO': codigo})
