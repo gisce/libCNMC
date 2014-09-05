@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-INVENTARI DE CNMC AT
+INVENTARI DE CNMC BT
 """
 from datetime import datetime
 import traceback
