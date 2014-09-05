@@ -8,3 +8,4 @@ from FIA import FIA
 from CTS import CTS
 from INV import INV
 from CINIMAQ import CINIMAQ
+from CINIPOS import CINIPOS
