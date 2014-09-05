@@ -23,7 +23,6 @@ class MultiprocessBased(object):
 
     def __init__(self, **kwargs):
         self.file_output = kwargs.pop('output', False)
-        self.content = None
         self.connection = kwargs.pop('connection')
         self.num_proc = max(1, kwargs.pop('num_proc', N_PROC))
         self.content = None
@@ -34,7 +33,6 @@ class MultiprocessBased(object):
         self.interactive = kwargs.pop('interactive', False)
         self.report_name = ''
         self.base_object = ''
-        self.year = None
         if 'SENTRY_DSN' in os.environ and Client:
             self.raven = Client()
             self.raven.tags_context({'version': VERSION})
