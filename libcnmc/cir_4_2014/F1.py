@@ -140,8 +140,8 @@ class F1(MultiprocessBased):
 
 
                 search_params = [('cups', '=', cups['id'])] + search_glob
-                polissa_id = O.GiscedataPolissa.search(search_params, 0, 0, False,
-                                                       context_glob)
+                polissa_id = O.GiscedataPolissa.search(
+                    search_params, 0, 1, 'data_alta desc', context_glob)
                 o_potencia = ''
                 o_cnae = ''
                 o_pot_ads = ''
@@ -166,7 +166,7 @@ class F1(MultiprocessBased):
                                                             ['pot_max_admisible'])
                         o_pot_ads = butlleti['pot_max_admisible']
                     comptador_actiu = get_comptador(
-                        self.connection, polissa_id, self.year)
+                        self.connection, polissa['id'], self.year)
                     if comptador_actiu:
                         comptador_actiu = comptador_actiu[0]
                         comptador = O.GiscedataLecturesComptador.read(
