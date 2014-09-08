@@ -24,13 +24,14 @@ class DES(MultiprocessBased):
 
     def consumer(self):
         O = self.connection
+        fields_to_read = ['name', 'cini', 'denominacio', 'any_ps', 'vai']
         while True:
             try:
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
                 despatx = O.GiscedataDespatx.read(
-                    item, ['name', 'cini', 'denominacio', 'any_ps', 'vai'])
+                    item, fields_to_read)
 
                 output = [
                     '%s' % despatx['name'],

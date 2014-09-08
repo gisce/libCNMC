@@ -25,14 +25,15 @@ class CINIMAQ(MultiprocessBased):
 
     def consumer(self):
         O = self.connection
+        fields_to_read = ['cini', 'tensio_primari_actual', 'tensio_b1',
+                          'tensio_b2', 'potencia_nominal', 'reductor']
         while True:
             try:
                 item = self.input_q.get()
                 self.progress_q.put(item)
                 cini = ''
                 trafo = O.GiscedataTransformadorTrafo.read(
-                    item, ['cini', 'tensio_primari_actual', 'tensio_b1',
-                           'tensio_b2', 'potencia_nominal', 'reductor'])
+                    item, fields_to_read)
 
                 if not trafo['cini']:
                     #Els cinis de màquines tots començen amb I27

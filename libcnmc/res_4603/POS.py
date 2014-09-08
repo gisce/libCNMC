@@ -27,14 +27,15 @@ class POS(MultiprocessBased):
 
     def consumer(self):
         O = self.connection
+        fields_to_read = ['name', 'cini', 'data_pm', 'subestacio_id',
+                          'codi_instalacio', 'perc_financament']
         while True:
             try:
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
                 sub = O.GiscedataCtsSubestacionsPosicio.read(
-                    item, ['name', 'cini', 'data_pm', 'subestacio_id',
-                           'codi_instalacio', 'perc_financament'])
+                    item, fields_to_read)
                 if not sub:
                     if not QUIET:
                         sys.stderr.write("**** ERROR: El ct %s (id:%s) no està "

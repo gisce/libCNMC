@@ -29,7 +29,9 @@ class LBT(MultiprocessBased):
     def consumer(self):
         O = self.connection
         count = 0
-
+        fields_to_read = ['name', 'municipi', 'data_acta_posada_marxa', 'ct',
+                          'coeficient', 'cini', 'perc_financament',
+                          'longitud_cad', 'cable', 'voltatge']
         while True:
             try:
                 count += 1
@@ -37,13 +39,7 @@ class LBT(MultiprocessBased):
                 self.progress_q.put(item)
                 data_pm = False
 
-                linia = O.GiscedataBtElement.read(item,
-                                                  ['name', 'municipi',
-                                                   'data_acta_posada_marxa', 'ct',
-                                                   'coeficient', 'cini',
-                                                   'perc_financament',
-                                                   'longitud_cad',
-                                                   'cable', 'voltatge'])
+                linia = O.GiscedataBtElement.read(item, fields_to_read)
 
                 res = O.GiscegisEdge.search([('id_linktemplate', '=', linia['name']),
                                              ('layer', 'ilike', '%BT%')])

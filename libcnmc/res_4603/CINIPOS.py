@@ -25,14 +25,15 @@ class CINIPOS(MultiprocessBased):
 
     def consumer(self):
         O = self.connection
+        fields_to_read = ['cini', 'tensio', 'interruptor', 'tipus_posicio',
+                          'barres']
         while True:
             try:
                 item = self.input_q.get()
                 self.progress_q.put(item)
                 cini = ''
                 trafo = O.GiscedataCtsSubestacionsPosicio.read(
-                    item, ['cini', 'tensio', 'interruptor', 'tipus_posicio',
-                           'barres'])
+                    item, fields_to_read)
 
                 if not trafo['cini']:
                     #Els cinis de mÃ quines tots comenÃ§en amb I27
