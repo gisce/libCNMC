@@ -20,7 +20,7 @@ class FIA(MultiprocessBased):
 
     def get_sequence(self):
         search_params = [('inventari', '=', 'fiabilitat')]
-        return self.connection.O.GiscedataCellesCella.search(search_params)
+        return self.connection.GiscedataCellesCella.search(search_params)
 
     def consumer(self):
         O = self.connection
