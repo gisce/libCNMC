@@ -5,11 +5,16 @@ from ooop import OOOP
 from libcnmc.utils import N_PROC
 from libcnmc.core import UpdateCNMCStats, UpdateCINISComptador
 from libcnmc.cir_4_2014 import F1, F1bis, F11
-from libcnmc.res_4603 import LAT, LBT, SUB, POS, MAQ, DES, FIA, CTS, INV, \
-    CINIMAQ, CINIPOS
+from libcnmc.res_4603 import LAT, LBT, SUB, POS, MAQ, DES, FIA, CTS, INV
+from libcnmc.res_4603 import CINIMAQ, CINIPOS
 
 
-@click.command()
+@click.group()
+def cnmc():
+    pass
+
+
+@cnmc.command()
 @click.option('-q', '--quiet', default=False, help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True, help="Deshabilitar el mode interactiu")
 @click.option('-s', '--server', default='http://localhost',
@@ -35,7 +40,7 @@ def update_cnmc_stats(**kwargs):
     proc.execute()
 
 
-@click.command()
+@cnmc.command()
 @click.option('-q', '--quiet', default=False, help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True, help="Deshabilitar el mode interactiu")
 @click.option('-s', '--server', default='http://localhost',
@@ -62,7 +67,7 @@ def update_cinis_comptador(**kwargs):
 
 
 
-@click.command()
+@cnmc.command()
 @click.option('-q', '--quiet', default=False, help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True, help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
@@ -92,7 +97,7 @@ def cir_4_2014_f1(**kwargs):
     )
     proc.calc()
 
-@click.command()
+@cnmc.command()
 @click.option('-q', '--quiet', default=False, help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True, help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
@@ -123,7 +128,7 @@ def cir_4_2014_f1bis(**kwargs):
     proc.calc()
 
 
-@click.command()
+@cnmc.command()
 @click.option('-q', '--quiet', default=False, help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True, help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
@@ -155,7 +160,7 @@ def cir_4_2014_f11(**kwargs):
 
 
 #CSV LAT
-@click.command()
+@cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -189,7 +194,7 @@ def res_4603_lat(**kwargs):
     proc.calc()
 
 #CSV LBT
-@click.command()
+@cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -224,7 +229,7 @@ def res_4603_lbt(**kwargs):
 
 
 #CSV SUB
-@click.command()
+@cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -259,7 +264,7 @@ def res_4603_sub(**kwargs):
 
 
 #CSV POS
-@click.command()
+@cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -294,7 +299,7 @@ def res_4603_pos(**kwargs):
 
 
 #CSV MAQ
-@click.command()
+@cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -329,7 +334,7 @@ def res_4603_maq(**kwargs):
 
 
 #CSV DES
-@click.command()
+@cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -364,7 +369,7 @@ def res_4603_des(**kwargs):
 
 
 #CSV FIA
-@click.command()
+@cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -399,7 +404,7 @@ def res_4603_fia(**kwargs):
 
 
 #CSV CTS
-@click.command()
+@cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -434,7 +439,7 @@ def res_4603_cts(**kwargs):
 
 
 #CSV INV
-@click.command()
+@cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -452,22 +457,14 @@ def res_4603_cts(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-@click.option("-l", "--Liniesat", dest="liniesat",
-              help="Fitxers CSV de linies AT")
-@click.option("-b", "--Liniesbt", dest="liniesbt",
-              help="Fitxers CSV de linies BT")
-@click.option("-e", "--Subestacions", dest="subestacions",
-              help="Fitxers CSV de subestacions")
-@click.option("-c", "--Posicions", dest="posicions",
-              help="Fitxers CSV de posicions")
-@click.option("-m", "--Maquines", dest="maquinas",
-              help="Fitxers CSV de maquines")
-@click.option("-x", "--Despatxos", dest="despatxos",
-              help="Fitxers CSV de despatxos")
-@click.option("-f", "--Fiabilitat", dest="fiabilidad",
-              help="Fitxers CSV de fiabilitat")
-@click.option("-t", "--Transformacio", dest="transformacion",
-              help="Fitxers CSV de transformacio")
+@click.option("-l", "--liniesat", help="Fitxers CSV de linies AT")
+@click.option("-b", "--liniesbt", help="Fitxers CSV de linies BT")
+@click.option("-e", "--subestacions", help="Fitxers CSV de subestacions")
+@click.option("-c", "--posicions", help="Fitxers CSV de posicions")
+@click.option("-m", "--maquines", help="Fitxers CSV de maquines")
+@click.option("-x", "--despatxos", help="Fitxers CSV de despatxos")
+@click.option("-f", "--fiabilitat", help="Fitxers CSV de fiabilitat")
+@click.option("-t", "--transformacio", help="Fitxers CSV de transformacio")
 
 def res_4603_inv(**kwargs):
     O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
@@ -487,15 +484,15 @@ def res_4603_inv(**kwargs):
         posicions=kwargs['posicions'],
         maquinas=kwargs['maquinas'],
         despatxos=kwargs['despatxos'],
-        fiabilidad=kwargs['fiabilidad'],
-        transformacion=kwargs['transformacion'],
+        fiabilidad=kwargs['fiabilitat'],
+        transformacion=kwargs['transformacio'],
         file_out=kwargs['file_out']
     )
     proc.calc()
 
 
 #CINIS Maquines
-@click.command()
+@cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -530,7 +527,7 @@ def res_4603_cinimaq(**kwargs):
 
 
 #CINIS Posicions
-@click.command()
+@cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -562,3 +559,7 @@ def res_4603_cinipos(**kwargs):
         year=kwargs['year']
     )
     proc.calc()
+
+
+def invoke():
+    cnmc()
