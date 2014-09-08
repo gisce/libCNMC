@@ -29,7 +29,7 @@ class LBT(MultiprocessBased):
     def consumer(self):
         O = self.connection
         count = 0
-        fields_to_read = ['name', 'municipi', 'data_acta_posada_marxa', 'ct',
+        fields_to_read = ['name', 'municipi', 'data_pm', 'ct',
                           'coeficient', 'cini', 'perc_financament',
                           'longitud_cad', 'cable', 'voltatge']
         while True:
