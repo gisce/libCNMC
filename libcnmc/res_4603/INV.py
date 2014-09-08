@@ -6,10 +6,18 @@ INVENTARI DE CNMC Inventari
 """
 from datetime import datetime
 import csv
+import os
+import traceback
 
 from libcnmc.core import cnmc_inventari
 
+try:
+    from raven import Client
+except:
+    Client = None
+
 QUIET = False
+from libcnmc import VERSION
 
 
 class INV():
@@ -29,6 +37,11 @@ class INV():
         self.transformacion = kwargs.pop('transformacion')
         self.file_out = kwargs.pop('file_out')
         self.pla_inversions_xml = cnmc_inventari.Empresa(self.codi_r1)
+        if 'SENTRY_DSN' in os.environ and Client:
+            self.raven = Client()
+            self.raven.tags_context({'version': VERSION})
+        else:
+            self.raven = None
 
     def open_csv_file(self, csv_file):
         reader = csv.reader(open(self.liniesat), delimiter=';')
@@ -258,32 +271,37 @@ class INV():
         arxiuxml.write(str(self.pla_inversions_xml))
 
     def calc(self):
-        #Obro l'arxiu XML a emplenar
-        arxiuxml = open(self.file_out, 'wb')
+        try:
+            #Obro l'arxiu XML a emplenar
+            arxiuxml = open(self.file_out, 'wb')
 
-        # Carrega dels fitxers CSV LAT
-        self.tractar_linies_at()
+            # Carrega dels fitxers CSV LAT
+            self.tractar_linies_at()
 
-        # Carrega dels fitxers CSV LBT
-        self.tractar_linies_bt()
+            # Carrega dels fitxers CSV LBT
+            self.tractar_linies_bt()
 
-        # Carrega dels fitxers CSV subestacions
-        self.tractar_subestacions()
+            # Carrega dels fitxers CSV subestacions
+            self.tractar_subestacions()
 
-        # Carrega dels fitxers CSV posicions
-        self.tractar_posicions()
+            # Carrega dels fitxers CSV posicions
+            self.tractar_posicions()
 
-        # Carrega dels fitxers CSV maquines
-        self.tractar_maquines()
+            # Carrega dels fitxers CSV maquines
+            self.tractar_maquines()
 
-        # Carrega dels fitxers CSV despatxos
-        self.tractar_despatxos()
+            # Carrega dels fitxers CSV despatxos
+            self.tractar_despatxos()
 
-        # Carrega dels fitxers CSV fiabilitat
-        self.tractar_equips_fiabilitat()
+            # Carrega dels fitxers CSV fiabilitat
+            self.tractar_equips_fiabilitat()
 
-        # Carrega dels fitxers CSV transformadors
-        self.tractar_centres_transformadors()
+            # Carrega dels fitxers CSV transformadors
+            self.tractar_centres_transformadors()
 
-        # Escrivim l'arxiu XML
-        self.escriure_xml(arxiuxml)
+            # Escrivim l'arxiu XML
+            self.escriure_xml(arxiuxml)
+        except:
+            traceback.print_exc()
+            if self.raven:
+                self.raven.captureException()
