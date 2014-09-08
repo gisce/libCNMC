@@ -41,7 +41,6 @@ setup(name='libcnmc',
               '4603_inv = libcnmc.cli:res_4603_inv',
               '4603_cinimaq = libcnmc.cli:res_4603_cinimaq',
               '4603_cinipos = libcnmc.cli:res_4603_cinipos',
-              'lat = libcnmc.cli:res_4603_lat',
               'update_cnmc_stats = libcnmc.cli:update_cnmc_stats',
               'update_cinis_comptador = libcnmc.cli:update_cinis_comptador'
           ]
