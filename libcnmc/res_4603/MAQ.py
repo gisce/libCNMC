@@ -25,7 +25,7 @@ class MAQ(MultiprocessBased):
 
     def consumer(self):
         O = self.connection
-        fields_to_read = ['cini', 'historic', 'data_aps', 'ct', 'name',
+        fields_to_read = ['cini', 'historic', 'data_pm', 'ct', 'name',
                           'potencia_nominal', 'codi_instalacio']
         while True:
             try:
@@ -50,7 +50,7 @@ class MAQ(MultiprocessBased):
                     if historic['data_entrada'] < data_hist:
                         data_hist = historic['data_entrada']
 
-                data_pm = trafo['data_aps'] or data_hist
+                data_pm = trafo['data_pm'] or data_hist
                 if data_pm:
                     data_pm = datetime.strptime(str(data_pm),
                                                 '%Y-%m-%d %H:%M:%S')
