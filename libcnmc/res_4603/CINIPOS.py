@@ -40,11 +40,11 @@ class CINIPOS(MultiprocessBased):
                     cini_ = "I28"
                     #Per completar el tercer digit
                     codi3 = ''
-                    if 110000 <= trafo['tensio'] < 220000:
+                    if 110000 <= int(trafo['tensio'][1]) < 220000:
                         codi3 = '2'
-                    elif 36000 <= trafo['tensio'] < 110000:
+                    elif 36000 <= int(trafo['tensio'][1]) < 110000:
                         codi3 = '3'
-                    elif 1000 <= trafo['tensio'] < 36000:
+                    elif 1000 <= int(trafo['tensio'][1]) < 36000:
                         codi3 = '4'
                     #Per completar el quart digit
                     codi4 = ''
