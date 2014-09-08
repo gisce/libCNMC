@@ -36,13 +36,14 @@ class CTS(MultiprocessBased):
                     if data_industria:
                         data_industria = datetime.strptime(str(data_industria),
                                                            '%Y-%m-%d')
-                        data_aps = data_industria.strftime('%d/%m/%Y')
+                        data_pm = data_industria.strftime('%d/%m/%Y')
                     else:
-                        data_pm = datetime.strptime(str(ct.data_pm), '%Y-%m-%d')
-                        data_aps = data_pm.strftime('%d/%m/%Y')
+                        data_pm_ct = datetime.strptime(str(ct.data_pm),
+                                                       '%Y-%m-%d')
+                        data_pm = data_pm_ct.strftime('%d/%m/%Y')
                 except Exception as e:
                     print "error: %d %s" % (item, e)
-                    data_aps = ''
+                    data_pm = ''
 
                 ccaa = ct.id_municipi.state.comunitat_autonoma.codi
                 finan = ct.perc_financament
@@ -54,7 +55,7 @@ class CTS(MultiprocessBased):
                     codi or '',
                     ccaa or '',
                     round(100 - int(finan)),
-                    data_aps,
+                    data_pm,
                     ''
                 ]
 
