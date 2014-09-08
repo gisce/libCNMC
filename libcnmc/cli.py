@@ -483,11 +483,10 @@ def res_4603_inv(**kwargs):
         liniesbt=kwargs['liniesbt'],
         subestacions=kwargs['subestacions'],
         posicions=kwargs['posicions'],
-        maquinas=kwargs['maquinas'],
+        maquinas=kwargs['maquines'],
         despatxos=kwargs['despatxos'],
         fiabilidad=kwargs['fiabilitat'],
         transformacion=kwargs['transformacio'],
-        file_out=kwargs['file_out']
     )
     proc.calc()
 
