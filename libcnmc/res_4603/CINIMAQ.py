@@ -40,35 +40,54 @@ class CINIMAQ(MultiprocessBased):
                     cini_ = "I27"
                     #Per completar el tercer digit
                     codi3 = ''
-                    if int(trafo['tensio_primari_actual']) <= 40000:
+                    try:
+                        tensio_primari = int(trafo['tensio_primari_actual'])
+                    except:
+                        print "Error a {}, la tensio_primari no " \
+                              "es correcte".format(item)
+                    if tensio_primari <= 40000:
                         codi3 = '0'
-                    elif 220000 <= int(trafo['tensio_primari_actual']) < 400000:
+                    elif 220000 <= tensio_primari < 400000:
                         codi3 = '1'
-                    elif 110000 <= int(trafo['tensio_primari_actual']) < 220000:
+                    elif 110000 <= tensio_primari < 220000:
                         codi3 = '2'
-                    elif 36000 <= int(trafo['tensio_primari_actual']) < 110000:
+                    elif 36000 <= tensio_primari < 110000:
                         codi3 = '3'
-                    elif 1000 <= int(trafo['tensio_primari_actual']) < 36000:
+                    elif 1000 <= tensio_primari < 36000:
                         codi3 = '4'
                     #Per completar el quart digit
                     codi4 = ''
-                    if int(trafo['tensio_b1']):
-                        if 110000 <= int(trafo['tensio_b1']) < 220000:
+                    try:
+                        #El camp tensio_b1 es un char s'ha de comprovar que es
+                        #pot fer la conversio a enter
+                        tensio_b1 = int(trafo['tensio_b1'])
+                    except:
+                        print "Error a {}, la tensio_b1 " \
+                              "no es correcte".format(item)
+                        continue
+                    try:
+                        tensio_b2 = int(trafo['tensio_b2'])
+                    except:
+                        print "Error a {}, la tensio_b2 " \
+                              "no es correcte".format(item)
+                        continue
+                    if tensio_b1:
+                        if 110000 <= tensio_b1 < 220000:
                             codi4 = '2'
-                        elif 36000 <= int(trafo['tensio_b1']) < 110000:
+                        elif 36000 <= tensio_b1 < 110000:
                             codi4 = '3'
-                        elif 1000 <= int(trafo['tensio_b1']) < 36000:
+                        elif 1000 <= tensio_b1 < 36000:
                             codi4 = '4'
-                        elif int(trafo['tensio_b1']) < 1000:
+                        elif tensio_b1 < 1000:
                             codi4 = '4'
-                    elif int(trafo['tensio_b2']):
-                        if 110000 <= int(trafo['tensio_b2']) < 220000:
+                    elif tensio_b2:
+                        if 110000 <= tensio_b2 < 220000:
                             codi4 = '2'
-                        elif 36000 <= int(trafo['tensio_b2']) < 110000:
+                        elif 36000 <= tensio_b2 < 110000:
                             codi4 = '3'
-                        elif 1000 <= int(trafo['tensio_b2']) < 36000:
+                        elif 1000 <= tensio_b2 < 36000:
                             codi4 = '4'
-                        elif int(trafo['tensio_b2']) < 1000:
+                        elif tensio_b2 < 1000:
                             codi4 = '4'
                     #Per completar el cinquè digit
                     codi5 = ''
@@ -78,33 +97,39 @@ class CINIMAQ(MultiprocessBased):
                         codi5 = '2'
                     #Per completar el sisè digit
                     codi6 = ''
-                    if int(trafo['potencia_nominal']) < 1000:
+                    try:
+                        pot_nominal = int(trafo['potencia_nominal'])
+                    except:
+                        print "Error a {}, la potencia nominal" \
+                              "no es correcte".format(item)
+                        continue
+                    if pot_nominal < 1000:
                         codi6 = 'A'
-                    elif 1000 <= int(trafo['potencia_nominal']) < 5000:
+                    elif 1000 <= pot_nominal < 5000:
                         codi6 = 'B'
-                    elif 5000 <= int(trafo['potencia_nominal']) < 10000:
+                    elif 5000 <= pot_nominal < 10000:
                         codi6 = 'C'
-                    elif 10000 <= int(trafo['potencia_nominal']) < 15000:
+                    elif 10000 <= pot_nominal < 15000:
                         codi6 = 'D'
-                    elif 15000 <= int(trafo['potencia_nominal']) < 20000:
+                    elif 15000 <= pot_nominal < 20000:
                         codi6 = 'E'
-                    elif 20000 <= int(trafo['potencia_nominal']) < 25000:
+                    elif 20000 <= pot_nominal < 25000:
                         codi6 = 'F'
-                    elif 25000 <= int(trafo['potencia_nominal']) < 30000:
+                    elif 25000 <= pot_nominal < 30000:
                         codi6 = 'G'
-                    elif 30000 <= int(trafo['potencia_nominal']) < 40000:
+                    elif 30000 <= pot_nominal < 40000:
                         codi6 = 'H'
-                    elif 40000 <= int(trafo['potencia_nominal']) < 60000:
+                    elif 40000 <= pot_nominal < 60000:
                         codi6 = 'I'
-                    elif 60000 <= int(trafo['potencia_nominal']) < 80000:
+                    elif 60000 <= pot_nominal < 80000:
                         codi6 = 'J'
-                    elif 80000 <= int(trafo['potencia_nominal']) < 100000:
+                    elif 80000 <= pot_nominal < 100000:
                         codi6 = 'K'
-                    elif 100000 <= int(trafo['potencia_nominal']) < 120000:
+                    elif 100000 <= pot_nominal < 120000:
                         codi6 = 'L'
-                    elif 120000 <= int(trafo['potencia_nominal']) < 150000:
+                    elif 120000 <= pot_nominal < 150000:
                         codi6 = 'M'
-                    elif 150000 >= int(trafo['potencia_nominal']):
+                    elif 150000 >= pot_nominal:
                         codi6 = 'N'
 
                     cini = cini_ + codi3 + codi4 + codi5 + codi6
