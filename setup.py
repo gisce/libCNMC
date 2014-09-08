@@ -30,20 +30,7 @@ setup(name='libcnmc',
               'f1 = libcnmc.cli:cir_4_2014_f1',
               'f1bis = libcnmc.cli:cir_4_2014_f1bis',
               'f11 = libcnmc.cli:cir_4_2014_f11',
-              '4603_lat = libcnmc.cli:res_4603_lat',
-              '4603_lbt = libcnmc.cli:res_4603_lbt',
-              '4603_sub = libcnmc.cli:res_4603_sub',
-              '4603_pos = libcnmc.cli:res_4603_pos',
-              '4603_maq = libcnmc.cli:res_4603_maq',
-              '4603_des = libcnmc.cli:res_4603_des',
-              '4603_fia = libcnmc.cli:res_4603_fia',
-              '4603_cts = libcnmc.cli:res_4603_cts',
-              '4603_inv = libcnmc.cli:res_4603_inv',
-              '4603_cinimaq = libcnmc.cli:res_4603_cinimaq',
-              '4603_cinipos = libcnmc.cli:res_4603_cinipos',
-              'lat = libcnmc.cli:res_4603_lat',
-              'update_cnmc_stats = libcnmc.cli:update_cnmc_stats',
-              'update_cinis_comptador = libcnmc.cli:update_cinis_comptador'
+              'cnmc = libcnmc.cli:invoke'
           ]
       })
 
