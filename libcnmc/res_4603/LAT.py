@@ -25,6 +25,11 @@ class LAT(MultiprocessBased):
 
     def consumer(self):
         O = self.connection
+        fields_to_read = ['baixa', 'data_pm', 'data_industria',
+                          'coeficient', 'cini',
+                          'tensio_max_disseny', 'name', 'origen',
+                          'final', 'perc_financament', 'circuits',
+                          'longitud_cad', 'cable']
         while True:
             try:
                 item = self.input_q.get()
@@ -34,11 +39,6 @@ class LAT(MultiprocessBased):
                     item, ['trams', 'tensio', 'municipi']
                 )
                 for tram in linia['trams']:
-                    fields_to_read = ['baixa', 'data_pm', 'data_industria',
-                                      'coeficient', 'cini',
-                                      'tensio_max_disseny', 'name', 'origen',
-                                      'final', 'perc_financament', 'circuits',
-                                      'longitud_cad', 'cable']
                     tram = O.GiscedataAtTram.read(tram, fields_to_read)
                     #Si el tram es de baixa no l'afegim
                     if tram['baixa']:

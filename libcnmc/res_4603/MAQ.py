@@ -25,14 +25,15 @@ class MAQ(MultiprocessBased):
 
     def consumer(self):
         O = self.connection
+        fields_to_read = ['cini', 'historic', 'data_aps', 'ct', 'name',
+                          'potencia_nominal', 'codi_instalacio']
         while True:
             try:
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
                 trafo = O.GiscedataTransformadorTrafo.read(
-                    item, ['cini', 'historic', 'data_aps', 'ct', 'name',
-                           'potencia_nominal', 'codi_instalacio'])
+                    item, fields_to_read)
 
                 #La propia empresa
                 company = O.ResCompany.get(1)

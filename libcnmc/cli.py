@@ -461,7 +461,7 @@ def res_4603_cts(**kwargs):
 @click.option("-l", "--liniesat", help="Fitxers CSV de linies AT")
 @click.option("-b", "--liniesbt", help="Fitxers CSV de linies BT")
 @click.option("-e", "--subestacions", help="Fitxers CSV de subestacions")
-@click.option("-c", "--posicions", help="Fitxers CSV de posicions")
+@click.option("-z", "--posicions", help="Fitxers CSV de posicions")
 @click.option("-m", "--maquines", help="Fitxers CSV de maquines")
 @click.option("-x", "--despatxos", help="Fitxers CSV de despatxos")
 @click.option("-f", "--fiabilitat", help="Fitxers CSV de fiabilitat")
