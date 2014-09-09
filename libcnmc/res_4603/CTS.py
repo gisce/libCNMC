@@ -31,19 +31,19 @@ class CTS(MultiprocessBased):
 
                 ct = O.GiscedataCts.get(item)
                 codi = ct.codi_instalacio
-                try:
-                    data_industria = ct.expedients_ids[0].industria_data
-                    if data_industria:
+                if not ct.data_pm:
+                    try:
+                        data_industria = ct.expedients_ids[0].industria_data
                         data_industria = datetime.strptime(str(data_industria),
                                                            '%Y-%m-%d')
                         data_pm = data_industria.strftime('%d/%m/%Y')
-                    else:
-                        data_pm_ct = datetime.strptime(str(ct.data_pm),
-                                                       '%Y-%m-%d')
-                        data_pm = data_pm_ct.strftime('%d/%m/%Y')
-                except Exception as e:
-                    print "error: %d %s" % (item, e)
-                    data_pm = ''
+                    except Exception as e:
+                        print "error: %d %s" % (item, e)
+                        data_pm = ''
+                else:
+                    data_pm_ct = datetime.strptime(str(ct.data_pm),
+                                                   '%Y-%m-%d')
+                    data_pm = data_pm_ct.strftime('%d/%m/%Y')
 
                 ccaa = ct.id_municipi.state.comunitat_autonoma.codi
                 finan = ct.perc_financament
