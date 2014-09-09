@@ -19,7 +19,9 @@ class CTS(MultiprocessBased):
         self.report_name = 'CNMC INVENTARI CTS'
 
     def get_sequence(self):
-        search_params = [('name', '!=', '1')]
+        search_params = [('name', '!=', '1'),
+                         ('id_installacio.name', '!=', 'SE')]
+
         return self.connection.GiscedataCts.search(search_params)
 
     def consumer(self):
