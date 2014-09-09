@@ -119,7 +119,7 @@ class LBT(MultiprocessBased):
                     cable['seccio'],
                     round(
                         (cable['intensitat_admisible'] * int(linia['voltatge']) *
-                         math.sqrt(3))/1000, 3)
+                         math.sqrt(3))/1000000, 3)
                 ]
 
                 self.output_q.put(output)
