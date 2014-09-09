@@ -29,7 +29,7 @@ class LAT(MultiprocessBased):
                           'coeficient', 'cini',
                           'tensio_max_disseny', 'name', 'origen',
                           'final', 'perc_financament', 'circuits',
-                          'longitud_cad', 'cable']
+                          'longitud_cad', 'cable', 'expedients_ids']
         while True:
             try:
                 item = self.input_q.get()
@@ -45,7 +45,16 @@ class LAT(MultiprocessBased):
                         continue
                     # Calculem any posada en marxa
                     if not tram['data_pm']:
-                        data_pm = tram['data_industria'] or ''
+                        try:
+                            #Busco en els expedients la data d'industria
+                            exp_id = tram['expedients_ids'][0]
+                            data_exp = O.GiscedataExpedientsExpedient.read(
+                                exp_id,
+                                ['industria_data'])
+                            data_pm = data_exp['industria_data'] or ''
+                        except:
+                            #No s'ha trobat l'expedient
+                            data_pm = tram['data_pm']
                     else:
                         data_pm = tram['data_pm']
 
