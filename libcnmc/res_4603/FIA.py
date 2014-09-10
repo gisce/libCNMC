@@ -50,7 +50,10 @@ class FIA(MultiprocessBased):
                 try:
                     data_industria = ''
                     if cll.expedients:
-                        data_industria = cll.expedients[0].industria_data
+                        for exp in cll.expedients_ids:
+                            if exp.industria_data:
+                                data_industria = exp.industria_data
+                                break
                     if data_industria:
                         data_industria = datetime.strptime(str(data_industria),
                                                            '%Y-%m-%d')
