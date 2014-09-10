@@ -19,8 +19,7 @@ class CINIMAQ(MultiprocessBased):
         self.report_name = 'CNMC INVENTARI CINIMAQ'
 
     def get_sequence(self):
-        search_params = [('name', '!=', '1'),
-                         ('id_estat.cnmc_inventari', '=', True)]
+        search_params = [('id_estat.cnmc_inventari', '=', True)]
         return self.connection.GiscedataTransformadorTrafo.search(search_params)
 
     def consumer(self):

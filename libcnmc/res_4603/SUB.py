@@ -22,7 +22,7 @@ class SUB(MultiprocessBased):
         self.report_name = 'CNMC INVENTARI SUB'
 
     def get_sequence(self):
-        search_params = [('name', '!=', '1')]
+        search_params = []
         return self.connection.GiscedataCtsSubestacions.search(search_params)
 
     def consumer(self):

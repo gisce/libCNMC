@@ -19,7 +19,7 @@ class CINIPOS(MultiprocessBased):
         self.report_name = 'CNMC INVENTARI CINIPOS'
 
     def get_sequence(self):
-        search_params = [('name', '!=', '1')]
+        search_params = []
         return self.connection.GiscedataCtsSubestacionsPosicio.search(
             search_params)
 
