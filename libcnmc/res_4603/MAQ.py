@@ -19,7 +19,7 @@ class MAQ(MultiprocessBased):
         self.report_name = 'CNMC INVENTARI MAQ'
 
     def get_sequence(self):
-        search_params = [('id_estat.cnmc_inventari', '=', True) or
+        search_params = ['|', ('id_estat.cnmc_inventari', '=', True),
                          ('id_estat', '=', False)]
         return self.connection.GiscedataTransformadorTrafo.search(search_params)
 
