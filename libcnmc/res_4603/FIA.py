@@ -34,17 +34,17 @@ class FIA(MultiprocessBased):
                 #Comprovar si es tipus fiabilitat
                 if cll.tipus_element:
                     cllt = O.GiscedataCellesTipusElement.get(
-                        int(cll.tipus_element.name))
-                    tipus_inst_id = O.Giscedata_cnmcTipo_instalacion.search(
-                        [('cini', '=', cll.cini)])
-                    codigo = O.Giscedata_cnmcTipo_instalacion.read(
-                        tipus_inst_id, ['codi'])
-                    if codigo:
-                        codi = codigo[0]
-                    else:
-                        codi = {'codi': ' '}
+                        cll.tipus_element.id)
                 else:
                     cllt = {'name': ''}
+
+                tipus_inst_id = O.Giscedata_cnmcTipo_instalacion.search(
+                    [('cini', '=', cll.cini)])
+                codigo = O.Giscedata_cnmcTipo_instalacion.read(
+                    tipus_inst_id, ['codi'])
+                if codigo:
+                    codi = codigo[0]
+                else:
                     codi = {'codi': ' '}
 
                 try:
