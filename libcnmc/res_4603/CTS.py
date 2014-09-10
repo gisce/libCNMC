@@ -42,6 +42,7 @@ class CTS(MultiprocessBased):
                         for exp in ct.expedients_ids:
                             if exp.industria_data:
                                 data_industria = exp.industria_data
+                                break
                         data_industria = datetime.strptime(str(data_industria),
                                                            '%Y-%m-%d')
                         data_pm = data_industria.strftime('%d/%m/%Y')

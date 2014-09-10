@@ -49,10 +49,10 @@ class LAT(MultiprocessBased):
                     else:
                         try:
                             #Busco en els expedients la data d'industria
-                            exp_id = tram['expedients_ids'][0]
-                            data_exp = O.GiscedataExpedientsExpedient.read(
-                                exp_id,
-                                ['industria_data'])
+                            for exp in tram['expedients_ids']:
+                                data_exp = O.GiscedataExpedientsExpedient.read(
+                                    exp, ['industria_data'])
+                                break
                             data_pm = data_exp['industria_data'] or ''
                         except:
                             #No s'ha trobat l'expedient
