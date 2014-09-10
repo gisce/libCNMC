@@ -50,7 +50,7 @@ class MAQ(MultiprocessBased):
                     if historic['data_entrada'] < data_hist:
                         data_hist = historic['data_entrada']
 
-                data_pm = trafo['data_pm'] or data_hist
+                data_pm = data_hist or trafo['data_pm']
                 if data_pm:
                     data_pm = datetime.strptime(str(data_pm),
                                                 '%Y-%m-%d %H:%M:%S')

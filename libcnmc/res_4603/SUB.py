@@ -41,7 +41,7 @@ class SUB(MultiprocessBased):
                         sys.stderr.flush()
 
                 # Calculem any posada en marxa
-                data_pm = sub.data_pm or sub.data_industria
+                data_pm = sub.data_industria or sub.data_pm
 
                 if data_pm:
                     data_pm = datetime.strptime(str(data_pm), '%Y-%m-%d')

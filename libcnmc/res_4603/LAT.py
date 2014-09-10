@@ -44,7 +44,9 @@ class LAT(MultiprocessBased):
                     if tram['baixa']:
                         continue
                     # Calculem any posada en marxa
-                    if not tram['data_pm']:
+                    if not tram['expedients_ids']:
+                        data_pm = tram['data_pm']
+                    else:
                         try:
                             #Busco en els expedients la data d'industria
                             exp_id = tram['expedients_ids'][0]
@@ -55,8 +57,6 @@ class LAT(MultiprocessBased):
                         except:
                             #No s'ha trobat l'expedient
                             data_pm = tram['data_pm']
-                    else:
-                        data_pm = tram['data_pm']
 
                     if data_pm:
                         data_pm = datetime.strptime(str(data_pm), '%Y-%m-%d')

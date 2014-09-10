@@ -75,8 +75,8 @@ class LBT(MultiprocessBased):
                     cts = O.GiscedataCts.read(linia['ct'][0],
                                               ['data_industria', 'data_pm'])
                     # Calculem any posada en marxa
-                    data_pm = linia['data_pm'] or cts[
-                        'data_industria'] or cts['data_pm']
+                    data_pm = cts['data_industria'] or cts['data_pm'] or linia[
+                        'data_pm']
 
                 if data_pm:
                     data_pm = datetime.strptime(str(data_pm), '%Y-%m-%d')
