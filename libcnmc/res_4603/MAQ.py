@@ -26,7 +26,8 @@ class MAQ(MultiprocessBased):
     def consumer(self):
         O = self.connection
         fields_to_read = ['cini', 'historic', 'data_pm', 'ct', 'name',
-                          'potencia_nominal', 'codi_instalacio']
+                          'potencia_nominal', 'codi_instalacio',
+                          'numero_fabricacio']
         while True:
             try:
                 item = self.input_q.get()
@@ -79,7 +80,7 @@ class MAQ(MultiprocessBased):
                 output = [
                     '%s' % trafo['name'],
                     trafo['cini'] or '',
-                    trafo['name'] or '',
+                    trafo['numero_fabricacio'] or '',
                     codi or '',
                     '',
                     comunitat or c_ccaa or '',
