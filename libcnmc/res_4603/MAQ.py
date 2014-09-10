@@ -44,12 +44,13 @@ class MAQ(MultiprocessBased):
                     historic = O.GiscedataTransformadorHistoric.read(
                         trafo['historic'][0], ['data_entrada'])
                     data_hist = historic['data_entrada']
-                for hist_id in trafo['historic']:
-                    historic = O.GiscedataTransformadorHistoric.read(
-                        hist_id, ['data_entrada'])
-                    if historic['data_entrada'] < data_hist:
-                        data_hist = historic['data_entrada']
-
+                    for hist_id in trafo['historic']:
+                        historic = O.GiscedataTransformadorHistoric.read(
+                            hist_id, ['data_entrada'])
+                        if historic['data_entrada'] < data_hist:
+                            data_hist = historic['data_entrada']
+                else:
+                    data_hist = ''
                 data_pm = data_hist or trafo['data_pm']
                 if data_pm:
                     data_pm = datetime.strptime(str(data_pm),
