@@ -33,13 +33,17 @@ class CTS(MultiprocessBased):
 
                 ct = O.GiscedataCts.get(item)
                 codi = ct.codi_instalacio
+                if codi == 0:
+                    codi = '0'
                 if not ct.expedients_ids:
                     data_pm_ct = datetime.strptime(str(ct.data_pm),
                                                    '%Y-%m-%d')
                     data_pm = data_pm_ct.strftime('%d/%m/%Y')
                 else:
                     try:
-                        data_industria = ct.expedients_ids[0].industria_data
+                        for exp in ct.expedients_ids:
+                            if exp.industria_data:
+                                data_industria = exp.industria_data
                         data_industria = datetime.strptime(str(data_industria),
                                                            '%Y-%m-%d')
                         data_pm = data_industria.strftime('%d/%m/%Y')
