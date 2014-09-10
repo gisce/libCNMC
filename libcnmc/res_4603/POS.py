@@ -21,7 +21,7 @@ class POS(MultiprocessBased):
         self.report_name = 'CNMC INVENTARI POS'
 
     def get_sequence(self):
-        search_params = []
+        search_params = [('interruptor', '=', '2')]
         return self.connection.GiscedataCtsSubestacionsPosicio.search(
             search_params)
 
