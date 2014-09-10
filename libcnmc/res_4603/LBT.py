@@ -23,7 +23,7 @@ class LBT(MultiprocessBased):
         self.report_name = 'CNMC INVENTARI BT'
 
     def get_sequence(self):
-        search_params = []
+        search_params = [('baixa', '!=', True)]
         return self.connection.GiscedataBtElement.search(search_params)
 
     def consumer(self):
