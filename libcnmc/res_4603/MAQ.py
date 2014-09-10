@@ -40,6 +40,8 @@ class MAQ(MultiprocessBased):
                 company = O.ResCompany.get(1)
                 if trafo['codi_instalacio']:
                     codi = trafo['codi_instalacio']
+                else:
+                    codi = ''
 
                 if trafo['historic']:
                     historic = O.GiscedataTransformadorHistoric.read(
