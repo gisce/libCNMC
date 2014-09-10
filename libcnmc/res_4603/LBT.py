@@ -41,30 +41,34 @@ class LBT(MultiprocessBased):
 
                 linia = O.GiscedataBtElement.read(item, fields_to_read)
 
-                res = O.GiscegisEdge.search([('id_linktemplate', '=', linia['name']),
+                res = O.GiscegisEdge.search([('id_linktemplate', '=',
+                                              linia['name']),
                                              ('layer', 'ilike', '%BT%')])
                 if not res:
                     if not QUIET:
-                        sys.stderr.write("**** ERROR: l'element %s (id:%s) no està "
-                                         "en giscegis_edges.\n" % (linia['name'],
-                                                                   linia['id']))
+                        sys.stderr.write(
+                            "**** ERROR: l'element %s (id:%s) no està en "
+                            "giscegis_edges.\n" % (linia['name'], linia['id']))
                         sys.stderr.flush()
                     edge = {'start_node': (0, '%s_0' % linia['name']),
                             'end_node': (0, '%s_1' % linia['name'])}
                 elif len(res) > 1:
                     if not QUIET:
-                        sys.stderr.write("**** ERROR: l'element %s (id:%s) està més "
-                                         "d'una vegada a giscegis_edges. %s\n" %
+                        sys.stderr.write("**** ERROR: l'element %s (id:%s) "
+                                         "està més d'una vegada a "
+                                         "giscegis_edges. %s\n" %
                                          (linia['name'], linia['id'], res))
                         sys.stderr.flush()
                     edge = {'start_node': (0, '%s_0' % linia['name']),
                             'end_node': (0, '%s_1' % linia['name'])}
                 else:
-                    edge = O.GiscegisEdge.read(res[0], ['start_node', 'end_node'])
+                    edge = O.GiscegisEdge.read(res[0], ['start_node',
+                                                        'end_node'])
                 if linia['municipi']:
                     id_comunitat = O.ResComunitat_autonoma.get_ccaa_from_municipi(
                         [], linia['municipi'][0])
-                    comunidad = O.ResComunitat_autonoma.read(id_comunitat, ['codi'])
+                    comunidad = O.ResComunitat_autonoma.read(id_comunitat,
+                                                             ['codi'])
                     if comunidad:
                         comunitat = comunidad[0]
                     else:
@@ -116,10 +120,9 @@ class LBT(MultiprocessBased):
                     1,
                     1,
                     round(linia['longitud_cad'] * coeficient / 1000.0, 3) or 0,
-                    cable['seccio'],
-                    round(
-                        (cable['intensitat_admisible'] * int(linia['voltatge']) *
-                         math.sqrt(3))/1000000, 3)
+                    cable['seccio'], round(
+                        (cable['intensitat_admisible'] * int(linia['voltatge'])
+                         * math.sqrt(3))/1000000, 3)
                 ]
 
                 self.output_q.put(output)
