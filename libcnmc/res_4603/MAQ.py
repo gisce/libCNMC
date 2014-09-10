@@ -36,8 +36,6 @@ class MAQ(MultiprocessBased):
                 trafo = O.GiscedataTransformadorTrafo.read(
                     item, fields_to_read)
 
-                #La propia empresa
-                company = O.ResCompany.get(1)
                 if trafo['codi_instalacio']:
                     codi = trafo['codi_instalacio']
                 else:
@@ -74,11 +72,17 @@ class MAQ(MultiprocessBased):
                     if comunidad:
                         comunitat = comunidad[0]['codi']
                     finan = cts['perc_financament']
-                if len(company.partner_id.address):
-                    if company.partner_id.address[0].state_id:
-                        c_ccaa = company.partner_id.address[0].\
-                            state_id.comunitat_autonoma.codi
 
+                #La propia empresa
+                if O.ResCompany.get(1):
+                    company_partner = O.ResCompany.read(1, ['partner_id'])
+                    address = O.ResPartnerAddress.read(
+                        company_partner['partner_id'][0], ['municipi'])
+                    id_comunitat = O.ResComunitat_autonoma.get_ccaa_from_municipi(
+                        [], address['municipi'][0])
+                    c_ccaa = O.ResComunitat_autonoma.read(id_comunitat,
+                                                          ['codi'])
+                    c_ccaa = c_ccaa[0]['codi']
                 output = [
                     '%s' % trafo['name'],
                     trafo['cini'] or '',
