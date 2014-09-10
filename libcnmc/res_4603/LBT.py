@@ -31,7 +31,7 @@ class LBT(MultiprocessBased):
         count = 0
         fields_to_read = ['name', 'municipi', 'data_pm', 'ct',
                           'coeficient', 'cini', 'perc_financament',
-                          'longitud_cad', 'cable', 'voltatge']
+                          'longitud_cad', 'cable', 'voltatge', 'data_alta']
         while True:
             try:
                 count += 1
