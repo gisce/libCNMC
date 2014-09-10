@@ -35,11 +35,9 @@ class CTS(MultiprocessBased):
                 codi = ct.codi_instalacio
                 if codi == 0:
                     codi = '0'
-                if not ct.expedients_ids:
-                    data_pm_ct = datetime.strptime(str(ct.data_pm),
-                                                   '%Y-%m-%d')
-                    data_pm = data_pm_ct.strftime('%d/%m/%Y')
-                else:
+
+                #Busco la data, primer mirer els expedients, sino la data_pm CT
+                if ct.expedients_ids:
                     try:
                         for exp in ct.expedients_ids:
                             if exp.industria_data:
@@ -49,7 +47,16 @@ class CTS(MultiprocessBased):
                         data_pm = data_industria.strftime('%d/%m/%Y')
                     except Exception as e:
                         print "error: %d %s" % (item, e)
-                        data_pm = ''
+                        if ct.data_pm:
+                            data_pm_ct = datetime.strptime(str(ct.data_pm),
+                                                           '%Y-%m-%d')
+                            data_pm = data_pm_ct.strftime('%d/%m/%Y')
+                else:
+                    if ct.data_pm:
+                        data_pm_ct = datetime.strptime(str(ct.data_pm),
+                                                       '%Y-%m-%d')
+                        data_pm = data_pm_ct.strftime('%d/%m/%Y')
+
 
                 ccaa = ct.id_municipi.state.comunitat_autonoma.codi
                 finan = ct.perc_financament
