@@ -20,7 +20,10 @@ class CTS(MultiprocessBased):
 
     def get_sequence(self):
         search_params = [('name', '!=', '1'),
-                         ('id_installacio.name', '!=', 'SE')]
+                         ('id_installacio.name', '!=', 'SE'),
+                         ('id_installacio.name', '!=', 'CH'),
+                         ('id_installacio.name', '!=', 'CP'),
+                         ]
 
         return self.connection.GiscedataCts.search(search_params)
 
