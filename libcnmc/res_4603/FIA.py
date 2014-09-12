@@ -39,7 +39,7 @@ class FIA(MultiprocessBased):
                     cllt = {'name': ''}
 
                 #Busquem per la penúltima lletra
-                pos_cini = cll.cini[2]
+                pos_cini = cll.cini[5]
                 if pos_cini == '1':
                     codi = 174
                 elif pos_cini == '2':
