@@ -59,7 +59,6 @@ class FIA(MultiprocessBased):
                         codi = 0
                 else:
                     codi = 0
-                    
                 try:
                     data_industria = ''
                     if cll.expedients:
