@@ -38,25 +38,28 @@ class FIA(MultiprocessBased):
                 else:
                     cllt = {'name': ''}
 
-                #Busquem per la penúltima lletra
-                pos_cini = cll.cini[5]
-                if pos_cini == '1':
-                    codi = 174
-                elif pos_cini == '2':
-                    codi = 177
-                elif pos_cini == '3':
-                    codi = 179
-                elif pos_cini == '4':
-                    codi = 181
-                elif pos_cini == '5':
-                    codi = 182
-                elif pos_cini == '6':
-                    codi = 183
-                elif pos_cini == '7':
-                    codi = 187
+                if cll.cini:
+                    #Busquem per la penúltima lletra
+                    pos_cini = cll.cini[5]
+                    if pos_cini == '1':
+                        codi = 174
+                    elif pos_cini == '2':
+                        codi = 177
+                    elif pos_cini == '3':
+                        codi = 179
+                    elif pos_cini == '4':
+                        codi = 181
+                    elif pos_cini == '5':
+                        codi = 182
+                    elif pos_cini == '6':
+                        codi = 183
+                    elif pos_cini == '7':
+                        codi = 187
+                    else:
+                        codi = 0
                 else:
-                    codi = 000
-
+                    codi = 0
+                    
                 try:
                     data_industria = ''
                     if cll.expedients:
