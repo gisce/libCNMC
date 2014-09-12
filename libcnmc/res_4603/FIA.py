@@ -38,14 +38,24 @@ class FIA(MultiprocessBased):
                 else:
                     cllt = {'name': ''}
 
-                tipus_inst_id = O.Giscedata_cnmcTipo_instalacion.search(
-                    [('cini', '=', cll.cini)])
-                codigo = O.Giscedata_cnmcTipo_instalacion.read(
-                    tipus_inst_id, ['codi'])
-                if codigo:
-                    codi = codigo[0]
+                #Busquem per la penúltima lletra
+                pos_cini = cll.cini[2]
+                if pos_cini == '1':
+                    codi = 174
+                elif pos_cini == '2':
+                    codi = 177
+                elif pos_cini == '3':
+                    codi = 179
+                elif pos_cini == '4':
+                    codi = 181
+                elif pos_cini == '5':
+                    codi = 182
+                elif pos_cini == '6':
+                    codi = 183
+                elif pos_cini == '7':
+                    codi = 187
                 else:
-                    codi = {'codi': ' '}
+                    codi = 000
 
                 try:
                     data_industria = ''
@@ -89,7 +99,7 @@ class FIA(MultiprocessBased):
                     '%s' % cll.name,
                     cll.cini or '',
                     cllt.name or '',
-                    codi['codi'] or '',
+                    codi or '',
                     ccaa or '',
                     data_aps,
                     cll.data_baixa or ''
