@@ -75,14 +75,17 @@ class MAQ(MultiprocessBased):
                 else:
                     #Si no hi ha ct agafem la comunitat del rescompany
                     company_partner = O.ResCompany.read(1, ['partner_id'])
+                    #funció per trobar la ccaa desde el municipi
+                    fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
                     if company_partner:
                         address = O.ResPartnerAddress.read(
                             company_partner['partner_id'][0], ['id_municipi'])
-                        id_comunitat = O.ResComunitat_autonoma.\
-                            get_ccaa_from_municipi([], address['id_municipi'][0])
-                        comunidad = O.ResComunitat_autonoma.read(id_comunitat,
-                                                                 ['codi'])
-                        comunitat = comunidad[0]['codi']
+                        if address['id_municipi']:
+                            id_comunitat = fun_ccaa(
+                                [], address['id_municipi'][0])
+                            comunidad = O.ResComunitat_autonoma.read(
+                                id_comunitat, ['codi'])
+                            comunitat = comunidad[0]['codi']
 
                 output = [
                     '%s' % trafo['name'],
