@@ -32,7 +32,7 @@ class CTS(MultiprocessBased):
 
                 ct = O.GiscedataCts.get(item)
                 codi = ct.codi_instalacio
-
+                data_pm = ''
                 #Busco la data, primer mirer els expedients, sino la data_pm CT
                 if ct.expedients_ids:
                     try:
