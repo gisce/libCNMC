@@ -38,9 +38,7 @@ class LAT(MultiprocessBased):
                 linia = O.GiscedataAtLinia.read(
                     item, ['trams', 'tensio', 'municipi']
                 )
-                for tram in linia['trams']:
-                    tram = O.GiscedataAtTram.read(tram, fields_to_read)
-
+                for tram in O.GiscedataAtTram.read(linia['trams'], fields_to_read):
                     #Comprovar el tipus del cable
                     cable = O.GiscedataAtCables.read(tram['cable'][0],
                                                      ['tipus'])
