@@ -40,6 +40,16 @@ class LAT(MultiprocessBased):
                 )
                 for tram in linia['trams']:
                     tram = O.GiscedataAtTram.read(tram, fields_to_read)
+
+                    #Comprovar el tipus del cable
+                    cable = O.GiscedataAtCables.read(tram['cable'][0],
+                                                     ['tipus'])
+                    tipus = O.GiscedataAtTipuscable.read(cable['tipus'][0],
+                                                         ['codi'])
+                    #Si el tram tram es embarrat no l'afegim
+                    if tipus['codi'] == 'E':
+                        continue
+
                     #Si el tram es de baixa no l'afegim
                     if tram['baixa']:
                         continue
