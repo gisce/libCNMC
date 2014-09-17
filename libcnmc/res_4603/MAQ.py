@@ -21,7 +21,8 @@ class MAQ(MultiprocessBased):
     def get_sequence(self):
         search_params = ['|', ('id_estat.cnmc_inventari', '=', True),
                          ('id_estat', '=', False)]
-        return self.connection.GiscedataTransformadorTrafo.search(search_params)
+        return [596]
+        #return self.connection.GiscedataTransformadorTrafo.search(search_params)
 
     def consumer(self):
         O = self.connection
@@ -50,12 +51,12 @@ class MAQ(MultiprocessBased):
                             hist_id, ['data_entrada'])
                         if historic['data_entrada'] < data_hist:
                             data_hist = historic['data_entrada']
+                    data_hist = data_hist[0:10]
                 else:
                     data_hist = ''
                 data_pm = trafo['data_pm'] or data_hist
                 if data_pm:
-                    data_pm = datetime.strptime(str(data_pm),
-                                                '%Y-%m-%d %H:%M:%S')
+                    data_pm = datetime.strptime(str(data_pm), '%Y-%m-%d')
                     data_pm = data_pm.strftime('%d/%m/%Y')
 
                 comunitat = ''
