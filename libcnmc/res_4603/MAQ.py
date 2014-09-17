@@ -21,8 +21,7 @@ class MAQ(MultiprocessBased):
     def get_sequence(self):
         search_params = ['|', ('id_estat.cnmc_inventari', '=', True),
                          ('id_estat', '=', False)]
-        return [596]
-        #return self.connection.GiscedataTransformadorTrafo.search(search_params)
+        return self.connection.GiscedataTransformadorTrafo.search(search_params)
 
     def consumer(self):
         O = self.connection
