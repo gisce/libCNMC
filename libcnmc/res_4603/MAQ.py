@@ -72,24 +72,25 @@ class MAQ(MultiprocessBased):
                     if comunidad:
                         comunitat = comunidad[0]['codi']
                     finan = cts['perc_financament']
-
-                #La propia empresa
-                if O.ResCompany.get(1):
+                else:
+                    #Si no hi ha ct agafem la comunitat del rescompany
                     company_partner = O.ResCompany.read(1, ['partner_id'])
-                    address = O.ResPartnerAddress.read(
-                        company_partner['partner_id'][0], ['municipi'])
-                    id_comunitat = O.ResComunitat_autonoma.get_ccaa_from_municipi(
-                        [], address['municipi'][0])
-                    c_ccaa = O.ResComunitat_autonoma.read(id_comunitat,
-                                                          ['codi'])
-                    c_ccaa = c_ccaa[0]['codi']
+                    if company_partner:
+                        address = O.ResPartnerAddress.read(
+                            company_partner['partner_id'][0], ['municipi'])
+                        id_comunitat = O.ResComunitat_autonoma.\
+                            get_ccaa_from_municipi([], address['municipi'][0])
+                        comunidad = O.ResComunitat_autonoma.read(id_comunitat,
+                                                                 ['codi'])
+                        comunitat = comunidad[0]['codi']
+
                 output = [
                     '%s' % trafo['name'],
                     trafo['cini'] or '',
                     trafo['numero_fabricacio'] or '',
                     codi or '',
                     '',
-                    comunitat or c_ccaa or '',
+                    comunitat or '',
                     round(100 - int(finan)),
                     data_pm,
                     '',
