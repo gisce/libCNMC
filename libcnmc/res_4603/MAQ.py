@@ -50,12 +50,12 @@ class MAQ(MultiprocessBased):
                             hist_id, ['data_entrada'])
                         if historic['data_entrada'] < data_hist:
                             data_hist = historic['data_entrada']
+                    data_hist = data_hist[0:10]
                 else:
                     data_hist = ''
                 data_pm = trafo['data_pm'] or data_hist
                 if data_pm:
-                    data_pm = datetime.strptime(str(data_pm),
-                                                '%Y-%m-%d %H:%M:%S')
+                    data_pm = datetime.strptime(str(data_pm), '%Y-%m-%d')
                     data_pm = data_pm.strftime('%d/%m/%Y')
 
                 comunitat = ''
