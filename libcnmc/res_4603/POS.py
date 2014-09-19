@@ -53,10 +53,7 @@ class POS(MultiprocessBased):
                 #Codi tipus de instalació
                 codi = sub['codi_instalacio']
 
-                ccaa = ''
-                c_ccaa = ''
-                #La propia empresa
-                company = O.ResCompany.get(1)
+                comunitat = ''
 
                 cts = O.GiscedataCtsSubestacions.read(sub['subestacio_id'][0],
                                                       ['id_municipi',
@@ -69,18 +66,28 @@ class POS(MultiprocessBased):
                             municipi['state'][0],
                             ['comunitat_autonoma'])
                         if provincia['comunitat_autonoma']:
-                            ccaa = provincia['comunitat_autonoma'][0]
-
-                if company.partner_id.address[0].state_id:
-                    c_ccaa = company.partner_id.address[0].\
-                        state_id.comunitat_autonoma.codi
+                            comunitat = provincia['comunitat_autonoma'][0]
+                else:
+                    #Si no hi ha ct agafem la comunitat del rescompany
+                    company_partner = O.ResCompany.read(1, ['partner_id'])
+                    #funció per trobar la ccaa desde el municipi
+                    fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
+                    if company_partner:
+                        address = O.ResPartnerAddress.read(
+                            company_partner['partner_id'][0], ['id_municipi'])
+                        if address['id_municipi']:
+                            id_comunitat = fun_ccaa(
+                                [], address['id_municipi'][0])
+                            comunidad = O.ResComunitat_autonoma.read(
+                                id_comunitat, ['codi'])
+                            comunitat = comunidad[0]['codi']
 
                 output = [
                     '%s' % sub['name'],
                     sub['cini'] or ' ',
                     cts['descripcio'] or ' ',
                     codi,
-                    ccaa or c_ccaa or ' ',
+                    comunitat,
                     round(100 - int(sub['perc_financament'])),
                     data_pm or ' ',
                     ' '
