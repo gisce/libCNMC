@@ -7,7 +7,8 @@ class CreateCelles(UpdateFile):
         super(CreateCelles, self).__init__(**kwargs)
         self.header = [
             'name', 'tipus_element', 'installacio', 'tipus_posicio',
-            'inventari', 'aillament', 'cini', 'propietari', 'perc_financament'
+            'inventari', 'aillament', 'cini', 'propietari', 'perc_financament',
+            'tensio'
         ]
         self.search_keys = [('cups', 'name')]
         self.object = self.connection.GiscedataCellesCella
@@ -36,6 +37,10 @@ class CreateCelles(UpdateFile):
             elif val[0] == 'aillament':
                 search_param = [('name', '=', val[1].upper())]
                 value = o.GiscedataCellesAillament.search(search_param)[0]
+                vals[val[0]] = value
+            elif val[0] == 'tensio':
+                search_param = [('name', '=', val[1].upper())]
+                value = o.GiscedataTensionsTensio.search(search_param)[0]
                 vals[val[0]] = value
             elif val[0] == 'installacio':
                 model, name = val[1].split(',')
