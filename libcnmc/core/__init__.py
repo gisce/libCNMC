@@ -142,6 +142,7 @@ class UpdateFile(MultiprocessBased):
         self.file_input = kwargs.pop('file_input')
         self.header = []
         self.search_keys = []
+        self.year = False
 
     def get_sequence(self):
         energies_file = open(self.file_input)
