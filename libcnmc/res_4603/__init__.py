@@ -10,3 +10,4 @@ from INV import INV
 from CINIMAQ import CINIMAQ
 from CINIPOS import CINIPOS
 from create_celles import CreateCelles
+from update_cinis_trafo import UpdateCINISTrafo
