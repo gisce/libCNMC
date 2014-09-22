@@ -46,10 +46,15 @@ class CreateCelles(UpdateFile):
                 model, name = val[1].split(',')
                 model = model.lower()
                 if 'ct' in model:
-                    ct_id = o.GiscedataCts.search([('name', '=', name)])[0]
+                    ct_id = o.GiscedataCts.search(
+                        [('name', '=', name)],
+                        0, 0, False,
+                        {'active_test': False})[0]
                     value = '%s,%s' % ('giscedata.cts', ct_id)
                 elif 'suport' in model:
-                    ct_id = o.GiscedataAtSuport.search([('name', '=', name)])[0]
+                    ct_id = o.GiscedataAtSuport.search(
+                        [('name', '=', name)], 0, 0, False,
+                        {'active_test': False})[0]
                     value = '%s,%s' % ('giscedata.at.suport', ct_id)
                 vals[val[0]] = value
             else:
