@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
 from libcnmc.core import UpdateFile
 
 class CreateCelles(UpdateFile):
@@ -12,7 +11,6 @@ class CreateCelles(UpdateFile):
         ]
         self.search_keys = [('cups', 'name')]
         self.object = self.connection.GiscedataCellesCella
-        self.year = datetime.now().year
 
     def model2cc(self, model):
         """Converteix el model en CamelCase.
