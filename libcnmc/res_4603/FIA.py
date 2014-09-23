@@ -24,23 +24,24 @@ class FIA(MultiprocessBased):
 
     def consumer(self):
         O = self.connection
+        fields_to_read = ['name', 'cini', 'data_baixa', 'tipus_element',
+                          'installacio', 'expedients', 'data_pm']
         while True:
             try:
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-                cll = O.GiscedataCellesCella.get(item)
+                cll = O.GiscedataCellesCella.read(item, fields_to_read)
 
                 #Comprovar si es tipus fiabilitat
-                if cll.tipus_element:
-                    cllt = O.GiscedataCellesTipusElement.get(
-                        cll.tipus_element.id)
-                else:
-                    cllt = {'name': ''}
+                if cll['tipus_element']:
 
-                if cll.cini:
+                    cllt = O.GiscedataCellesTipusElement.read(
+                        cll['tipus_element'][0], ['name'])
+
+                if cll['cini']:
                     #Busquem per la penúltima lletra
-                    pos_cini = cll.cini[5]
+                    pos_cini = cll['cini'][5]
                     if pos_cini == '1':
                         codi = 174
                     elif pos_cini == '2':
@@ -59,28 +60,41 @@ class FIA(MultiprocessBased):
                         codi = 0
                 else:
                     codi = 0
-                try:
-                    data_industria = ''
-                    if cll.expedients:
-                        for exp in cll.expedients_ids:
-                            if exp.industria_data:
-                                data_industria = exp.industria_data
+
+                data_industria = ''
+                data_pm = ''
+                #Busco la data, primer mirer els expedients, sino la data_pm CT
+                if cll['expedients']:
+                    try:
+                        for exp_id in cll['expedients']:
+                            exp = O.GiscedataExpedientsExpedient.read(
+                                exp_id, ['industria_data'])
+                            if exp['industria_data']:
+                                data_industria = exp['industria_data']
                                 break
-                    if data_industria:
                         data_industria = datetime.strptime(str(data_industria),
                                                            '%Y-%m-%d')
-                        data_aps = data_industria.strftime('%d/%m/%Y')
-                    else:
-                        data_pm = datetime.strptime(str(cll.data_pm),
-                                                    '%Y-%m-%d')
-                        data_aps = data_pm.strftime('%d/%m/%Y')
-                except:
-                    data_aps = ''
+                        print ' dins del try %s' % data_pm
+                        data_pm = data_industria.strftime('%d/%m/%Y')
+                    except Exception as e:
+                        print ' dins del except %s' % data_pm
+                        print "Data d'expedient no trobada, " \
+                              "Cella id: %d, %s" % (item, e)
+                        if cll['data_pm']:
+                            data_pm_ct = datetime.strptime(str(cll['data_pm']),
+                                                           '%Y-%m-%d')
+                            data_pm = data_pm_ct.strftime('%d/%m/%Y')
+                else:
+                    if cll['data_pm']:
+                        print ' dins del else %s' % data_pm
+                        data_pm_ct = datetime.strptime(str(cll['data_pm']),
+                                                       '%Y-%m-%d')
+                        data_pm = data_pm_ct.strftime('%d/%m/%Y')
 
                 #Per trobar la comunitat autonoma
                 ccaa = ''
                 #Comprovo si la cella pertany a ct o lat
-                cllinst = cll.installacio.split(',')
+                cllinst = cll['installacio'].split(',')
                 if cllinst[0] == 'giscedata.cts':
                     id_municipi = O.GiscedataCts.read(int(cllinst[1]),
                                                       ['id_municipi'])
@@ -98,13 +112,13 @@ class FIA(MultiprocessBased):
                             [], id_municipi['municipi'][0])[0]
 
                 output = [
-                    '%s' % cll.name,
-                    cll.cini or '',
-                    cllt.name or '',
+                    '%s' % cll['name'],
+                    cll['cini'] or '',
+                    cllt['name'] or '',
                     codi or '',
                     ccaa or '',
-                    data_aps,
-                    cll.data_baixa or ''
+                    data_pm,
+                    cll['data_baixa'] or ''
                 ]
                 self.output_q.put(output)
             except:

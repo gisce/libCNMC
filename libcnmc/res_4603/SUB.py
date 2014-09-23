@@ -27,46 +27,64 @@ class SUB(MultiprocessBased):
 
     def consumer(self):
         O = self.connection
+        fields_to_read = ['name', 'data_industria', 'data_pm', 'id_municipi',
+                          'posicions', 'cini', 'descripcio', 'perc_financament']
         while True:
             try:
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-                sub = O.GiscedataCtsSubestacions.get(item)
+                sub = O.GiscedataCtsSubestacions.read(item, fields_to_read)
+
                 if not sub:
                     if not QUIET:
                         sys.stderr.write("**** ERROR: El ct %s (id:%s) no està "
                                          "en giscedata_cts_subestacions.\n"
-                                         % (sub.name, sub.id))
+                                         % (sub['name'], sub['id']))
                         sys.stderr.flush()
 
                 # Calculem any posada en marxa
-                data_pm = sub.data_industria or sub.data_pm
+                data_pm = sub['data_industria'] or sub['data_pm']
 
                 if data_pm:
                     data_pm = datetime.strptime(str(data_pm), '%Y-%m-%d')
                     data_pm = data_pm.strftime('%d/%m/%Y')
 
-                c_ccaa = ''
-                #La propia empresa
-                company = O.ResCompany.get(1)
-                ccaa = sub.id_municipi.state.comunitat_autonoma.codi
-                if company.partner_id.address[0].state_id:
-                    c_ccaa = company.partner_id.address[0].state_id.\
-                        comunitat_autonoma.codi
-
-                pos = len(sub.posicions.objects)
+                comunitat = ''
+                if sub['id_municipi']:
+                    municipi = O.ResMunicipi.read(sub['id_municipi'][0],
+                                                  ['state'])
+                    if municipi['state']:
+                        provincia = O.ResCountryState.read(
+                            municipi['state'][0],
+                            ['comunitat_autonoma'])
+                        if provincia['comunitat_autonoma']:
+                            comunitat = provincia['comunitat_autonoma'][0]
+                else:
+                    #Si no hi ha subestació agafem la comunitat del rescompany
+                    company_partner = O.ResCompany.read(1, ['partner_id'])
+                    #funció per trobar la ccaa desde el municipi
+                    fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
+                    if company_partner:
+                        address = O.ResPartnerAddress.read(
+                            company_partner['partner_id'][0], ['id_municipi'])
+                        if address['id_municipi']:
+                            id_comunitat = fun_ccaa(
+                                [], address['id_municipi'][0])
+                            comunidad = O.ResComunitat_autonoma.read(
+                                id_comunitat, ['codi'])
+                            comunitat = comunidad[0]['codi']
 
                 output = [
-                    '%s' % sub.name,
-                    sub.cini or '',
-                    sub.descripcio or '',
+                    '%s' % sub['name'],
+                    sub['cini'] or '',
+                    sub['descripcio'] or '',
                     '',
-                    ccaa or c_ccaa or '',
-                    round(100 - int(sub.perc_financament)),
+                    comunitat,
+                    round(100 - int(sub['perc_financament'])),
                     data_pm,
                     '',
-                    pos
+                    len(sub['posicions'])
                 ]
 
                 self.output_q.put(output)
