@@ -58,7 +58,7 @@ class POS(MultiprocessBased):
                 cts = O.GiscedataCtsSubestacions.read(sub['subestacio_id'][0],
                                                       ['id_municipi',
                                                        'descripcio'])
-                if cts:
+                if cts['id_municipi']:
                     municipi = O.ResMunicipi.read(cts['id_municipi'][0],
                                                   ['state'])
                     if municipi['state']:
