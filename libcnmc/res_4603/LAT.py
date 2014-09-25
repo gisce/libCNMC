@@ -88,6 +88,7 @@ class LAT(MultiprocessBased):
                     id_comunitat = O.ResComunitat_autonoma.get_ccaa_from_municipi(
                         [], linia['municipi'][0])
                     comunidad = O.ResComunitat_autonoma.read(id_comunitat, ['codi'])
+                    comunitat = ''
                     if comunidad:
                         comunitat = comunidad[0]['codi']
 
@@ -101,8 +102,8 @@ class LAT(MultiprocessBased):
                         tram['origen'] or '',
                         tram['final'] or '',
                         codi['codi'] or '',
-                        comunitat or '',
-                        comunitat or '',
+                        comunitat,
+                        comunitat,
                         round(100 - int(tram['perc_financament'])),
                         data_pm,
                         '',
