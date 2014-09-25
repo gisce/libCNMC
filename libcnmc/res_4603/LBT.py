@@ -70,9 +70,7 @@ class LBT(MultiprocessBased):
                     comunidad = O.ResComunitat_autonoma.read(id_comunitat,
                                                              ['codi'])
                     if comunidad:
-                        comunitat = comunidad[0]
-                    else:
-                        comunitat = {'codi': ''}
+                        comunitat = comunidad[0]['codi']
 
                 if linia['ct']:
                     #Agafar les dates del centrestransformadors
@@ -112,8 +110,8 @@ class LBT(MultiprocessBased):
                     edge['start_node'][1] or '',
                     edge['end_node'][1] or '',
                     codi['codi'] or '',
-                    comunitat['codi'] or '',
-                    comunitat['codi'] or '',
+                    comunitat or '',
+                    comunitat or '',
                     round(100 - int(linia['perc_financament'])),
                     data_pm or '',
                     '',
