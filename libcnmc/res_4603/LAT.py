@@ -89,7 +89,7 @@ class LAT(MultiprocessBased):
                         [], linia['municipi'][0])
                     comunidad = O.ResComunitat_autonoma.read(id_comunitat, ['codi'])
                     if comunidad:
-                        comunitat = comunidad[0]
+                        comunitat = comunidad[0]['codi']
 
                     # Agafem el cable de la linia
                     cable = O.GiscedataAtCables.read(tram['cable'][0], [
@@ -101,8 +101,8 @@ class LAT(MultiprocessBased):
                         tram['origen'] or '',
                         tram['final'] or '',
                         codi['codi'] or '',
-                        comunitat['codi'] or '',
-                        comunitat['codi'] or '',
+                        comunitat or '',
+                        comunitat or '',
                         round(100 - int(tram['perc_financament'])),
                         data_pm,
                         '',
