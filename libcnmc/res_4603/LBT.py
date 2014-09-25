@@ -64,6 +64,7 @@ class LBT(MultiprocessBased):
                 else:
                     edge = O.GiscegisEdge.read(res[0], ['start_node',
                                                         'end_node'])
+                comunitat = ''
                 if linia['municipi']:
                     id_comunitat = O.ResComunitat_autonoma.get_ccaa_from_municipi(
                         [], linia['municipi'][0])
@@ -110,8 +111,8 @@ class LBT(MultiprocessBased):
                     edge['start_node'][1] or '',
                     edge['end_node'][1] or '',
                     codi['codi'] or '',
-                    comunitat or '',
-                    comunitat or '',
+                    comunitat,
+                    comunitat,
                     round(100 - int(linia['perc_financament'])),
                     data_pm or '',
                     '',
