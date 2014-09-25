@@ -66,16 +66,14 @@ class FIA(MultiprocessBased):
                 #Busco la data, primer mirer els expedients, sino la data_pm CT
                 if cll['expedients']:
                     try:
-                        for exp_id in cll['expedients']:
-                            exp = O.GiscedataExpedientsExpedient.read(
-                                exp_id, ['industria_data'])
-                            if exp['industria_data']:
-                                data_industria = exp['industria_data']
-                                break
-                        data_industria = datetime.strptime(str(data_industria),
-                                                           '%Y-%m-%d')
-                        print ' dins del try %s' % data_pm
-                        data_pm = data_industria.strftime('%d/%m/%Y')
+                        search_params = [('id', 'in', cll['expedients_ids'])]
+                        expedient_id = O.GiscedataExpedientsExpedient.search(
+                            search_params, 0, 1, 'industria_data desc')[0]
+                        data_exp = O.GiscedataExpedientsExpedient.read(
+                            expedient_id, ['industria_data'])
+                        data_exp_nova = datetime.strptime(
+                            data_exp['industria_data'], '%Y-%m-%d')
+                        data_pm = data_exp_nova.strftime('%d/%m/%Y')
                     except Exception as e:
                         print ' dins del except %s' % data_pm
                         print "Data d'expedient no trobada, " \
