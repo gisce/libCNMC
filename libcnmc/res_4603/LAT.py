@@ -85,11 +85,14 @@ class LAT(MultiprocessBased):
                     #Agafem la tensió
                     tensio = tram['tensio_max_disseny'] or linia['tensio']
 
-                    id_comunitat = O.ResComunitat_autonoma.get_ccaa_from_municipi(
-                        [], linia['municipi'][0])
-                    comunidad = O.ResComunitat_autonoma.read(id_comunitat, ['codi'])
-                    if comunidad:
-                        comunitat = comunidad[0]
+                    comunitat = ''
+                    if linia['municipi']:
+                        id_comunitat = O.ResComunitat_autonoma.get_ccaa_from_municipi(
+                            [], linia['municipi'][0])
+                        comunidad = O.ResComunitat_autonoma.read(id_comunitat,
+                                                                 ['codi'])
+                        if comunidad:
+                            comunitat = comunidad[0]['codi']
 
                     # Agafem el cable de la linia
                     cable = O.GiscedataAtCables.read(tram['cable'][0], [
@@ -101,8 +104,8 @@ class LAT(MultiprocessBased):
                         tram['origen'] or '',
                         tram['final'] or '',
                         codi['codi'] or '',
-                        comunitat['codi'] or '',
-                        comunitat['codi'] or '',
+                        comunitat,
+                        comunitat,
                         round(100 - int(tram['perc_financament'])),
                         data_pm,
                         '',
