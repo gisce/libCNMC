@@ -52,19 +52,23 @@ class LAT(MultiprocessBased):
                     if tram['baixa']:
                         continue
                     # Calculem any posada en marxa
-                    if not tram['expedients_ids']:
+                    data_pm = ''
+                    if tram['data_pm']:
                         data_pm = tram['data_pm']
                     else:
-                        try:
-                            #Busco en els expedients la data d'industria
-                            for exp in tram['expedients_ids']:
-                                data_exp = O.GiscedataExpedientsExpedient.read(
-                                    exp, ['industria_data'])
-                                break
-                            data_pm = data_exp['industria_data'] or ''
-                        except:
-                            #No s'ha trobat l'expedient
-                            data_pm = tram['data_pm']
+                        # Si no hi ha la data de posada en marxa
+                        # miro als expedients
+                        if tram['expedients_ids']:
+                            try:
+                                #Busco en els expedients la data d'industria
+                                for exp in tram['expedients_ids']:
+                                    data_exp = O.GiscedataExpedientsExpedient.read(
+                                        exp, ['industria_data'])
+                                    break
+                                data_pm = data_exp['industria_data'] or ''
+                            except:
+                                #No s'ha trobat l'expedient
+                                data_pm = ''
 
                     if data_pm:
                         data_pm = datetime.strptime(str(data_pm), '%Y-%m-%d')
