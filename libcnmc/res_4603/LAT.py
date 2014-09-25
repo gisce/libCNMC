@@ -68,9 +68,7 @@ class LAT(MultiprocessBased):
                                     search_params, 0, 1, 'industria_data desc')[0]
                                 data_exp = O.GiscedataExpedientsExpedient.read(
                                            expedient_id, ['industria_data'])
-                                data_exp_nova = datetime.strptime(
-                                    data_exp['industria_data'], '%Y-%m-%d')
-                                data_pm = data_exp_nova or ''
+                                data_pm = data_exp['industria_data'] or ''
                             except:
                                 #Si la data té un format no compatible
                                 #  amb '%Y-%m-%d'
