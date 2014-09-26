@@ -61,9 +61,11 @@ class FIA(MultiprocessBased):
                 else:
                     codi = 0
 
-                data_industria = ''
-                data_pm = ''
+                #Instal·lació a la que pertany
+                cllinst = cll['installacio'].split(',')
+
                 #Busco la data, primer mirer els expedients, sino la data_pm CT
+                data_pm = ''
                 if cll['expedients']:
                     try:
                         search_params = [('id', 'in', cll['expedients_ids'])]
@@ -76,23 +78,38 @@ class FIA(MultiprocessBased):
                         data_pm = data_exp_nova.strftime('%d/%m/%Y')
                     except Exception as e:
                         print ' dins del except %s' % data_pm
-                        print "Data d'expedient no trobada, " \
+                        print "Data d'expedient erronia, " \
                               "Cella id: %d, %s" % (item, e)
                         if cll['data_pm']:
                             data_pm_ct = datetime.strptime(str(cll['data_pm']),
                                                            '%Y-%m-%d')
                             data_pm = data_pm_ct.strftime('%d/%m/%Y')
+                        else:
+                            if cllinst[0] == 'giscedata.cts':
+                                data_ct = O.GiscedataCts.read(int(cllinst[1]),
+                                                              ['data_pm'])
+                                if data_ct['data_pm']:
+                                    data_pm_ct = datetime.strptime(str(data_ct[
+                                        'data_pm']), '%Y-%m-%d')
+                                    data_pm = data_pm_ct.strftime('%d/%m/%Y')
                 else:
                     if cll['data_pm']:
                         print ' dins del else %s' % data_pm
                         data_pm_ct = datetime.strptime(str(cll['data_pm']),
                                                        '%Y-%m-%d')
                         data_pm = data_pm_ct.strftime('%d/%m/%Y')
+                    else:
+                        if cllinst[0] == 'giscedata.cts':
+                            data_ct = O.GiscedataCts.read(int(cllinst[1]),
+                                                          ['data_pm'])
+                            if data_ct['data_pm']:
+                                data_pm_ct = datetime.strptime(str(data_ct[
+                                    'data_pm']), '%Y-%m-%d')
+                                data_pm = data_pm_ct.strftime('%d/%m/%Y')
 
                 #Per trobar la comunitat autonoma
                 ccaa = ''
-                #Comprovo si la cella pertany a ct o lat
-                cllinst = cll['installacio'].split(',')
+                #Comprovo si la cella pertany a ct o lat per trobar la ccaa
                 if cllinst[0] == 'giscedata.cts':
                     id_municipi = O.GiscedataCts.read(int(cllinst[1]),
                                                       ['id_municipi'])
