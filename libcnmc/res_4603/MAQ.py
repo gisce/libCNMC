@@ -60,7 +60,7 @@ class MAQ(MultiprocessBased):
 
                 comunitat = ''
                 c_ccaa = ''
-                finan = 0
+                financiacio = 0
                 if trafo['ct']:
                     cts = O.GiscedataCts.read(trafo['ct'][0],
                                               ['id_municipi',
@@ -71,7 +71,9 @@ class MAQ(MultiprocessBased):
                                                              ['codi'])
                     if comunidad:
                         comunitat = comunidad[0]['codi']
+                    #Calculo la financiacio a partir del camp perc_financament
                     finan = cts['perc_financament']
+                    financiacio = round(100 - int(finan))
                 else:
                     #Si no hi ha ct agafem la comunitat del rescompany
                     company_partner = O.ResCompany.read(1, ['partner_id'])
@@ -94,7 +96,7 @@ class MAQ(MultiprocessBased):
                     codi or '',
                     '',
                     comunitat or '',
-                    round(100 - int(finan)),
+                    financiacio,
                     data_pm,
                     '',
                     trafo['potencia_nominal']
