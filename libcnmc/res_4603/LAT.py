@@ -61,13 +61,17 @@ class LAT(MultiprocessBased):
                         if tram['expedients_ids']:
                             try:
                                 #Busco en els expedients la data d'industria
-                                for exp in tram['expedients_ids']:
-                                    data_exp = O.GiscedataExpedientsExpedient.read(
-                                        exp, ['industria_data'])
-                                    break
+                                search_params = [(
+                                    'id', 'in', tram['expedients_ids']
+                                )]
+                                expedient_id = O.GiscedataExpedientsExpedient.search(
+                                    search_params, 0, 1, 'industria_data desc')[0]
+                                data_exp = O.GiscedataExpedientsExpedient.read(
+                                           expedient_id, ['industria_data'])
                                 data_pm = data_exp['industria_data'] or ''
                             except:
-                                #No s'ha trobat l'expedient
+                                #Si la data té un format no compatible
+                                #  amb '%Y-%m-%d'
                                 data_pm = ''
 
                     if data_pm:
