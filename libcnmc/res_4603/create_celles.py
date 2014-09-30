@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from multiprocessing import Manager
+
+
 from libcnmc.core import UpdateFile
 
 class CreateCelles(UpdateFile):
@@ -11,6 +14,9 @@ class CreateCelles(UpdateFile):
         ]
         self.search_keys = [('cups', 'name')]
         self.object = self.connection.GiscedataCellesCella
+        manager = Manager()
+        self.cts = manager.dict()
+        self.at_suports = manager.dict()
 
     def model2cc(self, model):
         """Converteix el model en CamelCase.
@@ -44,16 +50,26 @@ class CreateCelles(UpdateFile):
                 model, name = val[1].split(',')
                 model = model.lower()
                 if 'ct' in model:
-                    ct_id = o.GiscedataCts.search(
-                        [('name', '=', name)],
-                        0, 0, False,
-                        {'active_test': False})[0]
+                    if name in self.cts:
+                        ct_id = self.cts[name]
+                    else:
+                        ct_id = o.GiscedataCts.search(
+                            [('name', '=', name)],
+                            0, 0, False,
+                            {'active_test': False})[0]
+                        self.cts[name] = {'id': ct_id}
                     value = '%s,%s' % ('giscedata.cts', ct_id)
+
                 elif 'suport' in model:
-                    ct_id = o.GiscedataAtSuport.search(
-                        [('name', '=', name)], 0, 0, False,
-                        {'active_test': False})[0]
-                    value = '%s,%s' % ('giscedata.at.suport', ct_id)
+                    if name in self.at_suports:
+                        at_suport_id = self.at_suports[name]
+                    else:
+                        at_suport_id = o.GiscedataAtSuport.search(
+                            [('name', '=', name)], 0, 0, False,
+                            {'active_test': False})[0]
+                        self.at_suports[name] = at_suport_id
+                    value = '%s,%s' % ('giscedata.at.suport', at_suport_id)
+
                 vals[val[0]] = value
             else:
                 vals[val[0]] = val[1]
