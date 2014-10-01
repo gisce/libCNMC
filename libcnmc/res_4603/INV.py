@@ -49,6 +49,8 @@ class INV():
     def tractar_linies(self, arxiucsvlinies):
         reader = self.open_csv_file(arxiucsvlinies)
         for row in reader:
+            if not row:
+                continue
             linia = cnmc_inventari.Linea()
 
             identificador = row[0]
@@ -95,6 +97,8 @@ class INV():
     def tractar_sub(self, arxiucsvsub):
         reader = self.open_csv_file(arxiucsvsub)
         for row in reader:
+            if not row:
+                continue
             sub = cnmc_inventari.Subestacion()
 
             identificador = row[0]
@@ -126,6 +130,8 @@ class INV():
     def tractar_pos(self, arxiucsvpos):
         reader = self.open_csv_file(arxiucsvpos)
         for row in reader:
+            if not row:
+                continue
             pos = cnmc_inventari.Posicion()
 
             identificador = row[0]
@@ -155,6 +161,8 @@ class INV():
     def tractar_maq(self, arxiucsvmaq):
         reader = self.open_csv_file(arxiucsvmaq)
         for row in reader:
+            if not row:
+                continue
             maq = cnmc_inventari.Maquina()
 
             identificador = row[0]
@@ -188,6 +196,8 @@ class INV():
     def tractar_desp(self, arxiucsvdesp):
         reader = self.open_csv_file(arxiucsvdesp)
         for row in reader:
+            if not row:
+                continue
             despt = cnmc_inventari.Despacho()
 
             identificador = row[0]
@@ -211,6 +221,8 @@ class INV():
     def tractar_fia(self, arxiucsvfia):
         reader = self.open_csv_file(arxiucsvfia)
         for row in reader:
+            if not row:
+                continue
             despt = cnmc_inventari.Fiabilidad()
 
             identificador = row[0]
@@ -238,6 +250,8 @@ class INV():
     def tractar_trans(self, arxiucsvtrans):
         reader = self.open_csv_file(arxiucsvtrans)
         for row in reader:
+            if not row:
+                continue
             trans = cnmc_inventari.Transformacion()
 
             identificador = row[0]
