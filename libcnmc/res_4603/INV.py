@@ -7,6 +7,7 @@ INVENTARI DE CNMC Inventari
 import csv
 import os
 import traceback
+from chardet import detect
 
 from libcnmc.core import cnmc_inventari
 
@@ -39,6 +40,15 @@ class INV():
             self.raven.tags_context({'version': VERSION})
         else:
             self.raven = None
+
+    def check_encoding(self):
+        input_files = ['liniesat', 'liniesbt', 'subestacions', 'posicions',
+                       'maquinas', 'despatxos', 'fiabilidad', 'transformacion']
+        for input_f in input_files:
+            with open(getattr(self, input_f), 'r') as f:
+                result = detect(f.read())
+                if result['encoding'] not in ('utf-8', 'ascii'):
+                    raise Exception('File: %s is not in UTF-8.' % input_f)
 
     def open_csv_file(self, csv_file):
         reader = csv.reader(open(csv_file), delimiter=';')
@@ -283,6 +293,7 @@ class INV():
 
     def calc(self):
         try:
+            self.check_encoding()
             #Obro l'arxiu XML a emplenar
             arxiuxml = open(self.file_out, 'wb')
 
@@ -316,3 +327,4 @@ class INV():
             traceback.print_exc()
             if self.raven:
                 self.raven.captureException()
+            raise

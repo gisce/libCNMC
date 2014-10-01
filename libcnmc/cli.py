@@ -476,7 +476,6 @@ def res_4603_inv(**kwargs):
     proc.calc()
 
 
-
 #CINIS Maquines
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
