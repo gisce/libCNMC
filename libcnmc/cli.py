@@ -458,14 +458,22 @@ def res_4603_cts(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-@click.option("-l", "--liniesat", help="Fitxers CSV de linies AT")
-@click.option("-b", "--liniesbt", help="Fitxers CSV de linies BT")
-@click.option("-e", "--subestacions", help="Fitxers CSV de subestacions")
-@click.option("-z", "--posicions", help="Fitxers CSV de posicions")
-@click.option("-m", "--maquines", help="Fitxers CSV de maquines")
-@click.option("-x", "--despatxos", help="Fitxers CSV de despatxos")
-@click.option("-f", "--fiabilitat", help="Fitxers CSV de fiabilitat")
-@click.option("-t", "--transformacio", help="Fitxers CSV de transformacio")
+@click.option("-l", "--liniesat", help="Fitxers CSV de linies AT",
+              type=click.Path(exists=True))
+@click.option("-b", "--liniesbt", help="Fitxers CSV de linies BT",
+              type=click.Path(exists=True))
+@click.option("-e", "--subestacions", help="Fitxers CSV de subestacions",
+              type=click.Path(exists=True))
+@click.option("-z", "--posicions", help="Fitxers CSV de posicions",
+              type=click.Path(exists=True))
+@click.option("-m", "--maquines", help="Fitxers CSV de maquines",
+              type=click.Path(exists=True))
+@click.option("-x", "--despatxos", help="Fitxers CSV de despatxos",
+              type=click.Path(exists=True))
+@click.option("-f", "--fiabilitat", help="Fitxers CSV de fiabilitat",
+              type=click.Path(exists=True))
+@click.option("-t", "--transformacio", help="Fitxers CSV de transformacio",
+              type=click.Path(exists=True))
 
 def res_4603_inv(**kwargs):
     O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
