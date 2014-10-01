@@ -4,7 +4,6 @@
 """
 INVENTARI DE CNMC Inventari
 """
-from datetime import datetime
 import csv
 import os
 import traceback
@@ -22,7 +21,6 @@ from libcnmc import VERSION
 
 class INV():
     def __init__(self, **kwargs):
-        self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Inventari'
         self.report_name = 'CNMC INVENTARI XML'
