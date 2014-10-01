@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 PACKAGES_DATA = {}
 
 
-INSTALL_REQUIRES = ['progressbar', 'click']
+INSTALL_REQUIRES = ['progressbar', 'click', 'libcomxml', 'ooop']
 if sys.version_info[1] < 6:
     INSTALL_REQUIRES += ['multiprocessing']
 
