@@ -329,3 +329,4 @@ class INV():
             traceback.print_exc()
             if self.raven:
                 self.raven.captureException()
+            raise
