@@ -43,7 +43,7 @@ class INV():
             self.raven = None
 
     def open_csv_file(self, csv_file):
-        reader = csv.reader(open(self.liniesat), delimiter=';')
+        reader = csv.reader(open(csv_file), delimiter=';')
         return reader
 
     def tractar_linies(self, arxiucsvlinies):
