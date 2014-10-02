@@ -28,7 +28,7 @@ class Linea(XmlModel):
         self.seccion = XmlField('SECCION')
         self.capacidad = XmlField('CAPACIDAD')
 
-        super(Linea, self).__init__('LINEA', 'linea')
+        super(Linea, self).__init__('LINEA', 'linea', drop_empty=False)
 
 
 class Subestacion(XmlModel):
@@ -48,7 +48,8 @@ class Subestacion(XmlModel):
         self.fecha_baja = XmlField('FECHA_BAJA')
         self.posiciones = XmlField('POSICIONES')
 
-        super(Subestacion, self).__init__('SUBESTACION', 'subestacion')
+        super(Subestacion, self).__init__('SUBESTACION', 'subestacion',
+                                          drop_empty=False)
 
 
 class Posicion(XmlModel):
@@ -67,8 +68,8 @@ class Posicion(XmlModel):
         self.fecha_aps = XmlField('FECHA_APS')
         self.fecha_baja = XmlField('FECHA_BAJA')
 
-        super(Posicion, self).__init__('POSICION', 'posicion')
-
+        super(Posicion, self).__init__('POSICION', 'posicion',
+                                       drop_empty=False)
 
 class Maquina(XmlModel):
     _sort_order = ('identificador', 'cini', 'denominacion',
@@ -88,7 +89,7 @@ class Maquina(XmlModel):
         self.fecha_baja = XmlField('FECHA_BAJA')
         self.capacidad = XmlField('CAPACIDAD')
         
-        super(Maquina, self).__init__('MAQUINA', 'maquina')
+        super(Maquina, self).__init__('MAQUINA', 'maquina', drop_empty=False)
 
 
 class Despacho(XmlModel):
@@ -102,7 +103,7 @@ class Despacho(XmlModel):
         self.anyo_ps = XmlField(u'AÑO_PS')
         self.vai = XmlField('VAI')
 
-        super(Despacho, self).__init__('DESPACHO', 'despacho')
+        super(Despacho, self).__init__('DESPACHO', 'despacho', drop_empty=False)
 
 
 class Fiabilidad(XmlModel):
@@ -119,7 +120,8 @@ class Fiabilidad(XmlModel):
         self.fecha_aps = XmlField('FECHA_APS')
         self.fecha_baja = XmlField('FECHA_BAJA')
 
-        super(Fiabilidad, self).__init__('FIABILIDAD', 'fiabilidad')
+        super(Fiabilidad, self).__init__('FIABILIDAD', 'fiabilidad',
+                                         drop_empty=False)
 
 
 class Transformacion(XmlModel):
@@ -137,7 +139,8 @@ class Transformacion(XmlModel):
         self.fecha_aps = XmlField('FECHA_APS')
         self.fecha_baja = XmlField('FECHA_BAJA')
 
-        super(Transformacion, self).__init__('TRANSFORMACION', 'transformacion')
+        super(Transformacion, self).__init__('TRANSFORMACION', 'transformacion',
+                                             drop_empty=False)
 
 
 
@@ -155,7 +158,7 @@ class Empresa(XmlModel):
         self.fiabilidad = []
         self.transformacion = []
         
-        super(Empresa, self).__init__('EMPRESA', 'root')
+        super(Empresa, self).__init__('EMPRESA', 'root', drop_empty=False)
 
     def set_codigo(self, codigo):
         self.root.attributes.update({'CODIGO': codigo})
