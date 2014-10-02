@@ -78,16 +78,16 @@ class INV():
             capacidad = row[14]
 
             linia.feed({
-                'identificador': '%s' % identificador or ' ',
-                'cini': '%s' % cini or ' ',
-                'origen': '%s' % origen or ' ',
-                'destino': '%s' % destino or ' ',
+                'identificador': '%s' % identificador.strip(),
+                'cini': '%s' % cini.strip(),
+                'origen': '%s' % origen.strip(),
+                'destino': '%s' % destino.strip(),
                 'codigo_tipo_linea': '%s' % codigo_tipo_linea,
                 'codigo_ccaa_1': '%s' % codigo_ccaa_1,
                 'codigo_ccaa_2': '%s' % codigo_ccaa_2,
                 'participacion': '%s' % participacion,
-                'fecha_aps': '%s' % fecha_aps or ' ',
-                'fecha_baja': '%s' % fecha_baja or ' ',
+                'fecha_aps': '%s' % fecha_aps.strip(),
+                'fecha_baja': '%s' % fecha_baja.strip(),
                 'numero_circuitos': '%s' % numero_circuitos,
                 'numero_conductores': '%s' % numero_conductores,
                 'longitud': '%s' % longitud,
@@ -120,14 +120,14 @@ class INV():
             posiciones = row[8]
 
             sub.feed({
-                'identificador': '%s' % identificador or ' ',
-                'cini': '%s' % cini or ' ',
-                'denominacion': '%s' % denominacion or ' ',
+                'identificador': '%s' % identificador.strip(),
+                'cini': '%s' % cini.strip(),
+                'denominacion': '%s' % denominacion.strip(),
                 'codigo_tipo_posicion': '%s' % codigo_tipo_posicion,
                 'codigo_ccaa': '%s' % codigo_ccaa,
                 'participacion': '%s' % participacion,
-                'fecha_aps': '%s' % fecha_aps or ' ',
-                'fecha_baja': '%s' % fecha_baja or ' ',
+                'fecha_aps': '%s' % fecha_aps.strip(),
+                'fecha_baja': '%s' % fecha_baja.strip(),
                 'posiciones': '%s' % posiciones,
             })
             self.pla_inversions_xml.linea.append(sub)
@@ -152,14 +152,14 @@ class INV():
             fecha_baja = row[7]
 
             pos.feed({
-                'identificador': '%s' % identificador or ' ',
-                'cini': '%s' % cini or ' ',
-                'denominacion': '%s' % denominacion or ' ',
+                'identificador': '%s' % identificador.strip(),
+                'cini': '%s' % cini.strip(),
+                'denominacion': '%s' % denominacion.strip(),
                 'codigo_tipo_posicion': '%s' % codigo_tipo_posicion,
                 'codigo_ccaa': '%s' % codigo_ccaa,
                 'participacion': '%s' % participacion,
-                'fecha_aps': '%s' % fecha_aps or ' ',
-                'fecha_baja': '%s' % fecha_baja or ' ',
+                'fecha_aps': '%s' % fecha_aps.strip(),
+                'fecha_baja': '%s' % fecha_baja.strip(),
             })
             self.pla_inversions_xml.linea.append(pos)
 
@@ -185,15 +185,15 @@ class INV():
             capacidad = row[9]
 
             maq.feed({
-                'identificador': '%s' % identificador or ' ',
-                'cini': '%s' % cini or ' ',
-                'denominacion': '%s' % denominacion or ' ',
+                'identificador': '%s' % identificador.strip(),
+                'cini': '%s' % cini.strip(),
+                'denominacion': '%s' % denominacion.strip(),
                 'codigo_tipo_posicion': '%s' % codigo_tipo_maquina,
                 'codigo_zona': '%s' % codigo_zona,
                 'codigo_ccaa': '%s' % codigo_ccaa,
                 'participacion': '%s' % participacion,
-                'fecha_aps': '%s' % fecha_aps or ' ',
-                'fecha_baja': '%s' % fecha_baja or ' ',
+                'fecha_aps': '%s' % fecha_aps.strip(),
+                'fecha_baja': '%s' % fecha_baja.strip(),
                 'capacidad': '%s' % capacidad,
             })
             self.pla_inversions_xml.linea.append(maq)
@@ -215,9 +215,9 @@ class INV():
             vai = row[4]
 
             despt.feed({
-                'identificador': '%s' % identificador or ' ',
-                'cini': '%s' % cini or ' ',
-                'denominacion': '%s' % denominacion or ' ',
+                'identificador': '%s' % identificador.strip(),
+                'cini': '%s' % cini.strip(),
+                'denominacion': '%s' % denominacion.strip(),
                 'anyo_ps': '%s' % anyo_ps,
                 'vai': '%s' % vai,
             })
@@ -242,13 +242,13 @@ class INV():
             fecha_baja = row[6]
 
             despt.feed({
-                'identificador': '%s' % identificador or ' ',
-                'cini': '%s' % cini or ' ',
-                'denominacion': '%s' % denominacion or ' ',
-                'codigo_tipo_inst': '%s' % codigo_tipo_inst or ' ',
+                'identificador': '%s' % identificador.strip(),
+                'cini': '%s' % cini.strip(),
+                'denominacion': '%s' % denominacion.strip(),
+                'codigo_tipo_inst': '%s' % codigo_tipo_inst.strip(),
                 'codigo_ccaa': '%s' % codigo_ccaa,
-                'fecha_aps': '%s' % fecha_aps or ' ',
-                'fecha_baja': '%s' % fecha_baja or ' ',
+                'fecha_aps': '%s' % fecha_aps.strip(),
+                'fecha_baja': '%s' % fecha_baja.strip(),
             })
             self.pla_inversions_xml.linea.append(despt)
 
@@ -272,14 +272,14 @@ class INV():
             fecha_baja = row[7]
 
             trans.feed({
-                'identificador': '%s' % identificador or ' ',
-                'cini': '%s' % cini or ' ',
-                'denominacion': '%s' % denominacion or ' ',
-                'codigo_tipo_ct': '%s' % codigo_tipo_ct or ' ',
+                'identificador': '%s' % identificador.strip(),
+                'cini': '%s' % cini.strip(),
+                'denominacion': '%s' % denominacion.strip(),
+                'codigo_tipo_ct': '%s' % codigo_tipo_ct.strip(),
                 'codigo_ccaa': '%s' % codigo_ccaa,
                 'participacion': '%s' % participacion,
-                'fecha_aps': '%s' % fecha_aps or ' ',
-                'fecha_baja': '%s' % fecha_baja or ' ',
+                'fecha_aps': '%s' % fecha_aps.strip(),
+                'fecha_baja': '%s' % fecha_baja.strip(),
             })
             self.pla_inversions_xml.linea.append(trans)
 
