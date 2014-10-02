@@ -125,12 +125,12 @@ class Fiabilidad(XmlModel):
 
 
 class Transformacion(XmlModel):
-    _sort_order = ('identificacion', 'cini', 'denominacion', 'codigo_tipo_ct',
+    _sort_order = ('identificador', 'cini', 'denominacion', 'codigo_tipo_ct',
                    'codigo_ccaa', 'participacion', 'fecha_aps', 'fecha_baja')
 
     def __init__(self):
         self.transformacion = XmlField('TRANSFORMACION')
-        self.identificacion = XmlField('IDENTIFICACION')
+        self.identificador = XmlField('IDENTIFICADOR')
         self.cini = XmlField('CINI')
         self.denominacion = XmlField('DENOMINACION')
         self.codigo_tipo_ct = XmlField('CODIGO_TIPO_CT')
