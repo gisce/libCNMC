@@ -84,13 +84,13 @@ class POS(MultiprocessBased):
 
                 output = [
                     '%s' % sub['name'],
-                    sub['cini'] or ' ',
-                    cts['descripcio'] or ' ',
+                    sub['cini'] or '',
+                    cts['descripcio'] or '',
                     codi,
                     comunitat,
                     round(100 - int(sub['perc_financament'])),
-                    data_pm or ' ',
-                    ' '
+                    data_pm or '',
+                    ''
                 ]
 
                 self.output_q.put(output)
