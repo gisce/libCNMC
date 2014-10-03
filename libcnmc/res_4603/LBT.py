@@ -68,10 +68,11 @@ class LBT(MultiprocessBased):
                 if linia['municipi']:
                     id_comunitat = O.ResComunitat_autonoma.get_ccaa_from_municipi(
                         [], linia['municipi'][0])
+                    id_comunitat = id_comunitat[0]
                     comunidad = O.ResComunitat_autonoma.read(id_comunitat,
                                                              ['codi'])
                     if comunidad:
-                        comunitat = comunidad[0]['codi']
+                        comunitat = comunidad['codi']
 
                 if linia['ct']:
                     #Agafar les dates del centrestransformadors
