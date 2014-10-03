@@ -40,3 +40,14 @@ def get_comptador(connection, polissa_id, year):
             ('data_alta', '<', '%s-01-01' % (year + 1))
         ], 0, 1, 'data_alta desc', {'active_test': False})
         return comp_id
+
+def get_id_expedient(connection, expedients_id):
+    id_expedient = False
+    if expedients_id:
+        search_params = [
+            ('id', 'in', expedients_id)]
+        id_expedients = connection.GiscedataExpedientsExpedient.search(
+            search_params, 0, 1, 'industria_data desc')
+        if id_expedients:
+            id_expedient = id_expedients[0]
+    return id_expedient
