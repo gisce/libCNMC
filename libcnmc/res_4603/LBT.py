@@ -5,6 +5,7 @@
 INVENTARI DE CNMC BT
 """
 from datetime import datetime
+from dateutil import parser
 import traceback
 import math
 import sys
@@ -72,17 +73,26 @@ class LBT(MultiprocessBased):
                                                              ['codi'])
                     if comunidad:
                         comunitat = comunidad[0]['codi']
-
-                if linia['ct']:
-                    #Agafar les dates del centrestransformadors
-                    cts = O.GiscedataCts.read(linia['ct'][0],
-                                              ['data_industria', 'data_pm'])
-                    # Calculem any posada en marxa
-                    data_pm = linia['data_pm'] or linia['data_alta'] or cts[
-                        'data_industria'] or cts['data_pm']
+                data_pm = ''
+                if linia['data_pm']:
+                    data_pm = linia['data_pm']
+                else:
+                    if linia['ct']:
+                        ct_dades = O.GiscedataCts.read(
+                            linia['ct'][0], ['expedients_ids', 'data_pm'])
+                        if ct_dades['expedients_ids']:
+                            search_params = [
+                                ('id', 'in', ct_dades['expedients_ids'])]
+                            exp_id = O.GiscedataExpedientsExpedient.search(
+                                search_params, 0, 1, 'industria_data desc')[0]
+                            data_exp = O.GiscedataExpedientsExpedient.read(
+                                exp_id, ['industria_data'])
+                            data_pm = data_exp['industria_data']
+                        elif ct_dades['data_pm']:
+                            data_pm = ct_dades['data_pm']
 
                 if data_pm:
-                    data_pm = datetime.strptime(str(data_pm), '%Y-%m-%d')
+                    data_pm = parser.parse(data_pm)
                     data_pm = data_pm.strftime('%d/%m/%Y')
 
                 # Coeficient per ajustar longituds de trams
