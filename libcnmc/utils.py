@@ -32,6 +32,7 @@ def get_ine(connection, ine):
     ine = ine[2:] + INES[ine]
     return state, ine
 
+
 def get_comptador(connection, polissa_id, year):
         O = connection
         comp_obj = O.GiscedataLecturesComptador
@@ -40,6 +41,7 @@ def get_comptador(connection, polissa_id, year):
             ('data_alta', '<', '%s-01-01' % (year + 1))
         ], 0, 1, 'data_alta desc', {'active_test': False})
         return comp_id
+
 
 def get_id_expedient(connection, expedients_id):
     id_expedient = False
