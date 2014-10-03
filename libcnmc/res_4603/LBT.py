@@ -11,6 +11,7 @@ import math
 import sys
 
 from libcnmc.core import MultiprocessBased
+from libcnmc.utils import get_id_expedient
 
 QUIET = False
 
@@ -81,15 +82,15 @@ class LBT(MultiprocessBased):
                     if linia['ct']:
                         ct_dades = O.GiscedataCts.read(
                             linia['ct'][0], ['expedients_ids', 'data_pm'])
-                        if ct_dades['expedients_ids']:
-                            search_params = [
-                                ('id', 'in', ct_dades['expedients_ids'])]
-                            exp_id = O.GiscedataExpedientsExpedient.search(
-                                search_params, 0, 1, 'industria_data desc')[0]
+                        id_expedient = get_id_expedient(
+                            self.connection, ct_dades['expedients_ids'])
+                        if id_expedient:
                             data_exp = O.GiscedataExpedientsExpedient.read(
-                                exp_id, ['industria_data'])
-                            data_pm = data_exp['industria_data']
-                        elif ct_dades['data_pm']:
+                                id_expedient, ['industria_data'])
+                            if data_exp['industria_data']:
+                                data_pm = data_exp['industria_data']
+
+                        if not data_pm and ct_dades['data_pm']:
                             data_pm = ct_dades['data_pm']
 
                 if data_pm:
