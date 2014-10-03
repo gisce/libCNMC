@@ -8,6 +8,7 @@ from datetime import datetime
 import traceback
 
 from libcnmc.core import MultiprocessBased
+from libcnmc.utils import get_id_expedient
 
 
 class CTS(MultiprocessBased):
@@ -39,13 +40,12 @@ class CTS(MultiprocessBased):
                 data_pm = ''
 
                 #Busco la data, primer mirer els expedients, sino la data_pm CT
-                if ct['expedients_ids']:
+                id_expedient = get_id_expedient(self.connection,
+                                                ct['expedients_ids'])
+                if id_expedient:
                     try:
-                        search_params = [('id', 'in', ct['expedients_ids'])]
-                        expedient_id = O.GiscedataExpedientsExpedient.search(
-                            search_params, 0, 1, 'industria_data desc')[0]
                         data_exp = O.GiscedataExpedientsExpedient.read(
-                            expedient_id, ['industria_data'])
+                            id_expedient, ['industria_data'])
                         data_exp_nova = datetime.strptime(
                             data_exp['industria_data'], '%Y-%m-%d')
                         data_pm = data_exp_nova.strftime('%d/%m/%Y')

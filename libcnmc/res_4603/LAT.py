@@ -9,6 +9,7 @@ import traceback
 import math
 
 from libcnmc.core import MultiprocessBased
+from libcnmc.utils import get_id_expedient
 
 
 class LAT(MultiprocessBased):
@@ -58,16 +59,12 @@ class LAT(MultiprocessBased):
                     else:
                         # Si no hi ha la data de posada en marxa
                         # miro als expedients
-                        if tram['expedients_ids']:
+                        id_expedient = get_id_expedient(
+                            self.connection, tram['expedients_ids'])
+                        if id_expedient:
                             try:
-                                #Busco en els expedients la data d'industria
-                                search_params = [(
-                                    'id', 'in', tram['expedients_ids']
-                                )]
-                                expedient_id = O.GiscedataExpedientsExpedient.search(
-                                    search_params, 0, 1, 'industria_data desc')[0]
                                 data_exp = O.GiscedataExpedientsExpedient.read(
-                                           expedient_id, ['industria_data'])
+                                           id_expedient, ['industria_data'])
                                 data_pm = data_exp['industria_data'] or ''
                             except:
                                 #Si la data té un format no compatible
