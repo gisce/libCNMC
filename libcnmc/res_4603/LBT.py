@@ -39,8 +39,7 @@ class LBT(MultiprocessBased):
                 count += 1
                 item = self.input_q.get()
                 self.progress_q.put(item)
-                data_pm = False
-
+                
                 linia = O.GiscedataBtElement.read(item, fields_to_read)
 
                 res = O.GiscegisEdge.search([('id_linktemplate', '=',
