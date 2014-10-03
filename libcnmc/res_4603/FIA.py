@@ -68,7 +68,7 @@ class FIA(MultiprocessBased):
                 #Busco la data, primer mirer els expedients, sino la data_pm CT
                 data_pm = ''
                 id_expedient = get_id_expedient(
-                    self.connection, cll['expedients_ids'])
+                    self.connection, cll['expedients'])
                 if id_expedient:
                     try:
                         data_exp = O.GiscedataExpedientsExpedient.read(
