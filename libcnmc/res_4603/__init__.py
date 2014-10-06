@@ -12,3 +12,4 @@ from CINIPOS import CINIPOS
 from create_celles import CreateCelles
 from update_cinis_trafo import UpdateCINISTrafo
 from update_trams_cinis import UpdateCINISTrams
+from update_cts_cinis import UpdateCINISCts
