@@ -47,7 +47,7 @@ def get_id_expedient(connection, expedients_id):
     id_expedient = False
     if expedients_id:
         search_params = [
-            ('id', 'in', expedients_id)]
+            ('id', 'in', expedients_id), ('industria_data', '!=', False)]
         id_expedients = connection.GiscedataExpedientsExpedient.search(
             search_params, 0, 1, 'industria_data desc')
         if id_expedients:
