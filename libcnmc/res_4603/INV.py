@@ -188,7 +188,7 @@ class INV():
                 'identificador': '%s' % identificador.strip(),
                 'cini': '%s' % cini.strip(),
                 'denominacion': '%s' % denominacion.strip(),
-                'codigo_tipo_posicion': '%s' % codigo_tipo_maquina,
+                'codigo_tipo_maquina': '%s' % codigo_tipo_maquina,
                 'codigo_zona': '%s' % codigo_zona,
                 'codigo_ccaa': '%s' % codigo_ccaa,
                 'participacion': '%s' % participacion,
