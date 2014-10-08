@@ -121,7 +121,7 @@ class CreateCelles(UpdateFile):
                         name = suport_name
                     vals[val[0]] = self.get_value(tipus, name, 'propietari')
                 else:
-                    vals[val[0]] = val[1]
+                    vals[val[0]] = int(val[1])
             elif val[0] == 'perc_financament':
                 if val[1] == 'auto':
                     if ct_name:
@@ -133,7 +133,7 @@ class CreateCelles(UpdateFile):
                     vals[val[0]] = self.get_value(
                         tipus, name, 'perc_financament')
                 else:
-                    vals[val[0]] = val[1]
+                    vals[val[0]] = float(val[1])
             else:
                 vals[val[0]] = val[1]
         return vals
