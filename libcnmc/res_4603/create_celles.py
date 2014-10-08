@@ -133,7 +133,7 @@ class CreateCelles(UpdateFile):
                     vals[val[0]] = self.get_value(
                         tipus, name, 'perc_financament')
                 else:
-                    vals[val[0]] = val[1]
+                    vals[val[0]] = float(val[1])
             else:
                 vals[val[0]] = val[1]
         return vals
