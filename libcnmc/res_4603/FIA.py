@@ -15,12 +15,15 @@ class FIA(MultiprocessBased):
     def __init__(self, **kwargs):
         super(FIA, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
+        self.ownership = kwargs.pop('ownership', False)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies FIA'
         self.report_name = 'CNMC INVENTARI FIA'
 
     def get_sequence(self):
         search_params = [('inventari', '=', 'fiabilitat')]
+        if self.ownership:
+            search_params += [('propietari', '=', True)]
         return self.connection.GiscedataCellesCella.search(search_params)
 
     def consumer(self):
