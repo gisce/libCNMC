@@ -17,12 +17,15 @@ class SUB(MultiprocessBased):
     def __init__(self, **kwargs):
         super(SUB, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
+        self.ownership = kwargs.pop('ownership', False)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Subestacions'
         self.report_name = 'CNMC INVENTARI SUB'
 
     def get_sequence(self):
         search_params = []
+        if self.ownership:
+            search_params += [('propietari', '=', True)]
         return self.connection.GiscedataCtsSubestacions.search(search_params)
 
     def consumer(self):
