@@ -86,10 +86,24 @@ class FIA(MultiprocessBased):
                             data_pm = data_pm_ct.strftime('%d/%m/%Y')
                         else:
                             if cllinst[0] == 'giscedata.cts':
-                                data_ct = O.GiscedataCts.read(int(cllinst[1]),
-                                                              ['data_pm'])
-                                if data_ct['data_pm']:
-                                    data_pm_ct = datetime.strptime(str(data_ct[
+                                ct = O.GiscedataCts.read(int(cllinst[1]),
+                                                         ['data_pm',
+                                                          'expedients_ids'])
+                                id_expedient_ct = get_id_expedient(
+                                    self.connection, ct['expedients_ids'])
+                                if id_expedient_ct:
+                                    try:
+                                        data_exp = O.GiscedataExpedientsExpedient.read(
+                                            id_expedient, ['industria_data'])
+                                        data_exp_nova = datetime.strptime(
+                                            data_exp['industria_data'],
+                                            '%Y-%m-%d')
+                                        data_pm = data_exp_nova.strftime(
+                                            '%d/%m/%Y')
+                                    except Exception as e:
+                                        print "Error data d'expedient %s" % e
+                                elif ct['data_pm']:
+                                    data_pm_ct = datetime.strptime(str(ct[
                                         'data_pm']), '%Y-%m-%d')
                                     data_pm = data_pm_ct.strftime('%d/%m/%Y')
                 else:
@@ -100,10 +114,25 @@ class FIA(MultiprocessBased):
                         data_pm = data_pm_ct.strftime('%d/%m/%Y')
                     else:
                         if cllinst[0] == 'giscedata.cts':
-                            data_ct = O.GiscedataCts.read(int(cllinst[1]),
-                                                          ['data_pm'])
-                            if data_ct['data_pm']:
-                                data_pm_ct = datetime.strptime(str(data_ct[
+                            ct = O.GiscedataCts.read(int(cllinst[1]),
+                                                     ['data_pm',
+                                                      'expedients_ids'])
+                            id_expedient_ct = get_id_expedient(
+                                self.connection, ct['expedients_ids'])
+                            if id_expedient_ct:
+                                try:
+                                    data_exp = O.GiscedataExpedientsExpedient.read(
+                                        id_expedient_ct, ['industria_data'])
+                                    print "data_exp segon: %s" % data_exp
+                                    data_exp_nova = datetime.strptime(
+                                        data_exp['industria_data'],
+                                        '%Y-%m-%d')
+                                    data_pm = data_exp_nova.strftime(
+                                        '%d/%m/%Y')
+                                except Exception as e:
+                                    print "Error data d'expedient %s" % e
+                            elif ct['data_pm']:
+                                data_pm_ct = datetime.strptime(str(ct[
                                     'data_pm']), '%Y-%m-%d')
                                 data_pm = data_pm_ct.strftime('%d/%m/%Y')
 
