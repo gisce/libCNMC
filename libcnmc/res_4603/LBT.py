@@ -20,12 +20,15 @@ class LBT(MultiprocessBased):
     def __init__(self, **kwargs):
         super(LBT, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
+        self.ownership = kwargs.pop('ownership', False)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies BT'
         self.report_name = 'CNMC INVENTARI BT'
 
     def get_sequence(self):
         search_params = [('baixa', '!=', True), ('cable.tipus.codi', '!=', 'E')]
+        if self.ownership:
+            search_params += [('propietari', '=', True)]
         return self.connection.GiscedataBtElement.search(search_params)
 
     def consumer(self):
