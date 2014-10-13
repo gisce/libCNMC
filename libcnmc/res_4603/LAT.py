@@ -16,12 +16,15 @@ class LAT(MultiprocessBased):
     def __init__(self, **kwargs):
         super(LAT, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
+        self.ownership = kwargs.pop('propietat', False)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies AT'
         self.report_name = 'CNMC INVENTARI AT'
 
     def get_sequence(self):
         search_params = [('name', '!=', '1')]
+        if self.ownership:
+            search_params += [('propietari', '=', True)]
         return self.connection.GiscedataAtLinia.search(search_params)
 
     def consumer(self):
