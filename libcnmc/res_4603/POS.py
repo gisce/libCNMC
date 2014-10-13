@@ -16,12 +16,15 @@ class POS(MultiprocessBased):
     def __init__(self, **kwargs):
         super(POS, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
+        self.ownership = kwargs.pop('ownership', False)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies POS'
         self.report_name = 'CNMC INVENTARI POS'
 
     def get_sequence(self):
         search_params = [('interruptor', '=', '2')]
+        if self.ownership:
+            search_params += [('propietari', '=', True)]
         return self.connection.GiscedataCtsSubestacionsPosicio.search(
             search_params)
 
