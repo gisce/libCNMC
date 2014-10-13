@@ -379,6 +379,8 @@ def res_4603_des(**kwargs):
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
+@click.option('-n', '--ownership', default=False, is_flag=True,
+              help=u'Només recupera les dades de propietat')
 @click.option('-s', '--server', default='http://localhost',
               help=u'Adreça servidor ERP')
 @click.option('-p', '--port', default=8069, help='Port servidor ERP',
@@ -399,7 +401,8 @@ def res_4603_fia(**kwargs):
         connection=O,
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
-        year=kwargs['year']
+        year=kwargs['year'],
+        ownership=kwargs['ownership']
     )
     proc.calc()
 
