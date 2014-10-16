@@ -116,6 +116,15 @@ class LBT(MultiprocessBased):
                 else:
                     cable = {'seccio': 0, 'intensitat_admisible': 0}
 
+                #Capacitat
+                cap = round(
+                    (cable['intensitat_admisible'] * int(linia['voltatge'])
+                     * math.sqrt(3))/1000000, 3)
+                if cap < 1:
+                    capacitat = 1
+                else:
+                    capacitat = int(round(cap))
+
                 output = [
                     'B%s' % linia['name'],
                     linia['cini'] or '',
@@ -130,9 +139,9 @@ class LBT(MultiprocessBased):
                     1,
                     1,
                     round(linia['longitud_cad'] * coeficient / 1000.0, 3) or 0,
-                    cable['seccio'], round(
-                        (cable['intensitat_admisible'] * int(linia['voltatge'])
-                         * math.sqrt(3))/1000000, 3)
+                    cable['seccio'],
+                    capacitat
+
                 ]
 
                 self.output_q.put(output)
