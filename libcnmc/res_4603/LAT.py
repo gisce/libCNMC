@@ -103,6 +103,15 @@ class LAT(MultiprocessBased):
                     cable = O.GiscedataAtCables.read(tram['cable'][0], [
                         'intensitat_admisible', 'seccio'])
 
+                    #Capacitat
+                    cap = round(
+                        (cable['intensitat_admisible'] * tensio *
+                         math.sqrt(3))/1000000, 3)
+                    if cap < 1:
+                        capacitat = 1
+                    else:
+                        capacitat = int(round(cap))
+
                     output = [
                         'A%s' % tram['name'],
                         tram['cini'] or '',
@@ -117,10 +126,10 @@ class LAT(MultiprocessBased):
                         tram['circuits'] or 1,
                         1,
                         round(tram['longitud_cad'] * coeficient / 1000.0,
-                              3) or 0, cable['seccio'],
-                        round(
-                            (cable['intensitat_admisible'] * tensio *
-                             math.sqrt(3))/1000000, 3)]
+                              3) or 0,
+                        cable['seccio'],
+                        capacitat
+                    ]
 
                     self.output_q.put(output)
 
