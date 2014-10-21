@@ -11,7 +11,7 @@ import math
 import sys
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import get_id_expedient
+from libcnmc.utils import get_id_expedient, tallar_text
 
 QUIET = False
 
@@ -126,18 +126,8 @@ class LBT(MultiprocessBased):
                     capacitat = int(round(cap))
 
                 #Descripció
-                if len(edge['start_node'][1]) > 50:
-                    edge_start = edge['start_node'][1][:50]
-                    origen = edge_start[:-3] + '...'
-                else:
-                    origen = edge['start_node'][1]
-
-                if len(edge['end_node'][1]) > 50:
-                    edge_end = edge['end_node'][1][:50]
-                    final = edge_end[:-3] + '...'
-                else:
-                    final = edge['end_node'][1]
-
+                origen = tallar_text(edge['start_node'], 50)
+                final = tallar_text(edge['end_node'], 50)
 
                 output = [
                     'B%s' % linia['name'],
