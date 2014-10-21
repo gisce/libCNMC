@@ -53,3 +53,9 @@ def get_id_expedient(connection, expedients_id):
         if id_expedients:
             id_expedient = id_expedients[0]
     return id_expedient
+
+def tallar_text(text, long):
+    if len(text) > long:
+        return text[:long-3] + '...'
+    else:
+        return text
