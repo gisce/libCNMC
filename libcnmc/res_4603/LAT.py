@@ -112,11 +112,24 @@ class LAT(MultiprocessBased):
                     else:
                         capacitat = int(round(cap))
 
+                    #Descripció
+                    if len(tram['origen']) > 50:
+                        tram_or = tram['origen'][:50]
+                        origen = tram_or[:-3] + '...'
+                    else:
+                        origen = tram['origen']
+
+                    if len(tram['final']) > 50:
+                        tram_fi = tram['final'][:50]
+                        final = tram_fi[:-3] + '...'
+                    else:
+                        final = tram['final']
+
                     output = [
                         'A%s' % tram['name'],
                         tram['cini'] or '',
-                        tram['origen'] or '',
-                        tram['final'] or '',
+                        origen or '',
+                        final or '',
                         codi['codi'] or '',
                         comunitat,
                         comunitat,
