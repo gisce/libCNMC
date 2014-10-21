@@ -125,11 +125,25 @@ class LBT(MultiprocessBased):
                 else:
                     capacitat = int(round(cap))
 
+                #Descripció
+                if len(edge['start_node'][1]) > 50:
+                    edge_start = edge['start_node'][1][:50]
+                    origen = edge_start[:-3] + '...'
+                else:
+                    origen = edge['start_node'][1]
+
+                if len(edge['end_node'][1]) > 50:
+                    edge_end = edge['end_node'][1][:50]
+                    final = edge_end[:-3] + '...'
+                else:
+                    final = edge['end_node'][1]
+
+
                 output = [
                     'B%s' % linia['name'],
                     linia['cini'] or '',
-                    edge['start_node'][1] or '',
-                    edge['end_node'][1] or '',
+                    origen or '',
+                    final or '',
                     codi['codi'] or '',
                     comunitat,
                     comunitat,
