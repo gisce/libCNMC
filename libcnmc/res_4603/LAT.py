@@ -9,7 +9,7 @@ import traceback
 import math
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import get_id_expedient
+from libcnmc.utils import get_id_expedient, tallar_text
 
 
 class LAT(MultiprocessBased):
@@ -113,17 +113,8 @@ class LAT(MultiprocessBased):
                         capacitat = int(round(cap))
 
                     #Descripció
-                    if len(tram['origen']) > 50:
-                        tram_or = tram['origen'][:50]
-                        origen = tram_or[:-3] + '...'
-                    else:
-                        origen = tram['origen']
-
-                    if len(tram['final']) > 50:
-                        tram_fi = tram['final'][:50]
-                        final = tram_fi[:-3] + '...'
-                    else:
-                        final = tram['final']
+                    origen = tallar_text(tram['origen'], 50)
+                    final = tallar_text(tram['final'], 50)
 
                     output = [
                         'A%s' % tram['name'],
