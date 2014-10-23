@@ -73,7 +73,7 @@ class LBT(MultiprocessBased):
                 comunitat = ''
                 if linia['municipi']:
                     id_comunitat = O.ResComunitat_autonoma.get_ccaa_from_municipi(
-                        [], linia['municipi'][0])
+                        linia['municipi'][0])
                     id_comunitat = id_comunitat[0]
                     comunidad = O.ResComunitat_autonoma.read(id_comunitat,
                                                              ['codi'])
