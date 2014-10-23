@@ -144,7 +144,7 @@ class FIA(MultiprocessBased):
                                                       ['id_municipi'])
                     if id_municipi:
                         ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi(
-                            [], id_municipi['id_municipi'][0])[0]
+                            id_municipi['id_municipi'][0])[0]
 
                 elif cllinst[0] == 'giscedata.at.suport':
                     id_linia = O.GiscedataAtSuport.read(int(cllinst[1]),
@@ -153,7 +153,7 @@ class FIA(MultiprocessBased):
                         int(id_linia['linia'][0]), ['municipi'])
                     if id_municipi:
                         ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi(
-                            [], id_municipi['municipi'][0])[0]
+                            id_municipi['municipi'][0])[0]
 
                 output = [
                     '%s' % cll['name'],
