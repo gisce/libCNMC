@@ -66,7 +66,7 @@ class MAQ(MultiprocessBased):
                                               ['id_municipi',
                                                'perc_financament'])
                     id_comunitat = O.ResComunitat_autonoma.\
-                        get_ccaa_from_municipi([], cts['id_municipi'][0])
+                        get_ccaa_from_municipi(cts['id_municipi'][0])
                     comunidad = O.ResComunitat_autonoma.read(id_comunitat,
                                                              ['codi'])
                     if comunidad:
