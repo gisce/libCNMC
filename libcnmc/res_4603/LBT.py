@@ -27,8 +27,8 @@ class LBT(MultiprocessBased):
     def get_sequence(self):
 
         search_params = [('cable.tipus.codi', '!=', 'E'),
-                         ('data_alta', '<', '01-01-%s' % (self.year + 1)), '|',
-                         ('data_baixa', '>', '31-12-%s' % self.year),
+                         ('data_alta', '<', '%s-01-01' % (self.year + 1)), '|',
+                         ('data_baixa', '>', '%s-12-31' % self.year),
                          ('data_baixa', '=', False),
                          ]
         return self.connection.GiscedataBtElement.search(search_params)
