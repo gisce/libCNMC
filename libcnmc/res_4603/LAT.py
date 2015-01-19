@@ -93,7 +93,7 @@ class LAT(MultiprocessBased):
                     comunitat = ''
                     if linia['municipi']:
                         id_comunitat = O.ResComunitat_autonoma.get_ccaa_from_municipi(
-                            [], linia['municipi'][0])
+                            linia['municipi'][0])
                         comunidad = O.ResComunitat_autonoma.read(id_comunitat,
                                                                  ['codi'])
                         if comunidad:
