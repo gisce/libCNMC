@@ -83,8 +83,7 @@ class MAQ(MultiprocessBased):
                         address = O.ResPartnerAddress.read(
                             company_partner['partner_id'][0], ['id_municipi'])
                         if address['id_municipi']:
-                            id_comunitat = fun_ccaa(
-                                [], address['id_municipi'][0])
+                            id_comunitat = fun_ccaa(address['id_municipi'][0])
                             comunidad = O.ResComunitat_autonoma.read(
                                 id_comunitat, ['codi'])
                             comunitat = comunidad[0]['codi']
