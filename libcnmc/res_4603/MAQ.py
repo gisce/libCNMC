@@ -21,6 +21,10 @@ class MAQ(MultiprocessBased):
     def get_sequence(self):
         search_params = ['|', ('id_estat.cnmc_inventari', '=', True),
                          ('id_estat', '=', False)]
+        data_pm = '%s-01-01' % (self.year + 1)
+        search_params += [('propietari', '=', True),
+                          '|', ('data_pm', '=', False),
+                               ('data_pm', '<', data_pm)]
         return self.connection.GiscedataTransformadorTrafo.search(search_params)
 
     def consumer(self):
@@ -41,36 +45,19 @@ class MAQ(MultiprocessBased):
                 else:
                     codi = ''
 
-                if trafo['historic']:
-                    historic = O.GiscedataTransformadorHistoric.read(
-                        trafo['historic'][0], ['data_entrada'])
-                    data_hist = historic['data_entrada']
-                    for hist_id in trafo['historic']:
-                        historic = O.GiscedataTransformadorHistoric.read(
-                            hist_id, ['data_entrada'])
-                        if historic['data_entrada'] < data_hist:
-                            data_hist = historic['data_entrada']
-                    data_hist = data_hist[0:10]
-                else:
-                    data_hist = ''
-                data_pm = trafo['data_pm'] or data_hist
-                if data_pm:
-                    data_pm = datetime.strptime(str(data_pm), '%Y-%m-%d')
+                if trafo['data_pm']:
+                    data_pm = datetime.strptime(str(trafo['data_pm']), '%Y-%m-%d')
                     data_pm = data_pm.strftime('%d/%m/%Y')
 
                 comunitat = ''
-                c_ccaa = ''
                 financiacio = 0
                 if trafo['ct']:
                     cts = O.GiscedataCts.read(trafo['ct'][0],
                                               ['id_municipi',
                                                'perc_financament'])
-                    id_comunitat = O.ResComunitat_autonoma.\
-                        get_ccaa_from_municipi(cts['id_municipi'][0])
-                    comunidad = O.ResComunitat_autonoma.read(id_comunitat,
-                                                             ['codi'])
-                    if comunidad:
-                        comunitat = comunidad[0]['codi']
+                    if cts['id_municipi']:
+                        id_municipi = cts['id_municipi'][0]
+
                     #Calculo la financiacio a partir del camp perc_financament
                     finan = cts['perc_financament']
                     financiacio = round(100 - int(finan))
@@ -78,15 +65,18 @@ class MAQ(MultiprocessBased):
                     #Si no hi ha ct agafem la comunitat del rescompany
                     company_partner = O.ResCompany.read(1, ['partner_id'])
                     #funció per trobar la ccaa desde el municipi
-                    fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
                     if company_partner:
                         address = O.ResPartnerAddress.read(
                             company_partner['partner_id'][0], ['id_municipi'])
                         if address['id_municipi']:
-                            id_comunitat = fun_ccaa(address['id_municipi'][0])
-                            comunidad = O.ResComunitat_autonoma.read(
-                                id_comunitat, ['codi'])
-                            comunitat = comunidad[0]['codi']
+                            id_municipi = address['id_municipi'][0]
+
+                if id_municipi:
+                    fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
+                    id_comunitat = fun_ccaa(id_municipi)
+                    comunidad = O.ResComunitat_autonoma.read(
+                        id_comunitat, ['codi'])
+                    comunitat = comunidad[0]['codi']
 
                 output = [
                     '%s' % trafo['name'],
