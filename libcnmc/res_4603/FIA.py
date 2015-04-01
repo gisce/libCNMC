@@ -21,6 +21,10 @@ class FIA(MultiprocessBased):
 
     def get_sequence(self):
         search_params = [('inventari', '=', 'fiabilitat')]
+        data_pm = '%s-01-01' % (self.year + 1)
+        search_params += [('propietari', '=', True),
+                          '|', ('data_pm', '=', False),
+                               ('data_pm', '<', data_pm)]
         return self.connection.GiscedataCellesCella.search(search_params)
 
     def consumer(self):
@@ -65,95 +69,32 @@ class FIA(MultiprocessBased):
                 #Instal·lació a la que pertany
                 cllinst = cll['installacio'].split(',')
 
-                #Busco la data, primer mirer els expedients, sino la data_pm CT
                 data_pm = ''
-                id_expedient = get_id_expedient(
-                    self.connection, cll['expedients'])
-                if id_expedient:
-                    try:
-                        data_exp = O.GiscedataExpedientsExpedient.read(
-                            id_expedient, ['industria_data'])
-                        data_exp_nova = datetime.strptime(
-                            data_exp['industria_data'], '%Y-%m-%d')
-                        data_pm = data_exp_nova.strftime('%d/%m/%Y')
-                    except Exception as e:
-                        print ' dins del except %s' % data_pm
-                        print "Data d'expedient erronia, " \
-                              "Cella id: %d, %s" % (item, e)
-                        if cll['data_pm']:
-                            data_pm_ct = datetime.strptime(str(cll['data_pm']),
-                                                           '%Y-%m-%d')
-                            data_pm = data_pm_ct.strftime('%d/%m/%Y')
-                        else:
-                            if cllinst[0] == 'giscedata.cts':
-                                ct = O.GiscedataCts.read(int(cllinst[1]),
-                                                         ['data_pm',
-                                                          'expedients_ids'])
-                                id_expedient_ct = get_id_expedient(
-                                    self.connection, ct['expedients_ids'])
-                                if id_expedient_ct:
-                                    try:
-                                        data_exp = O.GiscedataExpedientsExpedient.read(
-                                            id_expedient, ['industria_data'])
-                                        data_exp_nova = datetime.strptime(
-                                            data_exp['industria_data'],
-                                            '%Y-%m-%d')
-                                        data_pm = data_exp_nova.strftime(
-                                            '%d/%m/%Y')
-                                    except Exception as e:
-                                        print "Error data d'expedient %s" % e
-                                elif ct['data_pm']:
-                                    data_pm_ct = datetime.strptime(str(ct[
-                                        'data_pm']), '%Y-%m-%d')
-                                    data_pm = data_pm_ct.strftime('%d/%m/%Y')
-                else:
-                    if cll['data_pm']:
-                        print ' dins del else %s' % data_pm
-                        data_pm_ct = datetime.strptime(str(cll['data_pm']),
-                                                       '%Y-%m-%d')
-                        data_pm = data_pm_ct.strftime('%d/%m/%Y')
-                    else:
-                        if cllinst[0] == 'giscedata.cts':
-                            ct = O.GiscedataCts.read(int(cllinst[1]),
-                                                     ['data_pm',
-                                                      'expedients_ids'])
-                            id_expedient_ct = get_id_expedient(
-                                self.connection, ct['expedients_ids'])
-                            if id_expedient_ct:
-                                try:
-                                    data_exp = O.GiscedataExpedientsExpedient.read(
-                                        id_expedient_ct, ['industria_data'])
-                                    print "data_exp segon: %s" % data_exp
-                                    data_exp_nova = datetime.strptime(
-                                        data_exp['industria_data'],
-                                        '%Y-%m-%d')
-                                    data_pm = data_exp_nova.strftime(
-                                        '%d/%m/%Y')
-                                except Exception as e:
-                                    print "Error data d'expedient %s" % e
-                            elif ct['data_pm']:
-                                data_pm_ct = datetime.strptime(str(ct[
-                                    'data_pm']), '%Y-%m-%d')
-                                data_pm = data_pm_ct.strftime('%d/%m/%Y')
+                if cll['data_pm']:
+                    data_pm_ct = datetime.strptime(str(cll['data_pm']),
+                                                   '%Y-%m-%d')
+                    data_pm = data_pm_ct.strftime('%d/%m/%Y')
 
                 #Per trobar la comunitat autonoma
                 ccaa = ''
                 #Comprovo si la cella pertany a ct o lat per trobar la ccaa
                 if cllinst[0] == 'giscedata.cts':
-                    id_municipi = O.GiscedataCts.read(int(cllinst[1]),
-                                                      ['id_municipi'])
-                    if id_municipi:
-                        ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi(
-                            id_municipi['id_municipi'][0])[0]
+                    ct_vals = O.GiscedataCts.read(int(cllinst[1]),
+                                                  ['id_municipi'])
+                    if ct_vals['id_municipi']:
+                        id_municipi = ct_vals['id_municipi'][0]
 
                 elif cllinst[0] == 'giscedata.at.suport':
                     id_linia = O.GiscedataAtSuport.read(int(cllinst[1]),
                                                         ['linia'])
-                    id_municipi = O.GiscedataAtLinia.read(
+                    lat_vals = O.GiscedataAtLinia.read(
                         int(id_linia['linia'][0]), ['municipi'])
-                    if id_municipi:
-                        ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi(
-                            id_municipi['municipi'][0])[0]
+                    if lat_vals['municipi']:
+                        id_municipi = lat_vals['municipi'][0]
+
+                if id_municipi:
+                    ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi(
+                        id_municipi)[0]
 
                 output = [
                     '%s' % cll['name'],
