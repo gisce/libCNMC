@@ -21,13 +21,13 @@ class LAT(MultiprocessBased):
         self.report_name = 'CNMC INVENTARI AT'
 
     def get_sequence(self):
-        search_params = [('name', '!=', '1')]
+        search_params = [('name', '!=', '1'), ('propietari','=',True)]
         return self.connection.GiscedataAtLinia.search(search_params)
 
     def consumer(self):
         O = self.connection
         fields_to_read = ['baixa', 'data_pm', 'data_industria',
-                          'coeficient', 'cini',
+                          'coeficient', 'cini', 'propietari',
                           'tensio_max_disseny', 'name', 'origen',
                           'final', 'perc_financament', 'circuits',
                           'longitud_cad', 'cable', 'expedients_ids']
@@ -39,7 +39,8 @@ class LAT(MultiprocessBased):
                 linia = O.GiscedataAtLinia.read(
                     item, ['trams', 'tensio', 'municipi']
                 )
-                for tram in O.GiscedataAtTram.read(linia['trams'], fields_to_read):
+                for tram in O.GiscedataAtTram.read(linia['trams'],
+                                                   fields_to_read):
                     #Comprovar el tipus del cable
                     cable = O.GiscedataAtCables.read(tram['cable'][0],
                                                      ['tipus'])
@@ -49,30 +50,12 @@ class LAT(MultiprocessBased):
                     if tipus['codi'] == 'E':
                         continue
 
-                    #Si el tram es de baixa no l'afegim
-                    if tram['baixa']:
-                        continue
                     # Calculem any posada en marxa
+                    data_pm_limit = '%s-01-01' % (self.year + 1)
                     data_pm = ''
-                    if tram['data_pm']:
-                        data_pm = tram['data_pm']
-                    else:
-                        # Si no hi ha la data de posada en marxa
-                        # miro als expedients
-                        id_expedient = get_id_expedient(
-                            self.connection, tram['expedients_ids'])
-                        if id_expedient:
-                            try:
-                                data_exp = O.GiscedataExpedientsExpedient.read(
-                                           id_expedient, ['industria_data'])
-                                data_pm = data_exp['industria_data'] or ''
-                            except:
-                                #Si la data té un format no compatible
-                                #  amb '%Y-%m-%d'
-                                data_pm = ''
-
-                    if data_pm:
-                        data_pm = datetime.strptime(str(data_pm), '%Y-%m-%d')
+                    if tram['data_pm'] and tram['data_pm'] < data_pm_limit:
+                        data_pm = datetime.strptime(str(tram['data_pm']),
+                                                    '%Y-%m-%d')
                         data_pm = data_pm.strftime('%d/%m/%Y')
 
                     # Coeficient per ajustar longituds de trams
@@ -80,8 +63,8 @@ class LAT(MultiprocessBased):
 
                     tipus_inst_id = O.Giscedata_cnmcTipo_instalacion.search(
                         [('cini', '=', tram['cini'])])
-                    codigo = O.Giscedata_cnmcTipo_instalacion.read(tipus_inst_id,
-                                                                   ['codi'])
+                    codigo = O.Giscedata_cnmcTipo_instalacion.read(
+                        tipus_inst_id, ['codi'])
                     if codigo:
                         codi = codigo[0]
                     else:
