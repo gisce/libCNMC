@@ -26,11 +26,11 @@ class LBT(MultiprocessBased):
 
     def get_sequence(self):
 
-        search_params = [('cable.tipus.codi', '!=', 'E'),
-                         ('data_alta', '<', '%s-01-01' % (self.year + 1)), '|',
-                         ('data_baixa', '>', '%s-12-31' % self.year),
-                         ('data_baixa', '=', False),
-                         ]
+        search_params = [('cable.tipus.codi', '!=', 'E')]
+        data_pm = '%s-01-01' % (self.year + 1)
+        search_params += [('propietari', '=', True),
+                          '|', ('data_pm', '=', False),
+                               ('data_pm', '<', data_pm)]
         return self.connection.GiscedataBtElement.search(search_params)
 
     def consumer(self):
@@ -81,25 +81,9 @@ class LBT(MultiprocessBased):
                         comunitat = comunidad['codi']
                 data_pm = ''
                 if linia['data_pm']:
-                    data_pm = linia['data_pm']
-                else:
-                    if linia['ct']:
-                        ct_dades = O.GiscedataCts.read(
-                            linia['ct'][0], ['expedients_ids', 'data_pm'])
-                        id_expedient = get_id_expedient(
-                            self.connection, ct_dades['expedients_ids'])
-                        if id_expedient:
-                            data_exp = O.GiscedataExpedientsExpedient.read(
-                                id_expedient, ['industria_data'])
-                            if data_exp['industria_data']:
-                                data_pm = data_exp['industria_data']
-
-                        if not data_pm and ct_dades['data_pm']:
-                            data_pm = ct_dades['data_pm']
-
-                if data_pm:
-                    data_pm = parser.parse(data_pm)
-                    data_pm = data_pm.strftime('%d/%m/%Y')
+                    data_pm_linia = datetime.strptime(str(linia['data_pm']),
+                                                   '%Y-%m-%d')
+                    data_pm = data_pm_linia.strftime('%d/%m/%Y')
 
                 # Coeficient per ajustar longituds de trams
                 coeficient = linia['coeficient'] or 1.0
@@ -131,8 +115,8 @@ class LBT(MultiprocessBased):
                     capacitat = int(round(cap))
 
                 #Descripció
-                origen = tallar_text(edge['start_node'], 50)
-                final = tallar_text(edge['end_node'], 50)
+                origen = tallar_text(edge['start_node'][1], 50)
+                final = tallar_text(edge['end_node'][1], 50)
 
                 output = [
                     'B%s' % linia['name'],
