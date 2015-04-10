@@ -31,6 +31,19 @@ class LAT(MultiprocessBased):
                           'tensio_max_disseny', 'name', 'origen',
                           'final', 'perc_financament', 'circuits',
                           'longitud_cad', 'cable', 'expedients_ids']
+        data_pm_limit = '%s-01-01' % (self.year + 1)
+        data_baixa = '%s-12-31' % self.year
+        static_search_params = [('propietari', '=', True),
+                                '|', ('data_pm', '=', False),
+                                     ('data_pm', '<', data_pm_limit),
+                                '|', ('data_baixa', '>', data_baixa),
+                                     ('data_baixa', '=', False),
+                                ]
+        # Revisem que si està de baixa ha de tenir la data informada.
+        static_search_params += ['|',
+                                 '&', ('active', '=', False),
+                                      ('data_baixa', '!=', False),
+                                 ('active', '=', True)]
         while True:
             try:
                 item = self.input_q.get()
@@ -39,8 +52,11 @@ class LAT(MultiprocessBased):
                 linia = O.GiscedataAtLinia.read(
                     item, ['trams', 'tensio', 'municipi']
                 )
-                for tram in O.GiscedataAtTram.read(linia['trams'],
-                                                   fields_to_read):
+                search_params = [('id', 'in', linia['trams'])]
+                search_params += static_search_params
+                ids = O.GiscedataAtTram.search(
+                    search_params, 0, 0, False, {'active_test': False})
+                for tram in O.GiscedataAtTram.read(ids, fields_to_read):
                     #Comprovar el tipus del cable
                     cable = O.GiscedataAtCables.read(tram['cable'][0],
                                                      ['tipus'])
@@ -51,7 +67,6 @@ class LAT(MultiprocessBased):
                         continue
 
                     # Calculem any posada en marxa
-                    data_pm_limit = '%s-01-01' % (self.year + 1)
                     data_pm = ''
                     if tram['data_pm'] and tram['data_pm'] < data_pm_limit:
                         data_pm = datetime.strptime(str(tram['data_pm']),
