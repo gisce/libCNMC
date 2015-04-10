@@ -19,7 +19,7 @@ class DES(MultiprocessBased):
         self.report_name = 'CNMC INVENTARI DES'
 
     def get_sequence(self):
-        search_params = []
+        search_params = [('any_ps', '<=', self.year)]
         return self.connection.GiscedataDespatx.search(search_params)
 
     def consumer(self):
