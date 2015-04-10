@@ -22,10 +22,20 @@ class FIA(MultiprocessBased):
     def get_sequence(self):
         search_params = [('inventari', '=', 'fiabilitat')]
         data_pm = '%s-01-01' % (self.year + 1)
+        data_baixa = '%s-12-31' % self.year
         search_params += [('propietari', '=', True),
                           '|', ('data_pm', '=', False),
-                               ('data_pm', '<', data_pm)]
-        return self.connection.GiscedataCellesCella.search(search_params)
+                               ('data_pm', '<', data_pm),
+                          '|', ('data_baixa', '>', data_baixa),
+                               ('data_baixa', '=', False)
+                          ]
+        # Revisem que si està de baixa ha de tenir la data informada.
+        search_params += ['|',
+                          '&', ('active', '=', False),
+                               ('data_baixa', '!=', False),
+                          ('active', '=', True)]
+        return self.connection.GiscedataCellesCella.search(
+            search_params, 0, 0, False, {'active_test': False})
 
     def consumer(self):
         O = self.connection
