@@ -61,6 +61,7 @@ class MAQ(MultiprocessBased):
 
                 comunitat = ''
                 financiacio = 0
+                id_municipi = ''
                 if trafo['ct']:
                     cts = O.GiscedataCts.read(trafo['ct'][0],
                                               ['id_municipi',
