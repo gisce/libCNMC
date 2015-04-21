@@ -50,11 +50,10 @@ class MAQ(MultiprocessBased):
                 trafo = O.GiscedataTransformadorTrafo.read(
                     item, fields_to_read)
 
+                codi = ''
                 if trafo['codi_instalacio']:
                     codi = trafo['codi_instalacio']
-                else:
-                    codi = ''
-
+                data_pm = ''
                 if trafo['data_pm']:
                     data_pm = datetime.strptime(str(trafo['data_pm']), '%Y-%m-%d')
                     data_pm = data_pm.strftime('%d/%m/%Y')
