@@ -41,7 +41,7 @@ class MAQ(MultiprocessBased):
         O = self.connection
         fields_to_read = ['cini', 'historic', 'data_pm', 'ct', 'name',
                           'potencia_nominal', 'codi_instalacio',
-                          'numero_fabricacio']
+                          'numero_fabricacio', 'perc_financament']
         while True:
             try:
                 item = self.input_q.get()
@@ -55,22 +55,19 @@ class MAQ(MultiprocessBased):
                     codi = trafo['codi_instalacio']
                 data_pm = ''
                 if trafo['data_pm']:
-                    data_pm = datetime.strptime(str(trafo['data_pm']), '%Y-%m-%d')
+                    data_pm = datetime.strptime(
+                        str(trafo['data_pm']), '%Y-%m-%d')
                     data_pm = data_pm.strftime('%d/%m/%Y')
 
                 comunitat = ''
                 financiacio = 0
+                if trafo['perc_financament']:
+                    financiacio = round(100 - int(trafo['perc_financament']))
                 id_municipi = ''
                 if trafo['ct']:
-                    cts = O.GiscedataCts.read(trafo['ct'][0],
-                                              ['id_municipi',
-                                               'perc_financament'])
+                    cts = O.GiscedataCts.read(trafo['ct'][0], ['id_municipi'])
                     if cts['id_municipi']:
                         id_municipi = cts['id_municipi'][0]
-
-                    #Calculo la financiacio a partir del camp perc_financament
-                    finan = cts['perc_financament']
-                    financiacio = round(100 - int(finan))
                 else:
                     #Si no hi ha ct agafem la comunitat del rescompany
                     company_partner = O.ResCompany.read(1, ['partner_id'])
