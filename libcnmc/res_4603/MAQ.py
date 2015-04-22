@@ -51,7 +51,7 @@ class MAQ(MultiprocessBased):
                     item, fields_to_read)
 
                 codi = ''
-                if trafo['codi_instalacio']:
+                if 'codi_instalacio' in trafo:
                     codi = trafo['codi_instalacio']
                 data_pm = ''
                 if trafo['data_pm']:
@@ -90,7 +90,7 @@ class MAQ(MultiprocessBased):
                     '%s' % trafo['name'],
                     trafo['cini'] or '',
                     trafo['numero_fabricacio'] or '',
-                    codi or '',
+                    codi,
                     '',
                     comunitat or '',
                     financiacio,
