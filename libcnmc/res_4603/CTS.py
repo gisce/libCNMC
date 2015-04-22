@@ -8,7 +8,7 @@ from datetime import datetime
 import traceback
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import get_id_expedient
+from libcnmc.utils import get_id_expedient, get_id_municipi_from_company
 
 
 class CTS(MultiprocessBased):
@@ -63,13 +63,7 @@ class CTS(MultiprocessBased):
                 if ct['id_municipi']:
                     id_municipi = ct['id_municipi'][0]
                 else:
-                    #Si no hi ha ct agafem la comunitat del rescompany
-                    company_partner = O.ResCompany.read(1, ['partner_id'])
-                    if company_partner:
-                        address = O.ResPartnerAddress.read(
-                            company_partner['partner_id'][0], ['id_municipi'])
-                        if address['id_municipi']:
-                            id_municipi = address['id_municipi'][0]
+                    id_municipi = get_id_municipi_from_company(O)
 
                 if id_municipi:
                     id_comunitat = fun_ccaa(id_municipi)
