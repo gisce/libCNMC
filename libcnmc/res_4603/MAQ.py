@@ -62,7 +62,8 @@ class MAQ(MultiprocessBased):
                 comunitat = ''
                 financiacio = 0
                 if 'perc_financament' in trafo:
-                    financiacio = round(100 - int(trafo['perc_financament']))
+                    financiacio = round(
+                        100.0 - float(trafo['perc_financament']), 2)
                 id_municipi = ''
                 if trafo['ct']:
                     cts = O.GiscedataCts.read(trafo['ct'][0], ['id_municipi'])
