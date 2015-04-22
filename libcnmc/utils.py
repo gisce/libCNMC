@@ -55,6 +55,22 @@ def get_id_expedient(connection, expedients_id):
             id_expedient = id_expedients[0]
     return id_expedient
 
+def get_id_municipi_from_company(connection):
+    O = connection
+    id_municipi = False
+    #Si no hi ha ct agafem la comunitat del rescompany
+    company_partner = O.ResCompany.read(1, ['partner_id'])
+    #funció per trobar la ccaa desde el municipi
+    if company_partner:
+        partner_address = O.ResPartner.read(
+            company_partner['partner_id'][0], ['address'])
+        address = O.ResPartnerAddress.read(
+            partner_address['address'][0], ['id_municipi'])
+        if address['id_municipi']:
+            id_municipi = address['id_municipi'][0]
+    return id_municipi
+
+
 def tallar_text(text, long):
     if len(text) > long:
         return text[:long-3] + '...'
