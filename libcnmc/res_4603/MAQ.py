@@ -61,7 +61,7 @@ class MAQ(MultiprocessBased):
 
                 comunitat = ''
                 financiacio = 0
-                if trafo['perc_financament']:
+                if 'perc_financament' in trafo:
                     financiacio = round(100 - int(trafo['perc_financament']))
                 id_municipi = ''
                 if trafo['ct']:
