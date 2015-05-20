@@ -6,9 +6,6 @@ from ooop import OOOP
 from libcnmc.utils import N_PROC
 from libcnmc.core import UpdateCNMCStats, UpdateCINISComptador
 from libcnmc.cir_4_2014 import F1, F1bis, F11
-from libcnmc.res_4603 import LAT, LBT, SUB, POS, MAQ, DES, FIA, CTS, INV
-from libcnmc.res_4603 import CINIMAQ, CINIPOS, CreateCelles, UpdateCINISTrafo
-from libcnmc.res_4603 import UpdateCINISTrams, UpdateCINISCts
 
 
 @click.group()
@@ -230,6 +227,21 @@ def res_4603_lbt(**kwargs):
 
 
 #CSV SUB
+def res_sub(SUB, **kwargs):
+    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+             pwd=kwargs['password'], port=kwargs['port'],
+             uri=kwargs['server'])
+    proc = SUB(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year']
+    )
+    proc.calc()
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -249,19 +261,30 @@ def res_4603_lbt(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_sub(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
-    proc = SUB(
-        quiet=kwargs['quiet'],
-        interactive=kwargs['interactive'],
-        output=kwargs['output'],
-        connection=O,
-        num_proc=kwargs['num_proc'],
-        codi_r1=kwargs['codi_r1'],
-        year=kwargs['year']
-    )
-    proc.calc()
+    from libcnmc.res_4603 import SUB
+    res_sub(SUB, **kwargs)
+
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def res_4771_sub(**kwargs):
+    from libcnmc.res_4771 import SUB
+    res_sub(SUB, **kwargs)
 
 
 #CSV POS
@@ -335,6 +358,21 @@ def res_4603_maq(**kwargs):
 
 
 #CSV DES
+def res_des(DES, **kwargs):
+    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+             pwd=kwargs['password'], port=kwargs['port'],
+             uri=kwargs['server'])
+    proc = DES(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year']
+    )
+    proc.calc()
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -354,19 +392,30 @@ def res_4603_maq(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_des(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
-    proc = DES(
-        quiet=kwargs['quiet'],
-        interactive=kwargs['interactive'],
-        output=kwargs['output'],
-        connection=O,
-        num_proc=kwargs['num_proc'],
-        codi_r1=kwargs['codi_r1'],
-        year=kwargs['year']
-    )
-    proc.calc()
+    from libcnmc.res_4603 import DES
+    res_des(DES, **kwargs)
+
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def res_4771_des(**kwargs):
+    from libcnmc.res_4771 import DES
+    res_des(DES, **kwargs)
 
 
 #CSV FIA
