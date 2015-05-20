@@ -8,7 +8,7 @@ from datetime import datetime
 import traceback
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import get_id_expedient, get_id_municipi_from_company
+from libcnmc.utils import format_f, get_id_municipi_from_company
 
 
 class CTS(MultiprocessBased):
@@ -39,9 +39,8 @@ class CTS(MultiprocessBased):
 
     def consumer(self):
         O = self.connection
-        fields_to_read = ['name', 'cini', 'data_pm', 'expedients_ids',
-                          'codi_instalacio', 'id_municipi', 'perc_financament',
-                          'descripcio']
+        fields_to_read = ['name', 'cini', 'data_pm', 'cnmc_tipo_instalacion',
+                          'id_municipi', 'perc_financament', 'descripcio']
         while True:
             try:
                 item = self.input_q.get()
@@ -76,11 +75,10 @@ class CTS(MultiprocessBased):
                     '%s' % ct['name'],
                     ct['cini'] or '',
                     ct['descripcio'] or '',
-                    str(ct['codi_instalacio']) or '',
+                    str(ct['cnmc_tipo_instalacion']) or '',
                     comunitat_codi or '',
-                    round(100 - int(ct['perc_financament'])),
+                    format_f(round(100 - int(ct['perc_financament']))),
                     data_pm,
-                    ''
                 ]
 
                 self.output_q.put(output)
