@@ -5,13 +5,12 @@
 INVENTARI DE CNMC BT
 """
 from datetime import datetime
-from dateutil import parser
 import traceback
 import math
 import sys
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import get_id_expedient, tallar_text
+from libcnmc.utils import format_f, tallar_text
 
 QUIET = False
 
@@ -48,7 +47,8 @@ class LBT(MultiprocessBased):
         count = 0
         fields_to_read = ['name', 'municipi', 'data_pm', 'ct',
                           'coeficient', 'cini', 'perc_financament',
-                          'longitud_cad', 'cable', 'voltatge', 'data_alta']
+                          'longitud_cad', 'cable', 'voltatge', 'data_alta',
+                          'propietari', 'cnmc_tipo_instalacion']
         while True:
             try:
                 count += 1
@@ -82,32 +82,30 @@ class LBT(MultiprocessBased):
                                                         'end_node'])
                 comunitat = ''
                 if linia['municipi']:
-                    id_comunitat = O.ResComunitat_autonoma.get_ccaa_from_municipi(
+                    ccaa_obj = O.ResComunitat_autonoma
+                    id_comunitat = ccaa_obj.get_ccaa_from_municipi(
                         linia['municipi'][0])
                     id_comunitat = id_comunitat[0]
-                    comunidad = O.ResComunitat_autonoma.read(id_comunitat,
-                                                             ['codi'])
+                    comunidad = ccaa_obj.read(id_comunitat, ['codi'])
                     if comunidad:
                         comunitat = comunidad['codi']
                 data_pm = ''
                 if linia['data_pm']:
                     data_pm_linia = datetime.strptime(str(linia['data_pm']),
-                                                   '%Y-%m-%d')
+                                                      '%Y-%m-%d')
                     data_pm = data_pm_linia.strftime('%d/%m/%Y')
 
                 # Coeficient per ajustar longituds de trams
                 coeficient = linia['coeficient'] or 1.0
 
-                # Afagem el tipus de instalacio
-                tipus_inst_id = O.Giscedata_cnmcTipo_instalacion.search(
-                    [('cini', '=', linia['cini'])])
-                codigo = O.Giscedata_cnmcTipo_instalacion.read(
-                    tipus_inst_id, ['codi'])
-                if codigo:
-                    codi = codigo[0]
-                else:
-                    codi = {'codi': ''}
+                try:
+                    tensio = (int(linia['voltatge']) / 1000.0)
+                except:
+                    tensio = 0.0
 
+                propietari = linia['propietari'] and '1' or '0'
+
+                codi = linia['cnmc_tipo_instalacion']
                 # Agafem el cable de la linia
                 if linia['cable']:
                     cable = O.GiscedataBtCables.read(linia['cable'][0], [
@@ -115,10 +113,11 @@ class LBT(MultiprocessBased):
                 else:
                     cable = {'seccio': 0, 'intensitat_admisible': 0}
 
+                intensitat = cable['intensitat_admisible']
                 #Capacitat
                 cap = round(
                     (cable['intensitat_admisible'] * int(linia['voltatge'])
-                     * math.sqrt(3))/1000000, 3)
+                     * math.sqrt(3)) / 1000000, 3)
                 if cap < 1:
                     capacitat = 1
                 else:
@@ -133,18 +132,20 @@ class LBT(MultiprocessBased):
                     linia['cini'] or '',
                     origen or '',
                     final or '',
-                    codi['codi'] or '',
+                    codi or '',
                     comunitat,
                     comunitat,
-                    round(100 - int(linia['perc_financament'])),
+                    format_f(round(100 - int(linia['perc_financament']))),
                     data_pm or '',
-                    '',
                     1,
                     1,
-                    round(linia['longitud_cad'] * coeficient / 1000.0, 3) or 0,
-                    cable['seccio'],
-                    capacitat
-
+                    format_f(tensio),
+                    format_f(round(linia['longitud_cad']
+                                   * coeficient / 1000.0, 3) or 0),
+                    format_f(intensitat),
+                    format_f(cable['seccio']),
+                    format_f(capacitat),
+                    propietari,
                 ]
 
                 self.output_q.put(output)
