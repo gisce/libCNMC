@@ -9,7 +9,7 @@ import traceback
 import math
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import get_id_expedient, tallar_text
+from libcnmc.utils import format_f, tallar_text
 
 
 class LAT(MultiprocessBased):
@@ -30,7 +30,7 @@ class LAT(MultiprocessBased):
                           'coeficient', 'cini', 'propietari',
                           'tensio_max_disseny', 'name', 'origen',
                           'final', 'perc_financament', 'circuits',
-                          'longitud_cad', 'cable', 'expedients_ids']
+                          'longitud_cad', 'cable', 'cnmc_tipo_instalacion']
         data_pm_limit = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
         static_search_params = [('propietari', '=', True),
@@ -50,8 +50,10 @@ class LAT(MultiprocessBased):
                 self.progress_q.put(item)
 
                 linia = O.GiscedataAtLinia.read(
-                    item, ['trams', 'tensio', 'municipi']
+                    item, ['trams', 'tensio', 'municipi', 'propietari']
                 )
+
+                propietari = linia['propietari'] and '1' or '0'
                 search_params = [('id', 'in', linia['trams'])]
                 search_params += static_search_params
                 ids = O.GiscedataAtTram.search(
@@ -76,17 +78,11 @@ class LAT(MultiprocessBased):
                     # Coeficient per ajustar longituds de trams
                     coeficient = tram['coeficient'] or 1.0
 
-                    tipus_inst_id = O.Giscedata_cnmcTipo_instalacion.search(
-                        [('cini', '=', tram['cini'])])
-                    codigo = O.Giscedata_cnmcTipo_instalacion.read(
-                        tipus_inst_id, ['codi'])
-                    if codigo:
-                        codi = codigo[0]
-                    else:
-                        codi = {'codi': ' '}
+                    codi = tram['cnmc_tipo_instalacion']
 
                     #Agafem la tensió
-                    tensio = tram['tensio_max_disseny'] or linia['tensio']
+                    tensio = (tram['tensio_max_disseny'] or linia['tensio']
+                              / 1000.0)
 
                     comunitat = ''
                     if linia['municipi']:
@@ -104,7 +100,7 @@ class LAT(MultiprocessBased):
                     #Capacitat
                     cap = round(
                         (cable['intensitat_admisible'] * tensio *
-                         math.sqrt(3))/1000000, 3)
+                         math.sqrt(3))/ 1000000.0, 3)
                     if cap < 1:
                         capacitat = 1
                     else:
@@ -119,18 +115,22 @@ class LAT(MultiprocessBased):
                         tram['cini'] or '',
                         origen or '',
                         final or '',
-                        codi['codi'] or '',
+                        codi or '',
                         comunitat,
                         comunitat,
-                        round(100 - int(tram['perc_financament'])),
+                        format_f(round(100 - int(tram['perc_financament']))),
                         data_pm,
-                        '',
                         tram['circuits'] or 1,
                         1,
-                        round(tram['longitud_cad'] * coeficient / 1000.0,
-                              3) or 0,
-                        cable['seccio'],
-                        capacitat
+                        format_f(tensio),
+                        format_f(
+                            round(tram['longitud_cad'] * coeficient / 1000.0,
+                                  3)
+                            or 0),
+                        format_f(cable['intensitat_admisible']),
+                        format_f(cable['seccio']),
+                        capacitat,
+                        propietari,
                     ]
 
                     self.output_q.put(output)
