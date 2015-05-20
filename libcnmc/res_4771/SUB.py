@@ -9,7 +9,7 @@ import traceback
 import sys
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import get_id_municipi_from_company
+from libcnmc.utils import get_id_municipi_from_company, format_f
 
 QUIET = False
 
@@ -89,11 +89,9 @@ class SUB(MultiprocessBased):
                     '%s' % sub['name'],
                     sub['cini'] or '',
                     sub['descripcio'] or '',
-                    '',
                     comunitat,
-                    round(100 - int(sub['perc_financament'])),
+                    format_f(round(100 - int(sub['perc_financament']))),
                     data_pm,
-                    '',
                     len(sub['posicions'])
                 ]
 
