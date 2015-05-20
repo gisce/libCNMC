@@ -39,8 +39,8 @@ class FIA(MultiprocessBased):
 
     def consumer(self):
         O = self.connection
-        fields_to_read = ['name', 'cini', 'data_baixa', 'tipus_element',
-                          'installacio', 'expedients', 'data_pm']
+        fields_to_read = ['name', 'cini', 'tipus_element',
+                          'cnmc_tipo_instalacion', 'installacio', 'data_pm']
         while True:
             try:
                 item = self.input_q.get()
@@ -54,27 +54,7 @@ class FIA(MultiprocessBased):
                     cllt = O.GiscedataCellesTipusElement.read(
                         cll['tipus_element'][0], ['name'])
 
-                if cll['cini']:
-                    #Busquem per la penúltima lletra
-                    pos_cini = cll['cini'][5]
-                    if pos_cini == '1':
-                        codi = 174
-                    elif pos_cini == '2':
-                        codi = 177
-                    elif pos_cini == '3':
-                        codi = 179
-                    elif pos_cini == '4':
-                        codi = 181
-                    elif pos_cini == '5':
-                        codi = 182
-                    elif pos_cini == '6':
-                        codi = 183
-                    elif pos_cini == '7':
-                        codi = 187
-                    else:
-                        codi = 0
-                else:
-                    codi = 0
+                codi = cll['cnmc_tipo_instalacion']
 
                 #Instal·lació a la que pertany
                 cllinst = cll['installacio'].split(',')
@@ -87,20 +67,24 @@ class FIA(MultiprocessBased):
 
                 #Per trobar la comunitat autonoma
                 ccaa = ''
+                element_act = ''
                 #Comprovo si la cella pertany a ct o lat per trobar la ccaa
                 if cllinst[0] == 'giscedata.cts':
                     ct_vals = O.GiscedataCts.read(int(cllinst[1]),
-                                                  ['id_municipi'])
+                                                  ['id_municipi', 'name'])
                     if ct_vals['id_municipi']:
                         id_municipi = ct_vals['id_municipi'][0]
+                    element_act = ct_vals['name']
 
                 elif cllinst[0] == 'giscedata.at.suport':
-                    id_linia = O.GiscedataAtSuport.read(int(cllinst[1]),
-                                                        ['linia'])
-                    lat_vals = O.GiscedataAtLinia.read(
-                        int(id_linia['linia'][0]), ['municipi'])
+                    linia_vals = O.GiscedataAtSuport.read(int(cllinst[1]),
+                                                          ['linia'])
+                    linia_id = int(linia_vals['linia'][0])
+                    linia_name = linia_vals['linia'][1]
+                    lat_vals = O.GiscedataAtLinia.read(linia_id, ['municipi'])
                     if lat_vals['municipi']:
                         id_municipi = lat_vals['municipi'][0]
+                    element_act = linia_name
 
                 if id_municipi:
                     ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi(
@@ -109,11 +93,10 @@ class FIA(MultiprocessBased):
                 output = [
                     '%s' % cll['name'],
                     cll['cini'] or '',
-                    cllt['name'] or '',
+                    element_act,
                     codi or '',
                     ccaa or '',
                     data_pm,
-                    cll['data_baixa'] or ''
                 ]
                 self.output_q.put(output)
             except:
