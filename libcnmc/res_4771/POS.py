@@ -9,7 +9,7 @@ import traceback
 import sys
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import get_id_municipi_from_company
+from libcnmc.utils import get_id_municipi_from_company, format_f
 
 QUIET = False
 
@@ -43,7 +43,7 @@ class POS(MultiprocessBased):
     def consumer(self):
         O = self.connection
         fields_to_read = ['name', 'cini', 'data_pm', 'subestacio_id',
-                          'codi_instalacio', 'perc_financament']
+                          'cnmc_tipo_instalacion', 'perc_financament', 'tensio']
         while True:
             try:
                 item = self.input_q.get()
@@ -68,9 +68,12 @@ class POS(MultiprocessBased):
                     data_pm = data_pm.strftime('%d/%m/%Y')
 
                 #Codi tipus de instalació
-                codi = sub['codi_instalacio']
+                codi = sub['cnmc_tipo_instalacion']
 
                 comunitat = ''
+
+                #tensio
+                tensio = (sub['tensio'][1] / 1000.0) or ''
 
                 cts = O.GiscedataCtsSubestacions.read(sub['subestacio_id'][0],
                                                       ['id_municipi',
@@ -95,9 +98,9 @@ class POS(MultiprocessBased):
                     cts['descripcio'] or '',
                     codi,
                     comunitat,
-                    round(100 - int(sub['perc_financament'])),
+                    format_f(tensio),
+                    format_f(round(100 - int(sub['perc_financament']))),
                     data_pm or '',
-                    ''
                 ]
 
                 self.output_q.put(output)
