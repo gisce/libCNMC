@@ -6,6 +6,9 @@ from ooop import OOOP
 from libcnmc.utils import N_PROC
 from libcnmc.core import UpdateCNMCStats, UpdateCINISComptador
 from libcnmc.cir_4_2014 import F1, F1bis, F11
+from libcnmc.res_4603 import INV
+from libcnmc.res_4603 import CINIMAQ, CINIPOS, CreateCelles, UpdateCINISTrafo
+from libcnmc.res_4603 import UpdateCINISTrams, UpdateCINISCts
 
 
 @click.group()
