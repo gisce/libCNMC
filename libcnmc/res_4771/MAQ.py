@@ -4,11 +4,13 @@
 """
 INVENTARI DE CNMC Maquines
 """
+import sys
 from datetime import datetime
 import traceback
+from operator import itemgetter
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import get_id_municipi_from_company
+from libcnmc.utils import get_id_municipi_from_company, format_f
 
 
 class MAQ(MultiprocessBased):
@@ -17,6 +19,19 @@ class MAQ(MultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies MAQ'
+
+        tension_fields_to_read = ['l_inferior', 'l_superior', 'tensio']
+        tension_vals = self.connection.GiscedataTensionsTensio.read(
+            self.connection.GiscedataTensionsTensio.search([]),
+            tension_fields_to_read)
+
+        self.tension_norm = [(t['l_inferior'], t['l_superior'], t['tensio'])
+                             for t in tension_vals]
+        t_norm_txt = ''
+        for t in sorted(self.tension_norm, key=itemgetter(2)):
+            t_norm_txt += '[{0:6d} <= {2:6d} < {1:6d}]\n'.format(*t)
+        sys.stderr.write('Tensions normalitzades: \n%s' % t_norm_txt)
+        sys.stderr.flush()
         self.report_name = 'CNMC INVENTARI MAQ'
 
     def get_sequence(self):
@@ -38,11 +53,28 @@ class MAQ(MultiprocessBased):
         return self.connection.GiscedataTransformadorTrafo.search(
             search_params, 0, 0, False, {'active_test': False})
 
+    def get_norm_tension(self, tension):
+        if not tension:
+            return tension
+
+        for t in self.tension_norm:
+            if t[0] <= tension < t[1]:
+                return t[2]
+
+        sys.stderr.write('WARN: Tensió inexistent: %s\n' % tension)
+        sys.stderr.flush()
+        return tension
+
     def consumer(self):
         O = self.connection
         fields_to_read = ['cini', 'historic', 'data_pm', 'ct', 'name',
-                          'potencia_nominal', 'codi_instalacio',
-                          'numero_fabricacio', 'perc_financament']
+                          'potencia_nominal', 'numero_fabricacio',
+                          'perc_financament', 'cnmc_tipo_instalacion',
+                          'conexions']
+
+        con_fields_to_read = ['conectada', 'tensio_primari', 'tensio_p2',
+                              'tensio_b1', 'tensio_b2', 'tensio_b3']
+
         while True:
             try:
                 item = self.input_q.get()
@@ -51,9 +83,8 @@ class MAQ(MultiprocessBased):
                 trafo = O.GiscedataTransformadorTrafo.read(
                     item, fields_to_read)
 
-                codi = ''
-                if 'codi_instalacio' in trafo:
-                    codi = trafo['codi_instalacio']
+                codi = trafo['cnmc_tipo_instalacion'] or ''
+
                 data_pm = ''
                 if trafo['data_pm']:
                     data_pm = datetime.strptime(
@@ -65,6 +96,9 @@ class MAQ(MultiprocessBased):
                 if 'perc_financament' in trafo:
                     financiacio = round(
                         100.0 - float(trafo['perc_financament']), 2)
+
+                capacitat = trafo['potencia_nominal'] / 1000.0,
+
                 id_municipi = ''
                 if trafo['ct']:
                     cts = O.GiscedataCts.read(trafo['ct'][0], ['id_municipi'])
@@ -80,17 +114,34 @@ class MAQ(MultiprocessBased):
                         id_comunitat, ['codi'])
                     comunitat = comunidad[0]['codi']
 
+                #Càlcul tensions a partir de les connexions
+                con_vals = O.GiscedataTransformadorConnexio.read(
+                    trafo['conexions'], con_fields_to_read)
+
+                tensio_primari = 0
+                tensio_secundari = 0
+                for con in con_vals:
+                    if not con['conectada']:
+                        continue
+                    t_prim = max([con['tensio_primari'] or 0,
+                                  con['tensio_p2'] or 0])
+                    t_sec = max([con['tensio_b1'] or 0,
+                                 con['tensio_b2'] or 0,
+                                 con['tensio_b3'] or 0])
+                    tensio_primari = self.get_norm_tension(t_prim) / 1000.0
+                    tensio_secundari = self.get_norm_tension(t_sec) / 1000.0
+
                 output = [
                     '%s' % trafo['name'],
                     trafo['cini'] or '',
                     trafo['numero_fabricacio'] or '',
                     codi,
-                    '',
                     comunitat or '',
-                    financiacio,
+                    format_f(tensio_primari),
+                    format_f(tensio_secundari),
+                    format_f(financiacio),
                     data_pm,
-                    '',
-                    trafo['potencia_nominal']
+                    format_f(capacitat),
                 ]
 
                 self.output_q.put(output)
