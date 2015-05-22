@@ -81,7 +81,7 @@ class LAT(MultiprocessBased):
                     codi = tram['cnmc_tipo_instalacion']
 
                     #Agafem la tensió
-                    tensio = (tram['tensio_max_disseny'] or linia['tensio']
+                    tensio = ((tram['tensio_max_disseny'] or linia['tensio'])
                               / 1000.0)
 
                     comunitat = ''
