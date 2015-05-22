@@ -79,7 +79,7 @@ class POS(MultiprocessBased):
 
                 cts = O.GiscedataCtsSubestacions.read(sub['subestacio_id'][0],
                                                       ['id_municipi',
-                                                       'descripcio'])
+                                                       'name'])
                 if cts['id_municipi']:
                     id_municipi = cts['id_municipi'][0]
                 else:
@@ -97,7 +97,7 @@ class POS(MultiprocessBased):
                 output = [
                     '%s' % sub['name'],
                     sub['cini'] or '',
-                    cts['descripcio'] or '',
+                    cts['name'] or '',
                     codi,
                     comunitat,
                     format_f(tensio),
