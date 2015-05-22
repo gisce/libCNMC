@@ -76,3 +76,7 @@ def tallar_text(text, long):
         return text[:long-3] + '...'
     else:
         return text
+
+def format_f(num):
+    '''formats float with comma decimal separator'''
+    return ('%.2f' % num).replace('.', ',')

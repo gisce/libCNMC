@@ -6,7 +6,7 @@ from ooop import OOOP
 from libcnmc.utils import N_PROC
 from libcnmc.core import UpdateCNMCStats, UpdateCINISComptador
 from libcnmc.cir_4_2014 import F1, F1bis, F11
-from libcnmc.res_4603 import LAT, LBT, SUB, POS, MAQ, DES, FIA, CTS, INV
+from libcnmc.res_4603 import INV
 from libcnmc.res_4603 import CINIMAQ, CINIPOS, CreateCelles, UpdateCINISTrafo
 from libcnmc.res_4603 import UpdateCINISTrams, UpdateCINISCts
 
@@ -17,17 +17,20 @@ def cnmc():
 
 
 @cnmc.command()
-@click.option('-q', '--quiet', default=False, help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True, help="Deshabilitar el mode interactiu")
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
 @click.option('-s', '--server', default='http://localhost',
               help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP', type=click.INT)
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
 @click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
 @click.option('-w', '--password', default='admin',
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-@click.option('-f',  '--file-input', type=click.Path(exists=True))
+@click.option('-f', '--file-input', type=click.Path(exists=True))
 def update_cnmc_stats(**kwargs):
     O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
@@ -41,12 +44,16 @@ def update_cnmc_stats(**kwargs):
     )
     proc.execute()
 
+
 @cnmc.command()
-@click.option('-q', '--quiet', default=False, help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True, help="Deshabilitar el mode interactiu")
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
 @click.option('-s', '--server', default='http://localhost',
               help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP', type=click.INT)
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
 @click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
 @click.option('-w', '--password', default='admin',
               help='Contrasenya usuari ERP')
@@ -67,17 +74,19 @@ def update_cinis_comptador(**kwargs):
     proc.execute()
 
 
-
 @cnmc.command()
-@click.option('-q', '--quiet', default=False, help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True, help="Deshabilitar el mode interactiu")
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
               help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP', type=click.INT)
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
 @click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
 @click.option('-w', '--password', default='admin',
               help='Contrasenya usuari ERP')
@@ -98,16 +107,20 @@ def cir_4_2014_f1(**kwargs):
     )
     proc.calc()
 
+
 @cnmc.command()
-@click.option('-q', '--quiet', default=False, help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True, help="Deshabilitar el mode interactiu")
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
               help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP', type=click.INT)
+@click.option('-p', '--port', default=8069,
+              help='Port servidor ERP', type=click.INT)
 @click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
 @click.option('-w', '--password', default='admin',
               help='Contrasenya usuari ERP')
@@ -130,15 +143,18 @@ def cir_4_2014_f1bis(**kwargs):
 
 
 @cnmc.command()
-@click.option('-q', '--quiet', default=False, help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True, help="Deshabilitar el mode interactiu")
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
               help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP', type=click.INT)
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
 @click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
 @click.option('-w', '--password', default='admin',
               help='Contrasenya usuari ERP')
@@ -161,6 +177,22 @@ def cir_4_2014_f11(**kwargs):
 
 
 #CSV LAT
+def res_lat(LAT, **kwargs):
+    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+             pwd=kwargs['password'], port=kwargs['port'],
+             uri=kwargs['server'])
+    proc = LAT(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year']
+    )
+    proc.calc()
+
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -180,10 +212,39 @@ def cir_4_2014_f11(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_lat(**kwargs):
+    from libcnmc.res_4603 import LAT
+    res_lat(LAT, **kwargs)
+
+
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def res_4771_lat(**kwargs):
+    from libcnmc.res_4771 import LAT
+    res_lat(LAT, **kwargs)
+
+
+#CSV LBT
+def res_lbt(LBT, **kwargs):
     O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
-    proc = LAT(
+    proc = LBT(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
         output=kwargs['output'],
@@ -194,7 +255,7 @@ def res_4603_lat(**kwargs):
     )
     proc.calc()
 
-#CSV LBT
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -214,10 +275,39 @@ def res_4603_lat(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_lbt(**kwargs):
+    from libcnmc.res_4603 import LBT
+    res_lbt(LBT, **kwargs)
+
+
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def res_4771_lbt(**kwargs):
+    from libcnmc.res_4771 import LBT
+    res_lbt(LBT, **kwargs)
+
+
+#CSV SUB
+def res_sub(SUB, **kwargs):
     O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
-    proc = LBT(
+    proc = SUB(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
         output=kwargs['output'],
@@ -229,7 +319,6 @@ def res_4603_lbt(**kwargs):
     proc.calc()
 
 
-#CSV SUB
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -249,10 +338,39 @@ def res_4603_lbt(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_sub(**kwargs):
+    from libcnmc.res_4603 import SUB
+    res_sub(SUB, **kwargs)
+
+
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def res_4771_sub(**kwargs):
+    from libcnmc.res_4771 import SUB
+    res_sub(SUB, **kwargs)
+
+
+#CSV POS
+def res_pos(POS, **kwargs):
     O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
-    proc = SUB(
+    proc = POS(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
         output=kwargs['output'],
@@ -264,7 +382,6 @@ def res_4603_sub(**kwargs):
     proc.calc()
 
 
-#CSV POS
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -284,10 +401,39 @@ def res_4603_sub(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_pos(**kwargs):
+    from libcnmc.res_4603 import POS
+    res_pos(POS, **kwargs)
+
+
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def res_4771_pos(**kwargs):
+    from libcnmc.res_4771 import POS
+    res_pos(POS, **kwargs)
+
+
+#CSV MAQ
+def res_maq(MAQ, **kwargs):
     O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
-    proc = POS(
+    proc = MAQ(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
         output=kwargs['output'],
@@ -299,7 +445,6 @@ def res_4603_pos(**kwargs):
     proc.calc()
 
 
-#CSV MAQ
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -319,10 +464,39 @@ def res_4603_pos(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_maq(**kwargs):
+    from libcnmc.res_4603 import MAQ
+    res_maq(MAQ, **kwargs)
+
+
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def res_4771_maq(**kwargs):
+    from libcnmc.res_4771 import MAQ
+    res_maq(MAQ, **kwargs)
+
+
+#CSV DES
+def res_des(DES, **kwargs):
     O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
-    proc = MAQ(
+    proc = DES(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
         output=kwargs['output'],
@@ -334,7 +508,6 @@ def res_4603_maq(**kwargs):
     proc.calc()
 
 
-#CSV DES
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -354,10 +527,39 @@ def res_4603_maq(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_des(**kwargs):
+    from libcnmc.res_4603 import DES
+    res_des(DES, **kwargs)
+
+
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def res_4771_des(**kwargs):
+    from libcnmc.res_4771 import DES
+    res_des(DES, **kwargs)
+
+
+#CSV FIA
+def res_fia(FIA, **kwargs):
     O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
-    proc = DES(
+    proc = FIA(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
         output=kwargs['output'],
@@ -369,7 +571,6 @@ def res_4603_des(**kwargs):
     proc.calc()
 
 
-#CSV FIA
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -389,10 +590,39 @@ def res_4603_des(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_fia(**kwargs):
+    from libcnmc.res_4603 import FIA
+    res_fia(FIA, **kwargs)
+
+
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def res_4771_fia(**kwargs):
+    from libcnmc.res_4771 import FIA
+    res_fia(FIA, **kwargs)
+
+
+#CSV CTS
+def res_cts(CTS, **kwargs):
     O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
-    proc = FIA(
+    proc = CTS(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
         output=kwargs['output'],
@@ -404,7 +634,6 @@ def res_4603_fia(**kwargs):
     proc.calc()
 
 
-#CSV CTS
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -424,19 +653,31 @@ def res_4603_fia(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_cts(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
-    proc = CTS(
-        quiet=kwargs['quiet'],
-        interactive=kwargs['interactive'],
-        output=kwargs['output'],
-        connection=O,
-        num_proc=kwargs['num_proc'],
-        codi_r1=kwargs['codi_r1'],
-        year=kwargs['year']
-    )
-    proc.calc()
+    from libcnmc.res_4603 import CTS
+    res_cts(CTS, **kwargs)
+
+
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def res_4771_cts(**kwargs):
+    from libcnmc.res_4771 import CTS
+    res_cts(CTS, **kwargs)
 
 
 #CSV INV
@@ -459,7 +700,6 @@ def res_4603_cts(**kwargs):
               type=click.Path(exists=True))
 @click.option("-t", "--transformacio", help="Fitxers CSV de transformacio",
               type=click.Path(exists=True))
-
 def res_4603_inv(**kwargs):
     proc = INV(
         output=kwargs['output'],
@@ -547,11 +787,14 @@ def res_4603_cinipos(**kwargs):
 
 
 @cnmc.command()
-@click.option('-q', '--quiet', default=False, help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True, help="Deshabilitar el mode interactiu")
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
 @click.option('-s', '--server', default='http://localhost',
               help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP', type=click.INT)
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
 @click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
 @click.option('-w', '--password', default='admin',
               help='Contrasenya usuari ERP')
@@ -570,12 +813,16 @@ def create_celles(**kwargs):
         file_input=kwargs['file_input'])
     proc.calc()
 
+
 @cnmc.command()
-@click.option('-q', '--quiet', default=False, help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True, help="Deshabilitar el mode interactiu")
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
 @click.option('-s', '--server', default='http://localhost',
               help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP', type=click.INT)
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
 @click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
 @click.option('-w', '--password', default='admin',
               help='Contrasenya usuari ERP')
@@ -594,12 +841,16 @@ def update_cinis_trafo(**kwargs):
         file_input=kwargs['file_input'])
     proc.calc()
 
+
 @cnmc.command()
-@click.option('-q', '--quiet', default=False, help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True, help="Deshabilitar el mode interactiu")
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
 @click.option('-s', '--server', default='http://localhost',
               help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP', type=click.INT)
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
 @click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
 @click.option('-w', '--password', default='admin',
               help='Contrasenya usuari ERP')
@@ -620,11 +871,14 @@ def update_cinis_trams(**kwargs):
 
 
 @cnmc.command()
-@click.option('-q', '--quiet', default=False, help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True, help="Deshabilitar el mode interactiu")
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
 @click.option('-s', '--server', default='http://localhost',
               help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP', type=click.INT)
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
 @click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
 @click.option('-w', '--password', default='admin',
               help='Contrasenya usuari ERP')
