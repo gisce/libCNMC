@@ -100,12 +100,16 @@ class MAQ(MultiprocessBased):
                 capacitat = trafo['potencia_nominal'] / 1000.0,
 
                 id_municipi = ''
+                sys.stderr.write('CT %s -> ' % trafo['ct'])
                 if trafo['ct']:
-                    cts = O.GiscedataCts.read(trafo['ct'][0], ['id_municipi'])
+                    cts = O.GiscedataCts.read(trafo['ct'][0],
+                                              ['id_municipi', 'name'])
                     if cts['id_municipi']:
                         id_municipi = cts['id_municipi'][0]
+                    denominacio = cts['name']
                 else:
                     id_municipi = get_id_municipi_from_company(O)
+                    denominacio = 'ALMACEN'
 
                 if id_municipi:
                     fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
@@ -134,7 +138,7 @@ class MAQ(MultiprocessBased):
                 output = [
                     '%s' % trafo['name'],
                     trafo['cini'] or '',
-                    trafo['numero_fabricacio'] or '',
+                    denominacio or '',
                     codi,
                     comunitat or '',
                     format_f(tensio_primari),
