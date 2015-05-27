@@ -115,13 +115,12 @@ class LBT(MultiprocessBased):
 
                 intensitat = cable['intensitat_admisible']
                 #Capacitat
-                cap = round(
+                capacitat = round(
                     (cable['intensitat_admisible'] * int(linia['voltatge'])
-                     * math.sqrt(3)) / 1000000, 3)
-                if cap < 1:
-                    capacitat = 1
-                else:
-                    capacitat = int(round(cap))
+                     * math.sqrt(3)) / 1000, 3)
+
+                if not capacitat:
+                    capacitat = 1.0
 
                 #Descripció
                 origen = tallar_text(edge['start_node'][1], 50)
