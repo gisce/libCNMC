@@ -75,7 +75,7 @@ class POS(MultiprocessBased):
                 #tensio
                 ten = O.GiscedataTensionsTensio.read(sub['tensio'][0],
                                                      ['tensio'])
-                tensio = (ten['tensio'] / 1000.0) or ''
+                tensio = (ten['tensio'] / 1000.0) or 0.0
 
                 cts = O.GiscedataCtsSubestacions.read(sub['subestacio_id'][0],
                                                       ['id_municipi',
