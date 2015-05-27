@@ -98,9 +98,9 @@ class LAT(MultiprocessBased):
                         'intensitat_admisible', 'seccio'])
 
                     #Capacitat
-                    cap = round(
-                        (cable['intensitat_admisible'] * tensio *
-                         math.sqrt(3))/ 1000000.0, 3)
+                    cap = (cable['intensitat_admisible'] * tensio *
+                           math.sqrt(3) / 1000.0)
+
                     if cap < 1:
                         capacitat = 1
                     else:
