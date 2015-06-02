@@ -54,7 +54,7 @@ class LBT(MultiprocessBased):
                 count += 1
                 item = self.input_q.get()
                 self.progress_q.put(item)
-                
+
                 linia = O.GiscedataBtElement.read(item, fields_to_read)
 
                 res = O.GiscegisEdge.search([('id_linktemplate', '=',
@@ -126,6 +126,9 @@ class LBT(MultiprocessBased):
                 origen = tallar_text(edge['start_node'][1], 50)
                 final = tallar_text(edge['end_node'][1], 50)
 
+                longitud = round(linia['longitud_cad'] * coeficient / 1000.0,
+                                 3) or 0.001
+
                 output = [
                     'B%s' % linia['name'],
                     linia['cini'] or '',
@@ -139,8 +142,7 @@ class LBT(MultiprocessBased):
                     1,
                     1,
                     format_f(tensio),
-                    format_f(round(linia['longitud_cad']
-                                   * coeficient / 1000.0, 3) or 0),
+                    format_f(longitud, 3),
                     format_f(intensitat),
                     format_f(cable['seccio']),
                     format_f(capacitat),
