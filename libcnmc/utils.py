@@ -55,6 +55,7 @@ def get_id_expedient(connection, expedients_id):
             id_expedient = id_expedients[0]
     return id_expedient
 
+
 def get_id_municipi_from_company(connection):
     O = connection
     id_municipi = False
@@ -77,6 +78,8 @@ def tallar_text(text, long):
     else:
         return text
 
-def format_f(num):
+
+def format_f(num, decimals=2):
     '''formats float with comma decimal separator'''
-    return ('%.2f' % num).replace('.', ',')
+    fstring = '%%.%df' % decimals
+    return (fstring % num).replace('.', ',')

@@ -59,12 +59,12 @@ class LAT(MultiprocessBased):
                 ids = O.GiscedataAtTram.search(
                     search_params, 0, 0, False, {'active_test': False})
                 for tram in O.GiscedataAtTram.read(ids, fields_to_read):
-                    #Comprovar el tipus del cable
+                    # Comprovar el tipus del cable
                     cable = O.GiscedataAtCables.read(tram['cable'][0],
                                                      ['tipus'])
                     tipus = O.GiscedataAtTipuscable.read(cable['tipus'][0],
                                                          ['codi'])
-                    #Si el tram tram es embarrat no l'afegim
+                    # Si el tram tram es embarrat no l'afegim
                     if tipus['codi'] == 'E':
                         continue
 
@@ -86,7 +86,8 @@ class LAT(MultiprocessBased):
 
                     comunitat = ''
                     if linia['municipi']:
-                        id_comunitat = O.ResComunitat_autonoma.get_ccaa_from_municipi(
+                        ccaa_obj = O.ResComunitat_autonoma
+                        id_comunitat = ccaa_obj.get_ccaa_from_municipi(
                             linia['municipi'][0])
                         comunidad = O.ResComunitat_autonoma.read(id_comunitat,
                                                                  ['codi'])
@@ -110,6 +111,9 @@ class LAT(MultiprocessBased):
                     origen = tallar_text(tram['origen'], 50)
                     final = tallar_text(tram['final'], 50)
 
+                    longitud = round(tram['longitud_cad'] * coeficient
+                                     / 1000.0, 3) or 0.001
+
                     output = [
                         'A%s' % tram['name'],
                         tram['cini'] or '',
@@ -123,10 +127,7 @@ class LAT(MultiprocessBased):
                         tram['circuits'] or 1,
                         1,
                         format_f(tensio),
-                        format_f(
-                            round(tram['longitud_cad'] * coeficient / 1000.0,
-                                  3)
-                            or 0),
+                        format_f(longitud, 3),
                         format_f(cable['intensitat_admisible']),
                         format_f(cable['seccio']),
                         capacitat,
