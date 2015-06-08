@@ -145,7 +145,7 @@ class MAQ(MultiprocessBased):
                     format_f(tensio_secundari),
                     format_f(financiacio),
                     data_pm,
-                    format_f(capacitat),
+                    format_f(capacitat, 3),
                 ]
 
                 self.output_q.put(output)
