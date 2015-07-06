@@ -73,7 +73,7 @@ class LAT(MultiprocessBased):
                     if tram['data_pm'] and tram['data_pm'] < data_pm_limit:
                         data_pm = datetime.strptime(str(tram['data_pm']),
                                                     '%Y-%m-%d')
-                        data_pm = data_pm.strftime('%d/%m/%Y')
+                        data_pm = data_pm.strftime('%Y')
 
                     # Coeficient per ajustar longituds de trams
                     coeficient = tram['coeficient'] or 1.0
@@ -131,7 +131,6 @@ class LAT(MultiprocessBased):
                         format_f(cable['intensitat_admisible']),
                         format_f(cable['seccio']),
                         capacitat,
-                        propietari,
                     ]
 
                     self.output_q.put(output)
