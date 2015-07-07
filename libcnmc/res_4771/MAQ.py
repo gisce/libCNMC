@@ -35,23 +35,40 @@ class MAQ(MultiprocessBased):
         self.report_name = 'CNMC INVENTARI MAQ'
 
     def get_sequence(self):
-        search_params = ['|', ('id_estat.cnmc_inventari', '=', True),
-                         ('id_estat', '=', False)]
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
-        search_params += [('propietari', '=', True),
-                          '|', ('data_pm', '=', False),
+        search_params = [('propietari', '=', True),
+                               '|', ('data_pm', '=', False),
                                ('data_pm', '<', data_pm),
-                          '|', ('data_baixa', '>', data_baixa),
+                               '|', ('data_baixa', '>', data_baixa),
                                ('data_baixa', '=', False)
-                          ]
+                               ]
         # Revisem que si està de baixa ha de tenir la data informada.
         search_params += ['|',
                           '&', ('active', '=', False),
-                               ('data_baixa', '!=', False),
+                          ('data_baixa', '!=', False),
                           ('active', '=', True)]
-        return self.connection.GiscedataTransformadorTrafo.search(
-            search_params, 0, 0, False, {'active_test': False})
+        # Transformadors funcionament
+        search_params_func = [('id_estat.cnmc_inventari', '=', True),
+                              ('id_estat.codi', '=', 1),
+                              ('ordre_dins_ct', '>', 2)]
+        # Transformadors no funcionament
+        search_params_no_func = [('id_estat.cnmc_inventari', '=', True),
+                                 ('id_estat.codi', '!=', 1)]
+        search_params_func += search_params
+        ids_func = self.connection.GiscedataTransformadorTrafo.search(
+            search_params_func, 0, 0, False, {'active_test': False})
+        search_params_no_func += search_params
+        ids_no_func = self.connection.GiscedataTransformadorTrafo.search(
+            search_params_no_func, 0, 0, False, {'active_test': False})
+        # Transformadors reductors
+        search_params_reductor = [('id_estat.cnmc_inventari', '=', True),
+                                  ('reductor', '=', True)]
+        search_params_reductor += search_params
+        ids_reductor = self.connection.GiscedataTransformadorTrafo.search(
+            search_params_reductor, 0, 0, False, {'active_test': False})
+
+        return list(set(ids_func + ids_no_func + ids_reductor))
 
     def get_norm_tension(self, tension):
         if not tension:
@@ -89,7 +106,7 @@ class MAQ(MultiprocessBased):
                 if trafo['data_pm']:
                     data_pm = datetime.strptime(
                         str(trafo['data_pm']), '%Y-%m-%d')
-                    data_pm = data_pm.strftime('%d/%m/%Y')
+                    data_pm = data_pm.strftime('%Y')
 
                 comunitat = ''
                 financiacio = 0
@@ -97,7 +114,8 @@ class MAQ(MultiprocessBased):
                     financiacio = round(
                         100.0 - float(trafo['perc_financament']), 2)
 
-                capacitat = trafo['potencia_nominal'] / 1000.0,
+                # Unitats en MVA
+                capacitat = trafo['potencia_nominal'] / 1000.0
 
                 id_municipi = ''
                 sys.stderr.write('CT %s -> ' % trafo['ct'])
