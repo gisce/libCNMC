@@ -51,7 +51,7 @@ class MAQ(MultiprocessBased):
         # Transformadors funcionament
         search_params_func = [('id_estat.cnmc_inventari', '=', True),
                               ('id_estat.codi', '=', 1),
-                              ('ordre_transformador_ct', '>', 2)]
+                              ('ordre_dins_ct', '>', 2)]
         # Transformadors no funcionament
         search_params_no_func = [('id_estat.cnmc_inventari', '=', True),
                                  ('id_estat.codi', '!=', 1)]
