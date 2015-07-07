@@ -65,7 +65,7 @@ class POS(MultiprocessBased):
                 data_pm = sub['data_pm']
                 if data_pm:
                     data_pm = datetime.strptime(str(data_pm), '%Y-%m-%d')
-                    data_pm = data_pm.strftime('%d/%m/%Y')
+                    data_pm = data_pm.strftime('%Y')
 
                 #Codi tipus de instalació
                 codi = sub['cnmc_tipo_instalacion']
