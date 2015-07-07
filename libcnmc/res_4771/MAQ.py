@@ -61,8 +61,14 @@ class MAQ(MultiprocessBased):
         search_params_no_func += search_params
         ids_no_func = self.connection.GiscedataTransformadorTrafo.search(
             search_params_no_func, 0, 0, False, {'active_test': False})
+        # Transformadors reductors
+        search_params_reductor = [('id_estat.cnmc_inventari', '=', True),
+                                  ('reductor', '=', True)]
+        search_params_reductor += search_params
+        ids_reductor = self.connection.GiscedataTransformadorTrafo.search(
+            search_params_reductor, 0, 0, False, {'active_test': False})
 
-        return list(set(ids_func + ids_no_func))
+        return list(set(ids_func + ids_no_func + ids_reductor))
 
     def get_norm_tension(self, tension):
         if not tension:
