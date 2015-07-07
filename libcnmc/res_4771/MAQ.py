@@ -108,7 +108,8 @@ class MAQ(MultiprocessBased):
                     financiacio = round(
                         100.0 - float(trafo['perc_financament']), 2)
 
-                capacitat = trafo['potencia_nominal'] / 1000.0,
+                # Unitats en kVA
+                capacitat = trafo['potencia_nominal']
 
                 id_municipi = ''
                 sys.stderr.write('CT %s -> ' % trafo['ct'])
