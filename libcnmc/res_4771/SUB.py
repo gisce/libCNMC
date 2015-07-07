@@ -67,7 +67,7 @@ class SUB(MultiprocessBased):
 
                 if data_pm:
                     data_pm = datetime.strptime(str(data_pm), '%Y-%m-%d')
-                    data_pm = data_pm.strftime('%d/%m/%Y')
+                    data_pm = data_pm.strftime('%Y')
 
                 comunitat = ''
                 id_municipi = None
