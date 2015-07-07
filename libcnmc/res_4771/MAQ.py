@@ -35,23 +35,34 @@ class MAQ(MultiprocessBased):
         self.report_name = 'CNMC INVENTARI MAQ'
 
     def get_sequence(self):
-        search_params = ['|', ('id_estat.cnmc_inventari', '=', True),
-                         ('id_estat', '=', False)]
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
-        search_params += [('propietari', '=', True),
-                          '|', ('data_pm', '=', False),
+        search_params = [('propietari', '=', True),
+                               '|', ('data_pm', '=', False),
                                ('data_pm', '<', data_pm),
-                          '|', ('data_baixa', '>', data_baixa),
+                               '|', ('data_baixa', '>', data_baixa),
                                ('data_baixa', '=', False)
-                          ]
+                               ]
         # Revisem que si està de baixa ha de tenir la data informada.
         search_params += ['|',
                           '&', ('active', '=', False),
-                               ('data_baixa', '!=', False),
+                          ('data_baixa', '!=', False),
                           ('active', '=', True)]
-        return self.connection.GiscedataTransformadorTrafo.search(
-            search_params, 0, 0, False, {'active_test': False})
+        # Transformadors funcionament
+        search_params_func = [('id_estat.cnmc_inventari', '=', True),
+                              ('id_estat.codi', '=', 1),
+                              ('ordre_transformador_ct', '>', 2)]
+        # Transformadors no funcionament
+        search_params_no_func = [('id_estat.cnmc_inventari', '=', True),
+                                 ('id_estat.codi', '!=', 1)]
+        search_params_func += search_params
+        ids_func = self.connection.GiscedataTransformadorTrafo.search(
+            search_params_func, 0, 0, False, {'active_test': False})
+        search_params_no_func += search_params
+        ids_no_func = self.connection.GiscedataTransformadorTrafo.search(
+            search_params_no_func, 0, 0, False, {'active_test': False})
+
+        return list(set(ids_func + ids_no_func))
 
     def get_norm_tension(self, tension):
         if not tension:
