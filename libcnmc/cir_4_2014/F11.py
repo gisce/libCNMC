@@ -36,40 +36,40 @@ class F11(MultiprocessBased):
         muni = O.ResMunicipi.read(municipi_id, ['ine', 'dc'])
         return get_ine(O, muni['ine'])
 
-
     def get_sortides_ct(self, ct_name):
         O = self.connection
         search = '%s-' % ct_name
-        sortides = O.GiscegisBlocsFusiblesbt.search([('codi', 'ilike', search)])
+        sortides = O.GiscegisBlocsFusiblesbt.search(
+            [('codi', 'ilike', search)]
+        )
         disponibles = len(sortides)
         utilitzades = 0
         for sortida in O.GiscegisBlocsFusiblesbt.read(sortides, ['node']):
             if sortida['node']:
                 node = sortida['node'][0]
-                edges = O.GiscegisEdge.search(['|',
-                    ('start_node', '=', node),
-                    ('end_node', '=', node)
-                ])
+                edges = O.GiscegisEdge.search(
+                    ['|', ('start_node', '=', node), ('end_node', '=', node)]
+                )
                 if len(edges) > 1:
                     utilitzades += 1
         return disponibles, utilitzades
 
     def get_tipus(self, subtipus_id):
-        O = self.connection
+        o = self.connection
         tipus = ''
-        subtipus = O.GiscedataCtsSubtipus.read(subtipus_id, ['categoria_cne'])
+        subtipus = o.GiscedataCtsSubtipus.read(subtipus_id, ['categoria_cne'])
         if subtipus['categoria_cne']:
             cne_id = subtipus['categoria_cne'][0]
-            cne = O.GiscedataCneCtTipus.read(cne_id, ['codi'])
+            cne = o.GiscedataCneCtTipus.read(cne_id, ['codi'])
             tipus = cne['codi']
         return tipus
 
     def get_saturacio(self, ct_id):
-        O = self.connection
+        o = self.connection
         saturacio = ''
-        if 'giscedata.transformadors.saturacio' in O.models:
-            sat_obj = O.GiscedataTransformadorsSaturacio
-            trafo_obj = O.GiscedataTransformadorTrafo
+        if 'giscedata.transformadors.saturacio' in o.models:
+            sat_obj = o.GiscedataTransformadorsSaturacio
+            trafo_obj = o.GiscedataTransformadorTrafo
             sat = sat_obj.search([
                 ('ct.id', '=', ct_id)
             ])
@@ -109,11 +109,15 @@ class F11(MultiprocessBased):
                 cups = O.GiscedataCupsPs.search([('et', '=', ct['name'])])
                 o_energia = sum(
                     x['cne_anual_activa']
-                        for x in O.GiscedataCupsPs.read(cups, ['cne_anual_activa'])
+                    for x in O.GiscedataCupsPs.read(
+                        cups, ['cne_anual_activa']
+                    )
                 )
                 o_pic_activa = self.get_saturacio(ct['id'])
                 o_pic_reactiva = ''
-                o_s_utilitades, o_s_disponibles = self.get_sortides_ct(ct['name'])
+                o_s_utilitades, o_s_disponibles = self.get_sortides_ct(
+                    ct['name']
+                )
                 o_financament = ct['perc_financament']
                 o_propietari = int(ct['propietari'])
                 o_num_max_maquines = ct['numero_maxim_maquines']

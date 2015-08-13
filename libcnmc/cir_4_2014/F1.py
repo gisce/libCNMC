@@ -45,22 +45,27 @@ class F1(MultiprocessBased):
 
     def get_tipus_connexio(self, id_escomesa):
         O = self.connection
-        bloc = O.GiscegisBlocsEscomeses.search([('escomesa', '=', id_escomesa)])
+        bloc = O.GiscegisBlocsEscomeses.search(
+            [('escomesa', '=', id_escomesa)]
+        )
         tipus = ''
         if bloc:
             bloc = O.GiscegisBlocsEscomeses.read(bloc[0], ['node'])
             if bloc['node']:
                 node = bloc['node'][0]
-                edge = O.GiscegisEdge.search(['|',
-                    ('start_node', '=', node),
-                    ('end_node', '=', node)
-                ])
+                edge = O.GiscegisEdge.search(
+                    ['|', ('start_node', '=', node), ('end_node', '=', node)]
+                )
                 if edge:
                     edge = O.GiscegisEdge.read(edge[0], ['id_linktemplate'])
                     if edge['id_linktemplate']:
-                        bt = O.GiscedataBtElement.search([('id', '=', edge['id_linktemplate'])])
+                        bt = O.GiscedataBtElement.search(
+                            [('id', '=', edge['id_linktemplate'])]
+                        )
                         if bt:
-                            bt = O.GiscedataBtElement.read(bt[0], ['tipus_linia'])
+                            bt = O.GiscedataBtElement.read(
+                                bt[0], ['tipus_linia']
+                            )
                             if bt['tipus_linia']:
                                 if bt['tipus_linia'][0] == 1:
                                     tipus = 'A'
@@ -101,7 +106,9 @@ class F1(MultiprocessBased):
                 if 'et' in cups:
                     o_zona = self.get_zona_qualitat(cups['et'])
                 if cups['id_municipi']:
-                    municipi = O.ResMunicipi.read(cups['id_municipi'][0], ['ine'])
+                    municipi = O.ResMunicipi.read(
+                        cups['id_municipi'][0], ['ine']
+                    )
                     ine = get_ine(self.connection, municipi['ine'])
                     o_codi_ine = ine[1]
                     o_codi_prov = ine[0]
@@ -113,15 +120,21 @@ class F1(MultiprocessBased):
                 o_tensio = ''
                 o_connexio = ''
                 if cups and cups['id_escomesa']:
-                    o_connexio = self.get_tipus_connexio(cups['id_escomesa'][0])
+                    o_connexio = self.get_tipus_connexio(
+                        cups['id_escomesa'][0]
+                    )
                     search_params = [('escomesa', '=', cups['id_escomesa'][0])]
-                    bloc_escomesa_id = O.GiscegisBlocsEscomeses.search(search_params)
+                    bloc_escomesa_id = O.GiscegisBlocsEscomeses.search(
+                        search_params
+                    )
                     if bloc_escomesa_id:
                         bloc_escomesa = O.GiscegisBlocsEscomeses.read(
-                                                bloc_escomesa_id[0], ['node', 'vertex'])
+                            bloc_escomesa_id[0], ['node', 'vertex']
+                        )
                         if bloc_escomesa['vertex']:
-                            vertex = O.GiscegisVertex.read(bloc_escomesa['vertex'][0],
-                                                           ['x', 'y'])
+                            vertex = O.GiscegisVertex.read(
+                                bloc_escomesa['vertex'][0], ['x', 'y']
+                            )
                             o_utmx = round(vertex['x'], 3)
                             o_utmy = round(vertex['y'], 3)
                         if bloc_escomesa['node']:
@@ -138,7 +151,6 @@ class F1(MultiprocessBased):
                                 )
                                 o_nom_node = edge['name']
 
-
                 search_params = [('cups', '=', cups['id'])] + search_glob
                 polissa_id = O.GiscedataPolissa.search(
                     search_params, 0, 1, 'data_alta desc', context_glob)
@@ -153,8 +165,9 @@ class F1(MultiprocessBased):
                         'potencia', 'cnae', 'tarifa', 'butlletins', 'tensio'
                     ]
 
-                    polissa = O.GiscedataPolissa.read(polissa_id[0], fields_to_read,
-                             context_glob)
+                    polissa = O.GiscedataPolissa.read(
+                        polissa_id[0], fields_to_read, context_glob
+                    )
                     if polissa['tensio']:
                         o_tensio = polissa['tensio'] / 1000.0
                     o_potencia = polissa['potencia']
@@ -162,15 +175,16 @@ class F1(MultiprocessBased):
                         o_cnae = polissa['cnae'][1]
                     # Mirem si té l'actualització dels butlletins
                     if polissa.get('butlletins', []):
-                        butlleti = O.GiscedataButlleti.read(polissa['butlletins'][-1],
-                                                            ['pot_max_admisible'])
+                        butlleti = O.GiscedataButlleti.read(
+                            polissa['butlletins'][-1], ['pot_max_admisible']
+                        )
                         o_pot_ads = butlleti['pot_max_admisible']
                     comptador_actiu = get_comptador(
                         self.connection, polissa['id'], self.year)
                     if comptador_actiu:
                         comptador_actiu = comptador_actiu[0]
                         comptador = O.GiscedataLecturesComptador.read(
-                                comptador_actiu, ['cini', 'tg']
+                            comptador_actiu, ['cini', 'tg']
                         )
                         if not comptador['cini']:
                             comptador['cini'] = ''
@@ -188,33 +202,32 @@ class F1(MultiprocessBased):
                     o_equip = 'CNA'
                     o_estat_contracte = 1
 
-
                 #energies consumides
                 o_anual_activa = cups['cne_anual_activa'] or 0.0
                 o_anual_reactiva = cups['cne_anual_reactiva'] or 0.0
                 o_any_incorporacio = self.year + 1
                 self.output_q.put([
-                   o_nom_node,
-                   o_utmx,
-                   o_utmy,
-                   o_utmz,
-                   o_cnae,
-                   o_equip,
-                   o_cod_tfa,
-                   o_zona,
-                   o_name,
-                   o_codi_r1,
-                   o_codi_ine,
-                   o_codi_prov,
-                   o_connexio,
-                   o_tensio,
-                   o_estat_contracte,
-                   o_potencia,
-                   o_potencia_facturada,
-                   o_pot_ads or o_potencia,
-                   o_anual_activa,
-                   o_anual_reactiva,
-                   o_any_incorporacio
+                    o_nom_node,
+                    o_utmx,
+                    o_utmy,
+                    o_utmz,
+                    o_cnae,
+                    o_equip,
+                    o_cod_tfa,
+                    o_zona,
+                    o_name,
+                    o_codi_r1,
+                    o_codi_ine,
+                    o_codi_prov,
+                    o_connexio,
+                    o_tensio,
+                    o_estat_contracte,
+                    o_potencia,
+                    o_potencia_facturada,
+                    o_pot_ads or o_potencia,
+                    o_anual_activa,
+                    o_anual_reactiva,
+                    o_any_incorporacio
                 ])
             except:
                 traceback.print_exc()
