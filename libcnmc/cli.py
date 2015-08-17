@@ -997,6 +997,326 @@ def cir_4_2015_f1bis(**kwargs):
     )
     proc.calc()
 
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069,
+              help='Port servidor ERP', type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def cir_4_2015_f12(**kwargs):
+    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+             pwd=kwargs['password'], port=kwargs['port'],
+             uri=kwargs['server'])
+    proc = cir_4_2015.F12(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        year=kwargs['year']
+    )
+    proc.calc()
+
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069,
+              help='Port servidor ERP', type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def cir_4_2015_f12bis(**kwargs):
+    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+             pwd=kwargs['password'], port=kwargs['port'],
+             uri=kwargs['server'])
+    proc = cir_4_2015.F12bis(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        year=kwargs['year']
+    )
+    proc.calc()
+
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069,
+              help='Port servidor ERP', type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def cir_4_2015_f13(**kwargs):
+    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+             pwd=kwargs['password'], port=kwargs['port'],
+             uri=kwargs['server'])
+    proc = cir_4_2015.F13(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year']
+    )
+    proc.calc()
+
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069,
+              help='Port servidor ERP', type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def cir_4_2015_f13bis(**kwargs):
+    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+             pwd=kwargs['password'], port=kwargs['port'],
+             uri=kwargs['server'])
+    proc = cir_4_2015.F13bis(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        year=kwargs['year']
+    )
+    proc.calc()
+
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069,
+              help='Port servidor ERP', type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def cir_4_2015_f13c(**kwargs):
+    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+             pwd=kwargs['password'], port=kwargs['port'],
+             uri=kwargs['server'])
+    proc = cir_4_2015.F13c(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        year=kwargs['year']
+    )
+    proc.calc()
+
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069,
+              help='Port servidor ERP', type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def cir_4_2015_f14(**kwargs):
+    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+             pwd=kwargs['password'], port=kwargs['port'],
+             uri=kwargs['server'])
+    proc = cir_4_2015.F14(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        year=kwargs['year']
+    )
+    proc.calc()
+
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069,
+              help='Port servidor ERP', type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def cir_4_2015_f15(**kwargs):
+    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+             pwd=kwargs['password'], port=kwargs['port'],
+             uri=kwargs['server'])
+    proc = cir_4_2015.F15(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year']
+    )
+    proc.calc()
+
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069,
+              help='Port servidor ERP', type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def cir_4_2015_f10at(**kwargs):
+    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+             pwd=kwargs['password'], port=kwargs['port'],
+             uri=kwargs['server'])
+    proc = cir_4_2015.F10AT(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year']
+    )
+    proc.calc()
+
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069,
+              help='Port servidor ERP', type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def cir_4_2015_f10bt(**kwargs):
+    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+             pwd=kwargs['password'], port=kwargs['port'],
+             uri=kwargs['server'])
+    proc = cir_4_2015.F10BT(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year']
+    )
+    proc.calc()
+
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069,
+              help='Port servidor ERP', type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def cir_4_2015_f20(**kwargs):
+    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+             pwd=kwargs['password'], port=kwargs['port'],
+             uri=kwargs['server'])
+    proc = cir_4_2015.F20(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year']
+    )
+    proc.calc()
+
 
 def invoke():
     cnmc()

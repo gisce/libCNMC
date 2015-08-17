@@ -12,6 +12,10 @@ from libcnmc.core import MultiprocessBased
 class F10(MultiprocessBased):
     def __init__(self, **kwargs):
         super(F10, self).__init__(**kwargs)
+        self.codi_r1 = kwargs.pop('codi_r1')
+        self.year = kwargs.pop('year', datetime.now().year - 1)
+        self.report_name = 'F10 - CTS'
+        self.base_object = 'CTS'
 
     def get_sequence(self):
         search_params = []
@@ -35,9 +39,9 @@ class F10(MultiprocessBased):
                 o_x = ''
                 o_int_max = ''
                 o_op_habitual = ''
-                o_cod_dis = ''
+                o_cod_dis = self.codi_r1
                 o_prop = ''
-                o_any = ''
+                o_any = self.year + 1
 
                 self.output_q.put([
                     o_tram,
