@@ -45,7 +45,8 @@ class F13c(MultiprocessBased):
     def consumer(self):
         o = self.connection
         fields_to_read = [
-            'name', 'cini', 'propietari', 'tipus_posicio', 'data_pm', 'tensio'
+            'name', 'cini', 'propietari', 'tipus_posicio', 'data_pm', 'tensio',
+            'subestacio_id'
         ]
         while True:
             try:
@@ -56,7 +57,8 @@ class F13c(MultiprocessBased):
                     item, fields_to_read
                 )
                 o_subestacio = sub['name']
-                o_parc = self.get_tensio(sub)
+                o_parc = sub['subestacio_id'][1] + "-"\
+                    + str(self.get_tensio(sub))
                 o_pos = sub['tipus_posicio']
                 o_cini = sub['cini']
                 o_prop = int(sub['propietari'])
