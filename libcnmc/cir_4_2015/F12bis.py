@@ -23,9 +23,8 @@ class F12bis(MultiprocessBased):
         ]
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
-        search_params += [('propietari', '=', True),
-                          '|', ('data_pm', '=', False),
-                               ('data_pm', '<', data_pm),
+        search_params += [('data_pm', '=', False),
+                          ('data_pm', '<', data_pm),
                           '|', ('data_baixa', '>', data_baixa),
                                ('data_baixa', '=', False)
                           ]
