@@ -2,7 +2,7 @@
 from datetime import datetime
 import traceback
 
-from libcnmc.utils import get_comptador
+from libcnmc.utils import get_comptador, format_f
 from libcnmc.core import MultiprocessBased
 
 
@@ -111,7 +111,7 @@ class F1bis(MultiprocessBased):
                 else:
                     o_comptador_cini = ''
                     o_comptador_data = ''
-                o_num_lectures = cups['cnmc_numero_lectures'] or ''
+                o_num_lectures = format_f(cups['cnmc_numero_lectures'], 3) or ''
                 o_titular = self.get_cambio_titularidad(cups['id'])
                 o_baixa = self.get_baixa_cups(cups['id'])
                 o_year = datetime.now().year
