@@ -91,7 +91,7 @@ class F10BT(MultiprocessBased):
                         (int(linia['voltatge']) / 1000.0), 3
                     )
                 except:
-                    o_nivell_tensio = format_f(0.0, 3)
+                    o_nivell_tensio = 0.0
                 o_tram = 'B%s' % linia['name']
                 o_node_inicial = tallar_text(edge['start_node'][1], 20)
                 o_node_final = tallar_text(edge['end_node'][1], 20)
@@ -102,11 +102,11 @@ class F10BT(MultiprocessBased):
                 ) or 0.001
                 o_num_circuits = 1  # a BT suposarem que sempre hi ha 1
                 o_tipus = self.get_tipus_cable(cable['tipus'][0])
-                o_r = format_f(0.0, 6)
-                o_x = format_f(cable['reactancia'], 6) or ''
+                o_r = 0.0
+                o_x = format_f(cable['reactancia'], 6) or 0.0
                 o_int_max = format_f(cable['intensitat_admisible'], 3)
                 o_op_habitual = 1  # Tots son actius
-                o_cod_dis = self.codi_r1
+                o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
                 o_any = self.year + 1
 
                 self.output_q.put([
