@@ -5,7 +5,7 @@ import re
 import traceback
 
 from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP
-from libcnmc.utils import get_ine, get_comptador
+from libcnmc.utils import get_ine, get_comptador, format_f
 from libcnmc.core import MultiprocessBased
 
 
@@ -102,7 +102,7 @@ class F1(MultiprocessBased):
                 o_codi_ine = ''
                 o_codi_prov = ''
                 o_zona = ''
-                o_potencia_facturada = cups['cnmc_potencia_facturada'] or ''
+                o_potencia_facturada = format_f(cups['cnmc_potencia_facturada'], 3) or ''
                 if 'et' in cups:
                     o_zona = self.get_zona_qualitat(cups['et'])
                 if cups['id_municipi']:
@@ -169,8 +169,8 @@ class F1(MultiprocessBased):
                         polissa_id[0], fields_to_read, context_glob
                     )
                     if polissa['tensio']:
-                        o_tensio = polissa['tensio'] / 1000.0
-                    o_potencia = polissa['potencia']
+                        o_tensio = format_f(polissa['tensio'] / 1000.0, 3)
+                    o_potencia = format_f(polissa['potencia'], 3)
                     if polissa['cnae']:
                         o_cnae = polissa['cnae'][1]
                     # Mirem si té l'actualització dels butlletins
@@ -178,7 +178,7 @@ class F1(MultiprocessBased):
                         butlleti = O.GiscedataButlleti.read(
                             polissa['butlletins'][-1], ['pot_max_admisible']
                         )
-                        o_pot_ads = butlleti['pot_max_admisible']
+                        o_pot_ads = format_f(butlleti['pot_max_admisible'], 3)
                     comptador_actiu = get_comptador(
                         self.connection, polissa['id'], self.year)
                     if comptador_actiu:
@@ -203,8 +203,9 @@ class F1(MultiprocessBased):
                     o_estat_contracte = 1
 
                 #energies consumides
-                o_anual_activa = cups['cne_anual_activa'] or 0.0
-                o_anual_reactiva = cups['cne_anual_reactiva'] or 0.0
+                o_anual_activa = format_f(cups['cne_anual_activa'], 3) or 0.0
+                o_anual_reactiva = format_f(cups['cne_anual_reactiva'], 3) or \
+                    0.0
                 o_any_incorporacio = self.year + 1
                 self.output_q.put([
                     o_nom_node,
