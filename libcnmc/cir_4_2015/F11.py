@@ -2,7 +2,7 @@
 from datetime import datetime
 import traceback
 
-from libcnmc.utils import get_ine
+from libcnmc.utils import get_ine, format_f
 from libcnmc.core import MultiprocessBased
 
 
@@ -121,14 +121,21 @@ class F11(MultiprocessBased):
                 o_propietari = int(ct['propietari'])
                 o_num_max_maquines = ct['numero_maxim_maquines']
                 o_incorporacio = str(datetime.now().year)
+                x = ''
+                y = ''
+                z = ''
+                if vertex[0]:
+                    x = format_f(float(vertex[0]), 3)
+                if vertex[1]:
+                    y = format_f(float(vertex[1]), 3)
 
                 self.output_q.put([
                     o_node,
                     o_ct,
                     o_cini,
-                    vertex[0],
-                    vertex[1],
-                    '',
+                    x,
+                    y,
+                    z,
                     o_ine_muni,
                     o_ine_prov,
                     o_tensio_p,
