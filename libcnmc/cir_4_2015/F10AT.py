@@ -67,8 +67,8 @@ class F10AT(MultiprocessBased):
                         continue
                     #Agafem la tensió
                     o_nivell_tensio = (
-                        (at['tensio_max_disseny'] or linia['tensio']) / 1000.0)
-                    o_nivell_tensio = format_f(o_nivell_tensio, 3)
+                        (at['tensio_max_disseny'] or linia['tensio']))
+                    o_nivell_tensio = format_f(o_nivell_tensio / 1000.0, 3)
                     o_tram = 'A%s' % at['name']
                     o_node_inicial = at['origen'][0:20]
                     o_node_final = at['final'][0:20]
@@ -78,11 +78,11 @@ class F10AT(MultiprocessBased):
                         at['longitud_cad'] * coeficient / 1000.0, 3
                     ), 3) or 0.001
                     o_num_circuits = at['circuits']
-                    o_r = format_f(cable['resistencia'], 6) or ''
-                    o_x = format_f(cable['reactancia'], 6) or ''
+                    o_r = format_f(cable['resistencia'], 6) or 0.0
+                    o_x = format_f(cable['reactancia'], 6) or 0.0
                     o_int_max = format_f(cable['intensitat_admisible'], 3)
                     o_op_habitual = 1  # Tots son actius
-                    o_cod_dis = self.codi_r1
+                    o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
                     o_any = self.year + 1
 
                     self.output_q.put([
