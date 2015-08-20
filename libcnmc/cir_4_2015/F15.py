@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from multiprocessing import Manager
-import re
 import traceback
-
-from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP
-from libcnmc.utils import get_ine, get_comptador
+from libcnmc.utils import format_f
 from libcnmc.core import MultiprocessBased
 
 
@@ -59,7 +55,7 @@ class F15(MultiprocessBased):
         linia = o.GiscedataAtLinia.read(int(linia_id[0]), fields_to_read)
         municipi = linia['municipi'][0]
         provincia = linia['provincia'][0]
-        tensio = linia['tensio']
+        tensio = format_f(float(linia['tensio']) / 1000.0)
         res = {
             'municipi': municipi,
             'provincia': provincia,
@@ -85,13 +81,17 @@ class F15(MultiprocessBased):
                 o_fiabilitat = celles['inventari']
                 o_tram = self.obtenir_tram(celles['installacio'])
                 o_cini = celles['cini']
-                o_utm_x = vertex[0]
-                o_utm_y = vertex[1]
-                o_utm_z = ''
+                x = ''
+                y = ''
+                z = ''
+                if vertex[0]:
+                    x = format_f(float(vertex[0]), 3)
+                if vertex[1]:
+                    y = format_f(float(vertex[1]), 3)
                 o_municipi = dict_linia.get('municipi')
                 o_provincia = dict_linia.get('provincia')
                 o_tensio = dict_linia.get('tensio')
-                o_cod_dis = self.codi_r1
+                o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
                 o_prop = int(celles['propietari'])
                 o_any = self.year + 1
 
@@ -100,9 +100,9 @@ class F15(MultiprocessBased):
                     o_fiabilitat,
                     o_tram,
                     o_cini,
-                    o_utm_x,
-                    o_utm_y,
-                    o_utm_z,
+                    x,
+                    y,
+                    z,
                     o_municipi,
                     o_provincia,
                     o_tensio,
