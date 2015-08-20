@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from multiprocessing import Manager
-import re
 import traceback
-
-from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP
-from libcnmc.utils import get_ine, get_comptador
+from libcnmc.utils import format_f
 from libcnmc.core import MultiprocessBased
 
 
@@ -63,7 +59,7 @@ class F13bis(MultiprocessBased):
                 o_node = self.get_node(item)
                 o_cini = sub['cini']
                 o_tipus = self.get_tipus_parc(sub['subestacio_id'][0])
-                o_tensio = sub['tensio'][1]
+                o_tensio = format_f(float(sub['tensio'][1]) / 1000.0, 3)
                 o_prop = int(sub['propietari'])
                 o_any = self.year + 1
 
