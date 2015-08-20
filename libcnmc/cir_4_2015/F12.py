@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from multiprocessing import Manager
-import re
 import traceback
 
 from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP
