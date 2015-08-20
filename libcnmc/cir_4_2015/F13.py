@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from multiprocessing import Manager
-import re
 import traceback
-
-from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP
-from libcnmc.utils import get_ine, get_comptador
+from libcnmc.utils import format_f
 from libcnmc.core import MultiprocessBased
 
 
@@ -81,9 +77,13 @@ class F13(MultiprocessBased):
                 o_subestacio = sub['name']
                 o_cini = sub['cini']
                 o_denominacio = sub['descripcio']
-                o_utm_x = vertex[0]
-                o_utm_y = vertex[1]
-                o_utm_z = ''
+                x = ''
+                y = ''
+                z = ''
+                if vertex[0]:
+                    x = format_f(float(vertex[0]), 3)
+                if vertex[1]:
+                    y = format_f(float(vertex[1]), 3)
                 o_municipi = ines['ine_municipi']
                 o_provincia = ines['ine_provincia']
                 o_prop = int(sub['propietari'])
@@ -93,9 +93,9 @@ class F13(MultiprocessBased):
                     o_subestacio,
                     o_cini,
                     o_denominacio,
-                    o_utm_x,
-                    o_utm_y,
-                    o_utm_z,
+                    x,
+                    y,
+                    z,
                     o_municipi,
                     o_provincia,
                     o_codi_r1,
