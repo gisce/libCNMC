@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from multiprocessing import Manager
-import re
 import traceback
-
-from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP
-from libcnmc.utils import get_ine, get_comptador, get_norm_tension
+from libcnmc.utils import format_f, get_norm_tension
 from libcnmc.core import MultiprocessBased
 
 
@@ -71,7 +67,7 @@ class F14(MultiprocessBased):
                 o_cini = trafo['cini']
                 o_costat_alta = self.get_costat_alta(trafo)
                 o_costat_baixa = self.get_costat_baixa(trafo)
-                o_pot_maquina = trafo['potencia_nominal'] / 1000.0
+                o_pot_maquina = format_f(trafo['potencia_nominal'] / 1000.0, 3)
                 o_pot_activa = ''
                 o_pot_reactiva = ''
                 o_energia_anual = ''
