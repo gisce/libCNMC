@@ -21,7 +21,8 @@ class F10AT(MultiprocessBased):
         o = self.connection
         fields_to_read = [
             'name', 'cini', 'circuits', 'longitud_cad', 'linia', 'origen',
-            'final', 'coeficient', 'cable', 'tensio_max_disseny'
+            'final', 'coeficient', 'cable', 'tensio_max_disseny',
+            'longitud_cad'
         ]
         data_pm_limit = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
@@ -78,8 +79,10 @@ class F10AT(MultiprocessBased):
                         at['longitud_cad'] * coeficient / 1000.0, 3
                     ), 3) or 0.001
                     o_num_circuits = at['circuits']
-                    o_r = format_f(cable['resistencia'], 6) or 0.0
-                    o_x = format_f(cable['reactancia'], 6) or 0.0
+                    o_r = format_f(
+                        cable['resistencia'] * at['longitud_cad'], 6) or 0.0
+                    o_x = format_f(
+                        cable['reactancia'] * at['longitud_cad'], 6) or 0.0
                     o_int_max = format_f(cable['intensitat_admisible'], 3)
                     o_op_habitual = 1  # Tots son actius
                     o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
