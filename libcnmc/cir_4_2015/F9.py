@@ -12,7 +12,7 @@ class F9(MultiprocessBased):
     def __init__(self, **kwargs):
         super(F9, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.report_name = 'F10AT - CTS'
+        self.report_name = 'F9 - CTS'
         self.base_object = 'CTS'
 
     def get_sequence(self):
