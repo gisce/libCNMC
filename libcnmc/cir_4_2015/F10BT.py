@@ -19,8 +19,7 @@ class F10BT(MultiprocessBased):
         ]
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
-        search_params += [('propietari', '=', True),
-                          '|', ('data_pm', '=', False),
+        search_params += ['|', ('data_pm', '=', False),
                                ('data_pm', '<', data_pm),
                           '|', ('data_baixa', '>', data_baixa),
                                ('data_baixa', '=', False),
@@ -53,7 +52,7 @@ class F10BT(MultiprocessBased):
         o = self.connection
         fields_to_read = [
             'name', 'propietari', 'coeficient', 'cable', 'voltatge', 'cini',
-            'longitud_cad', 'municipi'
+            'longitud_cad', 'municipi', 'longitud_cad'
         ]
         while True:
             try:
@@ -80,7 +79,7 @@ class F10BT(MultiprocessBased):
                 coeficient = linia['coeficient'] or 1.0
                 # Comprovar el tipus del cable
                 fields_to_read_cable = [
-                    'tipus', 'reactancia', 'intensitat_admisible'
+                    'tipus', 'reactancia', 'resistencia', 'intensitat_admisible'
                 ]
                 # Agafem el cable de la linia
                 cable = o.GiscedataBtCables.read(linia['cable'][0],
@@ -102,8 +101,10 @@ class F10BT(MultiprocessBased):
                 ) or 0.001
                 o_num_circuits = 1  # a BT suposarem que sempre hi ha 1
                 o_tipus = self.get_tipus_cable(cable['tipus'][0])
-                o_r = 0.0
-                o_x = format_f(cable['reactancia'], 6) or 0.0
+                o_r = format_f(
+                    cable['resistencia'] * linia['longitud_cad'], 6) or 0.0
+                o_x = format_f(
+                    cable['reactancia'] * linia['longitud_cad'], 6) or 0.0
                 o_int_max = format_f(cable['intensitat_admisible'], 3)
                 o_op_habitual = 1  # Tots son actius
                 o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
