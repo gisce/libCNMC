@@ -14,7 +14,7 @@ class F12bis(MultiprocessBased):
     def get_sequence(self):
         search_params = [
             # ('inventari', '=', 'l2+p'),
-            # ('installacio', 'like', 'giscedata.cts')
+            ('installacio', 'like', 'giscedata.cts')
         ]
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
