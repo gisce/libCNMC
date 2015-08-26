@@ -29,13 +29,17 @@ class F13bis(MultiprocessBased):
         return self.connection.GiscedataCtsSubestacionsPosicio.search(
             search_params, 0, 0, False, {'active_test': False})
 
-    def get_node(self, ct_id):
+    def get_node(self, sub_id):
         o = self.connection
+        ct_id = o.GiscedataCtsSubestacions.read(sub_id, ['ct_id'])
+        ct_id = ct_id['ct_id'][0]
         bloc = o.GiscegisBlocsCtat.search([('ct', '=', ct_id)])
         node = ''
         if bloc:
             bloc = o.GiscegisBlocsCtat.read(bloc[0], ['node'])
             node = bloc['node'][0]
+        else:
+            print "ct id: {}".format(ct_id)
         return node
 
     def get_tipus_parc(self, sub_id):
@@ -56,7 +60,7 @@ class F13bis(MultiprocessBased):
                 )
                 o_subestacio = sub['subestacio_id'][1]
                 o_parc = sub['subestacio_id'][1] + "-" + sub['tensio'][1]
-                o_node = self.get_node(item)
+                o_node = self.get_node(sub['subestacio_id'][0])
                 o_cini = sub['cini']
                 o_tipus = self.get_tipus_parc(sub['subestacio_id'][0])
                 o_tensio = format_f(float(sub['tensio'][1]) / 1000.0, 3)
