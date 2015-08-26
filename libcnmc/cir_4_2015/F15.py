@@ -20,18 +20,23 @@ class F15(MultiprocessBased):
         ]
         return self.connection.GiscedataCellesCella.search(search_params)
 
-    def get_node_vertex(self, installacio):
+    def get_node_vertex(self, suport):
         o = self.connection
-        valor = str.split(installacio, ',')
-        id_tram = int(valor[1])
         node = ''
         vertex = ('', '')
-        if id_tram:
-            bloc = o.GiscegisBlocsCtat.read(id_tram, ['node', 'vertex'])
+        if suport:
+            bloc = o.GiscegisBlocsSuportsAt.search(
+                [('numsuport', '=', suport)]
+            )
             if bloc:
-                node = bloc['node'][0]
-                if bloc['vertex']:
-                    v = o.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
+                bloc = o.GiscegisBlocsSuportsAt.read(
+                    bloc[0], ['node', 'vertex'])
+                v = o.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
+                if bloc.get('node', False):
+                    node = bloc['node'][0]
+                else:
+                    node = v['id']
+                if bloc.get('vertex', False):
                     vertex = (round(v['x'], 3), round(v['y'], 3))
         return node, vertex
 
@@ -76,10 +81,10 @@ class F15(MultiprocessBased):
                 celles = o.GiscedataCellesCella.read(
                     item, fields_to_read
                 )
-                dict_linia = self.obtenir_camps_linia(celles['installacio'])
-                o_node, vertex = self.get_node_vertex(celles['installacio'])
-                o_fiabilitat = celles['inventari']
                 o_tram = self.obtenir_tram(celles['installacio'])
+                dict_linia = self.obtenir_camps_linia(celles['installacio'])
+                o_node, vertex = self.get_node_vertex(o_tram)
+                o_fiabilitat = celles['inventari']
                 o_cini = celles['cini']
                 x = ''
                 y = ''
