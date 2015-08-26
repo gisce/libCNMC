@@ -124,9 +124,8 @@ class F9(MultiprocessBased):
                     self.raven.captureException()
             finally:
                 self.output_q.task_done()
-
+        fio.write('END')
         if not self.file_output:
             self.content = fio.getvalue()
-        fio.write('END')
         fio.close()
 
