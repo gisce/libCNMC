@@ -145,7 +145,7 @@ class F11(MultiprocessBased):
                     o_pic_activa,
                     o_pic_reactiva,
                     o_s_utilitades,
-                    o_s_utilitades,
+                    o_s_disponibles,
                     o_codi_r1,
                     o_propietari,
                     o_incorporacio,
