@@ -15,10 +15,23 @@ class F12(MultiprocessBased):
         self.base_object = 'CTS'
 
     def get_sequence(self):
-        search_params = []
+        data_pm = '%s-01-01' % (self.year + 1)
+        data_baixa = '%s-12-31' % self.year
+        search_params = [
+            ('id_estat.cnmc_inventari', '=', True)
+        ]
+        search_params += ['|', ('data_pm', '=', False),
+                          ('data_pm', '<', data_pm),
+                          '|', ('data_baixa', '>', data_baixa),
+                          ('data_baixa', '=', False)
+                          ]
+        # Revisem que si està de baixa ha de tenir la data informada.
+        search_params += ['|',
+                          '&', ('active', '=', False),
+                               ('data_baixa', '!=', False),
+                          ('active', '=', True)]
         return self.connection.GiscedataTransformadorTrafo.search(
-            search_params
-        )
+            search_params, 0, 0, False, {'active_test': False})
 
     def get_node(self, ct_id):
         o = self.connection
@@ -43,8 +56,8 @@ class F12(MultiprocessBased):
                 trafo = o.GiscedataTransformadorTrafo.read(
                     item, fields_to_read
                 )
-                o_node = self.get_node(item)
                 o_ct = trafo['ct'] or ''
+                o_node = self.get_node(o_ct[0])
                 if o_ct != '':
                     o_ct = str(o_ct[1])
                 o_cini = trafo['cini'] or ''
