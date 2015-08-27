@@ -15,8 +15,21 @@ class F11(MultiprocessBased):
         self.base_object = 'CTS'
 
     def get_sequence(self):
-        search_params = []
-        return self.connection.GiscedataCts.search(search_params)
+        search_params = [('id_installacio.name', '!=', 'SE')]
+        data_pm = '%s-01-01' % (self.year + 1)
+        data_baixa = '%s-12-31' % self.year
+        search_params += ['|', ('data_pm', '=', False),
+                               ('data_pm', '<', data_pm),
+                          '|', ('data_baixa', '>', data_baixa),
+                               ('data_baixa', '=', False)
+                          ]
+        # Revisem que si està de baixa ha de tenir la data informada.
+        search_params += ['|',
+                          '&', ('active', '=', False),
+                               ('data_baixa', '!=', False),
+                          ('active', '=', True)]
+        return self.connection.GiscedataCts.search(
+            search_params, 0, 0, False, {'active_test': False})
 
     def get_node_vertex(self, ct_id):
         O = self.connection
