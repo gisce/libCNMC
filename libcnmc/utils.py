@@ -17,9 +17,28 @@ CODIS_ZONA = {'RURALDISPERSA': 'RD', 'RURALCONCENTRADA': 'RC',
 
 CINI_TG_REGEXP = 'I310[12]3.$'
 
+TENS_NORM = []
 
 INES = {}
 
+
+def get_norm_tension(connection, tension):
+
+    if not TENS_NORM:
+        tension_fields_to_read = ['l_inferior', 'l_superior', 'tensio']
+        tension_vals = connection.GiscedataTensionsTensio.read(
+            connection.GiscedataTensionsTensio.search([]),
+            tension_fields_to_read)
+        TENS_NORM.extend([(t['l_inferior'], t['l_superior'], t['tensio'])
+                        for t in tension_vals])
+    if not tension:
+        return tension
+
+    for t in TENS_NORM:
+        if t[0] <= tension < t[1]:
+            return t[2]
+
+    return tension
 
 def get_ine(connection, ine):
     """Retornem dos valors el codi de l'estat i el codi ine sense estat.
@@ -83,3 +102,4 @@ def format_f(num, decimals=2):
     '''formats float with comma decimal separator'''
     fstring = '%%.%df' % decimals
     return (fstring % num).replace('.', ',')
+
