@@ -37,7 +37,7 @@ class F9(MultiprocessBased):
                  ('layer', 'not ilike', '%\_AT\_%')]
             )
         edges = model_edge.read(ids_edges)
-        if edges == []:
+        if not edges:
             return []
         vertexs = model_polyline.read(edges[0]['polyline'][0])
         for punt in model_vertex.read(vertexs['vertex_ids']):
@@ -80,14 +80,14 @@ class F9(MultiprocessBased):
                 for at in o.GiscedataAtTram.read(ids, fields_to_read):
                     data = self.get_geom(at['name'], 'at')
                     data = self.conv_text(data)
-                    if data != [] and str(data):
+                    if data:
                         self.output_q.put(['A' + str(at['name'])])
                         self.output_q.put([data])
                         self.output_q.put(['END'])
                 for bt in o.GiscedataBtElement.read(ids, fields_to_read):
                     data = self.get_geom(bt['name'], 'at')
                     data = self.conv_text(data)
-                    if data != [] and str(data):
+                    if data:
                         self.output_q.put(['B' + str(bt['name'])])
                         self.output_q.put([data])
                         self.output_q.put(['END'])
