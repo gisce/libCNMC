@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import traceback
-import csv
 from libcnmc.core import MultiprocessBased
 try:
     from cStringIO import StringIO
 except:
     from StringIO import StringIO
+
 
 class F9(MultiprocessBased):
     def __init__(self, **kwargs):
@@ -20,9 +20,6 @@ class F9(MultiprocessBased):
         return self.connection.GiscedataCupsPs.search(search_params)
 
     def get_geom(self, id_tram, net):
-        # net = AT o BT, url = url de connexio,
-        # ex url "http://172.26.0.106:28069"
-        # c = Client(url, database, user, password)
         o = self.connection
         model_edge = o.GiscegisEdge
         model_vertex = o.GiscegisPolylineVertex
@@ -55,7 +52,6 @@ class F9(MultiprocessBased):
 
     def consumer(self):
         o = self.connection
-        contents = ''
         fields_to_read = [
             'name'
         ]
@@ -84,14 +80,14 @@ class F9(MultiprocessBased):
                 for at in o.GiscedataAtTram.read(ids, fields_to_read):
                     data = self.get_geom(at['name'], 'at')
                     data = self.conv_text(data)
-                    if data != [] and str(data) != '':
+                    if data != [] and str(data):
                         self.output_q.put(['A' + str(at['name'])])
                         self.output_q.put([data])
                         self.output_q.put(['END'])
                 for bt in o.GiscedataBtElement.read(ids, fields_to_read):
                     data = self.get_geom(bt['name'], 'at')
                     data = self.conv_text(data)
-                    if data != [] and str(data) != '':
+                    if data != [] and str(data):
                         self.output_q.put(['B' + str(bt['name'])])
                         self.output_q.put([data])
                         self.output_q.put(['END'])
@@ -128,4 +124,3 @@ class F9(MultiprocessBased):
         if not self.file_output:
             self.content = fio.getvalue()
         fio.close()
-
