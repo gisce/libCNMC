@@ -57,8 +57,9 @@ class F12(MultiprocessBased):
                     item, fields_to_read
                 )
                 o_ct = trafo['ct'] or ''
-                o_node = self.get_node(o_ct[0])
+                o_node = ''
                 if o_ct != '':
+                    o_node = self.get_node(o_ct[0])
                     o_ct = str(o_ct[1])
                 o_cini = trafo['cini'] or ''
                 o_maquina = trafo['name']
