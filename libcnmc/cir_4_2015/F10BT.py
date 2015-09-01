@@ -108,7 +108,7 @@ class F10BT(MultiprocessBased):
                 o_int_max = format_f(cable['intensitat_admisible'], 3)
                 o_op_habitual = 1  # Tots son actius
                 o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
-                o_any = self.year + 1
+                o_any = self.year
 
                 self.output_q.put([
                     o_tram,
