@@ -78,7 +78,7 @@ class F14(MultiprocessBased):
                     trafo['perdues_curtcircuit_nominal'] / 1000.0, 3)
                 o_propietat = int(trafo['propietari'])
                 o_estat = self.get_estat(trafo['id_estat'][0])
-                o_any = self.year + 1
+                o_any = self.year
 
                 self.output_q.put([
                     o_subestacio,
