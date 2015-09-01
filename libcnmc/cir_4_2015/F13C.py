@@ -63,7 +63,7 @@ class F13c(MultiprocessBased):
                 o_prop = int(sub['propietari'])
                 o_data = datetime.strptime(sub['data_pm'], "%Y-%m-%d")
                 o_data = int(o_data.year)
-                o_any = self.year + 1
+                o_any = self.year
 
                 self.output_q.put([
                     o_subestacio,
