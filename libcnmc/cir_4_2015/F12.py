@@ -67,7 +67,7 @@ class F12(MultiprocessBased):
                 o_perdues_buit = trafo['perdues_buit'] or 0
                 o_perdues_nominal = trafo['perdues_curtcircuit_nominal'] or 0
                 o_propietari = int(trafo['propietari'])
-                o_any = self.year + 1
+                o_any = self.year
 
                 self.output_q.put([
                     o_node,
