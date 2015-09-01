@@ -4,6 +4,8 @@ import traceback
 
 from libcnmc.utils import get_ine, format_f
 from libcnmc.core import MultiprocessBased
+from pyproj import Proj
+from pyproj import transform
 
 
 class F11(MultiprocessBased):
@@ -30,6 +32,19 @@ class F11(MultiprocessBased):
                           ('active', '=', True)]
         return self.connection.GiscedataCts.search(
             search_params, 0, 0, False, {'active_test': False})
+
+    def convert_srid(self, codi, srid_source, point):
+        assert srid_source in ['25829', '25830', '25831']
+        if codi == '0056':
+            return point
+        else:
+            if srid_source == '25830':
+                return point
+            else:
+                source = Proj(init='epsg:{0}'.format(srid_source))
+                dest = Proj(init='epsg:25830')
+                result_point = transform(source, dest, point[0], point[1])
+                return result_point
 
     def get_node_vertex(self, ct_id):
         O = self.connection
@@ -133,7 +148,7 @@ class F11(MultiprocessBased):
                 )
                 o_propietari = int(ct['propietari'])
                 o_num_max_maquines = ct['numero_maxim_maquines']
-                o_incorporacio = str(datetime.now().year)
+                o_incorporacio = self.year
                 x = ''
                 y = ''
                 z = ''
@@ -141,13 +156,17 @@ class F11(MultiprocessBased):
                     x = format_f(float(vertex[0]), 3)
                 if vertex[1]:
                     y = format_f(float(vertex[1]), 3)
-
+                giscegis_srid_id = O.ResConfig.search(
+                    [('name', '=', 'giscegis_srid')])
+                giscegis_srid = O.ResConfig.read(giscegis_srid_id)[0]['value']
+                res_srid = self.convert_srid(
+                    self.codi_r1, giscegis_srid, [x, y])
                 self.output_q.put([
                     o_node,
                     o_ct,
                     o_cini,
-                    x,
-                    y,
+                    res_srid[0],
+                    res_srid[1],
                     z,
                     o_ine_muni,
                     o_ine_prov,
@@ -161,8 +180,8 @@ class F11(MultiprocessBased):
                     o_s_disponibles,
                     o_codi_r1,
                     o_propietari,
-                    o_incorporacio,
-                    o_num_max_maquines
+                    o_num_max_maquines,
+                    o_incorporacio
                 ])
             except:
                 traceback.print_exc()
