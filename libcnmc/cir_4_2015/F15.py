@@ -3,7 +3,8 @@ from datetime import datetime
 import traceback
 from libcnmc.utils import format_f
 from libcnmc.core import MultiprocessBased
-
+from pyproj import Proj
+from pyproj import transform
 
 class F15(MultiprocessBased):
     def __init__(self, **kwargs):
@@ -19,6 +20,19 @@ class F15(MultiprocessBased):
             ('installacio', 'ilike', 'giscedata.at.suport,%')
         ]
         return self.connection.GiscedataCellesCella.search(search_params)
+
+    def convert_srid(self, codi, srid_source, point):
+        assert srid_source in ['25829', '25830', '25831']
+        if codi == '0056':
+            return point
+        else:
+            if srid_source == '25830':
+                return point
+            else:
+                source = Proj(init='epsg:{0}'.format(srid_source))
+                dest = Proj(init='epsg:25830')
+                result_point = transform(source, dest, point[0], point[1])
+                return result_point
 
     def get_node_vertex(self, suport):
         o = self.connection
@@ -98,15 +112,19 @@ class F15(MultiprocessBased):
                 o_tensio = dict_linia.get('tensio')
                 o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
                 o_prop = int(celles['propietari'])
-                o_any = self.year + 1
-
+                o_any = self.year
+                giscegis_srid_id = o.ResConfig.search(
+                    [('name', '=', 'giscegis_srid')])
+                giscegis_srid = o.ResConfig.read(giscegis_srid_id)[0]['value']
+                res_srid = self.convert_srid(
+                    self.codi_r1, giscegis_srid, [x, y])
                 self.output_q.put([
                     o_node,
                     o_fiabilitat,
                     o_tram,
                     o_cini,
-                    x,
-                    y,
+                    res_srid[0],
+                    res_srid[1],
                     z,
                     o_municipi,
                     o_provincia,
