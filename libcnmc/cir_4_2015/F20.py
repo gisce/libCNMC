@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from multiprocessing import Manager
-import re
 import traceback
-
-from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP
-from libcnmc.utils import get_ine, get_comptador
 from libcnmc.core import MultiprocessBased
 
 
@@ -14,12 +9,17 @@ class F20(MultiprocessBased):
         super(F20, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
-        self.report_name = 'F13 - CTS'
+        self.report_name = 'F20 - CTS'
         self.base_object = 'CTS'
 
     def get_sequence(self):
-        search_params = []
-        return self.connection.GiscedataCupsPs.search(search_params)
+        data_ini = '%s-01-01' % self.year
+        # data_baixa = '%s-12-31' % self.year
+        search_params = ['&',
+                         ('create_date', '<', data_ini),
+                         ('active', '=', True)]
+        return self.connection.GiscedataCupsPs.search(
+            search_params, 0, 0, False, {'active_test': False})
 
     def get_cini(self, et):
         o = self.connection
