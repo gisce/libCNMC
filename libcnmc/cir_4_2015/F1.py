@@ -7,6 +7,8 @@ import traceback
 from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP
 from libcnmc.utils import get_ine, get_comptador, format_f
 from libcnmc.core import MultiprocessBased
+from pyproj import Proj
+from pyproj import transform
 
 
 class F1(MultiprocessBased):
@@ -22,9 +24,26 @@ class F1(MultiprocessBased):
     def get_codi_tarifa(self, codi_tarifa):
         return CODIS_TARIFA.get(codi_tarifa, '')
 
+    def convert_srid(self, codi, srid_source, point):
+        assert srid_source in ['25829', '25830', '25831']
+        if codi == '0056':
+            return point
+        else:
+            if srid_source == '25830':
+                return point
+            else:
+                source = Proj(init='epsg:{0}'.format(srid_source))
+                dest = Proj(init='epsg:25830')
+                result_point = transform(source, dest, point[0], point[1])
+                return result_point
+
     def get_sequence(self):
-        search_params = []
-        return self.connection.GiscedataCupsPs.search(search_params)
+        data_ini = '%s-01-01' % self.year
+        search_params = ['&',
+                         ('create_date', '<', data_ini),
+                         ('active', '=', True)]
+        return self.connection.GiscedataCupsPs.search(
+            search_params, 0, 0, False, {'active_test': False})
 
     def get_zona_qualitat(self, codi_ct):
         zona_qualitat = ''
@@ -80,9 +99,9 @@ class F1(MultiprocessBased):
         search_glob = [
             ('state', 'not in', ('esborrany', 'validar')),
             ('data_alta', '<=', ultim_dia_any),
-            '|',
-            ('data_baixa', '>=', ultim_dia_any),
-            ('data_baixa', '=', False)
+            # '|',
+            # ('data_baixa', '>=', ultim_dia_any),
+            # ('data_baixa', '=', False)
         ]
         context_glob = {'date': ultim_dia_any, 'active_test': False}
         while True:
@@ -207,10 +226,15 @@ class F1(MultiprocessBased):
                 o_anual_reactiva = format_f(cups['cne_anual_reactiva'], 3) or \
                     0.0
                 o_any_incorporacio = self.year + 1
+                giscegis_srid_id = O.ResConfig.search(
+                    [('name', '=', 'giscegis_srid')])
+                giscegis_srid = O.ResConfig.read(giscegis_srid_id)[0]['value']
+                res_srid = self.convert_srid(
+                    self.codi_r1, giscegis_srid, [o_utmx, o_utmy])
                 self.output_q.put([
                     o_nom_node,
-                    o_utmx,
-                    o_utmy,
+                    res_srid[0],
+                    res_srid[1],
                     o_utmz,
                     o_cnae,
                     o_equip,
