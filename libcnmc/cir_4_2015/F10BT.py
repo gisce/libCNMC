@@ -43,7 +43,7 @@ class F10BT(MultiprocessBased):
     def get_provincia(self, id_mun):
         o = self.connection
         res = ''
-        prov = o.ResMunicipi.read(id_mun, ['state'])['state'][1]
+        prov = o.ResMunicipi.read(id_mun, ['ine'])['ine']
         if prov:
             res = prov
         return res
@@ -95,10 +95,10 @@ class F10BT(MultiprocessBased):
                 o_node_inicial = tallar_text(edge['start_node'][1], 20)
                 o_node_final = tallar_text(edge['end_node'][1], 20)
                 o_cini = linia['cini']
-                o_provincia = self.get_provincia(linia['municipi'][0])
+                o_provincia = self.get_provincia(linia['municipi'][0])[0:2]
                 o_longitud = format_f(
-                    round(linia['longitud_cad'] * coeficient / 1000.0, 3), 3
-                ) or 0.001
+                    round(linia['longitud_cad'] * coeficient / 1000.0, 3),
+                    decimals=3) or 0.001
                 o_num_circuits = 1  # a BT suposarem que sempre hi ha 1
                 o_tipus = self.get_tipus_cable(cable['tipus'][0])
                 o_r = format_f(
