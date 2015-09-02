@@ -17,6 +17,14 @@ class F10AT(MultiprocessBased):
         search_params = [('name', '!=', '1')]
         return self.connection.GiscedataAtLinia.search(search_params)
 
+    def get_provincia(self, id_prov):
+        o = self.connection
+        res = ''
+        ine = o.ResCountryState.read(id_prov, ['code'])['code']
+        if ine:
+            res = ine
+        return res
+
     def consumer(self):
         o = self.connection
         fields_to_read = [
@@ -74,19 +82,22 @@ class F10AT(MultiprocessBased):
                     o_node_inicial = at['origen'][0:20]
                     o_node_final = at['final'][0:20]
                     o_cini = at['cini']
-                    o_provincia = linia['provincia'][1]
+                    o_provincia = self.get_provincia(linia['provincia'][0])
                     o_longitud = format_f(round(
                         at['longitud_cad'] * coeficient / 1000.0, 3
-                    ), 3) or 0.001
+                    ), decimals=3) or 0.001
                     o_num_circuits = at['circuits']
                     o_r = format_f(
-                        cable['resistencia'] * at['longitud_cad'], 6) or 0.0
+                        cable['resistencia'] * at['longitud_cad'], decimals=6
+                    ) or 0.0
                     o_x = format_f(
-                        cable['reactancia'] * at['longitud_cad'], 6) or 0.0
-                    o_int_max = format_f(cable['intensitat_admisible'], 3)
+                        cable['reactancia'] * at['longitud_cad'], decimals=6
+                    ) or 0.0
+                    o_int_max = format_f(
+                        cable['intensitat_admisible'], decimals=3)
                     o_op_habitual = 1  # Tots son actius
                     o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
-                    o_any = self.year + 1
+                    o_any = self.year
 
                     self.output_q.put([
                         o_tram,

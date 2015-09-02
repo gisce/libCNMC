@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import traceback
-from libcnmc.utils import format_f
+from libcnmc.utils import format_f, convert_srid, get_srid
 from libcnmc.core import MultiprocessBased
-
 
 class F15(MultiprocessBased):
     def __init__(self, **kwargs):
@@ -90,23 +89,24 @@ class F15(MultiprocessBased):
                 y = ''
                 z = ''
                 if vertex[0]:
-                    x = format_f(float(vertex[0]), 3)
+                    x = format_f(float(vertex[0]), decimals=3)
                 if vertex[1]:
-                    y = format_f(float(vertex[1]), 3)
+                    y = format_f(float(vertex[1]), decimals=3)
                 o_municipi = dict_linia.get('municipi')
                 o_provincia = dict_linia.get('provincia')
-                o_tensio = dict_linia.get('tensio')
+                o_tensio = format_f(dict_linia.get('tensio'), decimals=3)
                 o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
                 o_prop = int(celles['propietari'])
-                o_any = self.year + 1
-
+                o_any = self.year
+                res_srid = convert_srid(
+                    self.codi_r1, get_srid(o), [x, y])
                 self.output_q.put([
                     o_node,
                     o_fiabilitat,
                     o_tram,
                     o_cini,
-                    x,
-                    y,
+                    format_f(res_srid[0], decimals=3),
+                    format_f(res_srid[1], decimals=3),
                     z,
                     o_municipi,
                     o_provincia,

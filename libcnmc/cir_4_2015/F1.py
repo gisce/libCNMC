@@ -5,7 +5,8 @@ import re
 import traceback
 
 from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP
-from libcnmc.utils import get_ine, get_comptador, format_f
+from libcnmc.utils import get_ine, get_comptador, format_f, get_srid,\
+    convert_srid
 from libcnmc.core import MultiprocessBased
 
 
@@ -23,8 +24,12 @@ class F1(MultiprocessBased):
         return CODIS_TARIFA.get(codi_tarifa, '')
 
     def get_sequence(self):
-        search_params = []
-        return self.connection.GiscedataCupsPs.search(search_params)
+        data_ini = '%s-01-01' % self.year
+        search_params = ['&',
+                         ('create_date', '<', data_ini),
+                         ('active', '=', True)]
+        return self.connection.GiscedataCupsPs.search(
+            search_params, 0, 0, False, {'active_test': False})
 
     def get_zona_qualitat(self, codi_ct):
         zona_qualitat = ''
@@ -80,9 +85,9 @@ class F1(MultiprocessBased):
         search_glob = [
             ('state', 'not in', ('esborrany', 'validar')),
             ('data_alta', '<=', ultim_dia_any),
-            '|',
-            ('data_baixa', '>=', ultim_dia_any),
-            ('data_baixa', '=', False)
+            # '|',
+            # ('data_baixa', '>=', ultim_dia_any),
+            # ('data_baixa', '=', False)
         ]
         context_glob = {'date': ultim_dia_any, 'active_test': False}
         while True:
@@ -102,7 +107,8 @@ class F1(MultiprocessBased):
                 o_codi_ine = ''
                 o_codi_prov = ''
                 o_zona = ''
-                o_potencia_facturada = format_f(cups['cnmc_potencia_facturada'], 3) or ''
+                o_potencia_facturada = format_f(
+                    cups['cnmc_potencia_facturada'], 3) or ''
                 if 'et' in cups:
                     o_zona = self.get_zona_qualitat(cups['et'])
                 if cups['id_municipi']:
@@ -169,8 +175,10 @@ class F1(MultiprocessBased):
                         polissa_id[0], fields_to_read, context_glob
                     )
                     if polissa['tensio']:
-                        o_tensio = format_f(polissa['tensio'] / 1000.0, 3)
-                    o_potencia = format_f(polissa['potencia'], 3)
+                        o_tensio = format_f(
+                            polissa['tensio'] / 1000.0, decimals=3)
+                    o_potencia = format_f(
+                        polissa['potencia'], decimals=3)
                     if polissa['cnae']:
                         o_cnae = polissa['cnae'][1]
                     # Mirem si té l'actualització dels butlletins
@@ -178,7 +186,8 @@ class F1(MultiprocessBased):
                         butlleti = O.GiscedataButlleti.read(
                             polissa['butlletins'][-1], ['pot_max_admisible']
                         )
-                        o_pot_ads = format_f(butlleti['pot_max_admisible'], 3)
+                        o_pot_ads = format_f(
+                            butlleti['pot_max_admisible'], decimals=3)
                     comptador_actiu = get_comptador(
                         self.connection, polissa['id'], self.year)
                     if comptador_actiu:
@@ -203,14 +212,19 @@ class F1(MultiprocessBased):
                     o_estat_contracte = 1
 
                 #energies consumides
-                o_anual_activa = format_f(cups['cne_anual_activa'], 3) or 0.0
-                o_anual_reactiva = format_f(cups['cne_anual_reactiva'], 3) or \
+                o_anual_activa = format_f(
+                    cups['cne_anual_activa'], decimals=3) or 0.0
+                o_anual_reactiva = format_f(
+                    cups['cne_anual_reactiva'], decimals=3) or \
                     0.0
-                o_any_incorporacio = self.year + 1
+                o_any_incorporacio = self.year
+                res_srid = convert_srid(
+                    self.codi_r1, get_srid(O), [o_utmx, o_utmy])
+
                 self.output_q.put([
                     o_nom_node,
-                    o_utmx,
-                    o_utmy,
+                    format_f(res_srid[0], decimals=3),
+                    format_f(res_srid[1], decimals=3),
                     o_utmz,
                     o_cnae,
                     o_equip,

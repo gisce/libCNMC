@@ -15,12 +15,16 @@ class F1bis(MultiprocessBased):
         self.base_object = 'CUPS'
 
     def get_sequence(self):
-        search_params = []
-        return self.connection.GiscedataCupsPs.search(search_params)
+        data_ini = '%s-01-01' % self.year
+        search_params = ['&',
+                         ('create_date', '<', data_ini),
+                         ('active', '=', True)]
+        return self.connection.GiscedataCupsPs.search(
+            search_params, 0, 0, False, {'active_test': False})
 
     def get_comptador(self, polissa_id):
-        O = self.connection
-        comp_obj = O.GiscedataLecturesComptador
+        o = self.connection
+        comp_obj = o.GiscedataLecturesComptador
         comp_id = comp_obj.search([
             ('polissa', '=', polissa_id),
             ('data_alta', '<', '%s-01-01' % (self.year + 1))
@@ -56,9 +60,9 @@ class F1bis(MultiprocessBased):
             ('cups', '=', cups_id),
             ('state', 'not in', ('esborrany', 'validar')),
             ('data_alta', '<=', ultim_dia_any),
-            '|',
-            ('data_baixa', '>=', ultim_dia_any),
-            ('data_baixa', '=', False)
+            # '|',
+            # ('data_baixa', '>=', ultim_dia_any),
+            # ('data_baixa', '=', False)
         ], 0, 1, 'data_alta desc', context)
         return polissa_id
 
@@ -111,10 +115,11 @@ class F1bis(MultiprocessBased):
                 else:
                     o_comptador_cini = ''
                     o_comptador_data = ''
-                o_num_lectures = format_f(cups['cnmc_numero_lectures'], 3) or ''
+                o_num_lectures = format_f(
+                    cups['cnmc_numero_lectures'], decimals=3) or ''
                 o_titular = self.get_cambio_titularidad(cups['id'])
                 o_baixa = self.get_baixa_cups(cups['id'])
-                o_year = datetime.now().year
+                o_year = self.year
 
                 self.output_q.put([
                     o_cups,

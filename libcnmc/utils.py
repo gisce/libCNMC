@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
 import multiprocessing
+from pyproj import Proj
+from pyproj import transform
 
 
 N_PROC = int(os.getenv('N_PROC', multiprocessing.cpu_count() + 1))
@@ -100,6 +102,28 @@ def tallar_text(text, long):
 
 def format_f(num, decimals=2):
     '''formats float with comma decimal separator'''
-    fstring = '%%.%df' % decimals
-    return (fstring % num).replace('.', ',')
+    if isinstance(num, float):
+        fstring = '%%.%df' % decimals
+        return (fstring % num).replace('.', ',')
+    return num
 
+
+def convert_srid(codi, srid_source, point):
+        assert srid_source in ['25829', '25830', '25831']
+        if codi == '0056':
+            return point
+        else:
+            if srid_source == '25830':
+                return point
+            else:
+                source = Proj(init='epsg:{0}'.format(srid_source))
+                dest = Proj(init='epsg:25830')
+                result_point = transform(source, dest, point[0], point[1])
+                return result_point
+
+
+def get_srid(connection):
+    giscegis_srid_id = connection.ResConfig.search(
+                    [('name', '=', 'giscegis_srid')])
+    giscegis_srid = connection.ResConfig.read(giscegis_srid_id)[0]['value']
+    return giscegis_srid

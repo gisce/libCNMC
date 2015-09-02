@@ -43,9 +43,9 @@ class F10BT(MultiprocessBased):
     def get_provincia(self, id_mun):
         o = self.connection
         res = ''
-        prov = o.ResMunicipi.read(id_mun, ['state'])['state'][1]
+        prov = o.ResMunicipi.read(id_mun, ['ine'])['ine']
         if prov:
-            res = prov
+            res = prov[0:2]
         return res
 
     def consumer(self):
@@ -97,8 +97,8 @@ class F10BT(MultiprocessBased):
                 o_cini = linia['cini']
                 o_provincia = self.get_provincia(linia['municipi'][0])
                 o_longitud = format_f(
-                    round(linia['longitud_cad'] * coeficient / 1000.0, 3), 3
-                ) or 0.001
+                    round(linia['longitud_cad'] * coeficient / 1000.0, 3),
+                    decimals=3) or 0.001
                 o_num_circuits = 1  # a BT suposarem que sempre hi ha 1
                 o_tipus = self.get_tipus_cable(cable['tipus'][0])
                 o_r = format_f(
@@ -108,7 +108,7 @@ class F10BT(MultiprocessBased):
                 o_int_max = format_f(cable['intensitat_admisible'], 3)
                 o_op_habitual = 1  # Tots son actius
                 o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
-                o_any = self.year + 1
+                o_any = self.year
 
                 self.output_q.put([
                     o_tram,
