@@ -63,7 +63,8 @@ class F13bis(MultiprocessBased):
                 o_node = self.get_node(sub['subestacio_id'][0])
                 o_cini = sub['cini']
                 o_tipus = self.get_tipus_parc(sub['subestacio_id'][0])
-                o_tensio = format_f(float(sub['tensio'][1]) / 1000.0, 3)
+                o_tensio = format_f(
+                    float(sub['tensio'][1]) / 1000.0, decimals=3)
                 o_prop = int(sub['propietari'])
                 o_any = self.year
 
