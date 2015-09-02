@@ -2,10 +2,8 @@
 from datetime import datetime
 import traceback
 
-from libcnmc.utils import get_ine, format_f
+from libcnmc.utils import get_ine, format_f, convert_srid, get_srid
 from libcnmc.core import MultiprocessBased
-from pyproj import Proj
-from pyproj import transform
 
 
 class F11(MultiprocessBased):
@@ -32,19 +30,6 @@ class F11(MultiprocessBased):
                           ('active', '=', True)]
         return self.connection.GiscedataCts.search(
             search_params, 0, 0, False, {'active_test': False})
-
-    def convert_srid(self, codi, srid_source, point):
-        assert srid_source in ['25829', '25830', '25831']
-        if codi == '0056':
-            return point
-        else:
-            if srid_source == '25830':
-                return point
-            else:
-                source = Proj(init='epsg:{0}'.format(srid_source))
-                dest = Proj(init='epsg:25830')
-                result_point = transform(source, dest, point[0], point[1])
-                return result_point
 
     def get_node_vertex(self, ct_id):
         O = self.connection
@@ -128,7 +113,7 @@ class F11(MultiprocessBased):
                     o_ine_prov, o_ine_muni = self.get_ine(ct['id_municipi'][0])
                 else:
                     o_ine_muni, o_ine_prov = '', ''
-                o_tensio_p = ct['tensio_p'] or ''
+                o_tensio_p = format_f(ct['tensio_p'] / 1000.0, decimals=3) or ''
                 if ct['id_subtipus']:
                     o_tipo = self.get_tipus(ct['id_subtipus'][0])
                 else:
@@ -141,7 +126,8 @@ class F11(MultiprocessBased):
                         cups, ['cne_anual_activa']
                     )
                 )
-                o_pic_activa = self.get_saturacio(ct['id'])
+                o_pic_activa = format_f(
+                    self.get_saturacio(ct['id']), decimals=3)
                 o_pic_reactiva = ''
                 o_s_utilitades, o_s_disponibles = self.get_sortides_ct(
                     ct['name']
@@ -153,27 +139,24 @@ class F11(MultiprocessBased):
                 y = ''
                 z = ''
                 if vertex[0]:
-                    x = format_f(float(vertex[0]), 3)
+                    x = format_f(float(vertex[0]), decimals=3)
                 if vertex[1]:
-                    y = format_f(float(vertex[1]), 3)
-                giscegis_srid_id = O.ResConfig.search(
-                    [('name', '=', 'giscegis_srid')])
-                giscegis_srid = O.ResConfig.read(giscegis_srid_id)[0]['value']
-                res_srid = self.convert_srid(
-                    self.codi_r1, giscegis_srid, [x, y])
+                    y = format_f(float(vertex[1]), decimals=3)
+                res_srid = convert_srid(
+                    self.codi_r1, get_srid(O), [x, y])
                 self.output_q.put([
                     o_node,
                     o_ct,
                     o_cini,
-                    res_srid[0],
-                    res_srid[1],
+                    format_f(res_srid[0], decimals=3),
+                    format_f(res_srid[1], decimals=3),
                     z,
                     o_ine_muni,
                     o_ine_prov,
                     o_tensio_p,
                     o_tipo,
                     o_potencia,
-                    o_energia,
+                    format_f(o_energia, decimals=3),
                     o_pic_activa,
                     o_pic_reactiva,
                     o_s_utilitades,
