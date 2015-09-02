@@ -115,7 +115,8 @@ class F1bis(MultiprocessBased):
                 else:
                     o_comptador_cini = ''
                     o_comptador_data = ''
-                o_num_lectures = format_f(cups['cnmc_numero_lectures'], 3) or ''
+                o_num_lectures = format_f(
+                    cups['cnmc_numero_lectures'], decimals=3) or ''
                 o_titular = self.get_cambio_titularidad(cups['id'])
                 o_baixa = self.get_baixa_cups(cups['id'])
                 o_year = self.year
