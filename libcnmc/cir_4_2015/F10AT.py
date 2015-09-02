@@ -17,12 +17,12 @@ class F10AT(MultiprocessBased):
         search_params = [('name', '!=', '1')]
         return self.connection.GiscedataAtLinia.search(search_params)
 
-    def get_provincia(self, id_mun):
+    def get_provincia(self, id_prov):
         o = self.connection
         res = ''
-        prov = o.ResMunicipi.read(id_mun, ['ine'])['ine']
-        if prov:
-            res = prov
+        ine = o.ResCountryState.read(id_prov, ['code'])['code']
+        if ine:
+            res = ine
         return res
 
     def consumer(self):
@@ -82,7 +82,7 @@ class F10AT(MultiprocessBased):
                     o_node_inicial = at['origen'][0:20]
                     o_node_final = at['final'][0:20]
                     o_cini = at['cini']
-                    o_provincia = self.get_provincia(linia['provincia'][0])[0:2]
+                    o_provincia = self.get_provincia(linia['provincia'][0])
                     o_longitud = format_f(round(
                         at['longitud_cad'] * coeficient / 1000.0, 3
                     ), decimals=3) or 0.001
