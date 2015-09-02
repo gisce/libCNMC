@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import traceback
-from libcnmc.utils import format_f
+from libcnmc.utils import format_f, convert_srid, get_srid
 from libcnmc.core import MultiprocessBased
-from pyproj import Proj
-from pyproj import transform
 
 
 class F13(MultiprocessBased):
@@ -31,19 +29,6 @@ class F13(MultiprocessBased):
                           ('ct_id.active', '=', True)]
         return self.connection.GiscedataCtsSubestacions.search(
             search_params, 0, 0, False, {'active_test': False})
-
-    def convert_srid(self, codi, srid_source, point):
-        assert srid_source in ['25829', '25830', '25831']
-        if codi == '0056':
-            return point
-        else:
-            if srid_source == '25830':
-                return point
-            else:
-                source = Proj(init='epsg:{0}'.format(srid_source))
-                dest = Proj(init='epsg:25830')
-                result_point = transform(source, dest, point[0], point[1])
-                return result_point
 
     def get_ines(self, ids):
         o = self.connection
@@ -96,24 +81,21 @@ class F13(MultiprocessBased):
                 y = ''
                 z = ''
                 if vertex[0]:
-                    x = format_f(float(vertex[0]), 3)
+                    x = format_f(float(vertex[0]), decimals=3)
                 if vertex[1]:
-                    y = format_f(float(vertex[1]), 3)
+                    y = format_f(float(vertex[1]), decimals=3)
                 o_municipi = ines['ine_municipi']
                 o_provincia = ines['ine_provincia']
                 o_prop = int(sub['propietari'])
                 o_any = self.year
-                giscegis_srid_id = o.ResConfig.search(
-                    [('name', '=', 'giscegis_srid')])
-                giscegis_srid = o.ResConfig.read(giscegis_srid_id)[0]['value']
-                res_srid = self.convert_srid(
-                    self.codi_r1, giscegis_srid, [x, y])
+                res_srid = convert_srid(
+                    self.codi_r1, get_srid(o), [x, y])
                 self.output_q.put([
                     o_subestacio,
                     o_cini,
                     o_denominacio,
-                    res_srid[0],
-                    res_srid[1],
+                    format_f(res_srid[0], decimals=3),
+                    format_f(res_srid[1], decimals=3),
                     z,
                     o_municipi,
                     o_provincia,
