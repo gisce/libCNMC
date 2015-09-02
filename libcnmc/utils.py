@@ -102,8 +102,10 @@ def tallar_text(text, long):
 
 def format_f(num, decimals=2):
     '''formats float with comma decimal separator'''
-    fstring = '%%.%df' % decimals
-    return (fstring % num).replace('.', ',')
+    if isinstance(num, float):
+        fstring = '%%.%df' % decimals
+        return (fstring % num).replace('.', ',')
+    return num
 
 
 def convert_srid(codi, srid_source, point):
