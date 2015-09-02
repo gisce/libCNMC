@@ -2,8 +2,7 @@
 from datetime import datetime
 import traceback
 
-from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP
-from libcnmc.utils import get_ine, get_comptador
+from libcnmc.utils import format_f
 from libcnmc.core import MultiprocessBased
 
 
@@ -63,9 +62,12 @@ class F12(MultiprocessBased):
                     o_ct = str(o_ct[1])
                 o_cini = trafo['cini'] or ''
                 o_maquina = trafo['name']
-                o_pot = trafo['potencia_nominal'] / 1000.0
-                o_perdues_buit = trafo['perdues_buit'] or 0
-                o_perdues_nominal = trafo['perdues_curtcircuit_nominal'] or 0
+                o_pot = format_f(
+                    trafo['potencia_nominal'] * 1000.0, decimals=3)
+                o_perdues_buit = format_f(
+                    trafo['perdues_buit'], decimals=3) or 0
+                o_perdues_nominal = format_f(
+                    trafo['perdues_curtcircuit_nominal'], decimals=3) or 0
                 o_propietari = int(trafo['propietari'])
                 o_any = self.year
 
