@@ -77,14 +77,15 @@ class F10AT(MultiprocessBased):
                     #Agafem la tensió
                     o_nivell_tensio = (
                         (at['tensio_max_disseny'] or linia['tensio']))
-                    o_nivell_tensio = format_f(o_nivell_tensio / 1000.0, 3)
+                    o_nivell_tensio = format_f(
+                        float(o_nivell_tensio) / 1000.0, 3)
                     o_tram = 'A%s' % at['name']
                     o_node_inicial = at['origen'][0:20]
                     o_node_final = at['final'][0:20]
                     o_cini = at['cini']
                     o_provincia = self.get_provincia(linia['provincia'][0])
                     o_longitud = format_f(round(
-                        at['longitud_cad'] * coeficient / 1000.0, 3
+                        float(at['longitud_cad']) * coeficient / 1000.0, 3
                     ), decimals=3) or 0.001
                     o_num_circuits = at['circuits']
                     o_r = format_f(
