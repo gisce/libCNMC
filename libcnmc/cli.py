@@ -918,9 +918,11 @@ def update_cinis_cts(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f1(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+    import sys
+    sys.argv = [sys.argv[0]]
+    service = OpenERPService()
+    service.db_name = kwargs['database']
+    O = PoolWrapper(service.pool, service.db_name, 1)
     proc = cir_4_2015.F1(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
@@ -1305,10 +1307,9 @@ def cir_4_2015_f10bt(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f20(**kwargs):
     import sys
-    import os
     sys.argv = [sys.argv[0]]
     service = OpenERPService()
-    service.db_name = 'Binefar'
+    service.db_name = kwargs['database']
     O = PoolWrapper(service.pool, service.db_name, 1)
     proc = cir_4_2015.F20(
         quiet=kwargs['quiet'],
@@ -1343,7 +1344,7 @@ def cir_4_2015_f9(**kwargs):
     sys.argv = [sys.argv[0]]
     service = OpenERPService()
     print service
-    service.db_name = 'Binefar'
+    service.db_name = kwargs['database']
     O = PoolWrapper(service.pool, service.db_name, 1)
     proc = cir_4_2015.F9(
         quiet=kwargs['quiet'],
