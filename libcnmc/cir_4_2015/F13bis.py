@@ -50,6 +50,7 @@ class F13bis(MultiprocessBased):
         fields_to_read = [
             'cini', 'propietari', 'subestacio_id', 'tensio'
         ]
+        dict_cts = {}
         while True:
             try:
                 # generar linies
@@ -67,17 +68,28 @@ class F13bis(MultiprocessBased):
                     float(sub['tensio'][1]) / 1000.0, decimals=3)
                 o_prop = int(sub['propietari'])
                 o_any = self.year
+                insert = True
+                if o_subestacio not in dict_cts.keys():
+                    dict_cts[o_subestacio] = [o_tensio]
+                else:
+                    llista_valors = dict_cts[o_subestacio]
+                    for valor in llista_valors:
+                        if valor == o_tensio:
+                            insert = False
+                    if insert:
+                        dict_cts[o_subestacio].append(o_tensio)
 
-                self.output_q.put([
-                    o_subestacio,
-                    o_parc,
-                    o_node,
-                    o_cini,
-                    o_tipus,
-                    o_tensio,
-                    o_prop,
-                    o_any
-                ])
+                if insert:
+                    self.output_q.put([
+                        o_subestacio,
+                        o_parc,
+                        o_node,
+                        o_cini,
+                        o_tipus,
+                        o_tensio,
+                        o_prop,
+                        o_any
+                    ])
             except:
                 traceback.print_exc()
                 if self.raven:
