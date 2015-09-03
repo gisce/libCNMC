@@ -97,8 +97,9 @@ class F10BT(MultiprocessBased):
                 o_cini = linia['cini']
                 o_provincia = self.get_provincia(linia['municipi'][0])
                 o_longitud = format_f(
-                    round(linia['longitud_cad'] * coeficient / 1000.0, 3),
-                    decimals=3) or 0.001
+                    round(
+                        float(linia['longitud_cad']) * coeficient / 1000.0, 3
+                    ), decimals=3) or 0.001
                 o_num_circuits = 1  # a BT suposarem que sempre hi ha 1
                 o_tipus = self.get_tipus_cable(cable['tipus'][0])
                 o_r = format_f(
