@@ -15,10 +15,11 @@ class F1bis(MultiprocessBased):
         self.base_object = 'CUPS'
 
     def get_sequence(self):
-        data_ini = '%s-01-01' % self.year
-        search_params = ['&',
+        data_ini = '%s-01-01' % (self.year + 1)
+        search_params = [('active', '=', True),
+                         '|',
                          ('create_date', '<', data_ini),
-                         ('active', '=', True)]
+                         ('create_date', '=', False)]
         return self.connection.GiscedataCupsPs.search(
             search_params, 0, 0, False, {'active_test': False})
 
