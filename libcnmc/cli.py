@@ -5,6 +5,7 @@ from datetime import datetime
 from ooop import OOOP
 from libcnmc.utils import N_PROC
 from libcnmc.core import UpdateCNMCStats, UpdateCINISComptador
+from libcnmc.core.backend import OpenERPService, PoolWrapper
 from libcnmc.cir_4_2014 import F1, F1bis, F11
 from libcnmc import cir_4_2015
 from libcnmc.res_4603 import INV
@@ -1303,9 +1304,12 @@ def cir_4_2015_f10bt(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f20(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+    import sys
+    import os
+    sys.argv = [sys.argv[0]]
+    service = OpenERPService()
+    service.db_name = 'Binefar'
+    O = PoolWrapper(service.pool, service.db_name, 1)
     proc = cir_4_2015.F20(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
@@ -1335,9 +1339,12 @@ def cir_4_2015_f20(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f9(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+    import sys
+    sys.argv = [sys.argv[0]]
+    service = OpenERPService()
+    print service
+    service.db_name = 'Binefar'
+    O = PoolWrapper(service.pool, service.db_name, 1)
     proc = cir_4_2015.F9(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
