@@ -139,12 +139,8 @@ class F11(MultiprocessBased):
                 x = ''
                 y = ''
                 z = ''
-                if vertex[0]:
-                    x = format_f(float(vertex[0]), decimals=3)
-                if vertex[1]:
-                    y = format_f(float(vertex[1]), decimals=3)
                 res_srid = convert_srid(
-                    self.codi_r1, get_srid(O), [x, y])
+                    self.codi_r1, get_srid(O), vertex)
                 self.output_q.put([
                     o_node,
                     o_ct,
