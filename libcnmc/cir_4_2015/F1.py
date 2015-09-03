@@ -176,7 +176,7 @@ class F1(MultiprocessBased):
                     )
                     if polissa['tensio']:
                         o_tensio = format_f(
-                            polissa['tensio'] / 1000.0, decimals=3)
+                            float(polissa['tensio']) / 1000.0, decimals=3)
                     o_potencia = format_f(
                         polissa['potencia'], decimals=3)
                     if polissa['cnae']:

@@ -69,17 +69,19 @@ class F14(MultiprocessBased):
                 o_costat_alta = self.get_costat_alta(trafo)
                 o_costat_baixa = self.get_costat_baixa(trafo)
                 o_pot_maquina = format_f(
-                    trafo['potencia_nominal'] / 1000.0, decimals=3)
+                    float(trafo['potencia_nominal']) / 1000.0, decimals=3)
                 o_pot_activa = format_f(
-                    trafo['potencia_activa'] / 1000.0, decimals=3)
+                    float(trafo['potencia_activa']) / 1000.0, decimals=3)
                 o_pot_reactiva = format_f(
-                    trafo['potencia_reactiva'] / 1000.0, decimals=3)
+                    float(trafo['potencia_reactiva']) / 1000.0, decimals=3)
                 o_energia_anual = format_f(
-                    trafo['energia_anual'] / 1000.0, decimals=3)
+                    float(trafo['energia_anual']) / 1000.0, decimals=3)
                 o_perdues = format_f(
-                    trafo['perdues_buit'] / 1000.0, decimals=3)
+                    float(trafo['perdues_buit']) / 1000.0, decimals=3)
                 o_perdues_nominal = format_f(
-                    trafo['perdues_curtcircuit_nominal'] / 1000.0, decimals=3)
+                    float(
+                        trafo['perdues_curtcircuit_nominal']
+                    ) / 1000.0, decimals=3)
                 o_propietat = int(trafo['propietari'])
                 o_estat = self.get_estat(trafo['id_estat'][0])
                 o_any = self.year
