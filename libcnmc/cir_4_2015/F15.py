@@ -85,13 +85,7 @@ class F15(MultiprocessBased):
                 o_node, vertex = self.get_node_vertex(o_tram)
                 o_fiabilitat = celles['inventari']
                 o_cini = celles['cini']
-                x = ''
-                y = ''
                 z = ''
-                if vertex[0]:
-                    x = format_f(float(vertex[0]), decimals=3)
-                if vertex[1]:
-                    y = format_f(float(vertex[1]), decimals=3)
                 o_municipi = dict_linia.get('municipi')
                 o_provincia = dict_linia.get('provincia')
                 o_tensio = format_f(dict_linia.get('tensio'), decimals=3)
@@ -99,7 +93,7 @@ class F15(MultiprocessBased):
                 o_prop = int(celles['propietari'])
                 o_any = self.year
                 res_srid = convert_srid(
-                    self.codi_r1, get_srid(o), [x, y])
+                    self.codi_r1, get_srid(o), vertex)
                 self.output_q.put([
                     o_node,
                     o_fiabilitat,
