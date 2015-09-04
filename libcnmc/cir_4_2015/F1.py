@@ -86,9 +86,9 @@ class F1(MultiprocessBased):
         search_glob = [
             ('state', 'not in', ('esborrany', 'validar')),
             ('data_alta', '<=', ultim_dia_any),
-            # '|',
-            # ('data_baixa', '>=', ultim_dia_any),
-            # ('data_baixa', '=', False)
+            '|',
+            ('data_baixa', '>=', ultim_dia_any),
+            ('data_baixa', '=', False)
         ]
         context_glob = {'date': ultim_dia_any, 'active_test': False}
         while True:
@@ -97,7 +97,8 @@ class F1(MultiprocessBased):
                 self.progress_q.put(item)
                 fields_to_read = [
                     'name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
-                    'cne_anual_reactiva', 'cnmc_potencia_facturada', 'et'
+                    'cne_anual_reactiva', 'cnmc_potencia_facturada', 'et',
+                    'polisses'
                 ]
 
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
@@ -161,12 +162,27 @@ class F1(MultiprocessBased):
                 search_params = [('cups', '=', cups['id'])] + search_glob
                 polissa_id = O.GiscedataPolissa.search(
                     search_params, 0, 1, 'data_alta desc', context_glob)
+
+                # if polissa_id:
+                #     search_params = [('data_inici', '<=', ultim_dia_any),
+                #                      ('data_final', '>=', ultim_dia_any),
+                #                      ('polissa_id.id', '=', polissa_id)]
+                #     c_ids = O.GiscedataPolissaModcontractual.search(
+                #         search_params, 0, 1, False, {'active_test': False})
+
+
                 o_potencia = ''
                 o_cnae = ''
                 o_pot_ads = ''
                 o_equip = 'MEC'
                 o_cod_tfa = ''
                 o_estat_contracte = 0
+                #energies consumides
+                o_anual_activa = format_f(
+                    cups['cne_anual_activa'], decimals=3) or 0.0
+                o_anual_reactiva = format_f(
+                    cups['cne_anual_reactiva'], decimals=3) or \
+                    0.0
                 if polissa_id:
                     fields_to_read = [
                         'potencia', 'cnae', 'tarifa', 'butlletins', 'tensio'
@@ -211,13 +227,36 @@ class F1(MultiprocessBased):
                     # "Contrato no activo (CNA)"
                     o_equip = 'CNA'
                     o_estat_contracte = 1
+                    o_potencia_facturada = 0
+                    o_pot_ads = 0
+                    o_potencia = 0
+                    o_anual_activa = 0
+                    o_anual_reactiva = 0
 
-                #energies consumides
-                o_anual_activa = format_f(
-                    cups['cne_anual_activa'], decimals=3) or 0.0
-                o_anual_reactiva = format_f(
-                    cups['cne_anual_reactiva'], decimals=3) or \
-                    0.0
+                    search_modcon = [
+                        ('id', 'in', cups['polisses']),
+                        ('data_inici', '<=', ultim_dia_any)
+                    ]
+                    modcons = O.GiscedataPolissaModcontractual.search(
+                        search_modcon, 0, 1, 'data_inici desc'
+                        , {'active_test': False})
+                    if modcons:
+                        modcon_id = modcons[0]
+
+                        fields_to_read_modcon   = ['cnae', 'tarifa', 'tensio']
+
+                        modcon = O.GiscedataPolissaModcontractual.read(
+                            modcon_id, fields_to_read_modcon)
+
+                        if modcon['tarifa']:
+                            o_cod_tfa = self.get_codi_tarifa(modcon['tarifa'][1])
+                        if modcon['cnae']:
+                            o_cnae = modcon['cnae'][1]
+                        if modcon['tensio']:
+                            o_tensio = format_f(
+                                float(modcon['tensio']) / 1000.0, decimals=3)
+
+
                 o_any_incorporacio = self.year
                 res_srid = convert_srid(
                     self.codi_r1, get_srid(O), [o_utmx, o_utmy])
