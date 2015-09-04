@@ -17,7 +17,8 @@ def OOOPFactory(**kwargs):
         logger.info('Using native OOOP')
         service = OpenERPService()
         service.db_name = kwargs['dbname']
-        O = PoolWrapper(service.pool, service.db_name, 1)
+        uid = service.login(kwargs['user'], kwargs['pwd'])
+        O = PoolWrapper(service.pool, service.db_name, uid)
     except:
         import traceback
         traceback.print_exc()
@@ -58,6 +59,14 @@ class OpenERPService(object):
         self.config['db_name'] = value
         self.db, self.pool = self.pooler.get_db_and_pool(self.db_name)
         # TODO: Patch ir.cron
+
+    def login(self, user, password):
+        if not self.db_name:
+            raise Exception('Database not ready')
+        import netsvc
+        common = netsvc.SERVICES['common']
+        res = common.login(self.db_name, user, password, 'localservice')
+        return res
 
 
 class Transaction(object):
