@@ -29,10 +29,11 @@ class F13bis(MultiprocessBased):
         return self.connection.GiscedataCtsSubestacionsPosicio.search(
             search_params, 0, 0, False, {'active_test': False})
 
-    def get_node(self, sub_id):
+    def get_subestacio(self, sub_id):
         o = self.connection
-        ct_id = o.GiscedataCtsSubestacions.read(sub_id, ['ct_id'])
-        ct_id = ct_id['ct_id'][0]
+        sub = o.GiscedataCtsSubestacions.read(sub_id, ['ct_id', 'cini'])
+        ct_id = sub['ct_id'][0]
+        cini = sub['cini']
         bloc = o.GiscegisBlocsCtat.search([('ct', '=', ct_id)])
         node = ''
         if bloc:
@@ -40,7 +41,8 @@ class F13bis(MultiprocessBased):
             node = bloc['node'][0]
         else:
             print "ct id: {}".format(ct_id)
-        return node
+        return {'node': node, 'cini': cini}
+
 
     def get_tipus_parc(self, sub_id):
         return 0
@@ -48,8 +50,9 @@ class F13bis(MultiprocessBased):
     def consumer(self):
         o = self.connection
         fields_to_read = [
-            'cini', 'propietari', 'subestacio_id', 'tensio'
+            'propietari', 'subestacio_id', 'tensio'
         ]
+        dict_cts = {}
         while True:
             try:
                 # generar linies
@@ -60,24 +63,36 @@ class F13bis(MultiprocessBased):
                 )
                 o_subestacio = sub['subestacio_id'][1]
                 o_parc = sub['subestacio_id'][1] + "-" + sub['tensio'][1]
-                o_node = self.get_node(sub['subestacio_id'][0])
-                o_cini = sub['cini']
+                subestacio = self.get_subestacio(sub['subestacio_id'][0])
+                o_node = subestacio['node']
+                o_cini = subestacio['cini']
                 o_tipus = self.get_tipus_parc(sub['subestacio_id'][0])
                 o_tensio = format_f(
                     float(sub['tensio'][1]) / 1000.0, decimals=3)
                 o_prop = int(sub['propietari'])
                 o_any = self.year
+                insert = True
+                if o_subestacio not in dict_cts.keys():
+                    dict_cts[o_subestacio] = [o_tensio]
+                else:
+                    llista_valors = dict_cts[o_subestacio]
+                    for valor in llista_valors:
+                        if valor == o_tensio:
+                            insert = False
+                    if insert:
+                        dict_cts[o_subestacio].append(o_tensio)
 
-                self.output_q.put([
-                    o_subestacio,
-                    o_parc,
-                    o_node,
-                    o_cini,
-                    o_tipus,
-                    o_tensio,
-                    o_prop,
-                    o_any
-                ])
+                if insert:
+                    self.output_q.put([
+                        o_subestacio,
+                        o_parc,
+                        o_node,
+                        o_cini,
+                        o_tipus,
+                        o_tensio,
+                        o_prop,
+                        o_any
+                    ])
             except:
                 traceback.print_exc()
                 if self.raven:

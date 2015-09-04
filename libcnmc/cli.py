@@ -1118,7 +1118,7 @@ def cir_4_2015_f13bis(**kwargs):
         interactive=kwargs['interactive'],
         output=kwargs['output'],
         connection=O,
-        num_proc=kwargs['num_proc'],
+        num_proc=1,
         year=kwargs['year']
     )
     proc.calc()
