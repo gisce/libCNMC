@@ -21,7 +21,7 @@ class F9(MultiprocessBased):
         self.codi_r1 = wiz_obj.default_get(['codi_r1'])['codi_r1']
         id_res_like = o.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')])
-        self.layer = '%\_BT\_%'
+        self.layer = 'LBT\_%'
         if id_res_like:
             self.layer = o.ResConfig.read(id_res_like, ['value'])[0]['value']
 
@@ -85,13 +85,17 @@ class F9(MultiprocessBased):
         if net.lower() == 'at':
             ids_edges = model_edge.search(
                 [('id_linktemplate', '=', id_tram),
-                 ('layer', 'not ilike', like_layer)]
+                 ('layer', 'not ilike', like_layer),
+                 ('layer', 'not ilike', '%EMBARRAT%'),
+                 ('layer', 'not ilike', '%EMBARRADO%')]
             )
             # print "ids edges at: {0}".format(len(ids_edges))
         else:
             ids_edges = model_edge.search(
                 [('id_linktemplate', '=', id_tram),
-                 ('layer', 'ilike', like_layer)]
+                 ('layer', 'ilike', like_layer),
+                 ('layer', 'not ilike', '%EMBARRAT%'),
+                 ('layer', 'not ilike', '%EMBARRADO%')]
             )
             # print "ids edges bt: {0}".format(len(ids_edges))
         edges = model_edge.read(ids_edges)
