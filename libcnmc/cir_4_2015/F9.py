@@ -17,8 +17,7 @@ class F9(MultiprocessBased):
         self.codi_r1 = ''
         self.base_object = 'CTS'
         o = self.connection
-        #wiz_obj = o.WizardCircular4_2015
-        wiz_obj = o.model('wizard.circular.4_2015')
+        wiz_obj = o.WizardCircular4_2015
         self.codi_r1 = wiz_obj.default_get(['codi_r1'])['codi_r1']
         id_res_like = o.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')])
