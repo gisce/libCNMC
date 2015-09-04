@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from multiprocessing import Manager
-
+from dateutil.parser import parse
+from datetime import datetime
 
 from libcnmc.res_4603.create_celles import CreateCelles
 
@@ -29,22 +29,11 @@ class CreateCelles4_2015(CreateCelles):
                     if suport_name:
                         tipus = 'suport'
                         name = suport_name
-                    vals[val[0]] = self.get_value(tipus, name, 'propietari')
-                else:
-                    vals[val[0]] = int(val[1])
-            elif val[0] == 'data_pm':
-                if val[1] == 'auto':
-                    if ct_name:
-                        tipus = 'ct'
-                        name = ct_name
-                    if suport_name:
-                        tipus = 'suport'
-                        name = suport_name
                     vals[val[0]] = self.get_value(
-                        tipus, name, 'perc_financament')
+                        tipus, name, 'data_pm')
                 else:
-                    vals[val[0]] = float(val[1])
-            else:
-                vals[val[0]] = val[1]
+                    print val[1]
+                    date = parse(val[1])
+                    vals[val[0]] = date.strftime('%Y-%m-%d')
         return vals
 
