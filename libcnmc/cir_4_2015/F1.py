@@ -43,10 +43,11 @@ class F1(MultiprocessBased):
                 if ct_ids:
                     dades_ct = self.connection.GiscedataCts.read(
                         ct_ids[0], ['zona_id'])
-                    zona_desc = dades_ct['zona_id'][1].upper().replace(' ', '')
-                    if zona_desc in CODIS_ZONA:
-                        zona_qualitat = CODIS_ZONA[zona_desc]
-                        self.cts[codi_ct] = zona_qualitat
+                    if dades_ct['zona_id']:
+                        zona_desc = dades_ct['zona_id'][1].upper().replace(' ', '')
+                        if zona_desc in CODIS_ZONA:
+                            zona_qualitat = CODIS_ZONA[zona_desc]
+                            self.cts[codi_ct] = zona_qualitat
         return zona_qualitat
 
     def get_tipus_connexio(self, id_escomesa):
