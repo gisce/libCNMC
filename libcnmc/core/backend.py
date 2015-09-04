@@ -1,22 +1,38 @@
 import re
 import os
+import logging
 
 from osconf import config_from_environment
+from ooop import OOOP
 
 
-__FIRST_CAP_RE = re.compile('(.)([A-Z][a-z]+)')
-__ALL_CAP_RE = re.compile('([a-z0-9])([A-Z])')
+def camel2dot(name):
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1.\2', name)
+    return re.sub('([a-z])([A-Z0-9])', r'\1.\2', s1).lower()
 
 
-def lowercase(name):
-    s1 = __FIRST_CAP_RE.sub(r'\1.\2', name)
-    return __ALL_CAP_RE.sub(r'\1.\2', s1).lower()
+def OOOPFactory(**kwargs):
+    logger = logging.getLogger('libCNMC.OOOPFactory')
+    try:
+        logger.info('Using native OOOP')
+        service = OpenERPService()
+        service.db_name = kwargs['dbname']
+        O = PoolWrapper(service.pool, service.db_name, 1)
+    except:
+        import traceback
+        traceback.print_exc()
+        logger.info('Using XML-RPC OOOP')
+        O = OOOP(**kwargs)
+    return O
 
 
 class OpenERPService(object):
     def __init__(self, **kwargs):
+        import sys
+        sys.argv = [sys.argv[0]]
         config = config_from_environment('OPENERP', [], **kwargs)
         import netsvc
+        logging.disable(logging.CRITICAL)
         import tools
         for key, value in config.iteritems():
             tools.config[key] = value
@@ -106,7 +122,6 @@ class PoolWrapper(object):
 
     def __getattr__(self, name):
         if not self.fork and (os.getpid() != self.ppid):
-            print "RESEEEEEEEEEEEEEEEEET!"
             import sql_db
             sql_db.close_db(self.dbname)
             service = OpenERPService()
@@ -114,7 +129,7 @@ class PoolWrapper(object):
             service.db_name = self.dbname
             self.pool = service.pool
             self.fork = True
-        name = lowercase(name)
+        name = camel2dot(name)
         return self.model(name)
 
     def model(self, name):
