@@ -21,7 +21,7 @@ class F9(MultiprocessBased):
         self.codi_r1 = wiz_obj.default_get(['codi_r1'])['codi_r1']
         id_res_like = o.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')])
-        self.layer = '%\_BT\_%'
+        self.layer = 'LBT\_%'
         if id_res_like:
             self.layer = o.ResConfig.read(id_res_like, ['value'])[0]['value']
 
