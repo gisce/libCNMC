@@ -113,8 +113,13 @@ class F11(MultiprocessBased):
                     o_ine_prov, o_ine_muni = self.get_ine(ct['id_municipi'][0])
                 else:
                     o_ine_muni, o_ine_prov = '', ''
-                o_tensio_p = format_f(
-                    float(ct['tensio_p']) / 1000.0, decimals=3) or ''
+
+                try:
+                    o_tensio_p = format_f(
+                        float(ct['tensio_p']) / 1000.0, decimals=3) or ''
+                except:
+                    o_tensio_p = ''
+
                 if ct['id_subtipus']:
                     o_tipo = self.get_tipus(ct['id_subtipus'][0])
                 else:
