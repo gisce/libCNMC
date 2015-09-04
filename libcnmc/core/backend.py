@@ -13,6 +13,7 @@ def camel2dot(name):
 
 def OOOPFactory(**kwargs):
     logger = logging.getLogger('libCNMC.OOOPFactory')
+    logging.basicConfig(level=logging.INFO)
     try:
         logger.info('Using native OOOP')
         service = OpenERPService()
