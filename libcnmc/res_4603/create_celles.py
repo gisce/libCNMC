@@ -13,10 +13,13 @@ class CreateCelles(UpdateFile):
             'tensio'
         ]
         self.search_keys = [('cups', 'name')]
+        self.fields_read_ct = ['perc_financament', 'propietari']
+        self.fields_read_at_tram = ['perc_financament']
         self.object = self.connection.GiscedataCellesCella
         manager = Manager()
         self.cts = manager.dict()
         self.at_suports = manager.dict()
+
 
     def model2cc(self, model):
         """Converteix el model en CamelCase.
@@ -33,12 +36,8 @@ class CreateCelles(UpdateFile):
                 return self.cts[clau][camp]
             else:
                 ct_dades = self.connection.GiscedataCts.read(
-                    self.cts[clau]['id'], ['perc_financament', 'propietari'])
-                vals = {
-                    'perc_financament':
-                        ct_dades['perc_financament'],
-                    'propietari': ct_dades['propietari'],
-                }
+                    self.cts[clau]['id'], self.fields_read_ct)
+                vals = ct_dades.copy()
                 vals.update(self.cts[clau])
                 self.cts[clau] = vals
                 return self.cts[clau][camp]
@@ -53,13 +52,12 @@ class CreateCelles(UpdateFile):
                     linia_id, ['trams', 'propietari']
                 )
                 tram_dades = self.connection.GiscedataAtTram.read(
-                    linia_dades['trams'][0], ['perc_financament']
+                    linia_dades['trams'][0], self.fields_read_at_tram
                 )
-                vals = {
-                    'perc_financament':
-                        tram_dades['perc_financament'],
-                    'propietari': linia_dades['propietari'],
-                }
+                vals = tram_dades.copy
+                vals.update({
+                    'propietari': linia_dades['propietari']
+                })
                 vals.update(self.at_suports[clau])
                 self.at_suports[clau] = vals
                 return self.at_suports[clau][camp]
