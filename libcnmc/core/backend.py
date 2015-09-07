@@ -42,6 +42,8 @@ class OpenERPService(object):
         from tools import config as default_config
         for key, value in config.iteritems():
             default_config[key] = value
+        # Disable cron
+        default_config['cron'] = False
         self.config = default_config
         import pooler
         import workflow
@@ -50,6 +52,11 @@ class OpenERPService(object):
         self.pool = None
         if 'db_name' in config:
             self.db_name = config['db_name']
+        try:
+            from netsvc import Agent
+            Agent.quit()
+        except ImportError:
+            pass
 
     @property
     def db_name(self):
