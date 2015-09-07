@@ -51,7 +51,8 @@ def get_ine(connection, ine):
             INES[municipi['ine']] = municipi['dc']
     # Accedim directament per la clau així si peta rebrem un sentry.
     if ine not in INES:
-        state, ine = ''
+        state = ''
+        ine = ''
     else:
         state = ine[:2]
         ine = ine[2:] + INES[ine]
