@@ -154,7 +154,7 @@ class PoolWrapper(object):
 
     @property
     def models(self):
-        return self.pool.keys()
+        return self.pool.obj_pool.keys()
 
 
 class ModelWrapper(object):
