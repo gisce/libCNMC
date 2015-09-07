@@ -14,7 +14,6 @@ class F15(MultiprocessBased):
 
     def get_sequence(self):
         search_params = [
-            # ('inventari', '=', 'fiabilitat'),
             ('installacio', 'ilike', 'giscedata.at.suport,%')
         ]
         return self.connection.GiscedataCellesCella.search(search_params)
@@ -70,7 +69,7 @@ class F15(MultiprocessBased):
     def consumer(self):
         o = self.connection
         fields_to_read = [
-            'inventari', 'installacio', 'cini', 'propietari'
+            'installacio', 'cini', 'propietari', 'name'
         ]
         while True:
             try:
@@ -83,7 +82,7 @@ class F15(MultiprocessBased):
                 o_tram = self.obtenir_tram(celles['installacio'])
                 dict_linia = self.obtenir_camps_linia(celles['installacio'])
                 o_node, vertex = self.get_node_vertex(o_tram)
-                o_fiabilitat = celles['inventari']
+                o_fiabilitat = celles['name']
                 o_cini = celles['cini']
                 z = ''
                 o_municipi = dict_linia.get('municipi')
