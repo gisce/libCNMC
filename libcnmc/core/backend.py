@@ -42,6 +42,8 @@ class OpenERPService(object):
         from tools import config as default_config
         for key, value in config.iteritems():
             default_config[key] = value
+        # Disable cron
+        default_config['cron'] = False
         self.config = default_config
         import pooler
         import workflow
