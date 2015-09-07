@@ -48,7 +48,7 @@ class F15(MultiprocessBased):
 
     def obtenir_camps_linia(self, installacio):
         o = self.connection
-        valor = str.split(installacio, ',')
+        valor = installacio.split(',')
         id_tram = int(valor[1])
         tram = o.GiscedataAtSuport.read(id_tram, ['linia'])
         linia_id = tram['linia']
