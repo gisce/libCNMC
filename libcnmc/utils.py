@@ -50,8 +50,11 @@ def get_ine(connection, ine):
         for municipi in connection.ResMunicipi.read(ids, ['ine', 'dc']):
             INES[municipi['ine']] = municipi['dc']
     # Accedim directament per la clau així si peta rebrem un sentry.
-    state = ine[:2]
-    ine = ine[2:] + INES[ine]
+    if ine not in INES:
+        state, ine = ''
+    else:
+        state = ine[:2]
+        ine = ine[2:] + INES[ine]
     return state, ine
 
 
