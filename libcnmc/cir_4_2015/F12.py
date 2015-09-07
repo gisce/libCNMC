@@ -57,7 +57,7 @@ class F12(MultiprocessBased):
                 trafo = o.GiscedataTransformadorTrafo.read(
                     item, fields_to_read
                 )
-                o_ct = trafo['ct'] or ''
+                o_ct = trafo['ct'] and trafo['ct'][1] or ''
                 o_node = self.get_node(item)
                 o_cini = trafo['cini'] or ''
                 o_maquina = trafo['name']
