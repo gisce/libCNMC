@@ -22,7 +22,7 @@ class F15(MultiprocessBased):
     def get_node_vertex(self, suport):
         o = self.connection
         node = ''
-        vertex = ('', '')
+        vertex = None
         if suport:
             bloc = o.GiscegisBlocsSuportsAt.search(
                 [('numsuport', '=', suport)]

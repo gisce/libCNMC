@@ -35,7 +35,7 @@ class F11(MultiprocessBased):
         O = self.connection
         bloc = O.GiscegisBlocsCtat.search([('ct', '=', ct_id)])
         node = ''
-        vertex = ('', '')
+        vertex = None
         if bloc:
             bloc = O.GiscegisBlocsCtat.read(bloc[0], ['node', 'vertex'])
             node = bloc['node'][0]
