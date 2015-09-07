@@ -152,6 +152,10 @@ class PoolWrapper(object):
     def model(self, name):
         return ModelWrapper(self.pool.get(name), self.dbname, self.uid)
 
+    @property
+    def models(self):
+        return self.pool.obj_pool.keys()
+
 
 class ModelWrapper(object):
     def __init__(self, model, dbname, uid):
