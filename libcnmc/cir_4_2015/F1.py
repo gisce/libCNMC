@@ -259,8 +259,10 @@ class F1(MultiprocessBased):
 
 
                 o_any_incorporacio = self.year
-                res_srid = convert_srid(
-                    self.codi_r1, get_srid(O), [o_utmx, o_utmy])
+                res_srid = ['', '']
+                if vertex:
+                    res_srid = convert_srid(
+                        self.codi_r1, get_srid(O), vertex)
 
                 self.output_q.put([
                     o_nom_node,
