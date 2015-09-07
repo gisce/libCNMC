@@ -52,6 +52,11 @@ class OpenERPService(object):
         self.pool = None
         if 'db_name' in config:
             self.db_name = config['db_name']
+        try:
+            from netsvc import agent_runner
+            agent_runner.stop()
+        except ImportError:
+            pass
 
     @property
     def db_name(self):
