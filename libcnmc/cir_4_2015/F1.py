@@ -262,7 +262,7 @@ class F1(MultiprocessBased):
                 res_srid = ['', '']
                 if vertex:
                     res_srid = convert_srid(
-                        self.codi_r1, get_srid(O), vertex)
+                        self.codi_r1, get_srid(O), [vertex['x'], vertex['y']])
 
                 self.output_q.put([
                     o_nom_node,
