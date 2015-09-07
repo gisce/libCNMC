@@ -92,8 +92,10 @@ class F15(MultiprocessBased):
                 o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
                 o_prop = int(celles['propietari'])
                 o_any = self.year
-                res_srid = convert_srid(
-                    self.codi_r1, get_srid(o), vertex)
+                res_srid = ['', '']
+                if vertex:
+                    res_srid = convert_srid(
+                        self.codi_r1, get_srid(o), vertex)
                 self.output_q.put([
                     o_node,
                     o_fiabilitat,

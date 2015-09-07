@@ -103,8 +103,8 @@ class F9(MultiprocessBased):
             return []
         vertexs = model_polyline.read(edges[0]['polyline'][0])
         for punt in model_vertex.read(vertexs['vertex_ids']):
-            data.append({'x': format_f(punt['x'], decimals=6),
-                         'y': format_f(punt['y'], decimals=6)})
+            data.append({'x': punt['x'],
+                         'y': punt['y']})
         return data
 
     def conv_text(self, data):
@@ -113,7 +113,10 @@ class F9(MultiprocessBased):
         for line in data:
             res_srid = convert_srid(self.codi_r1, get_srid(o),
                                     [line['x'], line['y']])
-            t += '{0};{1};{2}\n'.format(res_srid[0], res_srid[1], 0)
+            t += '{0};{1};{2}\n'.format(
+                format_f(res_srid[0], decimals=6),
+                format_f(res_srid[1], decimals=6),
+                0)
         return t[:-1]
 
     def consumer(self):
