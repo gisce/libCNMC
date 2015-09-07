@@ -54,7 +54,7 @@ class OpenERPService(object):
             self.db_name = config['db_name']
         try:
             from netsvc import agent_runner
-            agent_runner.stop()
+            agent_runner.quit()
         except ImportError:
             pass
 
