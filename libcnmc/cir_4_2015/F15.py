@@ -40,7 +40,7 @@ class F15(MultiprocessBased):
 
     def obtenir_tram(self, installacio):
         o = self.connection
-        valor = str.split(installacio, ',')
+        valor = installacio.split(',')
         id_tram = int(valor[1])
         tram = o.GiscedataAtSuport.read(id_tram, ['name'])
         valor = tram['name']
