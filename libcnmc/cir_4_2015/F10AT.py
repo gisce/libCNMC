@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import traceback
-from libcnmc.utils import format_f
+from libcnmc.utils import format_f, tallar_text
 from libcnmc.core import MultiprocessBased
 
 
@@ -11,7 +11,13 @@ class F10AT(MultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1')
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.report_name = 'F10AT - CTS'
-        self.base_object = 'CTS'
+        self.base_object = 'AT'
+        self.layer = 'LBT\_%'
+        id_res_like = self.connection.ResConfig.search(
+            [('name', '=', 'giscegis_btlike_layer')])
+        if id_res_like:
+            self.layer = self.connection.ResConfig.read(
+                id_res_like, ['value'])[0]['value']
 
     def get_sequence(self):
         search_params = [('name', '!=', '1')]
@@ -89,8 +95,19 @@ class F10AT(MultiprocessBased):
                     o_nivell_tensio = format_f(
                         float(o_nivell_tensio) / 1000.0, 3)
                     o_tram = 'A%s' % at['name']
-                    o_node_inicial = at['origen'][0:20]
-                    o_node_final = at['final'][0:20]
+                    res = o.GiscegisEdge.search(
+                        [('id_linktemplate', '=', at['name']),
+                         ('layer', 'not ilike', self.layer),
+                         ('layer', 'not ilike', 'EMBARRA%BT%')
+                         ])
+                    if not res or len(res) > 1:
+                        edge = {'start_node': (0, '%s_0' % at['name']),
+                                'end_node': (0, '%s_1' % at['name'])}
+                    else:
+                        edge = o.GiscegisEdge.read(res[0], ['start_node',
+                                                            'end_node'])
+                    o_node_inicial = tallar_text(edge['start_node'][1], 20)
+                    o_node_final = tallar_text(edge['end_node'][1], 20)
                     o_cini = at['cini']
                     o_provincia = self.get_provincia(linia['provincia'][0])
                     o_longitud = format_f(round(
