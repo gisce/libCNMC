@@ -67,7 +67,7 @@ class F1(MultiprocessBased):
                     edge = O.GiscegisEdge.read(edge[0], ['id_linktemplate'])
                     if edge['id_linktemplate']:
                         bt = O.GiscedataBtElement.search(
-                            [('id', '=', edge['id_linktemplate'])]
+                            [('name', '=', edge['id_linktemplate'])]
                         )
                         if bt:
                             bt = O.GiscedataBtElement.read(
