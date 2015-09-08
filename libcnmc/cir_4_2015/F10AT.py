@@ -121,7 +121,7 @@ class F10AT(MultiprocessBased):
                         cable['reactancia'] * at['longitud_cad'] or 0.0,
                         decimals=6)
                     o_int_max = format_f(
-                        cable['intensitat_admisible'], decimals=3)
+                        cable['intensitat_admisible'] or 0.0, decimals=3)
                     o_op_habitual = 1  # Tots son actius
                     o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
                     o_any = self.year
