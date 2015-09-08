@@ -128,6 +128,7 @@ class F1(MultiprocessBased):
                 o_nom_node = ''
                 o_tensio = ''
                 o_connexio = ''
+                vertex = False
                 if cups and cups['id_escomesa']:
                     o_connexio = self.get_tipus_connexio(
                         cups['id_escomesa'][0]
