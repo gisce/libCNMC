@@ -34,11 +34,11 @@ class F13bis(MultiprocessBased):
         sub = o.GiscedataCtsSubestacions.read(sub_id, ['ct_id', 'cini'])
         ct_id = sub['ct_id'][0]
         cini = sub['cini']
-        bloc = o.GiscegisBlocsCtat.search([('ct', '=', ct_id)])
+        bloc_ids = o.GiscegisBlocsCtat.search([('ct', '=', ct_id)])
         node = ''
-        if bloc:
-            bloc = o.GiscegisBlocsCtat.read(bloc[0], ['node'])
-            node = bloc['node'][0]
+        if bloc_ids:
+            bloc = o.GiscegisBlocsCtat.read(bloc_ids[0], ['node'])
+            node = bloc['node'][1]
         else:
             print "ct id: {}".format(ct_id)
         return {'node': node, 'cini': cini}

@@ -38,7 +38,7 @@ class F11(MultiprocessBased):
         vertex = None
         if bloc:
             bloc = O.GiscegisBlocsCtat.read(bloc[0], ['node', 'vertex'])
-            node = bloc['node'][0]
+            node = bloc['node'][1]
             if bloc['vertex']:
                 v = O.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
                 vertex = (round(v['x'], 3), round(v['y'], 3))
