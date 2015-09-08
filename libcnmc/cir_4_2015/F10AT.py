@@ -95,14 +95,14 @@ class F10AT(MultiprocessBased):
                     o_provincia = self.get_provincia(linia['provincia'][0])
                     o_longitud = format_f(round(
                         float(at['longitud_cad']) * coeficient / 1000.0, 3
-                    ), decimals=3) or 0.001
+                    ) or 0.001, decimals=3)
                     o_num_circuits = at['circuits']
                     o_r = format_f(
-                        cable['resistencia'] * at['longitud_cad'], decimals=6
-                    ) or 0.0
+                        cable['resistencia'] * at['longitud_cad'] or 0.0,
+                        decimals=6)
                     o_x = format_f(
-                        cable['reactancia'] * at['longitud_cad'], decimals=6
-                    ) or 0.0
+                        cable['reactancia'] * at['longitud_cad'] or 0.0,
+                        decimals=6)
                     o_int_max = format_f(
                         cable['intensitat_admisible'], decimals=3)
                     o_op_habitual = 1  # Tots son actius
