@@ -38,11 +38,15 @@ class F10AT(MultiprocessBased):
         ]
         data_pm_limit = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
-        static_search_params = ['|', ('data_pm', '=', False),
-                                     ('data_pm', '<', data_pm_limit),
-                                '|', ('data_baixa', '>', data_baixa),
-                                     ('data_baixa', '=', False),
-                                ]
+        static_search_params = [
+            ('cini', '!=', '0000000'),
+            '|',
+            ('data_pm', '=', False),
+            ('data_pm', '<', data_pm_limit),
+            '|',
+            ('data_baixa', '>', data_baixa),
+            ('data_baixa', '=', False),
+        ]
         # Revisem que si està de baixa ha de tenir la data informada.
         static_search_params += ['|',
                                  '&', ('active', '=', False),
@@ -75,8 +79,9 @@ class F10AT(MultiprocessBased):
                                                      fields_to_read_cable)
                     o_tipus = o.GiscedataAtTipuscable.read(cable['tipus'][0],
                                                          ['codi'])['codi']
-                    # Si el tram tram es embarrat no l'afegim
-                    if o_tipus == 'E':
+                    # Si el tram tram es embarrat amb una longitud > 100
+                    # no l'afegim
+                    if o_tipus == 'E' and at['longitud_cad'] > 100:
                         continue
                     #Agafem la tensió
                     o_nivell_tensio = (
