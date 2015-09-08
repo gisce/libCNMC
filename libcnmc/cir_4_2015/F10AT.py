@@ -15,7 +15,12 @@ class F10AT(MultiprocessBased):
 
     def get_sequence(self):
         search_params = [('name', '!=', '1')]
-        return self.connection.GiscedataAtLinia.search(search_params)
+        lines_id = self.connection.GiscedataAtLinia.search(search_params)
+        search_params = [('name', '=', '1')]
+        fict_line_id = self.connection.GiscedataAtLinia.search(
+            search_params, 0, 0, False, {'active_test': False})
+        return lines_id + fict_line_id
+
 
     def get_provincia(self, id_prov):
         o = self.connection
