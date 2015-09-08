@@ -71,18 +71,13 @@ class F9(MultiprocessBased):
         search_params += static_search_params
         ids_bt = o.GiscedataBtElement.search(
             search_params, 0, 0, False, {'active_test': False})
-        print '-----> len at {}'.format(len(ids_bt))
         # IDS AT + BT
 
         ids = []
-
         for at in ids_at:
             ids.append((at, 'at'))
         for bt in ids_bt:
             ids.append((bt, 'bt'))
-
-        # print "ids AT: {0}".format(len(ids_at))
-        # print "ids BT: {0}".format(len(ids_bt))
 
         return ids
 
@@ -99,7 +94,6 @@ class F9(MultiprocessBased):
                  ('layer', 'not ilike', like_layer),
                  ('layer', 'not ilike', 'EMBARRA%BT%')]
             )
-            # print "ids edges at: {0}".format(len(ids_edges))
         else:
             ids_edges = model_edge.search(
                 [('id_linktemplate', '=', id_tram),
@@ -107,7 +101,6 @@ class F9(MultiprocessBased):
                  ('layer', 'ilike', like_layer),
                  ('layer', 'ilike', 'EMBARRA%BT%')]
             )
-            # print "ids edges bt: {0}".format(len(ids_edges))
         edges = model_edge.read(ids_edges)
         if not edges:
             return []
