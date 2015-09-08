@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import traceback
-from libcnmc.utils import format_f
+from libcnmc.utils import format_f, tallar_text
 from libcnmc.core import MultiprocessBased
 
 
@@ -11,11 +11,22 @@ class F10AT(MultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1')
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.report_name = 'F10AT - CTS'
-        self.base_object = 'CTS'
+        self.base_object = 'AT'
+        self.layer = 'LBT\_%'
+        id_res_like = self.connection.ResConfig.search(
+            [('name', '=', 'giscegis_btlike_layer')])
+        if id_res_like:
+            self.layer = self.connection.ResConfig.read(
+                id_res_like, ['value'])[0]['value']
 
     def get_sequence(self):
         search_params = [('name', '!=', '1')]
-        return self.connection.GiscedataAtLinia.search(search_params)
+        lines_id = self.connection.GiscedataAtLinia.search(search_params)
+        search_params = [('name', '=', '1')]
+        fict_line_id = self.connection.GiscedataAtLinia.search(
+            search_params, 0, 0, False, {'active_test': False})
+        return lines_id + fict_line_id
+
 
     def get_provincia(self, id_prov):
         o = self.connection
@@ -29,16 +40,19 @@ class F10AT(MultiprocessBased):
         o = self.connection
         fields_to_read = [
             'name', 'cini', 'circuits', 'longitud_cad', 'linia', 'origen',
-            'final', 'coeficient', 'cable', 'tensio_max_disseny',
-            'longitud_cad'
+            'final', 'coeficient', 'cable', 'tensio_max_disseny'
         ]
         data_pm_limit = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
-        static_search_params = ['|', ('data_pm', '=', False),
-                                     ('data_pm', '<', data_pm_limit),
-                                '|', ('data_baixa', '>', data_baixa),
-                                     ('data_baixa', '=', False),
-                                ]
+        static_search_params = [
+            ('cini', '!=', '0000000'),
+            '|',
+            ('data_pm', '=', False),
+            ('data_pm', '<', data_pm_limit),
+            '|',
+            ('data_baixa', '>', data_baixa),
+            ('data_baixa', '=', False),
+        ]
         # Revisem que si està de baixa ha de tenir la data informada.
         static_search_params += ['|',
                                  '&', ('active', '=', False),
@@ -71,8 +85,9 @@ class F10AT(MultiprocessBased):
                                                      fields_to_read_cable)
                     o_tipus = o.GiscedataAtTipuscable.read(cable['tipus'][0],
                                                          ['codi'])['codi']
-                    # Si el tram tram es embarrat no l'afegim
-                    if o_tipus == 'E':
+                    # Si el tram tram es embarrat amb una longitud > 100
+                    # no l'afegim
+                    if o_tipus == 'E' and at['longitud_cad'] > 100:
                         continue
                     #Agafem la tensió
                     o_nivell_tensio = (
@@ -80,22 +95,33 @@ class F10AT(MultiprocessBased):
                     o_nivell_tensio = format_f(
                         float(o_nivell_tensio) / 1000.0, 3)
                     o_tram = 'A%s' % at['name']
-                    o_node_inicial = at['origen'][0:20]
-                    o_node_final = at['final'][0:20]
+                    res = o.GiscegisEdge.search(
+                        [('id_linktemplate', '=', at['name']),
+                         ('layer', 'not ilike', self.layer),
+                         ('layer', 'not ilike', 'EMBARRA%BT%')
+                         ])
+                    if not res or len(res) > 1:
+                        edge = {'start_node': (0, '%s_0' % at['name']),
+                                'end_node': (0, '%s_1' % at['name'])}
+                    else:
+                        edge = o.GiscegisEdge.read(res[0], ['start_node',
+                                                            'end_node'])
+                    o_node_inicial = tallar_text(edge['start_node'][1], 20)
+                    o_node_final = tallar_text(edge['end_node'][1], 20)
                     o_cini = at['cini']
                     o_provincia = self.get_provincia(linia['provincia'][0])
                     o_longitud = format_f(round(
                         float(at['longitud_cad']) * coeficient / 1000.0, 3
-                    ), decimals=3) or 0.001
+                    ) or 0.001, decimals=3)
                     o_num_circuits = at['circuits']
                     o_r = format_f(
-                        cable['resistencia'] * at['longitud_cad'], decimals=6
-                    ) or 0.0
+                        cable['resistencia'] * at['longitud_cad'] or 0.0,
+                        decimals=6)
                     o_x = format_f(
-                        cable['reactancia'] * at['longitud_cad'], decimals=6
-                    ) or 0.0
+                        cable['reactancia'] * at['longitud_cad'] or 0.0,
+                        decimals=6)
                     o_int_max = format_f(
-                        cable['intensitat_admisible'], decimals=3)
+                        cable['intensitat_admisible'] or 0.0, decimals=3)
                     o_op_habitual = 1  # Tots son actius
                     o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
                     o_any = self.year

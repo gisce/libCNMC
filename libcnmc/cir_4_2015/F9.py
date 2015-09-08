@@ -44,34 +44,40 @@ class F9(MultiprocessBased):
         trams = []
         ids_bt = 0
         ids_linia_at = o.GiscedataAtLinia.search([])
-        linia = o.GiscedataAtLinia.read(ids_linia_at, ['trams'])
-        for elem in linia:
+        fict_line_id = o.GiscedataAtLinia.search(
+            [('name', '=', '1')], 0, 0, False, {'active_test': False})
+        ids_linia_at += fict_line_id
+        linies = o.GiscedataAtLinia.read(ids_linia_at, ['trams'])
+        for elem in linies:
             trams += elem['trams']
-        search_params = [('id', 'in', trams)]
+        search_params = [('id', 'in', trams),
+                         ('cini', '!=', '0000000')]
         search_params += static_search_params
         ids_at = o.GiscedataAtTram.search(
             search_params, 0, 0, False, {'active_test': False})
-
+        search_params = [('id', 'in', trams),
+                         ('cini', '!=', '0000000'),
+                         ('longitud_cad', '>', 100),
+                         ('cable.tipus.codi', '=', 'E')]
+        search_params += static_search_params
+        remove_ids_at = o.GiscedataAtTram.search(
+            search_params, 0, 0, False, {'active_test': False})
+        ids_at = list(set(ids_at)-set(remove_ids_at))
         # BT
 
         search_params = [
-            ('cable.tipus.codi', 'in', ['T', 'D', 'S'])
+            ('cable.tipus.codi', 'in', ['T', 'D', 'S', 'E'])
         ]
         search_params += static_search_params
         ids_bt = o.GiscedataBtElement.search(
             search_params, 0, 0, False, {'active_test': False})
-
         # IDS AT + BT
 
         ids = []
-
         for at in ids_at:
             ids.append((at, 'at'))
         for bt in ids_bt:
             ids.append((bt, 'bt'))
-
-        # print "ids AT: {0}".format(len(ids_at))
-        # print "ids BT: {0}".format(len(ids_bt))
 
         return ids
 
@@ -86,18 +92,15 @@ class F9(MultiprocessBased):
             ids_edges = model_edge.search(
                 [('id_linktemplate', '=', id_tram),
                  ('layer', 'not ilike', like_layer),
-                 ('layer', 'not ilike', '%EMBARRAT%'),
-                 ('layer', 'not ilike', '%EMBARRADO%')]
+                 ('layer', 'not ilike', 'EMBARRA%BT%')]
             )
-            # print "ids edges at: {0}".format(len(ids_edges))
         else:
             ids_edges = model_edge.search(
                 [('id_linktemplate', '=', id_tram),
+                 '|',
                  ('layer', 'ilike', like_layer),
-                 ('layer', 'not ilike', '%EMBARRAT%'),
-                 ('layer', 'not ilike', '%EMBARRADO%')]
+                 ('layer', 'ilike', 'EMBARRA%BT%')]
             )
-            # print "ids edges bt: {0}".format(len(ids_edges))
         edges = model_edge.read(ids_edges)
         if not edges:
             return []
