@@ -126,10 +126,6 @@ class F10AT(MultiprocessBased):
                     o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
                     o_any = self.year
 
-                    if o_tipus == 'E':
-                        o_prop = '1'
-
-
                     self.output_q.put([
                         o_tram,
                         o_node_inicial,
