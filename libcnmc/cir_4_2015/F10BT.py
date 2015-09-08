@@ -15,7 +15,7 @@ class F10BT(MultiprocessBased):
 
     def get_sequence(self):
         search_params = [
-            ('cable.tipus.codi', 'in', ['T', 'D', 'S'])
+            ('cable.tipus.codi', 'in', ['T', 'D', 'S', 'E'])
         ]
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
