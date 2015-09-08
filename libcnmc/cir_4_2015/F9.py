@@ -44,23 +44,27 @@ class F9(MultiprocessBased):
         trams = []
         ids_bt = 0
         ids_linia_at = o.GiscedataAtLinia.search([])
-        linia = o.GiscedataAtLinia.read(ids_linia_at, ['trams'])
-        for elem in linia:
+        fict_line_id = o.GiscedataAtLinia.search(
+            [('name', '=', '1')], 0, 0, False, {'active_test': False})
+        ids_linia_at += fict_line_id
+        linies = o.GiscedataAtLinia.read(ids_linia_at, ['trams'])
+        for elem in linies:
             trams += elem['trams']
-        search_params = [('id', 'in', trams)]
+        search_params = [('id', 'in', trams),
+                         ('cini', '!=', '0000000')]
         search_params += static_search_params
         ids_at = o.GiscedataAtTram.search(
             search_params, 0, 0, False, {'active_test': False})
-
+        print '-----> len at {}'.format(len(ids_at))
         # BT
 
         search_params = [
-            ('cable.tipus.codi', 'in', ['T', 'D', 'S'])
+            ('cable.tipus.codi', 'in', ['T', 'D', 'S', 'E'])
         ]
         search_params += static_search_params
         ids_bt = o.GiscedataBtElement.search(
             search_params, 0, 0, False, {'active_test': False})
-
+        print '-----> len at {}'.format(len(ids_bt))
         # IDS AT + BT
 
         ids = []
@@ -86,16 +90,15 @@ class F9(MultiprocessBased):
             ids_edges = model_edge.search(
                 [('id_linktemplate', '=', id_tram),
                  ('layer', 'not ilike', like_layer),
-                 ('layer', 'not ilike', '%EMBARRAT%'),
-                 ('layer', 'not ilike', '%EMBARRADO%')]
+                 ('layer', 'not ilike', 'EMBARRA%BT%')]
             )
             # print "ids edges at: {0}".format(len(ids_edges))
         else:
             ids_edges = model_edge.search(
                 [('id_linktemplate', '=', id_tram),
+                 '|',
                  ('layer', 'ilike', like_layer),
-                 ('layer', 'not ilike', '%EMBARRAT%'),
-                 ('layer', 'not ilike', '%EMBARRADO%')]
+                 ('layer', 'ilike', 'EMBARRA%BT%')]
             )
             # print "ids edges bt: {0}".format(len(ids_edges))
         edges = model_edge.read(ids_edges)

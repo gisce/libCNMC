@@ -117,6 +117,9 @@ class F10BT(MultiprocessBased):
                 o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
                 o_any = self.year
 
+                if cable['tipus'][1] in ['EMBARRADO', 'EMBARRAT']:
+                    o_prop = 1
+
                 self.output_q.put([
                     o_tram,
                     o_node_inicial,
