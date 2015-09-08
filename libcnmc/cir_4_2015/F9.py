@@ -55,7 +55,14 @@ class F9(MultiprocessBased):
         search_params += static_search_params
         ids_at = o.GiscedataAtTram.search(
             search_params, 0, 0, False, {'active_test': False})
-        print '-----> len at {}'.format(len(ids_at))
+        search_params = [('id', 'in', trams),
+                         ('cini', '!=', '0000000'),
+                         ('longitud_cad', '>', 100),
+                         ('cable.tipus.codi', '=', 'E')]
+        search_params += static_search_params
+        remove_ids_at = o.GiscedataAtTram.search(
+            search_params, 0, 0, False, {'active_test': False})
+        ids_at = list(set(ids_at)-set(remove_ids_at))
         # BT
 
         search_params = [
