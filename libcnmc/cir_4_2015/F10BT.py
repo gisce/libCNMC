@@ -12,6 +12,12 @@ class F10BT(MultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.report_name = 'F10BT - CTS'
         self.base_object = 'CTS'
+        self.layer = 'LBT\_%'
+        id_res_like = self.connection.ResConfig.search(
+            [('name', '=', 'giscegis_btlike_layer')])
+        if id_res_like:
+            self.layer = self.connection.ResConfig.read(
+                id_res_like, ['value'])[0]['value']
 
     def get_sequence(self):
         search_params = [
@@ -61,13 +67,13 @@ class F10BT(MultiprocessBased):
                 self.progress_q.put(item)
                 linia = o.GiscedataBtElement.read(item, fields_to_read)
 
-                res = o.GiscegisEdge.search([('id_linktemplate', '=',
-                                              linia['name']),
-                                             ('layer', 'ilike', '%BT%')])
-                if not res:
-                    edge = {'start_node': (0, '%s_0' % linia['name']),
-                            'end_node': (0, '%s_1' % linia['name'])}
-                elif len(res) > 1:
+                res = o.GiscegisEdge.search(
+                    [('id_linktemplate', '=', linia['name']),
+                     '|',
+                     ('layer', 'ilike', self.layer),
+                     ('layer', 'ilike', 'EMBARRA%BT%')
+                     ])
+                if not res or len(res) > 1:
                     edge = {'start_node': (0, '%s_0' % linia['name']),
                             'end_node': (0, '%s_1' % linia['name'])}
                 else:
