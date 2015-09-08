@@ -31,7 +31,7 @@ class F15(MultiprocessBased):
                     bloc[0], ['node', 'vertex'])
                 v = o.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
                 if bloc.get('node', False):
-                    node = bloc['node'][0]
+                    node = bloc['node'][1]
                 else:
                     node = v['id']
                 if bloc.get('vertex', False):

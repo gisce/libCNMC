@@ -40,7 +40,7 @@ class F12(MultiprocessBased):
         if bloc:
             bloc_vals = o.GiscegisBlocsTransformadors.read(
                 bloc[0], ['node'])
-            node = bloc_vals['node'][0]
+            node = bloc_vals['node'][1]
         return node
 
     def consumer(self):
