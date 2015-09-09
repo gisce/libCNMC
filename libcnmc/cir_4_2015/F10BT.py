@@ -12,10 +12,16 @@ class F10BT(MultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.report_name = 'F10BT - CTS'
         self.base_object = 'CTS'
+        self.layer = 'LBT\_%'
+        id_res_like = self.connection.ResConfig.search(
+            [('name', '=', 'giscegis_btlike_layer')])
+        if id_res_like:
+            self.layer = self.connection.ResConfig.read(
+                id_res_like, ['value'])[0]['value']
 
     def get_sequence(self):
         search_params = [
-            ('cable.tipus.codi', 'in', ['T', 'D', 'S'])
+            ('cable.tipus.codi', 'in', ['T', 'D', 'S', 'E'])
         ]
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
@@ -61,13 +67,13 @@ class F10BT(MultiprocessBased):
                 self.progress_q.put(item)
                 linia = o.GiscedataBtElement.read(item, fields_to_read)
 
-                res = o.GiscegisEdge.search([('id_linktemplate', '=',
-                                              linia['name']),
-                                             ('layer', 'ilike', '%BT%')])
-                if not res:
-                    edge = {'start_node': (0, '%s_0' % linia['name']),
-                            'end_node': (0, '%s_1' % linia['name'])}
-                elif len(res) > 1:
+                res = o.GiscegisEdge.search(
+                    [('id_linktemplate', '=', linia['name']),
+                     '|',
+                     ('layer', 'ilike', self.layer),
+                     ('layer', 'ilike', 'EMBARRA%BT%')
+                     ])
+                if not res or len(res) > 1:
                     edge = {'start_node': (0, '%s_0' % linia['name']),
                             'end_node': (0, '%s_1' % linia['name'])}
                 else:
@@ -95,21 +101,28 @@ class F10BT(MultiprocessBased):
                 o_node_inicial = tallar_text(edge['start_node'][1], 20)
                 o_node_final = tallar_text(edge['end_node'][1], 20)
                 o_cini = linia['cini']
-                o_provincia = self.get_provincia(linia['municipi'][0])
+                o_provincia = ''
+                if linia['municipi']:
+                    o_provincia = self.get_provincia(linia['municipi'][0])
                 o_longitud = format_f(
                     round(
                         float(linia['longitud_cad']) * coeficient / 1000.0, 3
-                    ), decimals=3) or 0.001
+                    ) or 0.001, decimals=3)
                 o_num_circuits = 1  # a BT suposarem que sempre hi ha 1
                 o_tipus = self.get_tipus_cable(cable['tipus'][0])
+                if o_tipus == 'E':
+                    o_tipus = 'S'
                 o_r = format_f(
-                    cable['resistencia'] * linia['longitud_cad'], 6) or 0.0
+                    cable['resistencia'] * linia['longitud_cad'] or 0.0, 6)
                 o_x = format_f(
-                    cable['reactancia'] * linia['longitud_cad'], 6) or 0.0
+                    cable['reactancia'] * linia['longitud_cad'] or 0.0, 6)
                 o_int_max = format_f(cable['intensitat_admisible'], 3)
                 o_op_habitual = 1  # Tots son actius
                 o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
                 o_any = self.year
+
+                if cable['tipus'][1] in ['EMBARRADO', 'EMBARRAT']:
+                    o_prop = 1
 
                 self.output_q.put([
                     o_tram,

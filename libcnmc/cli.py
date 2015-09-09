@@ -2,9 +2,9 @@
 import click
 from datetime import datetime
 
-from ooop import OOOP
 from libcnmc.utils import N_PROC
 from libcnmc.core import UpdateCNMCStats, UpdateCINISComptador
+from libcnmc.core.backend import OOOPFactory
 from libcnmc.cir_4_2014 import F1, F1bis, F11
 from libcnmc import cir_4_2015
 from libcnmc.res_4603 import INV
@@ -33,7 +33,7 @@ def cnmc():
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('-f', '--file-input', type=click.Path(exists=True))
 def update_cnmc_stats(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = UpdateCNMCStats(
@@ -62,7 +62,7 @@ def update_cnmc_stats(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('-f',  '--file-input', type=click.Path(exists=True))
 def update_cinis_comptador(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = UpdateCINISComptador(
@@ -94,7 +94,7 @@ def update_cinis_comptador(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2014_f1(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = F1(
@@ -128,7 +128,7 @@ def cir_4_2014_f1(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2014_f1bis(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = F1bis(
@@ -162,7 +162,7 @@ def cir_4_2014_f1bis(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2014_f11(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = F11(
@@ -179,7 +179,7 @@ def cir_4_2014_f11(**kwargs):
 
 #CSV LAT
 def res_lat(LAT, **kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = LAT(
@@ -242,7 +242,7 @@ def res_4771_lat(**kwargs):
 
 #CSV LBT
 def res_lbt(LBT, **kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = LBT(
@@ -305,7 +305,7 @@ def res_4771_lbt(**kwargs):
 
 #CSV SUB
 def res_sub(SUB, **kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = SUB(
@@ -368,7 +368,7 @@ def res_4771_sub(**kwargs):
 
 #CSV POS
 def res_pos(POS, **kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = POS(
@@ -431,7 +431,7 @@ def res_4771_pos(**kwargs):
 
 #CSV MAQ
 def res_maq(MAQ, **kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = MAQ(
@@ -494,7 +494,7 @@ def res_4771_maq(**kwargs):
 
 #CSV DES
 def res_des(DES, **kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = DES(
@@ -557,7 +557,7 @@ def res_4771_des(**kwargs):
 
 #CSV FIA
 def res_fia(FIA, **kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = FIA(
@@ -620,7 +620,7 @@ def res_4771_fia(**kwargs):
 
 #CSV CTS
 def res_cts(CTS, **kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = CTS(
@@ -737,7 +737,7 @@ def res_4603_inv(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_cinimaq(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = CINIMAQ(
@@ -772,7 +772,7 @@ def res_4603_cinimaq(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_cinipos(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = CINIPOS(
@@ -803,7 +803,7 @@ def res_4603_cinipos(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('-f',  '--file-input', type=click.Path(exists=True))
 def create_celles(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = CreateCelles(
@@ -831,7 +831,7 @@ def create_celles(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('-f',  '--file-input', type=click.Path(exists=True))
 def update_cinis_trafo(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = UpdateCINISTrafo(
@@ -859,7 +859,7 @@ def update_cinis_trafo(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('-f',  '--file-input', type=click.Path(exists=True))
 def update_cinis_trams(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = UpdateCINISTrams(
@@ -887,7 +887,7 @@ def update_cinis_trams(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('-f',  '--file-input', type=click.Path(exists=True))
 def update_cinis_cts(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = UpdateCINISCts(
@@ -917,7 +917,7 @@ def update_cinis_cts(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f1(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = cir_4_2015.F1(
@@ -950,7 +950,7 @@ def cir_4_2015_f1(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f11(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = cir_4_2015.F11(
@@ -983,7 +983,7 @@ def cir_4_2015_f11(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f1bis(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = cir_4_2015.F1bis(
@@ -1015,7 +1015,7 @@ def cir_4_2015_f1bis(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f12(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = cir_4_2015.F12(
@@ -1046,7 +1046,7 @@ def cir_4_2015_f12(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f12bis(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = cir_4_2015.F12bis(
@@ -1078,7 +1078,7 @@ def cir_4_2015_f12bis(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f13(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = cir_4_2015.F13(
@@ -1110,7 +1110,7 @@ def cir_4_2015_f13(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f13bis(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = cir_4_2015.F13bis(
@@ -1141,7 +1141,7 @@ def cir_4_2015_f13bis(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f13c(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = cir_4_2015.F13c(
@@ -1172,7 +1172,7 @@ def cir_4_2015_f13c(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f14(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = cir_4_2015.F14(
@@ -1204,7 +1204,7 @@ def cir_4_2015_f14(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f15(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = cir_4_2015.F15(
@@ -1237,7 +1237,7 @@ def cir_4_2015_f15(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f10at(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = cir_4_2015.F10AT(
@@ -1270,7 +1270,7 @@ def cir_4_2015_f10at(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f10bt(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = cir_4_2015.F10BT(
@@ -1303,7 +1303,7 @@ def cir_4_2015_f10bt(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f20(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = cir_4_2015.F20(
@@ -1335,7 +1335,7 @@ def cir_4_2015_f20(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f9(**kwargs):
-    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = cir_4_2015.F9(

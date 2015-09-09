@@ -10,7 +10,8 @@ PACKAGES_DATA = {}
 
 
 INSTALL_REQUIRES = [
-    'progressbar', 'click', 'libcomxml', 'ooop', 'chardet', 'pyproj'
+    'progressbar', 'click', 'libcomxml', 'ooop', 'chardet', 'pyproj',
+    'osconf'
 ]
 if sys.version_info[1] < 6:
     INSTALL_REQUIRES += ['multiprocessing']
@@ -20,7 +21,7 @@ setup(name='libcnmc',
       author='GISCE-TI, S.L.',
       author_email='devel@gisce.net',
       url='http://www.gisce.net',
-      version='0.10.10',
+      version='0.11.9',
       license='General Public Licence 2',
       long_description='''Long description''',
       provides=['libcnmc'],

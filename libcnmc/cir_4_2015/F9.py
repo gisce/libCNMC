@@ -21,7 +21,7 @@ class F9(MultiprocessBased):
         self.codi_r1 = wiz_obj.default_get(['codi_r1'])['codi_r1']
         id_res_like = o.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')])
-        self.layer = '%\_BT\_%'
+        self.layer = 'LBT\_%'
         if id_res_like:
             self.layer = o.ResConfig.read(id_res_like, ['value'])[0]['value']
 
@@ -44,34 +44,40 @@ class F9(MultiprocessBased):
         trams = []
         ids_bt = 0
         ids_linia_at = o.GiscedataAtLinia.search([])
-        linia = o.GiscedataAtLinia.read(ids_linia_at, ['trams'])
-        for elem in linia:
+        fict_line_id = o.GiscedataAtLinia.search(
+            [('name', '=', '1')], 0, 0, False, {'active_test': False})
+        ids_linia_at += fict_line_id
+        linies = o.GiscedataAtLinia.read(ids_linia_at, ['trams'])
+        for elem in linies:
             trams += elem['trams']
-        search_params = [('id', 'in', trams)]
+        search_params = [('id', 'in', trams),
+                         ('cini', '!=', '0000000')]
         search_params += static_search_params
         ids_at = o.GiscedataAtTram.search(
             search_params, 0, 0, False, {'active_test': False})
-
+        search_params = [('id', 'in', trams),
+                         ('cini', '!=', '0000000'),
+                         ('longitud_cad', '>', 100),
+                         ('cable.tipus.codi', '=', 'E')]
+        search_params += static_search_params
+        remove_ids_at = o.GiscedataAtTram.search(
+            search_params, 0, 0, False, {'active_test': False})
+        ids_at = list(set(ids_at)-set(remove_ids_at))
         # BT
 
         search_params = [
-            ('cable.tipus.codi', 'in', ['T', 'D', 'S'])
+            ('cable.tipus.codi', 'in', ['T', 'D', 'S', 'E'])
         ]
         search_params += static_search_params
         ids_bt = o.GiscedataBtElement.search(
             search_params, 0, 0, False, {'active_test': False})
-
         # IDS AT + BT
 
         ids = []
-
         for at in ids_at:
             ids.append((at, 'at'))
         for bt in ids_bt:
             ids.append((bt, 'bt'))
-
-        # print "ids AT: {0}".format(len(ids_at))
-        # print "ids BT: {0}".format(len(ids_bt))
 
         return ids
 
@@ -85,22 +91,23 @@ class F9(MultiprocessBased):
         if net.lower() == 'at':
             ids_edges = model_edge.search(
                 [('id_linktemplate', '=', id_tram),
-                 ('layer', 'not ilike', like_layer)]
+                 ('layer', 'not ilike', like_layer),
+                 ('layer', 'not ilike', 'EMBARRA%BT%')]
             )
-            # print "ids edges at: {0}".format(len(ids_edges))
         else:
             ids_edges = model_edge.search(
                 [('id_linktemplate', '=', id_tram),
-                 ('layer', 'ilike', like_layer)]
+                 '|',
+                 ('layer', 'ilike', like_layer),
+                 ('layer', 'ilike', 'EMBARRA%BT%')]
             )
-            # print "ids edges bt: {0}".format(len(ids_edges))
         edges = model_edge.read(ids_edges)
         if not edges:
             return []
         vertexs = model_polyline.read(edges[0]['polyline'][0])
         for punt in model_vertex.read(vertexs['vertex_ids']):
-            data.append({'x': format_f(punt['x'], decimals=6),
-                         'y': format_f(punt['y'], decimals=6)})
+            data.append({'x': punt['x'],
+                         'y': punt['y']})
         return data
 
     def conv_text(self, data):
@@ -109,7 +116,10 @@ class F9(MultiprocessBased):
         for line in data:
             res_srid = convert_srid(self.codi_r1, get_srid(o),
                                     [line['x'], line['y']])
-            t += '{0};{1};{2}\n'.format(res_srid[0], res_srid[1], 0)
+            t += '{0};{1};{2}\n'.format(
+                format_f(res_srid[0], decimals=6),
+                format_f(res_srid[1], decimals=6),
+                0)
         return t[:-1]
 
     def consumer(self):

@@ -35,10 +35,10 @@ class F11(MultiprocessBased):
         O = self.connection
         bloc = O.GiscegisBlocsCtat.search([('ct', '=', ct_id)])
         node = ''
-        vertex = ('', '')
+        vertex = None
         if bloc:
             bloc = O.GiscegisBlocsCtat.read(bloc[0], ['node', 'vertex'])
-            node = bloc['node'][0]
+            node = bloc['node'][1]
             if bloc['vertex']:
                 v = O.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
                 vertex = (round(v['x'], 3), round(v['y'], 3))
@@ -144,8 +144,10 @@ class F11(MultiprocessBased):
                 x = ''
                 y = ''
                 z = ''
-                res_srid = convert_srid(
-                    self.codi_r1, get_srid(O), vertex)
+                res_srid = ['', '']
+                if vertex:
+                    res_srid = convert_srid(
+                        self.codi_r1, get_srid(O), vertex)
                 self.output_q.put([
                     o_node,
                     o_ct,

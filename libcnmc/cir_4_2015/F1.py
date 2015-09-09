@@ -67,7 +67,7 @@ class F1(MultiprocessBased):
                     edge = O.GiscegisEdge.read(edge[0], ['id_linktemplate'])
                     if edge['id_linktemplate']:
                         bt = O.GiscedataBtElement.search(
-                            [('id', '=', edge['id_linktemplate'])]
+                            [('name', '=', edge['id_linktemplate'])]
                         )
                         if bt:
                             bt = O.GiscedataBtElement.read(
@@ -128,6 +128,7 @@ class F1(MultiprocessBased):
                 o_nom_node = ''
                 o_tensio = ''
                 o_connexio = ''
+                vertex = False
                 if cups and cups['id_escomesa']:
                     o_connexio = self.get_tipus_connexio(
                         cups['id_escomesa'][0]
@@ -180,10 +181,10 @@ class F1(MultiprocessBased):
                 o_estat_contracte = 0
                 #energies consumides
                 o_anual_activa = format_f(
-                    cups['cne_anual_activa'], decimals=3) or 0.0
+                    cups['cne_anual_activa'] or 0.0, decimals=3)
                 o_anual_reactiva = format_f(
-                    cups['cne_anual_reactiva'], decimals=3) or \
-                    0.0
+                    cups['cne_anual_reactiva'] or 0.0, decimals=3)
+
                 if polissa_id:
                     fields_to_read = [
                         'potencia', 'cnae', 'tarifa', 'butlletins', 'tensio'
@@ -259,8 +260,10 @@ class F1(MultiprocessBased):
 
 
                 o_any_incorporacio = self.year
-                res_srid = convert_srid(
-                    self.codi_r1, get_srid(O), [o_utmx, o_utmy])
+                res_srid = ['', '']
+                if vertex:
+                    res_srid = convert_srid(
+                        self.codi_r1, get_srid(O), [vertex['x'], vertex['y']])
 
                 self.output_q.put([
                     o_nom_node,

@@ -32,13 +32,15 @@ class F12(MultiprocessBased):
         return self.connection.GiscedataTransformadorTrafo.search(
             search_params, 0, 0, False, {'active_test': False})
 
-    def get_node(self, ct_id):
+    def get_node(self, trafo_id):
         o = self.connection
-        bloc = o.GiscegisBlocsCtat.search([('ct', '=', ct_id)])
+        bloc = o.GiscegisBlocsTransformadors.search(
+            [('transformadors', '=', trafo_id)])
         node = ''
         if bloc:
-            bloc = o.GiscegisBlocsCtat.read(bloc[0], ['node'])
-            node = bloc['node'][0]
+            bloc_vals = o.GiscegisBlocsTransformadors.read(
+                bloc[0], ['node'])
+            node = bloc_vals['node'][1]
         return node
 
     def consumer(self):
@@ -55,19 +57,16 @@ class F12(MultiprocessBased):
                 trafo = o.GiscedataTransformadorTrafo.read(
                     item, fields_to_read
                 )
-                o_ct = trafo['ct'] or ''
-                o_node = ''
-                if o_ct:
-                    o_node = self.get_node(o_ct[0])
-                    o_ct = str(o_ct[1])
+                o_ct = trafo['ct'] and trafo['ct'][1] or ''
+                o_node = self.get_node(item)
                 o_cini = trafo['cini'] or ''
                 o_maquina = trafo['name']
                 o_pot = format_f(
                     trafo['potencia_nominal'], decimals=3)
                 o_perdues_buit = format_f(
-                    trafo['perdues_buit'], decimals=3) or 0
+                    trafo['perdues_buit'] or 0, decimals=3)
                 o_perdues_nominal = format_f(
-                    trafo['perdues_curtcircuit_nominal'], decimals=3) or 0
+                    trafo['perdues_curtcircuit_nominal'] or 0, decimals=3)
                 o_propietari = int(trafo['propietari'])
                 o_any = self.year
 

@@ -14,7 +14,6 @@ class F15(MultiprocessBased):
 
     def get_sequence(self):
         search_params = [
-            # ('inventari', '=', 'fiabilitat'),
             ('installacio', 'ilike', 'giscedata.at.suport,%')
         ]
         return self.connection.GiscedataCellesCella.search(search_params)
@@ -22,7 +21,7 @@ class F15(MultiprocessBased):
     def get_node_vertex(self, suport):
         o = self.connection
         node = ''
-        vertex = ('', '')
+        vertex = None
         if suport:
             bloc = o.GiscegisBlocsSuportsAt.search(
                 [('numsuport', '=', suport)]
@@ -32,7 +31,7 @@ class F15(MultiprocessBased):
                     bloc[0], ['node', 'vertex'])
                 v = o.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
                 if bloc.get('node', False):
-                    node = bloc['node'][0]
+                    node = bloc['node'][1]
                 else:
                     node = v['id']
                 if bloc.get('vertex', False):
@@ -41,7 +40,7 @@ class F15(MultiprocessBased):
 
     def obtenir_tram(self, installacio):
         o = self.connection
-        valor = str.split(installacio, ',')
+        valor = installacio.split(',')
         id_tram = int(valor[1])
         tram = o.GiscedataAtSuport.read(id_tram, ['name'])
         valor = tram['name']
@@ -49,7 +48,7 @@ class F15(MultiprocessBased):
 
     def obtenir_camps_linia(self, installacio):
         o = self.connection
-        valor = str.split(installacio, ',')
+        valor = installacio.split(',')
         id_tram = int(valor[1])
         tram = o.GiscedataAtSuport.read(id_tram, ['linia'])
         linia_id = tram['linia']
@@ -70,7 +69,7 @@ class F15(MultiprocessBased):
     def consumer(self):
         o = self.connection
         fields_to_read = [
-            'inventari', 'installacio', 'cini', 'propietari'
+            'installacio', 'cini', 'propietari', 'name'
         ]
         while True:
             try:
@@ -83,7 +82,7 @@ class F15(MultiprocessBased):
                 o_tram = self.obtenir_tram(celles['installacio'])
                 dict_linia = self.obtenir_camps_linia(celles['installacio'])
                 o_node, vertex = self.get_node_vertex(o_tram)
-                o_fiabilitat = celles['inventari']
+                o_fiabilitat = celles['name']
                 o_cini = celles['cini']
                 z = ''
                 o_municipi = dict_linia.get('municipi')
@@ -92,8 +91,10 @@ class F15(MultiprocessBased):
                 o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
                 o_prop = int(celles['propietari'])
                 o_any = self.year
-                res_srid = convert_srid(
-                    self.codi_r1, get_srid(o), vertex)
+                res_srid = ['', '']
+                if vertex:
+                    res_srid = convert_srid(
+                        self.codi_r1, get_srid(o), vertex)
                 self.output_q.put([
                     o_node,
                     o_fiabilitat,
