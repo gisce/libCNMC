@@ -178,7 +178,7 @@ class UpdateFile(MultiprocessBased):
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-                self.output_q.put([item])
+                self.output_q.put([item.strip()])
             finally:
                 self.input_q.task_done()
 
