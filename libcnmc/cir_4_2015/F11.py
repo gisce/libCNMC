@@ -65,7 +65,7 @@ class F11(MultiprocessBased):
                 )
                 if len(edges) > 1:
                     utilitzades += 1
-        return disponibles, utilitzades
+        return utilitzades, disponibles
 
     def get_tipus(self, subtipus_id):
         o = self.connection
