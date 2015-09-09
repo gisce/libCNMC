@@ -46,12 +46,9 @@ class POS(MultiprocessBased):
         descripcio = ''
         if pos:
             sub_id = pos['subestacio_id'][0]
-            sub = o.GiscedataCtsSubestacions.read(sub_id, ['ct_id'])
+            sub = o.GiscedataCtsSubestacions.read(sub_id, ['descripcio'])
             if sub:
-                ct_id = sub['ct_id'][0]
-                ct = o.GiscedataCts.read(ct_id, ['descripcio'])
-                if ct:
-                    descripcio = ct['descripcio']
+                descripcio = sub['descripcio']
         return descripcio
 
     def consumer(self):
