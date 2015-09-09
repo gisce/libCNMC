@@ -110,6 +110,8 @@ class F10BT(MultiprocessBased):
                     ) or 0.001, decimals=3)
                 o_num_circuits = 1  # a BT suposarem que sempre hi ha 1
                 o_tipus = self.get_tipus_cable(cable['tipus'][0])
+                if o_tipus == 'E':
+                    o_tipus = 'S'
                 o_r = format_f(
                     cable['resistencia'] * linia['longitud_cad'] or 0.0, 6)
                 o_x = format_f(
