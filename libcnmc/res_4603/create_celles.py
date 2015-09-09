@@ -12,7 +12,7 @@ class CreateCelles(UpdateFile):
             'inventari', 'aillament', 'cini', 'propietari', 'perc_financament',
             'tensio'
         ]
-        self.search_keys = [('cups', 'name')]
+        self.search_keys = [('name')]
         self.fields_read_ct = ['perc_financament', 'propietari']
         self.fields_read_at_tram = ['perc_financament']
         self.object = self.connection.GiscedataCellesCella
@@ -54,7 +54,7 @@ class CreateCelles(UpdateFile):
                 tram_dades = self.connection.GiscedataAtTram.read(
                     linia_dades['trams'][0], self.fields_read_at_tram
                 )
-                vals = tram_dades.copy
+                vals = tram_dades.copy()
                 vals.update({
                     'propietari': linia_dades['propietari']
                 })

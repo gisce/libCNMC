@@ -140,6 +140,7 @@ class UpdateFile(MultiprocessBased):
     def __init__(self, **kwargs):
         super(UpdateFile, self).__init__(**kwargs)
         self.file_input = kwargs.pop('file_input')
+        self.file_output = '{}.err'.format(self.file_input)
         self.header = []
         self.search_keys = []
         self.year = False
@@ -177,6 +178,7 @@ class UpdateFile(MultiprocessBased):
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
+                self.output_q.put([item.strip()])
             finally:
                 self.input_q.task_done()
 
