@@ -13,6 +13,8 @@ class CreateCelles4_2015(CreateCelles):
 
     def build_vals(self, values):
         vals = super(CreateCelles4_2015, self).build_vals(values)
+        ct_name = False
+        suport_name = False
         for val in zip(self.header, values):
             if val[0] == 'installacio':
                 model, name = val[1].split(',')
@@ -21,7 +23,10 @@ class CreateCelles4_2015(CreateCelles):
                     ct_name = name
                 elif 'suport' in model:
                     suport_name = name
+                else:
+                    raise
             elif val[0] == 'data_pm':
+                vals['bloquejar_pm'] = True
                 if val[1] == 'auto':
                     if ct_name:
                         tipus = 'ct'
@@ -32,7 +37,6 @@ class CreateCelles4_2015(CreateCelles):
                     vals[val[0]] = self.get_value(
                         tipus, name, 'data_pm')
                 else:
-                    print val[1]
                     date = parse(val[1])
                     vals[val[0]] = date.strftime('%Y-%m-%d')
         return vals
