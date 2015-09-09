@@ -40,6 +40,17 @@ class POS(MultiprocessBased):
         return self.connection.GiscedataCtsSubestacionsPosicio.search(
             search_params, 0, 0, False, {'active_test': False})
 
+    def get_description(self, pos_id):
+        o = self.connection
+        pos = o.GiscedataCtsSubestacionsPosicio.read(pos_id, ['subestacio_id'])
+        descripcio = ''
+        if pos:
+            sub_id = pos['subestacio_id'][0]
+            sub = o.GiscedataCtsSubestacions.read(sub_id, ['descripcio'])
+            if sub:
+                descripcio = sub['descripcio']
+        return descripcio
+
     def consumer(self):
         O = self.connection
         fields_to_read = ['name', 'cini', 'data_pm', 'subestacio_id',
@@ -48,7 +59,7 @@ class POS(MultiprocessBased):
             try:
                 item = self.input_q.get()
                 self.progress_q.put(item)
-
+                o_sub = ''
                 sub = O.GiscedataCtsSubestacionsPosicio.read(
                     item, fields_to_read)
                 if not sub:
@@ -93,9 +104,10 @@ class POS(MultiprocessBased):
                         id_comunitat[0], ['codi'])
                     if comunitat_vals:
                         comunitat = comunitat_vals['codi']
+                    o_sub = self.get_description(sub['subestacio_id'][0])
 
                 output = [
-                    '%s' % sub['name'],
+                    o_sub,
                     sub['cini'] or '',
                     cts['name'] or '',
                     codi,
