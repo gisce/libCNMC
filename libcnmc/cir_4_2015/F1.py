@@ -181,10 +181,10 @@ class F1(MultiprocessBased):
                 o_estat_contracte = 0
                 #energies consumides
                 o_anual_activa = format_f(
-                    cups['cne_anual_activa'], decimals=3) or 0.0
+                    cups['cne_anual_activa'] or 0.0, decimals=3)
                 o_anual_reactiva = format_f(
-                    cups['cne_anual_reactiva'], decimals=3) or \
-                    0.0
+                    cups['cne_anual_reactiva'] or 0.0, decimals=3)
+
                 if polissa_id:
                     fields_to_read = [
                         'potencia', 'cnae', 'tarifa', 'butlletins', 'tensio'
