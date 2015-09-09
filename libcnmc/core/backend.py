@@ -169,7 +169,9 @@ class ModelWrapper(object):
             def wrapper(*args):
                 with Transaction().start(self.dbname, user=self.uid) as txn:
                     newargs = (txn.cursor, txn.user) + args
-                    return base(*newargs)
+                    res = base(*newargs)
+                    txn.cursor.commit()
+                    return res
             return wrapper
         else:
             return base
