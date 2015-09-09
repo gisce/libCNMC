@@ -33,7 +33,8 @@ def cnmc():
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('-f', '--file-input', type=click.Path(exists=True))
 def update_cnmc_stats(**kwargs):
-    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+    from ooop import OOOP
+    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = UpdateCNMCStats(
@@ -62,7 +63,8 @@ def update_cnmc_stats(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('-f',  '--file-input', type=click.Path(exists=True))
 def update_cinis_comptador(**kwargs):
-    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+    from ooop import OOOP
+    O = OOOP(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
     proc = UpdateCINISComptador(
