@@ -109,7 +109,9 @@ class F10AT(MultiprocessBased):
                     o_node_inicial = tallar_text(edge['start_node'][1], 20)
                     o_node_final = tallar_text(edge['end_node'][1], 20)
                     o_cini = at['cini']
-                    o_provincia = self.get_provincia(linia['provincia'][0])
+                    o_provincia = ''
+                    if linia['provincia']:
+                        o_provincia = self.get_provincia(linia['provincia'][0])
                     o_longitud = format_f(round(
                         float(at['longitud_cad']) * coeficient / 1000.0, 3
                     ) or 0.001, decimals=3)
