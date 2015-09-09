@@ -89,6 +89,8 @@ class F10AT(MultiprocessBased):
                     # no l'afegim
                     if o_tipus == 'E' and at['longitud_cad'] > 100:
                         continue
+                    if o_tipus == 'E':
+                        o_tipus = 'S'
                     #Agafem la tensió
                     o_nivell_tensio = (
                         (at['tensio_max_disseny'] or linia['tensio']))
