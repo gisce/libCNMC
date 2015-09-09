@@ -40,15 +40,18 @@ class POS(MultiprocessBased):
         return self.connection.GiscedataCtsSubestacionsPosicio.search(
             search_params, 0, 0, False, {'active_test': False})
 
-    def get_description(self, sub_id):
+    def get_description(self, pos_id):
         o = self.connection
-        sub = o.GiscedataCtsSubestacionsPosicio.read(sub_id, ['subestacio_id'])
+        pos = o.GiscedataCtsSubestacionsPosicio.read(pos_id, ['subestacio_id'])
         descripcio = ''
-        if sub:
-            ct_id = sub['subestacio_id'][0]
-            ct = o.GiscedataCts.read(ct_id, ['descripcio'])
-            if ct:
-                descripcio = ct['descripcio']
+        if pos:
+            sub_id = pos['subestacio_id'][0]
+            sub = o.GiscedataCtsSubestacions.read(sub_id, ['ct_id'])
+            if sub:
+                ct_id = sub['ct_id'][0]
+                ct = o.GiscedataCts.read(ct_id, ['descripcio'])
+                if ct:
+                    descripcio = ct['descripcio']
         return descripcio
 
     def consumer(self):
