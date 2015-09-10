@@ -249,7 +249,7 @@ class F1(MultiprocessBased):
                         self.codi_r1, get_srid(O), [vertex['x'], vertex['y']])
 
                 self.output_q.put([
-                    o_nom_node,
+                    "B"+str(o_nom_node),
                     format_f(res_srid[0], decimals=3),
                     format_f(res_srid[1], decimals=3),
                     o_utmz,
