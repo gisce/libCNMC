@@ -147,10 +147,10 @@ class F1(MultiprocessBased):
                             )
                             o_utmx = round(vertex['x'], 3)
                             o_utmy = round(vertex['y'], 3)
-
-                            node = O.GiscegisNodes.read(
-                                [bloc_escomesa['node'][0]], ['name'])
-                            o_nom_node = node[0]['name']
+                            if bloc_escomesa['node']:
+                                node = O.GiscegisNodes.read(
+                                    [bloc_escomesa['node'][0]], ['name'])
+                                o_nom_node = node[0]['name']
 
                 search_params = [('cups', '=', cups['id'])] + search_glob
                 polissa_id = O.GiscedataPolissa.search(
