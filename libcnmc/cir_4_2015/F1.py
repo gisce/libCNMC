@@ -147,31 +147,14 @@ class F1(MultiprocessBased):
                             )
                             o_utmx = round(vertex['x'], 3)
                             o_utmy = round(vertex['y'], 3)
-                        if bloc_escomesa['node']:
-                            search_params = [('start_node', '=',
-                                              bloc_escomesa['node'][0])]
-                            edge_id = O.GiscegisEdge.search(search_params)
-                            if not edge_id:
-                                search_params = [('end_node', '=',
-                                                  bloc_escomesa['node'][0])]
-                                edge_id = O.GiscegisEdge.search(search_params)
-                            if edge_id:
-                                edge = O.GiscegisEdge.read(
-                                    edge_id[0], ['name']
-                                )
-                                o_nom_node = edge['name']
+                            if bloc_escomesa['node']:
+                                node = O.GiscegisNodes.read(
+                                    [bloc_escomesa['node'][0]], ['name'])
+                                o_nom_node = node[0]['name']
 
                 search_params = [('cups', '=', cups['id'])] + search_glob
                 polissa_id = O.GiscedataPolissa.search(
                     search_params, 0, 1, 'data_alta desc', context_glob)
-
-                # if polissa_id:
-                #     search_params = [('data_inici', '<=', ultim_dia_any),
-                #                      ('data_final', '>=', ultim_dia_any),
-                #                      ('polissa_id.id', '=', polissa_id)]
-                #     c_ids = O.GiscedataPolissaModcontractual.search(
-                #         search_params, 0, 1, False, {'active_test': False})
-
 
                 o_potencia = ''
                 o_cnae = ''
@@ -266,7 +249,7 @@ class F1(MultiprocessBased):
                         self.codi_r1, get_srid(O), [vertex['x'], vertex['y']])
 
                 self.output_q.put([
-                    o_nom_node,
+                    "B"+str(o_nom_node),
                     format_f(res_srid[0], decimals=3),
                     format_f(res_srid[1], decimals=3),
                     o_utmz,
