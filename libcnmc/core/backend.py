@@ -76,6 +76,14 @@ class OpenERPService(object):
         res = common.login(self.db_name, user, password, 'localservice')
         return res
 
+    def shutdown(self):
+        if self.db_name:
+            import sql_db
+            sql_db.close_db(self.db_name)
+
+    def __del__(self):
+        self.shutdown()
+
 
 class Transaction(object):
 
