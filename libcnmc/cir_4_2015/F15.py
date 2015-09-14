@@ -56,9 +56,16 @@ class F15(MultiprocessBased):
             'municipi', 'provincia', 'tensio'
         ]
         linia = o.GiscedataAtLinia.read(int(linia_id[0]), fields_to_read)
-        municipi = linia['municipi'][0]
-        provincia = linia['provincia'][0]
+        municipi = ''
+        provincia = ''
+        id_municipi = linia['municipi'][0]
+        id_provincia = linia['provincia'][0]
         tensio = format_f(float(linia['tensio']) / 1000.0)
+        if id_municipi and id_provincia:
+            provincia = o.ResCountryState.read(id_provincia, ['code'])['code']
+            municipi_dict = o.ResMunicipi.read(id_municipi, ['ine', 'dc'])
+            municipi = '{}{}'.format(municipi_dict['ine'][-3:],
+                                     municipi_dict['dc'])
         res = {
             'municipi': municipi,
             'provincia': provincia,
