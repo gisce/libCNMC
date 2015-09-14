@@ -64,7 +64,7 @@ class F15(MultiprocessBased):
         if id_municipi and id_provincia:
             provincia = o.ResCountryState.read(id_provincia, ['code'])['code']
             municipi_dict = o.ResMunicipi.read(id_municipi, ['ine', 'dc'])
-            municipi = '{}{}'.format(municipi_dict['ine'][-3:],
+            municipi = '{0}{1}'.format(municipi_dict['ine'][-3:],
                                      municipi_dict['dc'])
         res = {
             'municipi': municipi,
