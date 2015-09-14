@@ -36,7 +36,7 @@ class F13(MultiprocessBased):
         if ids.get('id_municipi', False):
             municipi_dict = o.ResMunicipi.read(ids['id_municipi'][0],
                                                ['ine', 'dc'])
-            res['ine_municipi'] = '{}{}'.format(municipi_dict['ine'][-3:],
+            res['ine_municipi'] = '{0}{1}'.format(municipi_dict['ine'][-3:],
                                                 municipi_dict['dc'])
         if ids.get('id_provincia', False):
             res['ine_provincia'] = o.ResCountryState.read(
