@@ -105,17 +105,16 @@ class F10BT(MultiprocessBased):
                 if linia['municipi']:
                     o_provincia = self.get_provincia(linia['municipi'][0])
                 o_longitud = format_f(
-                    round(
-                        float(linia['longitud_cad']) * coeficient / 1000.0, 3
-                    ) or 0.001, decimals=3)
+                        float(linia['longitud_cad']) * coeficient / 1000.0 or
+                        0.001, decimals=3)
                 o_num_circuits = 1  # a BT suposarem que sempre hi ha 1
                 o_tipus = self.get_tipus_cable(cable['tipus'][0])
                 if o_tipus == 'E':
                     o_tipus = 'S'
                 o_r = format_f(
-                    cable['resistencia'] * linia['longitud_cad'] or 0.0, 6)
+                    cable['resistencia'] * (float(linia['longitud_cad']) * coeficient / 1000.0) or 0.0, 6)
                 o_x = format_f(
-                    cable['reactancia'] * linia['longitud_cad'] or 0.0, 6)
+                    cable['reactancia'] * (float(linia['longitud_cad']) * coeficient / 1000.0) or 0.0, 6)
                 o_int_max = format_f(cable['intensitat_admisible'], 3)
                 o_op_habitual = 1  # Tots son actius
                 o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
