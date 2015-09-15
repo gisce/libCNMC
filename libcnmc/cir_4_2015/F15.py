@@ -81,14 +81,6 @@ class F15(MultiprocessBased):
                         tram_id, ['name'])[0]['name']
         return node, vertex, tram_name
 
-    def obtenir_tram(self, installacio):
-        o = self.connection
-        valor = installacio.split(',')
-        id_tram = int(valor[1])
-        tram = o.GiscedataAtSuport.read(id_tram, ['name'])
-        valor = tram['name']
-        return valor
-
     def obtenir_camps_linia(self, installacio):
         o = self.connection
         valor = installacio.split(',')
