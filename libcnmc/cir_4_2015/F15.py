@@ -129,7 +129,6 @@ class F15(MultiprocessBased):
                 celles = o.GiscedataCellesCella.read(
                     item, fields_to_read
                 )
-                o_tram = self.obtenir_tram(celles['installacio'])
                 dict_linia = self.obtenir_camps_linia(celles['installacio'])
                 o_fiabilitat = celles['name']
                 o_node, vertex, o_tram = self.get_node_vertex_tram(o_fiabilitat)
