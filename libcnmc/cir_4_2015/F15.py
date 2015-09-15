@@ -38,13 +38,48 @@ class F15(MultiprocessBased):
                     vertex = (round(v['x'], 3), round(v['y'], 3))
         return node, vertex
 
-    def obtenir_tram(self, installacio):
+    def get_node_vertex_tram(self, element_name):
         o = self.connection
-        valor = installacio.split(',')
-        id_tram = int(valor[1])
-        tram = o.GiscedataAtSuport.read(id_tram, ['name'])
-        valor = tram['name']
-        return valor
+        node = ''
+        vertex = None
+        tram_name = ''
+        bloc = None
+        if element_name:
+            # Search on the diferent models
+            models = [o.GiscegisBlocsInterruptorat,
+                      o.GiscegisBlocsFusiblesat,
+                      o.GiscegisBlocsSeccionadorat,
+                      o.GiscegisBlocsSeccionadorunifilar]
+            for model in models:
+                bloc_id = model.search([('codi', '=', element_name)])
+                if bloc_id:
+                    model_ok = model
+                    break
+            if bloc_id:
+                bloc = model_ok.read(
+                    bloc_id[0], ['node', 'vertex'])
+                v = o.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
+                if bloc.get('node', False):
+                    node = bloc['node'][1]
+                else:
+                    node = v['id']
+                if bloc.get('vertex', False):
+                    vertex = (round(v['x'], 3), round(v['y'], 3))
+                 # busquem el tram
+                polver_ids = o.GiscegisPolylineVertex.search(
+                    [('vertex', '=', v['id'])])
+                if polver_ids:
+                    poly_id = o.GiscegisPolyline.search(
+                        [('vertex_ids', 'in', polver_ids[0])])[0]
+                    edge_id = o.GiscegisEdge.search(
+                        [('polyline', '=', poly_id)])[0]
+                    linktemplate = o.GiscegisEdge.read(
+                        edge_id, ['id_linktemplate'])['id_linktemplate']
+                    tram_id = o.GiscedataAtTram.search(
+                        [('name', '=', linktemplate)])
+                    tram_name = o.GiscedataAtTram.read(
+                        tram_id, ['name'])[0]['name']
+        return node, vertex, tram_name
 
     def obtenir_camps_linia(self, installacio):
         o = self.connection
@@ -86,10 +121,9 @@ class F15(MultiprocessBased):
                 celles = o.GiscedataCellesCella.read(
                     item, fields_to_read
                 )
-                o_tram = self.obtenir_tram(celles['installacio'])
                 dict_linia = self.obtenir_camps_linia(celles['installacio'])
-                o_node, vertex = self.get_node_vertex(o_tram)
                 o_fiabilitat = celles['name']
+                o_node, vertex, o_tram = self.get_node_vertex_tram(o_fiabilitat)
                 o_cini = celles['cini']
                 z = ''
                 o_municipi = dict_linia.get('municipi')
