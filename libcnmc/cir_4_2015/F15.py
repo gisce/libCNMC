@@ -33,7 +33,6 @@ class F15(MultiprocessBased):
                 if bloc.get('node', False):
                     node = bloc['node'][1]
                 else:
-                    print "ERROR: NO hem trobat node: bloc %s vertex %s\n" % (bloc, v['id'])
                     node = v['id']
                 if bloc.get('vertex', False):
                     vertex = (round(v['x'], 3), round(v['y'], 3))
@@ -44,6 +43,7 @@ class F15(MultiprocessBased):
         node = ''
         vertex = None
         tram_name = ''
+        bloc = None
         if element_name:
             # Search on the diferent models
             models = [o.GiscegisBlocsInterruptorat,
@@ -51,16 +51,17 @@ class F15(MultiprocessBased):
                       o.GiscegisBlocsSeccionadorat,
                       o.GiscegisBlocsSeccionadorunifilar]
             for model in models:
-                bloc = model.search([('codi', '=', element_name)]
-            )
-            if bloc:
-                bloc = o.GiscegisBlocsSuportsAt.read(
-                    bloc[0], ['node', 'vertex'])
+                bloc_id = model.search([('codi', '=', element_name)])
+                if bloc_id:
+                    model_ok = model
+                    break
+            if bloc_id:
+                bloc = model_ok.read(
+                    bloc_id[0], ['node', 'vertex'])
                 v = o.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
                 if bloc.get('node', False):
                     node = bloc['node'][1]
                 else:
-                    print "ERROR: NO hem trobat node: bloc %s vertex %s\n" % (bloc, v['id'])
                     node = v['id']
                 if bloc.get('vertex', False):
                     vertex = (round(v['x'], 3), round(v['y'], 3))
