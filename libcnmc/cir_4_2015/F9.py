@@ -133,16 +133,13 @@ class F9(MultiprocessBased):
                     at = o.GiscedataAtTram.read(item[0], ['name'])
                     data = self.get_geom(at['name'], 'at')
                     data = self.conv_text(data)
-                    self.output_q.put(['A' + str(at['name'])])
-                    self.output_q.put([data])
-                    self.output_q.put(['END'])
+                    linia = 'A' + str(at['name']) + '\n' + data + '\nEND'
                 else:
                     bt = o.GiscedataBtElement.read(item[0], ['name'])
                     data = self.get_geom(bt['name'], 'bt')
                     data = self.conv_text(data)
-                    self.output_q.put(['B' + str(bt['name'])])
-                    self.output_q.put([data])
-                    self.output_q.put(['END'])
+                    linia = 'B' + str(bt['name']) + '\n' + data + '\nEND'
+                self.output_q.put([linia])
             except:
                 traceback.print_exc()
                 if self.raven:
