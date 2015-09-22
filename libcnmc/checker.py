@@ -29,13 +29,24 @@ def node_check(**kwargs):
                 for form in forms:
                     ruta_completa = ruta+'/'+form
                     if '_1_' in form and '~' not in form:
-                        print "Verificant nodes del formulari 1...\n"
+                        print "Verificant nodes del formulari f1...\n"
                         nodes = check(f10, ruta_completa, 'f1')
                         mostrar_nodes(nodes, 'f1', ruta)
+                        print "Verificant CUPS del formulari 1...\n"
+                        cups = check_cups(ruta_completa, 'f1')
+                        mostrar_cups(cups, 'f1', ruta)
+                    elif ('_1bis_' in form or '_1BIS_' in form) \
+                            and '~' not in form:
+                        print "Verificant CUPS del formulari f1bis...\n"
+                        cups = check_cups(ruta_completa, 'f1bis')
+                        mostrar_cups(cups, 'f1bis', ruta)
                     elif '_2_' in form and '~' not in form:
                         print "Verificant nodes del formulari 2...\n"
                         nodes = check(f10, ruta_completa, 'f2')
                         mostrar_nodes(nodes, 'f2', ruta)
+                        print "Verificant CUPS del formulari 2...\n"
+                        cups = check_cups(ruta_completa, 'f2')
+                        mostrar_cups(cups, 'f2', ruta)
                     elif '_3_' in form and '~' not in form:
                         print "Verificant nodes del formulari 3...\n"
                         nodes = check(f10, ruta_completa, 'f3')
@@ -44,6 +55,9 @@ def node_check(**kwargs):
                         print "Verificant nodes del formulari 6...\n"
                         nodes = check(f10, ruta_completa, 'f6')
                         mostrar_nodes(nodes, 'f6', ruta)
+                        print "Verificant CUPS del formulari 6...\n"
+                        cups = check_cups(ruta_completa, 'f6')
+                        mostrar_cups(cups, 'f6', ruta)
                     elif '_9_' in form and '~' not in form:
                         print "Verificant trams dels formularis 9 i 10...\n"
                         trams, topologia = check_trams_f9_f10(
@@ -101,12 +115,59 @@ def node_check(**kwargs):
                         print "Verificant nodes del formulari 17...\n"
                         nodes = check(f10, ruta_completa, 'f17')
                         mostrar_nodes(nodes, 'f17', ruta)
+                    elif '_20_' in form and '~' not in form:
+                        print "Verificant CUPS del formulari 20...\n"
+                        cups = check_cups(ruta_completa, 'f20')
+                        mostrar_cups(cups, 'f20', ruta)
                 print "\n\nVerificació completada."
             else:
                 print "ERROR: no s'ha trobat el formulari f10 a la" \
                       "carpeta especificada."
         else:
             print "ERROR: No s'ha trobat la carpeta de formularis especificada."
+
+
+def mostrar_cups(cups, form, ruta):
+    fitxer_sortida = ruta+'/resultats.txt'
+    with open(fitxer_sortida, 'a') as f:
+        if cups:
+            f.write("CUPS duplicats del formulari {0}:\n".format(form))
+            for elem in cups:
+                if cups[elem] > 1:
+                    f.write("\n")
+                    f.write("\tCodi: {0}\n".format(elem))
+                    for c in cups[elem]:
+                        f.write("\t\t{0}\n".format(c))
+            f.write("\nTotal CUPS duplicats a {0}: {1}\n\n".format(
+                form, len(cups)))
+        else:
+            f.write("No hi ha CUPS duplicats al formulari {0}. "
+                    "OK!\n\n".format(form))
+
+
+def check_cups(fitxer, form):
+    cups = {}
+    cups_repetits = {}
+    if existeix_fitxer(fitxer):
+        with open(fitxer, 'r') as f:
+            for linia in f.readlines():
+                if form == 'f1':
+                    cups_complet = linia.split(';')[8]
+                elif form == 'f1bis':
+                    cups_complet = linia.split(';')[0]
+                elif form == 'f2':
+                    cups_complet = linia.split(';')[5]
+                elif form == 'f6':
+                    cups_complet = linia.split(';')[6]
+                elif form == 'f20':
+                    cups_complet = linia.split(';')[1]
+                cups_trim = cups_complet[11:18]
+                if cups_trim in cups.keys():
+                    cups_repetits[cups_trim] = cups[cups_trim]
+                    cups_repetits[cups_trim].append(cups_complet)
+                else:
+                    cups[cups_trim] = [cups_complet]
+    return cups_repetits
 
 
 def mostrar_posicions(ruta, posicions):
