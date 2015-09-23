@@ -380,10 +380,11 @@ def check(f10_path, file_path, form):
                 node_actual = ''
                 for linia_f10 in f10.readlines():
                     linia_f10 = linia_f10.rstrip()
-                    node_actual = linia_f10.split(';')[1]
-                    nodes_f10.append(node_actual)
-                    node_actual = linia_f10.split(';')[2]
-                    nodes_f10.append(node_actual)
+                    if linia_f10 != '':
+                        node_actual = linia_f10.split(';')[1]
+                        nodes_f10.append(node_actual)
+                        node_actual = linia_f10.split(';')[2]
+                        nodes_f10.append(node_actual)
             # Ja tenim tots els nodes de F10, ara comprovem que cada node
             # del fitxer a comprovar és dins de F10
             with open(file_path, 'r') as f:
