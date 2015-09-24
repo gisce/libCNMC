@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import click
 import os
+import time
 
 
 @click.command()
@@ -18,18 +19,21 @@ def node_check(**kwargs):
             f11 = None
             f10 = None
             f9 = None
+            f1 = None
             for form in forms:
-                if '_11_' in form:
+                if '_11_' in form and '~' not in form:
                     f11 = ruta+'/'+form
-                if '_10_' in form:
+                if '_10_' in form and '~' not in form:
                     f10 = ruta+'/'+form
-                if '_9_' in form:
+                if '_9_' in form and '~' not in form:
                     f9 = ruta+'/'+form
+                if '_1_' in form and '~' not in form:
+                    f1 = ruta+'/'+form
             if f10:
                 for form in forms:
                     ruta_completa = ruta+'/'+form
                     if '_1_' in form and '~' not in form:
-                        print "Verificant nodes del formulari f1...\n"
+                        print "Verificant nodes del formulari 1...\n"
                         nodes = check(f10, ruta_completa, 'f1')
                         mostrar_nodes(nodes, 'f1', ruta)
                         print "Verificant CUPS del formulari 1...\n"
@@ -37,9 +41,11 @@ def node_check(**kwargs):
                         mostrar_cups(cups, 'f1', ruta)
                     elif ('_1bis_' in form or '_1BIS_' in form) \
                             and '~' not in form:
-                        print "Verificant CUPS del formulari f1bis...\n"
+                        print "Verificant CUPS del formulari 1bis...\n"
                         cups = check_cups(ruta_completa, 'f1bis')
                         mostrar_cups(cups, 'f1bis', ruta)
+                        cups = check_cups_f1bis(ruta_completa, f1)
+                        mostrar_cups_f1bis(cups, ruta)
                     elif '_2_' in form and '~' not in form:
                         print "Verificant nodes del formulari 2...\n"
                         nodes = check(f10, ruta_completa, 'f2')
@@ -127,6 +133,37 @@ def node_check(**kwargs):
             print "ERROR: No s'ha trobat la carpeta de formularis especificada."
 
 
+def mostrar_cups_f1bis(cups, ruta):
+    fitxer_sortida = ruta+'/resultats.txt'
+    with open(fitxer_sortida, 'a') as f:
+        if cups:
+            f.write("CUPS del formulari F1 Bis que no apareixen al formulari "
+                    "F1:\n\n")
+            for elem in cups:
+                f.write("\t{0}\n".format(elem))
+            f.write("\nTotal CUPS: {0}\n\n".format(len(cups)))
+        else:
+            f.write("Els cups del formulari F1 Bis coincideixen amb els del"
+                    " formulari F1. OK!\n\n")
+
+
+def check_cups_f1bis(fitxer, f1):
+    cups_f1 = []
+    cups_f1bis = []
+    resultat = []
+    if existeix_fitxer(fitxer):
+        if existeix_fitxer(f1):
+            with open(fitxer) as f1bis:
+                for linia in f1bis.readlines():
+                    cups_f1bis.append(linia.split(';')[0])
+            with open(f1) as f:
+                for linia in f.readlines():
+                    cups_f1.append(linia.split(';')[8])
+            resultat = set(cups_f1bis) - set(cups_f1)
+            resultat = list(resultat)
+    return resultat
+
+
 def mostrar_cups(cups, form, ruta):
     fitxer_sortida = ruta+'/resultats.txt'
     with open(fitxer_sortida, 'a') as f:
@@ -161,7 +198,7 @@ def check_cups(fitxer, form):
                     cups_complet = linia.split(';')[6]
                 elif form == 'f20':
                     cups_complet = linia.split(';')[1]
-                cups_trim = cups_complet[11:18]
+                cups_trim = cups_complet[:18]
                 if cups_trim in cups.keys():
                     cups_repetits[cups_trim] = cups[cups_trim]
                     cups_repetits[cups_trim].append(cups_complet)
@@ -309,7 +346,12 @@ def check_trams_f9_f10(ruta_f10, ruta_f9):
 def buidar_resultats_anteriors(ruta):
     fitxer_sortida = ruta+'/resultats.txt'
     with open(fitxer_sortida, 'w') as f:
-        f.write('')
+        f.write('Resultats de la comprovació dels formularis CNMC 4/2015\n\n')
+        f.write('Versió: 5\n\n')
+        f.write('Data de comprovació: {0}\n\n'.format(
+            time.strftime("%d/%m/%Y")))
+        f.write('#######################################################'
+                '\n\n\n\n')
 
 
 def mostrar_trams(trams, ruta, context, topologia=None):
