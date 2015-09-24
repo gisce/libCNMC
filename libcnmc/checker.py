@@ -3,6 +3,82 @@ import click
 import os
 import time
 
+_VERSION = 6
+
+_F1 = [
+    'Node',
+    'Coordenada X',
+    'Coordenada Y',
+    'Coordenada Z',
+    'CNAE',
+    'Equip de mesura',
+    'Codi de tarifa',
+    'Zona de qualitat',
+    'CUPS',
+    'Codi distribuidora',
+    'Municipi',
+    'Provincia',
+    'Connexió',
+    'Tensió d\'alimentació',
+    'Estat del contracte',
+    'Potència contractada',
+    'Potència facturada',
+    'Potència adscrita',
+    'Energia anual activa',
+    'Energia anual reactiva',
+    'Any d\'informació'
+]
+
+_F1_exclude = [
+    0, 1, 2, 3, 12, 19
+]
+
+_F1BIS = [
+    'CUPS',
+    'CINI',
+    'Instal·lació',
+    'Número de lectures',
+    'Canvi de titularitat',
+    'Baixa del subministre',
+    'Any d\'informació'
+]
+
+_F2A = [
+    'Codi de mercat',
+    'Codi companyia distribuidora declarant',
+    'Codi companyia distribuidora client',
+    'Codi frontera REE',
+    'Coordenada X',
+    'Coordenada Y',
+    'Tensió'
+]
+
+_F2B = [
+    'Codi de mercat',
+    'Codi companyia distribuidora declarant',
+    'Municipi',
+    'Provincia'
+]
+
+_F10 = [
+    'Tram',
+    'Node inicial',
+    'Node final',
+    'CINI',
+    'Provincia',
+    'Nivell de tensió',
+    'Longitud',
+    'Número de circuits',
+    'Tipus',
+    'R',
+    'X',
+    'Intensitat màxima',
+    'Estat operació',
+    'Codi companyia distribuidora',
+    'Propietat',
+    'Any d\'informació'
+]
+
 
 @click.command()
 @click.option('-d', '--dir', help='Ruta de la carpeta amb els formularis')
@@ -39,6 +115,10 @@ def node_check(**kwargs):
                         print "Verificant CUPS del formulari 1...\n"
                         cups = check_cups(ruta_completa, 'f1')
                         mostrar_cups(cups, 'f1', ruta)
+                        print "Verificant camps obligatoris del formulari " \
+                              "1...\n"
+                        camps = check_obligatoris(ruta_completa, 'f1')
+                        mostrar_obligatoris(camps, 'f1', ruta)
                     elif ('_1bis_' in form or '_1BIS_' in form) \
                             and '~' not in form:
                         print "Verificant CUPS del formulari 1bis...\n"
@@ -46,6 +126,10 @@ def node_check(**kwargs):
                         mostrar_cups(cups, 'f1bis', ruta)
                         cups = check_cups_f1bis(ruta_completa, f1)
                         mostrar_cups_f1bis(cups, ruta)
+                        print "Verificant camps obligatoris del formulari " \
+                              "1bis...\n"
+                        camps = check_obligatoris(ruta_completa, 'f1bis')
+                        mostrar_obligatoris(camps, 'f1bis', ruta)
                     elif '_2_' in form and '~' not in form:
                         print "Verificant nodes del formulari 2...\n"
                         nodes = check(f10, ruta_completa, 'f2')
@@ -53,6 +137,16 @@ def node_check(**kwargs):
                         print "Verificant CUPS del formulari 2...\n"
                         cups = check_cups(ruta_completa, 'f2')
                         mostrar_cups(cups, 'f2', ruta)
+                    elif ('_2a_' in form or '_2A_' in form) and '~' not in form:
+                        print "Verificant camps obligatoris del formulari" \
+                              "2a..."
+                        camps = check_obligatoris(ruta_completa, 'f2a')
+                        mostrar_obligatoris(camps, 'f2a', ruta)
+                    elif ('_2b_' in form or '_2B_' in form) and '~' not in form:
+                        print "Verificant camps obligatoris del formulari" \
+                              "2b..."
+                        camps = check_obligatoris(ruta_completa, 'f2b')
+                        mostrar_obligatoris(camps, 'f2b', ruta)
                     elif '_3_' in form and '~' not in form:
                         print "Verificant nodes del formulari 3...\n"
                         nodes = check(f10, ruta_completa, 'f3')
@@ -77,6 +171,10 @@ def node_check(**kwargs):
                         print "Verificant trams repetits del formulari 10...\n"
                         repetits = comprovar_repetits(ruta_completa, 'f10')
                         mostrar_trams(repetits, ruta, 'f10r')
+                        print "Verificant camps obligatoris del formulari" \
+                              "10..."
+                        camps = check_obligatoris(ruta_completa, 'f10')
+                        mostrar_obligatoris(camps, 'f10', ruta)
                     elif '_11_' in form and '~' not in form:
                         print "Verificant nodes del formulari 11...\n"
                         nodes = check(f10, ruta_completa, 'f11')
@@ -133,6 +231,86 @@ def node_check(**kwargs):
             print "ERROR: No s'ha trobat la carpeta de formularis especificada."
 
 
+def buidar_resultats_anteriors(ruta):
+    fitxer_sortida = ruta+'/resultats.txt'
+    with open(fitxer_sortida, 'w') as f:
+        f.write('Resultats de la comprovació dels formularis CNMC 4/2015\n\n')
+        f.write('Versió: {0}\n\n'.format(_VERSION))
+        f.write('Data de comprovació: {0}\n\n'.format(
+            time.strftime("%d/%m/%Y")))
+        f.write('#######################################################'
+                '\n\n\n\n')
+
+
+def check_obligatoris(fitxer, context):
+    camps = {}
+    if existeix_fitxer(fitxer):
+        with open(fitxer, 'r') as f:
+            j = 1
+            for linia in f:
+                linia = linia.rstrip()
+                camps_linia = linia.split(';')
+                i = 0
+                for camp in camps_linia:
+                    if context == 'f1':
+                        cups = camps_linia[8]
+                        if camp == '' and i not in _F1_exclude:
+                            if cups not in camps.keys():
+                                camps[cups] = []
+                            camps[cups].append(_F1[i])
+                    elif context == 'f1bis':
+                        cups = camps_linia[0]
+                        if camp == '':
+                            if cups not in camps.keys():
+                                camps[cups] = []
+                            camps[cups].append(_F1BIS[i])
+                    elif context == 'f2a':
+                        if camp == '':
+                            if j not in camps.keys():
+                                camps[j] = []
+                            camps[j].append(_F2A[i])
+                    elif context == 'f2b':
+                        if camp == '':
+                            if j not in camps.keys():
+                                camps[j] = []
+                            camps[j].append(_F2B[i])
+                    elif context == 'f10':
+                        tram = camps_linia[0]
+                        if camp == '':
+                            if tram not in camps.keys():
+                                camps[tram] = []
+                            camps[tram].append(_F10[i])
+                    i += 1
+                j += 1
+    return camps
+
+
+def mostrar_obligatoris(camps, form, ruta):
+    fitxer_sortida = ruta+'/resultats.txt'
+    with open(fitxer_sortida, 'a') as f:
+        if camps:
+            f.write("Camps obligatoris del formulari {0} que falten:"
+                    "\n".format(form))
+            i = 0
+            for elem in camps:
+                if len(camps[elem]) > 0:
+                    f.write("\n")
+                    if form == 'f2a' or form == 'f2b':
+                        f.write("\tLínia: {0}\n\n".format(elem))
+                    elif form == 'f10':
+                        f.write("\tTram: {0}\n\n".format(elem))
+                    else:
+                        f.write("\tCUPS: {0}\n\n".format(elem))
+                    i += 1
+                    for c in camps[elem]:
+                        f.write("\t\t{0}\n".format(c))
+            f.write("\nTotal de línies amb camps sense emplenar a {0}: "
+                    "{1}\n\n".format(form, i))
+        else:
+            f.write("Tots els camps obligatoris del fitxer {0} estàn complets."
+                    " OK!\n\n".format(form))
+
+
 def mostrar_cups_f1bis(cups, ruta):
     fitxer_sortida = ruta+'/resultats.txt'
     with open(fitxer_sortida, 'a') as f:
@@ -169,14 +347,16 @@ def mostrar_cups(cups, form, ruta):
     with open(fitxer_sortida, 'a') as f:
         if cups:
             f.write("CUPS duplicats del formulari {0}:\n".format(form))
+            i = 0
             for elem in cups:
-                if cups[elem] > 1:
+                if len(cups[elem]) > 1:
                     f.write("\n")
-                    f.write("\tCodi: {0}\n".format(elem))
+                    f.write("\tCodi: {0}\n\n".format(elem))
+                    i += 1
                     for c in cups[elem]:
                         f.write("\t\t{0}\n".format(c))
             f.write("\nTotal CUPS duplicats a {0}: {1}\n\n".format(
-                form, len(cups)))
+                form, i))
         else:
             f.write("No hi ha CUPS duplicats al formulari {0}. "
                     "OK!\n\n".format(form))
@@ -341,17 +521,6 @@ def check_trams_f9_f10(ruta_f10, ruta_f9):
             resta = set(trams_f10) - set(trams_f9)
             trams += [(x, 'f9', 'f10') for x in resta]
     return trams, topologia
-
-
-def buidar_resultats_anteriors(ruta):
-    fitxer_sortida = ruta+'/resultats.txt'
-    with open(fitxer_sortida, 'w') as f:
-        f.write('Resultats de la comprovació dels formularis CNMC 4/2015\n\n')
-        f.write('Versió: 5\n\n')
-        f.write('Data de comprovació: {0}\n\n'.format(
-            time.strftime("%d/%m/%Y")))
-        f.write('#######################################################'
-                '\n\n\n\n')
 
 
 def mostrar_trams(trams, ruta, context, topologia=None):
