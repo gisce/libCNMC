@@ -308,70 +308,67 @@ def check_trams_f9_f10(ruta_f10, ruta_f9):
 
 def buidar_resultats_anteriors(ruta):
     fitxer_sortida = ruta+'/resultats.txt'
-    f = open(fitxer_sortida, 'w')
-    f.write('')
-    f.close()
+    with open(fitxer_sortida, 'w') as f:
+        f.write('')
 
 
 def mostrar_trams(trams, ruta, context, topologia=None):
     fitxer_sortida = ruta+'/resultats.txt'
-    f = open(fitxer_sortida, 'a')
-    repetit = ''
-    if trams:
-        if context == 'f9_f10':
-            f.write("Trams dels formularis F9 i F10:\n\n")
-        elif context == 'f15':
-            f.write("Trams del formulari F15:\n\n")
-        elif context == 'f9r':
-            repetit = 'F9'
-            f.write("Trams repetits del formulari F9:\n\n")
-        elif context == 'f10r':
-            repetit = 'F10'
-            f.write("Trams repetits del formulari F10:\n\n")
-        for tram in trams:
-            if 'r' not in context:
-                f.write("\tEl tram {0} del formulari {1} no apareix al "
-                        "formulari {2}\n".format(tram[0], tram[2], tram[1]))
-            else:
-                f.write("\tEl tram {0} es repeteix al formulari {1}\n".format(
-                    tram, repetit))
-        f.write('\nTotal trams: {0}\n\n'.format(len(trams)))
-    else:
-        if context == 'f9_f10':
-            f.write("Els trams dels formularis f9 i f10 coincideixen entre "
-                    "ells. OK!\n\n")
-        elif context == 'f15':
-            f.write("Els trams del formulari f15 coincideixen amb els del "
-                    "formulari f9. OK!\n\n")
-        elif context == 'f10r':
-            f.write("No es repeteix cap tram al formulari f10. OK!\n\n")
-        elif context == 'f9r':
-            f.write("No es repeteix cap tram al formulari f9. OK!\n\n")
-    if topologia:
-        f.write("Trams del formulari F9 fora de topologia:\n\n")
-        for tram in topologia:
-            f.write("\tTram fora de topologia: {0}\n".format(tram))
-        f.write('\nTotal fora topologia: {0}\n\n'.format(len(topologia)))
-    f.close()
+    with open(fitxer_sortida, 'a') as f:
+        repetit = ''
+        if trams:
+            if context == 'f9_f10':
+                f.write("Trams dels formularis F9 i F10:\n\n")
+            elif context == 'f15':
+                f.write("Trams del formulari F15:\n\n")
+            elif context == 'f9r':
+                repetit = 'F9'
+                f.write("Trams repetits del formulari F9:\n\n")
+            elif context == 'f10r':
+                repetit = 'F10'
+                f.write("Trams repetits del formulari F10:\n\n")
+            for tram in trams:
+                if 'r' not in context:
+                    f.write("\tEl tram {0} del formulari {1} no apareix al "
+                            "formulari {2}\n".format(tram[0], tram[2], tram[1]))
+                else:
+                    f.write("\tEl tram {0} es repeteix al formulari "
+                            "{1}\n".format(tram, repetit))
+            f.write('\nTotal trams: {0}\n\n'.format(len(trams)))
+        else:
+            if context == 'f9_f10':
+                f.write("Els trams dels formularis f9 i f10 coincideixen entre "
+                        "ells. OK!\n\n")
+            elif context == 'f15':
+                f.write("Els trams del formulari f15 coincideixen amb els del "
+                        "formulari f9. OK!\n\n")
+            elif context == 'f10r':
+                f.write("No es repeteix cap tram al formulari f10. OK!\n\n")
+            elif context == 'f9r':
+                f.write("No es repeteix cap tram al formulari f9. OK!\n\n")
+        if topologia:
+            f.write("Trams del formulari F9 fora de topologia:\n\n")
+            for tram in topologia:
+                f.write("\tTram fora de topologia: {0}\n".format(tram))
+            f.write('\nTotal fora topologia: {0}\n\n'.format(len(topologia)))
 
 
 def mostrar_nodes(nodes, form, ruta):
     fitxer_sortida = ruta+'/resultats.txt'
-    f = open(fitxer_sortida, 'a')
-    if nodes:
-        f.write(
-            "Nodes del formulari {} que no apareixen al formulari "
-            "f10:\n\n".format(form))
-        for elem in nodes:
-            if form == 'f1' or form == 'f2' or form == 'f6':
-                f.write("\tNode: {0}, CUPS: {1}\n".format(elem[0], elem[1]))
-            else:
-                f.write("\t{0}\n".format(elem))
-        f.write("\nTotal nodes {0}: {1}\n\n".format(form, len(nodes)))
-    else:
-        f.write("Els nodes del formulari {0} coincideixen amb els del "
-                "formulari f10. OK!\n\n".format(form))
-    f.close()
+    with open(fitxer_sortida, 'a') as f:
+        if nodes:
+            f.write(
+                "Nodes del formulari {} que no apareixen al formulari "
+                "f10:\n\n".format(form))
+            for elem in nodes:
+                if form == 'f1' or form == 'f2' or form == 'f6':
+                    f.write("\tNode: {0}, CUPS: {1}\n".format(elem[0], elem[1]))
+                else:
+                    f.write("\t{0}\n".format(elem))
+            f.write("\nTotal nodes {0}: {1}\n\n".format(form, len(nodes)))
+        else:
+            f.write("Els nodes del formulari {0} coincideixen amb els del "
+                    "formulari f10. OK!\n\n".format(form))
 
 
 def check(f10_path, file_path, form):
@@ -379,45 +376,41 @@ def check(f10_path, file_path, form):
     if existeix_fitxer(f10_path):
         if existeix_fitxer(file_path):
             nodes_f10 = []
-            f = open(file_path, 'r')
-            f10 = open(f10_path, 'r')
-            linia = f.readline()
-            linia_f10 = f10.readline().rstrip()
-            node_actual = ''
-            while linia_f10 != '':
-                node_actual = linia_f10.split(';')[1]
-                nodes_f10.append(node_actual)
-                node_actual = linia_f10.split(';')[2]
-                nodes_f10.append(node_actual)
-                linia_f10 = f10.readline().rstrip()
+            with open(f10_path, 'r') as f10:
+                node_actual = ''
+                for linia_f10 in f10.readlines():
+                    linia_f10 = linia_f10.rstrip()
+                    if linia_f10 != '':
+                        node_actual = linia_f10.split(';')[1]
+                        nodes_f10.append(node_actual)
+                        node_actual = linia_f10.split(';')[2]
+                        nodes_f10.append(node_actual)
             # Ja tenim tots els nodes de F10, ara comprovem que cada node
             # del fitxer a comprovar és dins de F10
-            while linia != '':
-                if form == 'f1' or form == 'f2' or form == 'f3' or form == 'f6'\
-                        or form == 'f11' or form == 'f12' or form == 'f15'\
-                        or form == 'f16' or form == 'f17':
-                    node_actual = linia.split(';')[0]
-                elif form == 'f13bis':
-                    node_actual = linia.split(';')[2]
-                if node_actual not in nodes_f10:
-                    cups = 'formulari_sense_cups'
-                    if node_actual == '':
-                        node_actual = "Node buit"
-                    if form == 'f1':
-                        cups = linia.split(';')[8]
-                    elif form == 'f2':
-                        cups = linia.split(';')[3]
-                    elif form == 'f6':
-                        cups = linia.split(';')[4]
-                    if not cups:
-                        cups = "Sense CUPS"
-                    if cups == 'formulari_sense_cups':
-                        nodes.append(node_actual)
-                    else:
-                        nodes.append((node_actual, cups))
-                linia = f.readline()
-    f.close()
-    f10.close()
+            with open(file_path, 'r') as f:
+                for linia in f.readlines():
+                    if form == 'f1' or form == 'f2' or form == 'f3' \
+                            or form == 'f6' or form == 'f11' or form == 'f12' \
+                            or form == 'f15' or form == 'f16' or form == 'f17':
+                        node_actual = linia.split(';')[0]
+                    elif form == 'f13bis':
+                        node_actual = linia.split(';')[2]
+                    if node_actual not in nodes_f10:
+                        cups = 'formulari_sense_cups'
+                        if node_actual == '':
+                            node_actual = "Node buit"
+                        if form == 'f1':
+                            cups = linia.split(';')[8]
+                        elif form == 'f2':
+                            cups = linia.split(';')[3]
+                        elif form == 'f6':
+                            cups = linia.split(';')[4]
+                        if not cups:
+                            cups = "Sense CUPS"
+                        if cups == 'formulari_sense_cups':
+                            nodes.append(node_actual)
+                        else:
+                            nodes.append((node_actual, cups))
     return nodes
 
 
