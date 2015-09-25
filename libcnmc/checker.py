@@ -3,7 +3,7 @@ import click
 import os
 import time
 
-_VERSION = 6
+_VERSION = 6.1
 
 _F1 = [
     'Node',
@@ -171,8 +171,8 @@ def node_check(**kwargs):
                         print "Verificant trams repetits del formulari 10...\n"
                         repetits = comprovar_repetits(ruta_completa, 'f10')
                         mostrar_trams(repetits, ruta, 'f10r')
-                        print "Verificant camps obligatoris del formulari" \
-                              "10..."
+                        print "Verificant camps obligatoris del formulari " \
+                              "10...\n"
                         camps = check_obligatoris(ruta_completa, 'f10')
                         mostrar_obligatoris(camps, 'f10', ruta)
                     elif '_11_' in form and '~' not in form:
@@ -298,7 +298,10 @@ def mostrar_obligatoris(camps, form, ruta):
                     if form == 'f2a' or form == 'f2b':
                         f.write("\tLínia: {0}\n\n".format(elem))
                     elif form == 'f10':
-                        f.write("\tTram: {0}\n\n".format(elem))
+                        if i == 0:
+                            f.write("\tLínia: {0}\n\n".format(i+1))
+                        else:
+                            f.write("\tTram: {0}\n\n".format(elem))
                     else:
                         f.write("\tCUPS: {0}\n\n".format(elem))
                     i += 1
