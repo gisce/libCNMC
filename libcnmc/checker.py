@@ -246,6 +246,8 @@ def check_obligatoris(fitxer, context):
     camps = {}
     if existeix_fitxer(fitxer):
         with open(fitxer, 'r') as f:
+            # j és el numero de linia del fitxer on s'ha trobat que falta un
+            # camp
             j = 1
             for linia in f:
                 linia = linia.rstrip()
@@ -279,7 +281,12 @@ def check_obligatoris(fitxer, context):
                         if camp == '':
                             if tram not in camps.keys():
                                 camps[tram] = []
-                            camps[tram].append(_F10[i])
+                            if tram == '':
+                                if j not in camps.keys():
+                                    camps[j] = []
+                                camps[j].append(_F10[i])
+                            else:
+                                camps[tram].append(_F10[i])
                     i += 1
                 j += 1
     return camps
@@ -298,8 +305,8 @@ def mostrar_obligatoris(camps, form, ruta):
                     if form == 'f2a' or form == 'f2b':
                         f.write("\tLínia: {0}\n\n".format(elem))
                     elif form == 'f10':
-                        if i == 0:
-                            f.write("\tLínia: {0}\n\n".format(i+1))
+                        if "Tram" in camps[elem]:
+                            f.write("\tLínia: {0}\n\n".format(elem))
                         else:
                             f.write("\tTram: {0}\n\n".format(elem))
                     else:
