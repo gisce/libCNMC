@@ -104,12 +104,14 @@ class POS(MultiprocessBased):
                         id_comunitat[0], ['codi'])
                     if comunitat_vals:
                         comunitat = comunitat_vals['codi']
-                    o_sub = self.get_description(sub['subestacio_id'][0])
+                    # o_sub = self.get_description(sub['subestacio_id'][0])
+                    o_sub = sub['name']
+                    o_denom = self.get_description(sub['subestacio_id'][0])
 
                 output = [
                     o_sub,
                     sub['cini'] or '',
-                    cts['name'] or '',
+                    o_denom,
                     codi,
                     comunitat,
                     format_f(tensio),
