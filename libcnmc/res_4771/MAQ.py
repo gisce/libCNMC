@@ -121,10 +121,10 @@ class MAQ(MultiprocessBased):
                 sys.stderr.write('CT %s -> ' % trafo['ct'])
                 if trafo['ct']:
                     cts = O.GiscedataCts.read(trafo['ct'][0],
-                                              ['id_municipi', 'name'])
+                                              ['id_municipi', 'descripcio'])
                     if cts['id_municipi']:
                         id_municipi = cts['id_municipi'][0]
-                    denominacio = cts['name']
+                    denominacio = cts['descripcio']
                 else:
                     id_municipi = get_id_municipi_from_company(O)
                     denominacio = 'ALMACEN'
