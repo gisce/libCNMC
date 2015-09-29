@@ -93,6 +93,19 @@ class F11(MultiprocessBased):
             saturacio *= 0.9
         return saturacio
 
+    def get_potencia_trafos(self, id_ct):
+        o = self.connection
+        res = 0
+        ids_trafos = o.GiscedataTransformadorTrafo.search([
+            ('ct', '=', id_ct), ('id_estat.cnmc_inventari', '=', True)])
+        if ids_trafos:
+            for elem in ids_trafos:
+                trafo = o.GiscedataTransformadorTrafo.read(
+                    elem, ['potencia_nominal'])
+                if trafo:
+                    res += trafo['potencia_nominal']
+        return res
+
     def consumer(self):
         o_codi_r1 = 'R1-%s' % self.codi_r1[-3:]
         O = self.connection
@@ -124,7 +137,8 @@ class F11(MultiprocessBased):
                     o_tipo = self.get_tipus(ct['id_subtipus'][0])
                 else:
                     o_tipo = ''
-                o_potencia = ct['potencia']
+                o_potencia = format_f(self.get_potencia_trafos(item),
+                                      decimals=3)
                 cups = O.GiscedataCupsPs.search([('et', '=', ct['name'])])
                 o_energia = sum(
                     x['cne_anual_activa']
