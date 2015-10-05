@@ -3,7 +3,7 @@ import click
 import os
 import time
 
-_VERSION = 6.1
+_VERSION = 7.0
 
 _F1 = [
     'Node',
