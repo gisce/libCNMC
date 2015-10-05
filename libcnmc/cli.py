@@ -6,8 +6,9 @@ from libcnmc.utils import N_PROC
 from libcnmc.core import UpdateCNMCStats, UpdateCINISComptador
 from libcnmc.core.backend import OOOPFactory
 from libcnmc.cir_4_2014 import F1, F1bis, F11
-from libcnmc.cir_3_2015 import f3
-from libcnmc import cir_4_2015, cir_3_2015
+from libcnmc.cir_3_2015 import F3
+from libcnmc import cir_3_2015
+from libcnmc import cir_4_2015
 from libcnmc.res_4603 import INV
 from libcnmc.res_4603 import CINIMAQ, CINIPOS, CreateCelles, UpdateCINISTrafo
 from libcnmc.res_4603 import UpdateCINISTrams, UpdateCINISCts
@@ -1388,14 +1389,26 @@ def cir_4_2015_create_celles(**kwargs):
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
               help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069,
-              help='Port servidor ERP', type=click.INT)
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
 @click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
 @click.option('-w', '--password', default='admin',
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_3_2015_f3(**kwargs):
-    f3(**kwargs)
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
+    proc = cir_3_2015.F3(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        year=kwargs['year']
+    )
+    proc.calc()
 
 
 def invoke():
