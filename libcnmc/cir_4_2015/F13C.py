@@ -41,11 +41,18 @@ class F13c(MultiprocessBased):
             res = tensio_obj['tensio']
         return res
 
+    def get_subestacio(self, sub_id):
+        o = self.connection
+        sub = o.GiscedataCtsSubestacions.read(sub_id, ['ct_id'])
+        res = ''
+        if sub:
+            res = sub['ct_id'][1]
+        return res
+
     def consumer(self):
         o = self.connection
         fields_to_read = [
-            'name', 'cini', 'propietari', 'tipus_posicio', 'data_pm', 'tensio',
-            'subestacio_id'
+            'name', 'cini', 'propietari', 'subestacio_id', 'data_pm', 'tensio'
         ]
         while True:
             try:
@@ -55,10 +62,10 @@ class F13c(MultiprocessBased):
                 sub = o.GiscedataCtsSubestacionsPosicio.read(
                     item, fields_to_read
                 )
-                o_subestacio = sub['name']
+                o_subestacio = self.get_subestacio(sub['subestacio_id'][0])
                 o_parc = sub['subestacio_id'][1] + "-"\
                     + str(self.get_tensio(sub))
-                o_pos = sub['tipus_posicio']
+                o_pos = sub['name']
                 o_cini = sub['cini']
                 o_prop = int(sub['propietari'])
                 o_data = datetime.strptime(sub['data_pm'], "%Y-%m-%d")
