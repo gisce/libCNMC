@@ -180,9 +180,9 @@ def node_check(**kwargs):
                         nodes = check(f10, ruta_completa, 'f11')
                         mostrar_nodes(nodes, 'f11', ruta)
                     elif '_12_' in form and '~' not in form:
-                        print "Verificant nodes del formulari 12...\n"
-                        nodes = check(f10, ruta_completa, 'f12')
-                        mostrar_nodes(nodes, 'f12', ruta)
+                        # print "Verificant nodes del formulari 12...\n"
+                        # nodes = check(f10, ruta_completa, 'f12')
+                        # mostrar_nodes(nodes, 'f12', ruta)
                         if f11:
                             print "Verificant CTs del formulari 12bis...\n"
                             cts = comprovar_cts(f11, ruta_completa, 'f12')
