@@ -51,6 +51,16 @@ class POS(MultiprocessBased):
                 descripcio = sub['descripcio']
         return descripcio
 
+    def get_denom(self, sub_id):
+        o = self.connection
+        res = ''
+        ct_id = o.GiscedataCtsSubestacions.read(sub_id, ['ct_id'])['ct_id'][0]
+        if ct_id:
+            denom = o.GiscedataCts.read(ct_id, ['descripcio'])['descripcio']
+            if denom:
+                res = denom
+        return res
+
     def consumer(self):
         O = self.connection
         fields_to_read = ['name', 'cini', 'data_pm', 'subestacio_id',
@@ -89,8 +99,11 @@ class POS(MultiprocessBased):
                 tensio = (ten['tensio'] / 1000.0) or 0.0
 
                 cts = O.GiscedataCtsSubestacions.read(sub['subestacio_id'][0],
-                                                      ['id_municipi',
-                                                       'name'])
+                                                      ['id_municipi'])
+
+                denominacio = self.get_denom(sub['subestacio_id'][0])
+
+
                 if cts['id_municipi']:
                     id_municipi = cts['id_municipi'][0]
                 else:
@@ -104,14 +117,12 @@ class POS(MultiprocessBased):
                         id_comunitat[0], ['codi'])
                     if comunitat_vals:
                         comunitat = comunitat_vals['codi']
-                    # o_sub = self.get_description(sub['subestacio_id'][0])
-                    o_sub = sub['name']
-                    o_denom = self.get_description(sub['subestacio_id'][0])
+                    o_sub = self.get_description(sub['subestacio_id'][0])
 
                 output = [
                     o_sub,
                     sub['cini'] or '',
-                    o_denom,
+                    denominacio,
                     codi,
                     comunitat,
                     format_f(tensio),
