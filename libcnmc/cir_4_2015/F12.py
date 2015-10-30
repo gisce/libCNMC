@@ -17,6 +17,7 @@ class F12(MultiprocessBased):
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
         search_params = [
+            ('reductor', '=', False),
             ('id_estat.cnmc_inventari', '=', True)
         ]
         search_params += ['|', ('data_pm', '=', False),
