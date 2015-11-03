@@ -79,6 +79,7 @@ class F15(MultiprocessBased):
                         [('name', '=', linktemplate)])
                     tram_name = o.GiscedataAtTram.read(
                         tram_id, ['name'])[0]['name']
+                    tram_name = "A{0}".format(tram_name)
         return node, vertex, tram_name
 
     def obtenir_camps_linia(self, installacio):
