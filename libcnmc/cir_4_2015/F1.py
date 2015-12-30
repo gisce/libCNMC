@@ -212,11 +212,8 @@ class F1(MultiprocessBased):
                     # "Contrato no activo (CNA)"
                     o_equip = 'CNA'
                     o_estat_contracte = 1
-                    o_potencia_facturada = 0
                     o_pot_ads = 0
                     o_potencia = 0
-                    o_anual_activa = 0
-                    o_anual_reactiva = 0
 
                     search_modcon = [
                         ('id', 'in', cups['polisses']),
