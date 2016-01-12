@@ -69,7 +69,6 @@ class POS(MultiprocessBased):
             try:
                 item = self.input_q.get()
                 self.progress_q.put(item)
-                o_sub = ''
                 sub = O.GiscedataCtsSubestacionsPosicio.read(
                     item, fields_to_read)
                 if not sub:
@@ -81,7 +80,7 @@ class POS(MultiprocessBased):
                         sys.stderr.flush()
 
                     raise Exception(txt)
-
+                o_sub = sub['name']
                 # Calculem any posada en marxa
                 data_pm = sub['data_pm']
                 if data_pm:
@@ -103,7 +102,6 @@ class POS(MultiprocessBased):
 
                 denominacio = self.get_denom(sub['subestacio_id'][0])
 
-
                 if cts['id_municipi']:
                     id_municipi = cts['id_municipi'][0]
                 else:
@@ -117,7 +115,7 @@ class POS(MultiprocessBased):
                         id_comunitat[0], ['codi'])
                     if comunitat_vals:
                         comunitat = comunitat_vals['codi']
-                    o_sub = self.get_description(sub['subestacio_id'][0])
+                    # o_sub = self.get_description(sub['subestacio_id'][0])
 
                 output = [
                     o_sub,
