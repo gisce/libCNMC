@@ -115,10 +115,8 @@ class F10AT(MultiprocessBased):
                     if linia['provincia']:
                         o_provincia = self.get_provincia(linia['provincia'][0])
                     o_longitud = format_f(
-                        float(at['longitud_cad']) * coeficient / 1000.0 or 0.001
-                        , decimals=3)
-                    if o_longitud == '0,000':
-                        o_longitud = '0,001'
+                            round(float(at['longitud_cad']) *
+                                  coeficient / 1000.0, 3) or 0.001, decimals=3)
                     o_num_circuits = at['circuits']
                     o_r = format_f(
                         cable['resistencia'] * (float(at['longitud_cad']) *
