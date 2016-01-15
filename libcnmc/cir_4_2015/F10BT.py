@@ -107,6 +107,8 @@ class F10BT(MultiprocessBased):
                 o_longitud = format_f(
                         float(linia['longitud_cad']) * coeficient / 1000.0 or
                         0.001, decimals=3)
+                if o_longitud == '0,000':
+                    o_longitud = '0,001'
                 o_num_circuits = 1  # a BT suposarem que sempre hi ha 1
                 o_tipus = self.get_tipus_cable(cable['tipus'][0])
                 if o_tipus == 'E':
