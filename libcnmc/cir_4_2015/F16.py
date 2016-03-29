@@ -54,8 +54,8 @@ class F16(MultiprocessBased):
 
     def get_tensio(self, tensio_id):
         O = self.connection
-        tensio = O.GiscedataTensionsTensio.read(tensio_id, ['name'])
-        return tensio['name']
+        tensio = O.GiscedataTensionsTensio.read(tensio_id, ['tensio'])
+        return tensio['tensio']
 
     def consumer(self):
         o_codi_r1 = 'R1-%s' % self.codi_r1[-3:]
@@ -75,7 +75,10 @@ class F16(MultiprocessBased):
                 o_ine_muni, o_ine_prov = '', ''
                 if ct['id_municipi']:
                     o_ine_prov, o_ine_muni = self.get_ine(ct['id_municipi'][0])
-                o_tensio = self.get_tensio(cond['tensio_id'][0])
+                o_tensio = format_f(
+                    float(self.get_tensio(cond['tensio_id'][0])) / 1000.0,
+                    decimals=3
+                )
                 o_potencia = cond['potencia_instalada']
                 o_propietari = int(ct['propietari'])
                 o_any = self.year
