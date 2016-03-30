@@ -45,14 +45,24 @@ class F13bis(MultiprocessBased):
             print "ct id: {}".format(ct_id)
         return {'node': node, 'cini': cini}
 
-
-    def get_tipus_parc(self, sub_id):
-        return 0
+    def get_parc(self, parc_id, data):
+        o = self.connection
+        res = ''
+        if data == 'codi':
+            res = o.GiscedataParcs.read(parc_id, ['name'])['name']
+        elif data == 'tipus':
+            res = o.GiscedataParcs.read(parc_id, ['tipus'])['tipus'] - 1
+        elif data == 'tensio':
+            tensio_id = o.GiscedataParcs.read(
+                parc_id, ['tensio_id'])['tensio_id'][0]
+            res = o.GiscedataTensionsTensio.read(
+                tensio_id, ['tensio'])['tensio']
+        return res
 
     def consumer(self):
         o = self.connection
         fields_to_read = [
-            'propietari', 'subestacio_id', 'tensio'
+            'id', 'propietari', 'name', 'parc_id'
         ]
         dict_cts = {}
         while True:
