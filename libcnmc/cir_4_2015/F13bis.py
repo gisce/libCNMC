@@ -70,17 +70,19 @@ class F13bis(MultiprocessBased):
                 # generar linies
                 item = self.input_q.get()
                 self.progress_q.put(item)
-                sub = o.GiscedataCtsSubestacionsPosicio.read(
+                sub = o.GiscedataCtsSubestacions.read(
                     item, fields_to_read
                 )
-                o_subestacio = sub['subestacio_id'][1]
-                o_parc = sub['subestacio_id'][1] + "-" + sub['tensio'][1]
-                subestacio = self.get_subestacio(sub['subestacio_id'][0])
+                o_subestacio = sub['name']
+                # o_parc = sub['subestacio_id'][1] + "-" + sub['tensio'][1]
+                o_parc = self.get_parc(sub['parc_id'][0], 'codi')
+                subestacio = self.get_subestacio(sub['id'])
                 o_node = subestacio['node']
                 o_cini = subestacio['cini']
-                o_tipus = self.get_tipus_parc(sub['subestacio_id'][0])
+                o_tipus = self.get_parc(sub['parc_id'][0], 'tipus')
+                tensio = self.get_parc(sub['parc_id'][0], 'tensio')
                 o_tensio = format_f(
-                    float(sub['tensio'][1]) / 1000.0, decimals=3)
+                    float(tensio) / 1000.0, decimals=3)
                 o_prop = int(sub['propietari'])
                 o_any = self.year
                 insert = True
