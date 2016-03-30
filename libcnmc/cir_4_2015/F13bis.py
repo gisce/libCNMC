@@ -15,18 +15,20 @@ class F13bis(MultiprocessBased):
     def get_sequence(self):
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
-        search_params = ['|', ('data_pm', '=', False),
-                         ('data_pm', '<', data_pm),
-                         '|', ('data_baixa', '>', data_baixa),
-                         ('data_baixa', '=', False)
+        search_params = [('ct_id.propietari', '=', True),
+                         '|', ('ct_id.data_pm', '=', False),
+                         ('ct_id.data_pm', '<', data_pm),
+                         '|', ('ct_id.data_baixa', '>', data_baixa),
+                         ('ct_id.data_baixa', '=', False),
                          ]
         # Revisem que si està de baixa ha de tenir la data informada.
         search_params += ['|',
-                          '&', ('active', '=', False),
-                               ('data_baixa', '!=', False),
-                          ('active', '=', True)]
-        search_params += [('tensio.tensio', '!=', False)]
-        return self.connection.GiscedataCtsSubestacionsPosicio.search(
+                          '&', ('ct_id.active', '=', False),
+                          ('ct_id.data_baixa', '!=', False),
+                          ('ct_id.active', '=', True)]
+        # Revisem que tingui un parc assignat
+        search_params += [('parc_id', '!=', False)]
+        return self.connection.GiscedataCtsSubestacions.search(
             search_params, 0, 0, False, {'active_test': False})
 
     def get_subestacio(self, sub_id):
