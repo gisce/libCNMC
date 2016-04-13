@@ -15,18 +15,20 @@ class F13bis(MultiprocessBased):
     def get_sequence(self):
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
-        search_params = ['|', ('data_pm', '=', False),
-                         ('data_pm', '<', data_pm),
-                         '|', ('data_baixa', '>', data_baixa),
-                         ('data_baixa', '=', False)
+        search_params = [('ct_id.propietari', '=', True),
+                         '|', ('ct_id.data_pm', '=', False),
+                         ('ct_id.data_pm', '<', data_pm),
+                         '|', ('ct_id.data_baixa', '>', data_baixa),
+                         ('ct_id.data_baixa', '=', False),
                          ]
         # Revisem que si està de baixa ha de tenir la data informada.
         search_params += ['|',
-                          '&', ('active', '=', False),
-                               ('data_baixa', '!=', False),
-                          ('active', '=', True)]
-        search_params += [('tensio.tensio', '!=', False)]
-        return self.connection.GiscedataCtsSubestacionsPosicio.search(
+                          '&', ('ct_id.active', '=', False),
+                          ('ct_id.data_baixa', '!=', False),
+                          ('ct_id.active', '=', True)]
+        # Revisem que tingui un parc assignat
+        search_params += [('parc_id', '!=', False)]
+        return self.connection.GiscedataCtsSubestacions.search(
             search_params, 0, 0, False, {'active_test': False})
 
     def get_subestacio(self, sub_id):
@@ -43,14 +45,24 @@ class F13bis(MultiprocessBased):
             print "ct id: {}".format(ct_id)
         return {'node': node, 'cini': cini}
 
-
-    def get_tipus_parc(self, sub_id):
-        return 0
+    def get_parc(self, parc_id, data):
+        o = self.connection
+        res = ''
+        if data == 'codi':
+            res = o.GiscedataParcs.read(parc_id, ['name'])['name']
+        elif data == 'tipus':
+            res = o.GiscedataParcs.read(parc_id, ['tipus'])['tipus'] - 1
+        elif data == 'tensio':
+            tensio_id = o.GiscedataParcs.read(
+                parc_id, ['tensio_id'])['tensio_id'][0]
+            res = o.GiscedataTensionsTensio.read(
+                tensio_id, ['tensio'])['tensio']
+        return res
 
     def consumer(self):
         o = self.connection
         fields_to_read = [
-            'propietari', 'subestacio_id', 'tensio'
+            'id', 'propietari', 'name', 'parc_id'
         ]
         dict_cts = {}
         while True:
@@ -58,17 +70,19 @@ class F13bis(MultiprocessBased):
                 # generar linies
                 item = self.input_q.get()
                 self.progress_q.put(item)
-                sub = o.GiscedataCtsSubestacionsPosicio.read(
+                sub = o.GiscedataCtsSubestacions.read(
                     item, fields_to_read
                 )
-                o_subestacio = sub['subestacio_id'][1]
-                o_parc = sub['subestacio_id'][1] + "-" + sub['tensio'][1]
-                subestacio = self.get_subestacio(sub['subestacio_id'][0])
+                o_subestacio = sub['name']
+                # o_parc = sub['subestacio_id'][1] + "-" + sub['tensio'][1]
+                o_parc = self.get_parc(sub['parc_id'][0], 'codi')
+                subestacio = self.get_subestacio(sub['id'])
                 o_node = subestacio['node']
                 o_cini = subestacio['cini']
-                o_tipus = self.get_tipus_parc(sub['subestacio_id'][0])
+                o_tipus = self.get_parc(sub['parc_id'][0], 'tipus')
+                tensio = self.get_parc(sub['parc_id'][0], 'tensio')
                 o_tensio = format_f(
-                    float(sub['tensio'][1]) / 1000.0, decimals=3)
+                    float(tensio) / 1000.0, decimals=3)
                 o_prop = int(sub['propietari'])
                 o_any = self.year
                 insert = True
