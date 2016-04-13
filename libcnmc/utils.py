@@ -97,11 +97,14 @@ def get_id_municipi_from_company(connection):
     return id_municipi
 
 
-def tallar_text(text, long):
-    if len(text) > long:
-        return text[:long-3] + '...'
-    else:
-        return text
+def tallar_text(text, longitud):
+    try:
+        if len(text) > longitud:
+            return text[:longitud-3] + '...'
+        else:
+            return text
+    except TypeError:
+        return ''
 
 
 def format_f(num, decimals=2):
