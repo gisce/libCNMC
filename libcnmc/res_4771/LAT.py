@@ -58,16 +58,14 @@ class LAT(MultiprocessBased):
                 search_params += static_search_params
                 ids = O.GiscedataAtTram.search(
                     search_params, 0, 0, False, {'active_test': False})
+                # Afegim els embarrats
+                search_params = [('linia.name', '=', 1)]
+                search_params += static_search_params
+                em_ids = O.GiscedataAtTram.search(
+                    search_params, 0, 0, False, {'active_test': False}
+                )
+                ids += em_ids
                 for tram in O.GiscedataAtTram.read(ids, fields_to_read):
-                    # Comprovar el tipus del cable
-                    cable = O.GiscedataAtCables.read(tram['cable'][0],
-                                                     ['tipus'])
-                    tipus = O.GiscedataAtTipuscable.read(cable['tipus'][0],
-                                                         ['codi'])
-                    # Si el tram tram es embarrat no l'afegim
-                    if tipus['codi'] == 'E':
-                        continue
-
                     # Calculem any posada en marxa
                     data_pm = ''
                     if tram['data_pm'] and tram['data_pm'] < data_pm_limit:
