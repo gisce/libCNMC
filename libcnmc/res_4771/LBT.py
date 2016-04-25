@@ -93,7 +93,7 @@ class LBT(MultiprocessBased):
                 if linia['data_pm']:
                     data_pm_linia = datetime.strptime(str(linia['data_pm']),
                                                       '%Y-%m-%d')
-                    data_pm = data_pm_linia.strftime('%Y')
+                    data_pm = data_pm_linia.strftime('%d/%m/%Y')
 
                 # Coeficient per ajustar longituds de trams
                 coeficient = linia['coeficient'] or 1.0
@@ -146,6 +146,7 @@ class LBT(MultiprocessBased):
                     format_f(intensitat),
                     format_f(cable['seccio']),
                     format_f(capacitat),
+                    propietari
                 ]
 
                 self.output_q.put(output)

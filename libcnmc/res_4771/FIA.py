@@ -63,7 +63,7 @@ class FIA(MultiprocessBased):
                 if cll['data_pm']:
                     data_pm_ct = datetime.strptime(str(cll['data_pm']),
                                                    '%Y-%m-%d')
-                    data_pm = data_pm_ct.strftime('%Y')
+                    data_pm = data_pm_ct.strftime('%d/%m/%Y')
 
                 #Per trobar la comunitat autonoma
                 ccaa = ''
