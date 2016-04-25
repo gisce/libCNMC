@@ -25,7 +25,7 @@ class LBT(MultiprocessBased):
 
     def get_sequence(self):
 
-        search_params = [('cable.tipus.codi', '!=', 'E')]
+        search_params = []
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
         search_params += [('propietari', '=', True),
