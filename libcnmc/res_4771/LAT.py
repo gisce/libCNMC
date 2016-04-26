@@ -19,6 +19,12 @@ class LAT(MultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies AT'
         self.report_name = 'CNMC INVENTARI AT'
+        self.layer = 'LBT\_%'
+        id_res_like = self.connection.ResConfig.search(
+            [('name', '=', 'giscegis_btlike_layer')])
+        if id_res_like:
+            self.layer = self.connection.ResConfig.read(
+                id_res_like, ['value'])[0]['value']
 
     def get_sequence(self):
 
@@ -138,11 +144,23 @@ class LAT(MultiprocessBased):
                     else:
                         longitud = 0
 
+                    res = O.GiscegisEdge.search(
+                        [('id_linktemplate', '=', tram['name']),
+                         ('layer', 'not ilike', self.layer),
+                         ('layer', 'not ilike', 'EMBARRA%BT%')
+                         ])
+                    if not res or len(res) > 1:
+                        edge = {'start_node': (0, '%s_0' % tram.get('name')),
+                                'end_node': (0, '%s_1' % tram.get('name'))}
+                    else:
+                        edge = O.GiscegisEdge.read(res[0], ['start_node',
+                                                            'end_node'])
+
                     output = [
                         'A%s' % tram['name'],
                         tram.get('cini', ''),
-                        origen or '',
-                        final or '',
+                        origen or edge['start_node'][1],
+                        final or edge['end_node'][1],
                         codi or '',
                         comunitat,
                         comunitat,
