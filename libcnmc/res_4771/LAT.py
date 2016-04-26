@@ -21,7 +21,7 @@ class LAT(MultiprocessBased):
         self.report_name = 'CNMC INVENTARI AT'
 
     def get_sequence(self):
-        search_params = [('name', '!=', '1'), ('propietari', '=', True)]
+        search_params = [('propietari', '=', True)]
         return self.connection.GiscedataAtLinia.search(search_params)
 
     def consumer(self):
