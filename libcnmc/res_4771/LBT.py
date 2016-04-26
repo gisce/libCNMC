@@ -145,6 +145,7 @@ class LBT(MultiprocessBased):
                     format_f(intensitat),
                     format_f(cable['seccio']),
                     format_f(capacitat),
+                    propietari
                 ]
 
                 self.output_q.put(output)

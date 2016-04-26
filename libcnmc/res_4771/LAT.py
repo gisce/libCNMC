@@ -173,6 +173,7 @@ class LAT(MultiprocessBased):
                         format_f(cable.get('intensitat_admisible', 0)),
                         format_f(cable.get('seccio', 0)),
                         capacitat,
+                        propietari
                     ]
 
                     self.output_q.put(output)
