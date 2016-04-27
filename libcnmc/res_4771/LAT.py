@@ -88,7 +88,7 @@ class LAT(MultiprocessBased):
                     if 'data_pm' in tram and tram['data_pm'] and tram['data_pm'] < data_pm_limit:
                         data_pm = datetime.strptime(str(tram['data_pm']),
                                                     '%Y-%m-%d')
-                        data_pm = data_pm.strftime('%Y')
+                        data_pm = data_pm.strftime('%d/%m/%Y')
 
                     # Coeficient per ajustar longituds de trams
                     coeficient = tram.get('coeficient',1.0)

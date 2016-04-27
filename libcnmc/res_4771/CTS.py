@@ -54,7 +54,7 @@ class CTS(MultiprocessBased):
                 if ct['data_pm']:
                     data_pm_ct = datetime.strptime(str(ct['data_pm']),
                                                    '%Y-%m-%d')
-                    data_pm = data_pm_ct.strftime('%Y')
+                    data_pm = data_pm_ct.strftime('%d/%m/%Y')
 
                 #funció per trobar la ccaa desde el municipi
                 fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
