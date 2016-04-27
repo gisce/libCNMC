@@ -138,12 +138,11 @@ class LAT(MultiprocessBased):
                     #Descripció
                     origen = tallar_text(tram['origen'], 50)
                     final = tallar_text(tram['final'], 50)
+                    if 'longitud_cad' in tram:
+                        longitud = round(tram['longitud_cad'] * coeficient/ 1000.0, 3) or 0.001
+                    else:
+                        longitud = 0
                     if not origen or not final:
-                        if 'longitud_cad' in tram:
-                            longitud = round(tram['longitud_cad'] * coeficient/ 1000.0, 3) or 0.001
-                        else:
-                            longitud = 0
-
                         res = O.GiscegisEdge.search(
                             [('id_linktemplate', '=', tram['name']),
                              ('layer', 'not ilike', self.layer),
