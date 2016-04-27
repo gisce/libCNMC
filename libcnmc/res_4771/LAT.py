@@ -138,40 +138,40 @@ class LAT(MultiprocessBased):
                     #Descripció
                     origen = tallar_text(tram['origen'], 50)
                     final = tallar_text(tram['final'], 50)
+                    if not origen or not final:
+                        if 'longitud_cad' in tram:
+                            longitud = round(tram['longitud_cad'] * coeficient/ 1000.0, 3) or 0.001
+                        else:
+                            longitud = 0
 
-                    if 'longitud_cad' in tram:
-                        longitud = round(tram['longitud_cad'] * coeficient/ 1000.0, 3) or 0.001
-                    else:
-                        longitud = 0
-
-                    res = O.GiscegisEdge.search(
-                        [('id_linktemplate', '=', tram['name']),
-                         ('layer', 'not ilike', self.layer),
-                         ('layer', 'not ilike', 'EMBARRA%BT%')
-                         ])
-                    if not res or len(res) > 1:
-                        edge = {'start_node': (0, '%s_0' % tram.get('name')),
-                                'end_node': (0, '%s_1' % tram.get('name'))}
-                    else:
-                        edge = O.GiscegisEdge.read(res[0], ['start_node',
-                                                            'end_node'])
+                        res = O.GiscegisEdge.search(
+                            [('id_linktemplate', '=', tram['name']),
+                             ('layer', 'not ilike', self.layer),
+                             ('layer', 'not ilike', 'EMBARRA%BT%')
+                             ])
+                        if not res or len(res) > 1:
+                            edge = {'start_node': (0, '%s_0' % tram.get('name')),
+                                    'end_node': (0, '%s_1' % tram.get('name'))}
+                        else:
+                            edge = O.GiscegisEdge.read(res[0], ['start_node',
+                                                                'end_node'])
 
                     output = [
                         'A%s' % tram['name'],
-                        tram.get('cini', ''),
+                        tram.get('cini', '') or '',
                         origen or edge['start_node'][1],
                         final or edge['end_node'][1],
                         codi or '',
                         comunitat,
                         comunitat,
-                        format_f(round(100 - int(tram.get('perc_financament', 0)))),
+                        format_f(round(100 - int(tram.get('perc_financament', 0) or 0))),
                         data_pm,
-                        tram.get('circuits', 1),
+                        tram.get('circuits', 1) or 1,
                         1,
                         format_f(tensio),
                         format_f(longitud, 3),
-                        format_f(cable.get('intensitat_admisible', 0)),
-                        format_f(cable.get('seccio', 0)),
+                        format_f(cable.get('intensitat_admisible', 0) or 0),
+                        format_f(cable.get('seccio', 0) or o),
                         capacitat,
                         propietari
                     ]
