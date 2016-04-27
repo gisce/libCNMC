@@ -19,10 +19,20 @@ class LAT(MultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies AT'
         self.report_name = 'CNMC INVENTARI AT'
+        self.layer = 'LBT\_%'
+        id_res_like = self.connection.ResConfig.search(
+            [('name', '=', 'giscegis_btlike_layer')])
+        if id_res_like:
+            self.layer = self.connection.ResConfig.read(
+                id_res_like, ['value'])[0]['value']
 
     def get_sequence(self):
-        search_params = [('name', '!=', '1'), ('propietari', '=', True)]
-        return self.connection.GiscedataAtLinia.search(search_params)
+
+        search_params = [('propietari', '=', True)]
+        ids = self.connection.GiscedataAtLinia.search(search_params)
+        id_lat_emb = self.connection.GiscedataAtLinia.search(
+            [('name', '=', '1')], 0, 0, False, {'active_test': False})
+        return ids + id_lat_emb
 
     def consumer(self):
         O = self.connection
@@ -58,31 +68,41 @@ class LAT(MultiprocessBased):
                 search_params += static_search_params
                 ids = O.GiscedataAtTram.search(
                     search_params, 0, 0, False, {'active_test': False})
+                id_desconegut = O.GiscedataAtCables.search(
+                    [('name', '=', 'DESCONEGUT')])
+
+                if not id_desconegut:
+                    id_desconegut = O.GiscedataAtCables.search(
+                    [('name', '=', 'DESCONOCIDO')])[0]
                 for tram in O.GiscedataAtTram.read(ids, fields_to_read):
                     # Comprovar el tipus del cable
-                    cable = O.GiscedataAtCables.read(tram['cable'][0],
+                    if 'cable' in tram:
+                        cable = O.GiscedataAtCables.read(tram['cable'][0],
                                                      ['tipus'])
-                    tipus = O.GiscedataAtTipuscable.read(cable['tipus'][0],
-                                                         ['codi'])
-                    # Si el tram tram es embarrat no l'afegim
-                    if tipus['codi'] == 'E':
-                        continue
+                    else:
+                        cable = O.GiscedataAtCables.read(
+                            id_desconegut, ['tipus'])
 
                     # Calculem any posada en marxa
                     data_pm = ''
-                    if tram['data_pm'] and tram['data_pm'] < data_pm_limit:
+                    if 'data_pm' in tram and tram['data_pm'] and tram['data_pm'] < data_pm_limit:
                         data_pm = datetime.strptime(str(tram['data_pm']),
                                                     '%Y-%m-%d')
                         data_pm = data_pm.strftime('%Y')
 
                     # Coeficient per ajustar longituds de trams
-                    coeficient = tram['coeficient'] or 1.0
+                    coeficient = tram.get('coeficient',1.0)
 
-                    codi = tram['cnmc_tipo_instalacion']
+                    codi = tram.get('cnmc_tipo_instalacion','')
 
                     #Agafem la tensió
-                    tensio = ((tram['tensio_max_disseny'] or linia['tensio'])
-                              / 1000.0)
+                    if 'tensio_max_disseny' in tram :
+                        tensio = tram['tensio_max_disseny'] / 1000.0
+                    elif 'tensio' in linia:
+                        tensio = linia['tensio'] / 1000.0
+                    else:
+                        tensio = 0
+
 
                     comunitat = ''
                     if linia['municipi']:
@@ -95,12 +115,20 @@ class LAT(MultiprocessBased):
                             comunitat = comunidad[0]['codi']
 
                     # Agafem el cable de la linia
-                    cable = O.GiscedataAtCables.read(tram['cable'][0], [
-                        'intensitat_admisible', 'seccio'])
+                    if 'cable' in tram:
+                        cable = O.GiscedataAtCables.read(
+                            tram['cable'][0], ['intensitat_admisible',
+                                               'seccio'])
+                    else:
+                        cable = O.GiscedataAtCables.read(
+                            id_desconegut[0], ['tipus'])
 
                     #Capacitat
-                    cap = (cable['intensitat_admisible'] * tensio *
-                           math.sqrt(3) / 1000.0)
+                    if 'intensitat_admisible' in cable:
+                        cap = (cable['intensitat_admisible'] * tensio *
+                               math.sqrt(3) / 1000.0)
+                    else:
+                        cap = 0
 
                     if cap < 1:
                         capacitat = 1
@@ -110,27 +138,42 @@ class LAT(MultiprocessBased):
                     #Descripció
                     origen = tallar_text(tram['origen'], 50)
                     final = tallar_text(tram['final'], 50)
+                    if not origen or not final:
+                        if 'longitud_cad' in tram:
+                            longitud = round(tram['longitud_cad'] * coeficient/ 1000.0, 3) or 0.001
+                        else:
+                            longitud = 0
 
-                    longitud = round(tram['longitud_cad'] * coeficient
-                                     / 1000.0, 3) or 0.001
+                        res = O.GiscegisEdge.search(
+                            [('id_linktemplate', '=', tram['name']),
+                             ('layer', 'not ilike', self.layer),
+                             ('layer', 'not ilike', 'EMBARRA%BT%')
+                             ])
+                        if not res or len(res) > 1:
+                            edge = {'start_node': (0, '%s_0' % tram.get('name')),
+                                    'end_node': (0, '%s_1' % tram.get('name'))}
+                        else:
+                            edge = O.GiscegisEdge.read(res[0], ['start_node',
+                                                                'end_node'])
 
                     output = [
                         'A%s' % tram['name'],
-                        tram['cini'] or '',
-                        origen or '',
-                        final or '',
+                        tram.get('cini', '') or '',
+                        origen or edge['start_node'][1],
+                        final or edge['end_node'][1],
                         codi or '',
                         comunitat,
                         comunitat,
-                        format_f(round(100 - int(tram['perc_financament']))),
+                        format_f(round(100 - int(tram.get('perc_financament', 0) or 0))),
                         data_pm,
-                        tram['circuits'] or 1,
+                        tram.get('circuits', 1) or 1,
                         1,
                         format_f(tensio),
                         format_f(longitud, 3),
-                        format_f(cable['intensitat_admisible']),
-                        format_f(cable['seccio']),
+                        format_f(cable.get('intensitat_admisible', 0) or 0),
+                        format_f(cable.get('seccio', 0) or o),
                         capacitat,
+                        propietari
                     ]
 
                     self.output_q.put(output)
