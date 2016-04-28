@@ -22,12 +22,16 @@ class LBT(MultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies BT'
         self.report_name = 'CNMC INVENTARI BT'
+        self.embarrats = kwargs.pop('embarrats', False)
 
     def get_sequence(self):
 
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
-        search_params = [('propietari', '=', True),
+        search_params = []
+        if not self.embarrats:
+            search_params += [('cable.tipus.codi', '!=', 'E')]
+        search_params += [('propietari', '=', True),
                           '|', ('data_pm', '=', False),
                                ('data_pm', '<', data_pm),
                           '|', ('data_baixa', '>', data_baixa),

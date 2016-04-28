@@ -20,6 +20,7 @@ class LAT(MultiprocessBased):
         self.base_object = 'Línies AT'
         self.report_name = 'CNMC INVENTARI AT'
         self.layer = 'LBT\_%'
+        self.embarrats = kwargs.pop('embarrats', False)
         id_res_like = self.connection.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')])
         if id_res_like:
@@ -30,8 +31,11 @@ class LAT(MultiprocessBased):
 
         search_params = [('propietari', '=', True)]
         ids = self.connection.GiscedataAtLinia.search(search_params)
-        id_lat_emb = self.connection.GiscedataAtLinia.search(
-            [('name', '=', '1')], 0, 0, False, {'active_test': False})
+        id_lat_emb = []
+        if self.embarrats:
+            id_lat_emb = self.connection.GiscedataAtLinia.search([
+                ('name', '=', '1')
+            ], 0, 0, False, {'active_test': False})
         return ids + id_lat_emb
 
     def consumer(self):
@@ -79,6 +83,13 @@ class LAT(MultiprocessBased):
                     if 'cable' in tram:
                         cable = O.GiscedataAtCables.read(tram['cable'][0],
                                                      ['tipus'])
+                        if not self.embarrats and cable['tipus']:
+                            tipus = O.GiscedataAtTipuscable.read(
+                                        cable['tipus'][0], ['codi']
+                            )
+                            # Si el tram tram es embarrat no l'afegim
+                            if tipus['codi'] == 'E':
+                                continue
                     else:
                         cable = O.GiscedataAtCables.read(
                             id_desconegut, ['tipus'])
