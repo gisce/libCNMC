@@ -191,7 +191,8 @@ def res_lat(LAT, **kwargs):
         connection=O,
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
-        year=kwargs['year']
+        year=kwargs['year'],
+        embarrats=kwargs['embarrats']
     )
     proc.calc()
 
@@ -236,6 +237,8 @@ def res_4603_lat(**kwargs):
 @click.option('-w', '--password', default='admin',
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--embarrats/--no-embarrats', default=False,
+              help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4771_lat(**kwargs):
     from libcnmc.res_4771 import LAT
