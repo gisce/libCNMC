@@ -48,17 +48,14 @@ class LAT(MultiprocessBased):
                           'longitud_cad', 'cable', 'cnmc_tipo_instalacion',
                           'data_baixa']
         data_pm_limit = '%s-01-01' % (self.year + 1)
-        data_baixa = '%s-1-1' % self.year
-        #static_search_params_original = [
-        #    ('propietari', '=', True),
-        #    '|', ('data_pm', '=', False), ('data_pm', '<', data_pm_limit),
-        #    '|', ('data_baixa', '>', data_baixa), ('data_baixa', '=', False),
-        #                        ]
+        data_baixa = '%s-01-01' % self.year
 
         static_search_params = [
             ('propietari', '=', True),
             '|', ('data_pm', '=', False), ('data_pm', '<', data_pm_limit),
-        ]
+            '|', ('data_baixa', '=', False), ('data_baixa', '>', data_baixa)
+            ]
+
         #print 'static_search_params:{}'.format(static_search_params)
         # Revisem que si està de baixa ha de tenir la data informada.
         static_search_params += [
@@ -173,15 +170,13 @@ class LAT(MultiprocessBased):
                             edge = O.GiscegisEdge.read(res[0], ['start_node',
                                                                 'end_node'])
                     if tram.get('data_baixa'):
-                        #print 'data_baixa:{}'.format(data_baixa)
-                        if tram.get('data_baixa') < data_baixa:
-                            fecha_baja = tram.get('data_baixa')
-                            #print 'tram_name:{} data_baixa:{}'.format(tram['name'],tram.get('data_baixa'))
-                        else:
+                        if tram.get('data_baixa') > data_pm_limit:
                             fecha_baja = ''
-                            #print 'tram_name:{} data_baixa:{}'.format(tram['name'],tram.get('data_baixa'))
+                        else:
+                            fecha_baja = tram.get('data_baixa')
                     else:
                        fecha_baja = ''
+
                     if data_pm:
                         dpm = time.strptime(data_pm, '%d/%m/%Y')
                         db = time.strptime(data_baixa, '%Y-%m-%d')
