@@ -30,12 +30,12 @@ class LAT(MultiprocessBased):
     def get_sequence(self):
 
         search_params = [('propietari', '=', True)]
-        ids = self.connection.GiscedataAtLinia.search(search_params)
+        obj_lat = self.connection.GiscedataAtLinia
+        ids = obj_lat.search(search_params)
         id_lat_emb = []
         if self.embarrats:
-            id_lat_emb = self.connection.GiscedataAtLinia.search([
-                ('name', '=', '1')
-            ], 0, 0, False, {'active_test': False})
+            id_lat_emb = obj_lat.search(
+                [('name', '=', '1')], 0, 0, False, {'active_test': False})
         return ids + id_lat_emb
 
     def consumer(self):
@@ -165,17 +165,21 @@ class LAT(MultiprocessBased):
                         else:
                             edge = O.GiscegisEdge.read(res[0], ['start_node',
                                                                 'end_node'])
-
+                    codigo_ccuu = 'TI-XXXX'  # TODO: Fer que l'agafi del camp antic
+                    estado = '2'  # TODO: Fer que surti 0 o 2
+                    fecha_baja = ''  # TODO: Nomes omplir el camp quan es va donar de baixa en el periode
                     output = [
                         'A%s' % tram['name'],
                         tram.get('cini', '') or '',
                         origen or edge['start_node'][1],
                         final or edge['end_node'][1],
+                        codigo_ccuu or '',
                         codi or '',
                         comunitat,
                         comunitat,
                         format_f(round(100 - int(tram.get('perc_financament', 0) or 0))),
                         data_pm,
+                        fecha_baja or '',
                         tram.get('circuits', 1) or 1,
                         1,
                         format_f(tensio),
@@ -183,7 +187,8 @@ class LAT(MultiprocessBased):
                         format_f(cable.get('intensitat_admisible', 0) or 0),
                         format_f(cable.get('seccio', 0) or 0),
                         capacitat,
-                        propietari
+                        propietari,
+                        estado
                     ]
 
                     self.output_q.put(output)
