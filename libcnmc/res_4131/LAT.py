@@ -104,7 +104,7 @@ class LAT(MultiprocessBased):
                     # Coeficient per ajustar longituds de trams
                     coeficient = tram.get('coeficient',1.0)
 
-                    codi = tram.get('cnmc_tipo_instalacion','')
+                    codi_ccuu = tram.get('cnmc_tipo_instalacion', '')
 
                     #Agafem la tensió
                     if 'tensio_max_disseny' in tram :
@@ -165,7 +165,6 @@ class LAT(MultiprocessBased):
                         else:
                             edge = O.GiscegisEdge.read(res[0], ['start_node',
                                                                 'end_node'])
-                    codigo_ccuu = 'TI-XXXX'  # TODO: Fer que l'agafi del camp antic
                     estado = '2'  # TODO: Fer que surti 0 o 2
                     fecha_baja = ''  # TODO: Nomes omplir el camp quan es va donar de baixa en el periode
                     output = [
@@ -173,8 +172,7 @@ class LAT(MultiprocessBased):
                         tram.get('cini', '') or '',
                         origen or edge['start_node'][1],
                         final or edge['end_node'][1],
-                        codigo_ccuu or '',
-                        codi or '',
+                        codi_ccuu or '',
                         comunitat,
                         comunitat,
                         format_f(round(100 - int(tram.get('perc_financament', 0) or 0))),
