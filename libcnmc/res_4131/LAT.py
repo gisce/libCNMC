@@ -7,6 +7,7 @@ INVENTARI DE CNMC AT
 from datetime import datetime
 import traceback
 import math
+import time
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import format_f, tallar_text
@@ -44,20 +45,27 @@ class LAT(MultiprocessBased):
                           'coeficient', 'cini', 'propietari',
                           'tensio_max_disseny', 'name', 'origen',
                           'final', 'perc_financament', 'circuits',
-                          'longitud_cad', 'cable', 'cnmc_tipo_instalacion']
+                          'longitud_cad', 'cable', 'cnmc_tipo_instalacion',
+                          'data_baixa']
         data_pm_limit = '%s-01-01' % (self.year + 1)
-        data_baixa = '%s-12-31' % self.year
-        static_search_params = [('propietari', '=', True),
-                                '|', ('data_pm', '=', False),
-                                     ('data_pm', '<', data_pm_limit),
-                                '|', ('data_baixa', '>', data_baixa),
-                                     ('data_baixa', '=', False),
-                                ]
+        data_baixa = '%s-1-1' % self.year
+        #static_search_params_original = [
+        #    ('propietari', '=', True),
+        #    '|', ('data_pm', '=', False), ('data_pm', '<', data_pm_limit),
+        #    '|', ('data_baixa', '>', data_baixa), ('data_baixa', '=', False),
+        #                        ]
+
+        static_search_params = [
+            ('propietari', '=', True),
+            '|', ('data_pm', '=', False), ('data_pm', '<', data_pm_limit),
+        ]
+        #print 'static_search_params:{}'.format(static_search_params)
         # Revisem que si està de baixa ha de tenir la data informada.
-        static_search_params += ['|',
-                                 '&', ('active', '=', False),
-                                      ('data_baixa', '!=', False),
-                                 ('active', '=', True)]
+        static_search_params += [
+            '|',
+            '&', ('active', '=', False), ('data_baixa', '!=', False),
+            ('active', '=', True)
+        ]
         while True:
             try:
                 item = self.input_q.get()
@@ -66,9 +74,8 @@ class LAT(MultiprocessBased):
                 linia = O.GiscedataAtLinia.read(
                     item, ['trams', 'tensio', 'municipi', 'propietari']
                 )
-
                 propietari = linia['propietari'] and '1' or '0'
-                search_params = [('id', 'in', linia['trams'])]
+                search_params = [('linia', '=', linia['id'])]
                 search_params += static_search_params
                 ids = O.GiscedataAtTram.search(
                     search_params, 0, 0, False, {'active_test': False})
@@ -165,8 +172,28 @@ class LAT(MultiprocessBased):
                         else:
                             edge = O.GiscegisEdge.read(res[0], ['start_node',
                                                                 'end_node'])
-                    estado = '2'  # TODO: Fer que surti 0 o 2
-                    fecha_baja = ''  # TODO: Nomes omplir el camp quan es va donar de baixa en el periode
+                    if tram.get('data_baixa'):
+                        #print 'data_baixa:{}'.format(data_baixa)
+                        if tram.get('data_baixa') < data_baixa:
+                            fecha_baja = tram.get('data_baixa')
+                            #print 'tram_name:{} data_baixa:{}'.format(tram['name'],tram.get('data_baixa'))
+                        else:
+                            fecha_baja = ''
+                            #print 'tram_name:{} data_baixa:{}'.format(tram['name'],tram.get('data_baixa'))
+                    else:
+                       fecha_baja = ''
+                    if data_pm:
+                        dpm = time.strptime(data_pm, '%d/%m/%Y')
+                        db = time.strptime(data_baixa, '%Y-%m-%d')
+                        if dpm > db:
+                            estado = 2
+                        else:
+
+                            estado = 0
+                    else:
+                        print 'name:{} data_pm:{}'.format(tram['name'],data_pm)
+                        estado = 0
+
                     output = [
                         'A%s' % tram['name'],
                         tram.get('cini', '') or '',
