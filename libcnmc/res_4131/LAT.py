@@ -186,7 +186,6 @@ class LAT(MultiprocessBased):
 
                             estado = 0
                     else:
-                        print 'name:{} data_pm:{}'.format(tram['name'],data_pm)
                         estado = 0
 
                     output = [
