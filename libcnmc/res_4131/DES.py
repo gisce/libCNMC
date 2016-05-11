@@ -33,13 +33,19 @@ class DES(MultiprocessBased):
 
                 despatx = O.GiscedataDespatx.read(
                     item, fields_to_read)
-
+                if despatx['any_ps'] == self.year:
+                    estado = '2'
+                else:
+                    estado = '0'
+                fecha_baja = ''
                 output = [
                     '{0}'.format(despatx['name']),
                     despatx['cini'] or '',
                     despatx['denominacio'] or '',
                     despatx['any_ps'],
-                    format_f(despatx['vai'])
+                    fecha_baja,
+                    format_f(despatx['vai']),
+                    estado
                 ]
 
                 self.output_q.put(output)
@@ -49,4 +55,3 @@ class DES(MultiprocessBased):
                     self.raven.captureException()
             finally:
                 self.input_q.task_done()
-
