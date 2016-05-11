@@ -10,6 +10,7 @@ import traceback
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import format_f
 
+
 class DES(MultiprocessBased):
     def __init__(self, **kwargs):
         super(DES, self).__init__(**kwargs)
@@ -34,7 +35,7 @@ class DES(MultiprocessBased):
                     item, fields_to_read)
 
                 output = [
-                    '%s' % despatx['name'],
+                    '{0}'.format(despatx['name']),
                     despatx['cini'] or '',
                     despatx['denominacio'] or '',
                     despatx['any_ps'],
@@ -42,7 +43,7 @@ class DES(MultiprocessBased):
                 ]
 
                 self.output_q.put(output)
-            except:
+            except Exception:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
