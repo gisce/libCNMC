@@ -47,8 +47,8 @@ class LAT(MultiprocessBased):
                           'final', 'perc_financament', 'circuits',
                           'longitud_cad', 'cable', 'cnmc_tipo_instalacion',
                           'data_baixa']
-        data_pm_limit = '%s-01-01' % (self.year + 1)
-        data_baixa = '%s-01-01' % self.year
+        data_pm_limit = '{0}-01-01'.format(self.year + 1)
+        data_baixa = '{0}-01-01'.format(self.year)
 
         static_search_params = [
             ('propietari', '=', True),
