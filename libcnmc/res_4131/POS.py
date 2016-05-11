@@ -24,8 +24,8 @@ class POS(MultiprocessBased):
 
     def get_sequence(self):
         search_params = [('interruptor', '=', '2')]
-        data_pm = '%s-01-01' % (self.year + 1)
-        data_baixa = '%s-12-31' % self.year
+        data_pm = '{0}-01-01'.format(self.year + 1)
+        data_baixa = '{0}-12-31'.format(self.year)
         search_params += [('propietari', '=', True),
                           '|', ('data_pm', '=', False),
                                ('data_pm', '<', data_pm),
@@ -65,6 +65,7 @@ class POS(MultiprocessBased):
         O = self.connection
         fields_to_read = ['name', 'cini', 'data_pm', 'subestacio_id',
                           'cnmc_tipo_instalacion', 'perc_financament', 'tensio']
+        not_found_msg = '**** ERROR: El ct {0} (id:{1}) no està a giscedata_cts_subestacions_posicio.\n'
         while True:
             try:
                 item = self.input_q.get()
@@ -72,9 +73,7 @@ class POS(MultiprocessBased):
                 sub = O.GiscedataCtsSubestacionsPosicio.read(
                     item, fields_to_read)
                 if not sub:
-                    txt = ('**** ERROR: El ct %s (id:%s) no està a '
-                           'giscedata_cts_subestacions_posicio.\n' %
-                           (sub['name'], sub['id']))
+                    txt = (not_found_msg.format(sub['name'], sub['id']))
                     if not QUIET:
                         sys.stderr.write(txt)
                         sys.stderr.flush()
