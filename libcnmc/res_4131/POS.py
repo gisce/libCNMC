@@ -122,7 +122,7 @@ class POS(MultiprocessBased):
                 if pos['data_baixa']:
                     if pos['data_baixa'] < data_pm_limit:
                         tmp_date = datetime.strptime(
-                            pos['data_baixa'], '%Y-%m-%d')
+                            pos['data_baixa'], '%Y-%m-%d %H:%M:%S')
                         fecha_baja = tmp_date.strftime('%d/%m/%Y')
                     else:
                         fecha_baja = ''
