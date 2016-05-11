@@ -1626,6 +1626,7 @@ def res_4131_des(**kwargs):
     from libcnmc.res_4131 import DES
     res_lat(DES, **kwargs)
 
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
