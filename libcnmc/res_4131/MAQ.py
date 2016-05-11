@@ -30,13 +30,13 @@ class MAQ(MultiprocessBased):
         t_norm_txt = ''
         for t in sorted(self.tension_norm, key=itemgetter(2)):
             t_norm_txt += '[{0:6d} <= {2:6d} < {1:6d}]\n'.format(*t)
-        sys.stderr.write('Tensions normalitzades: \n{0}'.format(t_norm_txt)
+        sys.stderr.write('Tensions normalitzades: \n{0}'.format(t_norm_txt))
         sys.stderr.flush()
         self.report_name = 'CNMC INVENTARI MAQ'
 
     def get_sequence(self):
         data_pm = '{0}-01-01'.format(self.year + 1)
-        data_baixa = '{0}-12-31'.format(self.year)
+        data_baixa = '{0}-01-01'.format(self.year)
         search_params = [('propietari', '=', True),
                                '|', ('data_pm', '=', False),
                                ('data_pm', '<', data_pm),
@@ -78,20 +78,22 @@ class MAQ(MultiprocessBased):
             if t[0] <= tension < t[1]:
                 return t[2]
 
-        sys.stderr.write('WARN: Tensió inexistent: {0}\n'.format(tension)
+        sys.stderr.write('WARN: Tensió inexistent: {0}\n'.format(tension))
         sys.stderr.flush()
         return tension
 
     def consumer(self):
         O = self.connection
-        fields_to_read = ['cini', 'historic', 'data_pm', 'ct', 'name',
-                          'potencia_nominal', 'numero_fabricacio',
-                          'perc_financament', 'cnmc_tipo_instalacion',
-                          'conexions']
+        fields_to_read = [
+            'cini', 'historic', 'data_pm', 'ct', 'name', 'potencia_nominal',
+            'numero_fabricacio', 'perc_financament', 'cnmc_tipo_instalacion',
+            'conexions', 'data_baixa']
 
         con_fields_to_read = ['conectada', 'tensio_primari', 'tensio_p2',
                               'tensio_b1', 'tensio_b2', 'tensio_b3']
 
+        data_pm_limit = '{0}-01-01'.format(self.year + 1)
+        data_baixa_limit = '{0}-01-01'.format(self.year)
         while True:
             try:
                 item = self.input_q.get()
@@ -100,7 +102,7 @@ class MAQ(MultiprocessBased):
                 trafo = O.GiscedataTransformadorTrafo.read(
                     item, fields_to_read)
 
-                codi = trafo['cnmc_tipo_instalacion'] or ''
+                codigo_ccuu = trafo['cnmc_tipo_instalacion'] or ''
 
                 data_pm = ''
                 if trafo['data_pm']:
@@ -152,18 +154,34 @@ class MAQ(MultiprocessBased):
                                  con['tensio_b3'] or 0])
                     tensio_primari = self.get_norm_tension(t_prim) / 1000.0
                     tensio_secundari = self.get_norm_tension(t_sec) / 1000.0
+                if trafo['data_baixa']:
+                    if trafo['data_baixa'] < data_pm_limit:
+                        tmp_date = datetime.strptime(
+                            trafo['data_baixa'], '%Y-%m-%d %H:%M:%S')
+                        fecha_baja = tmp_date.strftime('%d/%m/%Y')
+                    else:
+                        fecha_baja = ''
+                else:
+                    fecha_baja = ''
+                if trafo['data_pm'] > data_baixa_limit:
+                    estado = '2'
+                else:
+                    estado = '0'
+
 
                 output = [
                     '{0}'.format(trafo['name']),
                     trafo['cini'] or '',
                     denominacio or '',
-                    codi,
+                    codigo_ccuu,
                     comunitat or '',
                     format_f(tensio_primari),
                     format_f(tensio_secundari),
                     format_f(financiacio),
                     data_pm,
+                    fecha_baja,
                     format_f(capacitat, 3),
+                    estado
                 ]
 
                 self.output_q.put(output)
