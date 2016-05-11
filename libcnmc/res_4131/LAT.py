@@ -173,7 +173,9 @@ class LAT(MultiprocessBased):
                         if tram.get('data_baixa') > data_pm_limit:
                             fecha_baja = ''
                         else:
-                            fecha_baja = tram.get('data_baixa')
+                            tmp_date = datetime.strptime(
+                                tram.get('data_baixa'), '%Y-%m-%d')
+                            fecha_baja = tmp_date.strftime('%d/%m/%Y')
                     else:
                        fecha_baja = ''
 
