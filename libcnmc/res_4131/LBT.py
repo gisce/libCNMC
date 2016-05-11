@@ -27,7 +27,7 @@ class LBT(MultiprocessBased):
     def get_sequence(self):
 
         data_pm = '%s-01-01' % (self.year + 1)
-        data_baixa = '%s-12-31' % self.year
+        data_baixa = '%s-01-01' % self.year
         search_params = []
         if not self.embarrats:
             search_params += [('cable.tipus.codi', '!=', 'E')]
@@ -48,10 +48,14 @@ class LBT(MultiprocessBased):
     def consumer(self):
         O = self.connection
         count = 0
-        fields_to_read = ['name', 'municipi', 'data_pm', 'ct',
-                          'coeficient', 'cini', 'perc_financament',
-                          'longitud_cad', 'cable', 'voltatge', 'data_alta',
-                          'propietari', 'cnmc_tipo_instalacion']
+        fields_to_read = [
+            'name', 'municipi', 'data_pm', 'ct','coeficient', 'cini',
+            'perc_financament', 'longitud_cad', 'cable', 'voltatge',
+            'data_alta', 'propietari', 'cnmc_tipo_instalacion',
+            'data_baixa'
+        ]
+        data_baixa_limit = '%s-01-01' % self.year
+        data_pm_limit = '%s-01-01' % str( self.year + 1)
         while True:
             try:
                 count += 1
@@ -108,7 +112,7 @@ class LBT(MultiprocessBased):
 
                 propietari = linia['propietari'] and '1' or '0'
 
-                codi = linia['cnmc_tipo_instalacion']
+                codi_ccuu = linia['cnmc_tipo_instalacion']
                 # Agafem el cable de la linia
                 if linia['cable']:
                     cable = O.GiscedataBtCables.read(linia['cable'][0], [
@@ -131,17 +135,34 @@ class LBT(MultiprocessBased):
 
                 longitud = round(linia['longitud_cad'] * coeficient / 1000.0,
                                  3) or 0.001
+                if linia['data_baixa']:
+                    if linia['data_baixa'] > data_pm_limit:
+                        fecha_baja = ''
+                    else:
+                        tmp_date = datetime.strptime(
+                            linia['data_baixa'], '%Y-%m-%d')
+                        fecha_baja = tmp_date.strftime('%d/%m/%Y')
+                else:
+                    fecha_baja = ''
+                if linia['data_pm']:
+                    if linia['data_pm'] > data_baixa_limit:
+                        estado = 2
+                    else:
+                        estado = 0
+                else:
+                    estado = 0
 
                 output = [
                     'B%s' % linia['name'],
                     linia['cini'] or '',
                     origen or '',
                     final or '',
-                    codi or '',
+                    codi_ccuu or '',
                     comunitat,
                     comunitat,
                     format_f(round(100 - int(linia['perc_financament']))),
                     data_pm or '',
+                    fecha_baja,
                     1,
                     1,
                     format_f(tensio),
@@ -149,7 +170,8 @@ class LBT(MultiprocessBased):
                     format_f(intensitat),
                     format_f(cable['seccio']),
                     format_f(capacitat),
-                    propietari
+                    propietari,
+                    estado
                 ]
 
                 self.output_q.put(output)
