@@ -54,8 +54,8 @@ class LBT(MultiprocessBased):
             'data_alta', 'propietari', 'cnmc_tipo_instalacion',
             'data_baixa'
         ]
-        data_baixa_limit = '%s-01-01' % self.year
-        data_pm_limit = '%s-01-01' % str( self.year + 1)
+        data_baixa_limit = '{0}-01-01'.format(self.year)
+        data_pm_limit = '{0}-01-01'.format( self.year + 1)
         while True:
             try:
                 count += 1
