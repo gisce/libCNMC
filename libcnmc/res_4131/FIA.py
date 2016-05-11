@@ -21,8 +21,8 @@ class FIA(MultiprocessBased):
 
     def get_sequence(self):
         search_params = [('inventari', '=', 'fiabilitat')]
-        data_pm = '%s-01-01' % (self.year + 1)
-        data_baixa = '%s-12-31' % self.year
+        data_pm = '{0}-01-01' .format(self.year + 1)
+        data_baixa = '{0}-12-31'.format(self.year)
         search_params += [('propietari', '=', True),
                           '|', ('data_pm', '=', False),
                                ('data_pm', '<', data_pm),
@@ -91,7 +91,7 @@ class FIA(MultiprocessBased):
                         id_municipi)[0]
 
                 output = [
-                    '%s' % cll['name'],
+                    '{0}'.format(cll['name']),
                     cll['cini'] or '',
                     element_act,
                     codi or '',
@@ -99,7 +99,7 @@ class FIA(MultiprocessBased):
                     data_pm,
                 ]
                 self.output_q.put(output)
-            except:
+            except Exception:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
