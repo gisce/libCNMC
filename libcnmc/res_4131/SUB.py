@@ -24,8 +24,8 @@ class SUB(MultiprocessBased):
 
     def get_sequence(self):
         search_params = []
-        data_pm = '%s-01-01' % (self.year + 1)
-        data_baixa = '%s-12-31' % self.year
+        data_pm = '{}-01-01'.format(self.year + 1)
+        data_baixa = '{}-12-31'.format(self.year)
         search_params += [('propietari', '=', True),
                           '|', ('data_pm', '=', False),
                                ('data_pm', '<', data_pm),
@@ -96,7 +96,7 @@ class SUB(MultiprocessBased):
                 ]
 
                 self.output_q.put(output)
-            except:
+            except Exception:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
