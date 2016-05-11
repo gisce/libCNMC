@@ -22,7 +22,7 @@ class FIA(MultiprocessBased):
     def get_sequence(self):
         search_params = [('inventari', '=', 'fiabilitat')]
         data_pm = '{0}-01-01' .format(self.year + 1)
-        data_baixa = '{0}-12-31'.format(self.year)
+        data_baixa = '{0}-01-01'.format(self.year)
         search_params += [('propietari', '=', True),
                           '|', ('data_pm', '=', False),
                                ('data_pm', '<', data_pm),
@@ -39,8 +39,11 @@ class FIA(MultiprocessBased):
 
     def consumer(self):
         O = self.connection
-        fields_to_read = ['name', 'cini', 'tipus_element',
-                          'cnmc_tipo_instalacion', 'installacio', 'data_pm']
+        fields_to_read = [
+            'name', 'cini', 'tipus_element', 'cnmc_tipo_instalacion',
+            'installacio', 'data_pm', 'data_baixa']
+        data_pm_limit= '{0}-01-01' .format(self.year + 1)
+        data_baixa_limit = '{0}-01-01'.format(self.year)
         while True:
             try:
                 item = self.input_q.get()
@@ -54,7 +57,7 @@ class FIA(MultiprocessBased):
                     cllt = O.GiscedataCellesTipusElement.read(
                         cll['tipus_element'][0], ['name'])
 
-                codi = cll['cnmc_tipo_instalacion']
+                codigo_ccuu = cll['cnmc_tipo_instalacion']
 
                 #Instal·lació a la que pertany
                 cllinst = cll['installacio'].split(',')
@@ -90,13 +93,28 @@ class FIA(MultiprocessBased):
                     ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi(
                         id_municipi)[0]
 
+                if cll['data_baixa']:
+                    if cll['data_baixa'] < data_pm_limit:
+                        fecha_baja = cll['data_baixa']
+                    else:
+                        fecha_baja = ''
+                else:
+                    fecha_baja = ''
+
+                if cll['data_pm'] > data_baixa_limit:
+                    estado = '2'
+                else:
+                    estado = '0'
+
                 output = [
                     '{0}'.format(cll['name']),
                     cll['cini'] or '',
                     element_act,
-                    codi or '',
+                    codigo_ccuu or '',
                     ccaa or '',
                     data_pm,
+                    fecha_baja,
+                    estado
                 ]
                 self.output_q.put(output)
             except Exception:
