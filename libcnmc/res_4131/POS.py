@@ -25,7 +25,7 @@ class POS(MultiprocessBased):
     def get_sequence(self):
         search_params = [('interruptor', '=', '2')]
         data_pm = '{0}-01-01'.format(self.year + 1)
-        data_baixa = '{0}-12-31'.format(self.year)
+        data_baixa = '{0}-01-01'.format(self.year)
         search_params += [('propietari', '=', True),
                           '|', ('data_pm', '=', False),
                                ('data_pm', '<', data_pm),
@@ -63,43 +63,47 @@ class POS(MultiprocessBased):
 
     def consumer(self):
         O = self.connection
-        fields_to_read = ['name', 'cini', 'data_pm', 'subestacio_id',
-                          'cnmc_tipo_instalacion', 'perc_financament', 'tensio']
+        fields_to_read = [
+            'name', 'cini', 'data_pm', 'subestacio_id',
+            'cnmc_tipo_instalacion', 'perc_financament', 'tensio', 'data_baixa'
+        ]
         not_found_msg = '**** ERROR: El ct {0} (id:{1}) no està a giscedata_cts_subestacions_posicio.\n'
+        data_pm_limit = '{0}-01-01'.format(self.year + 1)
+        data_baixa_limit = '{0}-01-01'.format(self.year)
         while True:
             try:
                 item = self.input_q.get()
                 self.progress_q.put(item)
-                sub = O.GiscedataCtsSubestacionsPosicio.read(
+                pos = O.GiscedataCtsSubestacionsPosicio.read(
                     item, fields_to_read)
-                if not sub:
-                    txt = (not_found_msg.format(sub['name'], sub['id']))
+                if not pos:
+                    txt = (not_found_msg.format(pos['name'], pos['id']))
                     if not QUIET:
                         sys.stderr.write(txt)
                         sys.stderr.flush()
 
                     raise Exception(txt)
-                o_sub = sub['name']
+                o_sub = pos['name']
                 # Calculem any posada en marxa
-                data_pm = sub['data_pm']
+                data_pm = pos['data_pm']
                 if data_pm:
                     data_pm = datetime.strptime(str(data_pm), '%Y-%m-%d')
                     data_pm = data_pm.strftime('%d/%m/%Y')
 
                 #Codi tipus de instalació
-                codi = sub['cnmc_tipo_instalacion']
+                codigo_ccuu = pos['cnmc_tipo_instalacion']
 
                 comunitat = ''
 
                 #tensio
-                ten = O.GiscedataTensionsTensio.read(sub['tensio'][0],
+                ten = O.GiscedataTensionsTensio.read(pos['tensio'][0],
                                                      ['tensio'])
                 tensio = (ten['tensio'] / 1000.0) or 0.0
 
-                cts = O.GiscedataCtsSubestacions.read(sub['subestacio_id'][0],
+                cts = O.GiscedataCtsSubestacions.read(pos['subestacio_id'][0],
                                                       ['id_municipi'])
 
-                denominacio = self.get_denom(sub['subestacio_id'][0])
+                denominacio = self.get_denom(pos['subestacio_id'][0])
 
                 if cts['id_municipi']:
                     id_municipi = cts['id_municipi'][0]
@@ -115,16 +119,30 @@ class POS(MultiprocessBased):
                     if comunitat_vals:
                         comunitat = comunitat_vals['codi']
                     # o_sub = self.get_description(sub['subestacio_id'][0])
-
+                if pos['data_baixa']:
+                    if pos['data_baixa'] < data_pm_limit:
+                        tmp_date = datetime.strptime(
+                            pos['data_baixa'], '%Y-%m-%d')
+                        fecha_baja = tmp_date.strftime('%d/%m/%Y')
+                    else:
+                        fecha_baja = ''
+                else:
+                    fecha_baja = ''
+                if pos['data_pm'] > data_baixa_limit:
+                    estado = '2'
+                else:
+                    estado = '0'
                 output = [
                     o_sub,
-                    sub['cini'] or '',
+                    pos['cini'] or '',
                     denominacio,
-                    codi,
+                    codigo_ccuu,
                     comunitat,
                     format_f(tensio),
-                    format_f(round(100 - int(sub['perc_financament']))),
+                    format_f(round(100 - int(pos['perc_financament']))),
                     data_pm or '',
+                    fecha_baja,
+                    estado
                 ]
 
                 self.output_q.put(output)
