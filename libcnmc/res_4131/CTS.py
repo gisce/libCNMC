@@ -22,7 +22,7 @@ class CTS(MultiprocessBased):
     def get_sequence(self):
         search_params = [('id_installacio.name', '!=', 'SE')]
         data_pm = '{0}-01-01'.format(self.year + 1)
-        data_baixa = '{0}-12-31'.format(self.year)
+        data_baixa = '{0}-01-01'.format(self.year)
         search_params += [('propietari', '=', True),
                           '|', ('data_pm', '=', False),
                                ('data_pm', '<', data_pm),
@@ -39,8 +39,13 @@ class CTS(MultiprocessBased):
 
     def consumer(self):
         O = self.connection
-        fields_to_read = ['name', 'cini', 'data_pm', 'cnmc_tipo_instalacion',
-                          'id_municipi', 'perc_financament', 'descripcio']
+        fields_to_read = [
+            'name', 'cini', 'data_pm', 'cnmc_tipo_instalacion','id_municipi',
+            'perc_financament', 'descripcio', 'data_baixa'
+        ]
+        data_pm_limit = '{0}-01-01'.format(self.year + 1)
+        data_baixa_limit = '{0}-01-01'.format(self.year)
+
         while True:
             try:
                 item = self.input_q.get()
@@ -71,6 +76,21 @@ class CTS(MultiprocessBased):
                     if comunitat_vals:
                         comunitat_codi = comunitat_vals['codi']
 
+                if ct['data_baixa']:
+                    if ct['data_baixa'] < data_pm_limit:
+                        tmp_date = datetime.strptime(
+                            ct['data_baixa'], '%Y-%m-%d %H:%M:%S')
+                        fecha_baja = tmp_date.strftime('%d/%m/%Y')
+                    else:
+                        fecha_baja = ''
+                else:
+                    fecha_baja = ''
+
+                if ct['data_pm'] > data_baixa_limit:
+                    estado = '2'
+                else:
+                    estado = '0'
+
                 output = [
                     '%s' % ct['name'],
                     ct['cini'] or '',
@@ -79,6 +99,8 @@ class CTS(MultiprocessBased):
                     comunitat_codi or '',
                     format_f(round(100 - int(ct['perc_financament']))),
                     data_pm,
+                    fecha_baja,
+                    estado
                 ]
 
                 self.output_q.put(output)
