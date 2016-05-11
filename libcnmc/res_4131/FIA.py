@@ -95,7 +95,9 @@ class FIA(MultiprocessBased):
 
                 if cll['data_baixa']:
                     if cll['data_baixa'] < data_pm_limit:
-                        fecha_baja = cll['data_baixa']
+                        tmp_date = datetime.strptime(
+                            cll['data_baixa'], '%Y-%m-%d')
+                        fecha_baja = tmp_date.strftime('%d/%m/%Y')
                     else:
                         fecha_baja = ''
                 else:
