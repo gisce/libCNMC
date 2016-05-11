@@ -25,7 +25,7 @@ class SUB(MultiprocessBased):
     def get_sequence(self):
         search_params = []
         data_pm = '{}-01-01'.format(self.year + 1)
-        data_baixa = '{}-12-31'.format(self.year)
+        data_baixa = '{}-01-01'.format(self.year)
         search_params += [('propietari', '=', True),
                           '|', ('data_pm', '=', False),
                                ('data_pm', '<', data_pm),
@@ -42,8 +42,13 @@ class SUB(MultiprocessBased):
 
     def consumer(self):
         O = self.connection
-        fields_to_read = ['name', 'data_industria', 'data_pm', 'id_municipi',
-                          'posicions', 'cini', 'descripcio', 'perc_financament']
+        fields_to_read = [
+            'name', 'data_industria', 'data_pm', 'id_municipi', 'cini',
+            'descripcio', 'perc_financament', 'data_baixa',
+            'cnmc_tipo_instalacion'
+        ]
+        data_pm_limit = '{}-01-01'.format(self.year + 1)
+        data_baixa_limit = '{}-01-01'.format(self.year)
         while True:
             try:
                 item = self.input_q.get()
@@ -70,7 +75,6 @@ class SUB(MultiprocessBased):
                     data_pm = data_pm.strftime('%d/%m/%Y')
 
                 comunitat = ''
-                id_municipi = None
                 if sub['id_municipi']:
                     id_municipi = sub['id_municipi'][0]
                 else:
@@ -84,15 +88,27 @@ class SUB(MultiprocessBased):
                         id_comunitat[0], ['codi'])
                     if comunitat_vals:
                         comunitat = comunitat_vals['codi']
-
+                if sub['data_baixa']:
+                    if sub['data_baixa'] < data_pm_limit:
+                        fecha_baja = sub['data_baixa']
+                    else:
+                        fecha_baja = ''
+                else:
+                    fecha_baja = ''
+                if sub['data_pm'] > data_baixa_limit:
+                    estado = '2'
+                else:
+                    estado = '0'
                 output = [
-                    '%s' % sub['name'],
+                    '{}'.format(sub['name']),
                     sub['cini'] or '',
                     sub['descripcio'] or '',
+                    sub['cnmc_tipo_instalacion'] or '',
                     comunitat,
                     format_f(round(100 - int(sub['perc_financament']))),
                     data_pm,
-                    len(sub['posicions'])
+                    fecha_baja,
+                    estado
                 ]
 
                 self.output_q.put(output)
