@@ -44,7 +44,7 @@ class SUB(MultiprocessBased):
         O = self.connection
         fields_to_read = [
             'name', 'data_industria', 'data_pm', 'id_municipi', 'cini',
-            'descripcio', 'perc_financament', 'data_baixa',
+            'descripcio', 'perc_financament', 'data_baixa', 'posicions'
             'cnmc_tipo_instalacion'
         ]
         data_pm_limit = '{}-01-01'.format(self.year + 1)
@@ -108,6 +108,7 @@ class SUB(MultiprocessBased):
                     format_f(round(100 - int(sub['perc_financament']))),
                     data_pm,
                     fecha_baja,
+                    len(sub['posicions']),
                     estado
                 ]
 
