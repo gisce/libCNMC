@@ -32,7 +32,7 @@ class LAT(MultiprocessBased):
 
         search_params = [('propietari', '=', True)]
         obj_lat = self.connection.GiscedataAtLinia
-        ids = obj_lat.search(search_params)
+        ids = obj_lat.search(search_params, 0, 0, False, {'active_test': False})
         id_lat_emb = []
         if self.embarrats:
             id_lat_emb = obj_lat.search(
