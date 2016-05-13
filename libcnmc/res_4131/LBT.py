@@ -16,6 +16,9 @@ QUIET = False
 
 
 class LBT(MultiprocessBased):
+    """
+    Class that generates the LBT(2) file of the 4131
+    """
     def __init__(self, **kwargs):
         super(LBT, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)

@@ -12,6 +12,9 @@ from libcnmc.utils import format_f, get_id_municipi_from_company
 
 
 class CTS(MultiprocessBased):
+    """
+    Class that generates the CT file of the 4131
+    """
     def __init__(self, **kwargs):
         super(CTS, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)

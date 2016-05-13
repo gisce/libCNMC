@@ -14,6 +14,9 @@ from libcnmc.utils import format_f, tallar_text
 
 
 class LAT(MultiprocessBased):
+    """
+    Class that generates the LAT(1) file of  4131
+    """
     def __init__(self, **kwargs):
         super(LAT, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)

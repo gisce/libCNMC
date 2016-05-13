@@ -14,6 +14,9 @@ from libcnmc.utils import get_id_municipi_from_company, format_f
 
 
 class MAQ(MultiprocessBased):
+    """
+    Class that generates the Maquinas/Transofrmadores(5) file of the 4131
+    """
     def __init__(self, **kwargs):
         super(MAQ, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)

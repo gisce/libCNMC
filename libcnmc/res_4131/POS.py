@@ -15,6 +15,9 @@ QUIET = False
 
 
 class POS(MultiprocessBased):
+    """
+    Class that generates the POS/Interruptores(4) of 4131 report
+    """
     def __init__(self, **kwargs):
         super(POS, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)

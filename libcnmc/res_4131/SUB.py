@@ -15,6 +15,9 @@ QUIET = False
 
 
 class SUB(MultiprocessBased):
+    """
+    Class that generates the SUB(3) report of the 4131
+    """
     def __init__(self, **kwargs):
         super(SUB, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)

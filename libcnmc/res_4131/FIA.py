@@ -12,6 +12,9 @@ from libcnmc.utils import get_id_expedient
 
 
 class FIA(MultiprocessBased):
+    """
+    Class that generates the fiabilidad(7) file of the 4131
+    """
     def __init__(self, **kwargs):
         super(FIA, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
