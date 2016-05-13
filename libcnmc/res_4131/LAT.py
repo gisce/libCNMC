@@ -179,8 +179,8 @@ class LAT(MultiprocessBased):
                              ('layer', 'not ilike', 'EMBARRA%BT%')
                              ])
                         if not res or len(res) > 1:
-                            edge = {'start_node': (0, '%s_0' % tram.get('name')),
-                                    'end_node': (0, '%s_1' % tram.get('name'))}
+                            edge = {'start_node': (0, '{0}_0'.format(tram.get('name'))),
+                                    'end_node': (0, '{0}_1'.format(tram.get('name')))}
                         else:
                             edge = O.GiscegisEdge.read(res[0], ['start_node',
                                                                 'end_node'])
