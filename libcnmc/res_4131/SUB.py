@@ -65,6 +65,7 @@ class SUB(MultiprocessBased):
         ]
         data_pm_limit = '{}-01-01'.format(self.year + 1)
         data_baixa_limit = '{}-01-01'.format(self.year)
+        error_msg = "**** ERROR: El ct %s (id:%s) no està en giscedata_cts_subestacions.\n"
         while True:
             try:
                 item = self.input_q.get()
@@ -73,10 +74,7 @@ class SUB(MultiprocessBased):
                 sub = O.GiscedataCtsSubestacions.read(item, fields_to_read)
 
                 if not sub:
-                    txt = ("**** ERROR: El ct %s (id:%s) no està en "
-                           "giscedata_cts_subestacions.\n" %
-                           (sub['name'], sub['id']))
-
+                    txt = (error_msg.format((sub['name'], sub['id'])))
                     if not QUIET:
                         sys.stderr.write(txt)
                         sys.stderr.flush()
