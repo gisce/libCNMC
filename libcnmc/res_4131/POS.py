@@ -19,6 +19,11 @@ class POS(MultiprocessBased):
     Class that generates the POS/Interruptores(4) of 4131 report
     """
     def __init__(self, **kwargs):
+        """
+        Class constructor
+        :param kwargs: year(generation year), codi_r1 R1 code
+        :return: CT
+        """
         super(POS, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
@@ -26,6 +31,10 @@ class POS(MultiprocessBased):
         self.report_name = 'CNMC INVENTARI POS'
 
     def get_sequence(self):
+        """
+        Method that generates a list of ids to pass to the consummer
+        :return: List of ids
+        """
         search_params = [('interruptor', '=', '2')]
         data_pm = '{0}-01-01'.format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
@@ -44,6 +53,11 @@ class POS(MultiprocessBased):
             search_params, 0, 0, False, {'active_test': False})
 
     def get_description(self, pos_id):
+        """
+        Method that gives the description
+        :param pos_id: Posicio id
+        :return: Position description
+        """
         o = self.connection
         pos = o.GiscedataCtsSubestacionsPosicio.read(pos_id, ['subestacio_id'])
         descripcio = ''
@@ -55,6 +69,11 @@ class POS(MultiprocessBased):
         return descripcio
 
     def get_denom(self, sub_id):
+        """
+        Method that gives the denomicacion
+        :param sub_id: Subestacio id
+        :return: denominacion
+        """
         o = self.connection
         res = ''
         ct_id = o.GiscedataCtsSubestacions.read(sub_id, ['ct_id'])['ct_id'][0]
@@ -65,6 +84,10 @@ class POS(MultiprocessBased):
         return res
 
     def consumer(self):
+        """
+        Method that generates the csb file
+        :return: List of arrays
+        """
         O = self.connection
         fields_to_read = [
             'name', 'cini', 'data_pm', 'subestacio_id',
