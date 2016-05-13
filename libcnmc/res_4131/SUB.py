@@ -121,7 +121,6 @@ class SUB(MultiprocessBased):
                     '{}'.format(sub['name']),
                     sub['cini'] or '',
                     sub['descripcio'] or '',
-                    sub.get('cnmc_tipo_instalacion', '') or '',
                     comunitat,
                     format_f(round(100 - int(sub['perc_financament']))),
                     data_pm,
