@@ -16,6 +16,11 @@ class DES(MultiprocessBased):
     Class that generates the Despachos(6) file of the 4131
     """
     def __init__(self, **kwargs):
+        """
+        Class constructor
+        :param kwargs: year(generation year), codi_r1 R1 code
+        :return: CT
+        """
         super(DES, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
@@ -23,10 +28,18 @@ class DES(MultiprocessBased):
         self.report_name = 'CNMC INVENTARI DES'
 
     def get_sequence(self):
+        """
+        Method that generates a list of ids to pass to the consummer
+        :return: List of ids
+        """
         search_params = [('any_ps', '<=', self.year)]
         return self.connection.GiscedataDespatx.search(search_params)
 
     def consumer(self):
+        """
+        Method that generates the csb file
+        :return: List of arrays
+        """
         O = self.connection
         fields_to_read = ['name', 'cini', 'denominacio', 'any_ps', 'vai']
         while True:
