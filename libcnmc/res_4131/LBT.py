@@ -71,7 +71,7 @@ class LBT(MultiprocessBased):
         ]
         data_baixa_limit = '{0}-01-01'.format(self.year)
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
-        error_msg = "**** ERROR: l'element %s (id:{0}) no està en giscegis_edges.\n"
+        error_msg = "**** ERROR: l'element {0} (id:{1}) no està en giscegis_edges.\n"
         error_msg_multi = "**** ERROR: l'element {0} (id:{1}) està més d'una vegada a giscegis_edges. {2}\n"
         while True:
             try:
@@ -89,15 +89,15 @@ class LBT(MultiprocessBased):
                         sys.stderr.write(
                             error_msg.format(linia['name'], linia['id']))
                         sys.stderr.flush()
-                    edge = {'start_node': (0, '%s_0' % linia['name']),
-                            'end_node': (0, '%s_1' % linia['name'])}
+                    edge = {'start_node': (0, '{0}_0'.format(linia['name'])),
+                            'end_node': (0, '{0}_1'.format(linia['name']))}
                 elif len(res) > 1:
                     if not QUIET:
                         sys.stderr.write(
                             error_msg_multi.format(linia['name'], linia['id'], res))
                         sys.stderr.flush()
-                    edge = {'start_node': (0, '%s_0' % linia['name']),
-                            'end_node': (0, '%s_1' % linia['name'])}
+                    edge = {'start_node': (0, '{0}_0'.format(linia['name'])),
+                            'end_node': (0, '{0}_1'.format(linia['name']))}
                 else:
                     edge = O.GiscegisEdge.read(res[0], ['start_node',
                                                         'end_node'])
