@@ -206,7 +206,7 @@ class LAT(MultiprocessBased):
                         estado = 0
 
                     output = [
-                        'A%s' % tram['name'],
+                        'A{0}'.format(tram['name']),
                         tram.get('cini', '') or '',
                         origen or edge['start_node'][1],
                         final or edge['end_node'][1],
