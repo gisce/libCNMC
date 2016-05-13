@@ -37,8 +37,8 @@ class LBT(MultiprocessBased):
         Method that generates a list of ids to pass to the consummer
         :return: List of ids
         """
-        data_pm = '%s-01-01' % (self.year + 1)
-        data_baixa = '%s-01-01' % self.year
+        data_pm = '{0}-01-01'.format(self.year + 1)
+        data_baixa = '{0}-01-01'.format( self.year)
         search_params = []
         if not self.embarrats:
             search_params += [('cable.tipus.codi', '!=', 'E')]
@@ -71,6 +71,8 @@ class LBT(MultiprocessBased):
         ]
         data_baixa_limit = '{0}-01-01'.format(self.year)
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
+        error_msg = "**** ERROR: l'element %s (id:{0}) no està en giscegis_edges.\n"
+        error_msg_multi = "**** ERROR: l'element {0} (id:{1}) està més d'una vegada a giscegis_edges. {2}\n"
         while True:
             try:
                 count += 1
@@ -85,17 +87,14 @@ class LBT(MultiprocessBased):
                 if not res:
                     if not QUIET:
                         sys.stderr.write(
-                            "**** ERROR: l'element %s (id:%s) no està en "
-                            "giscegis_edges.\n" % (linia['name'], linia['id']))
+                            error_msg.format(linia['name'], linia['id']))
                         sys.stderr.flush()
                     edge = {'start_node': (0, '%s_0' % linia['name']),
                             'end_node': (0, '%s_1' % linia['name'])}
                 elif len(res) > 1:
                     if not QUIET:
-                        sys.stderr.write("**** ERROR: l'element %s (id:%s) "
-                                         "està més d'una vegada a "
-                                         "giscegis_edges. %s\n" %
-                                         (linia['name'], linia['id'], res))
+                        sys.stderr.write(
+                            error_msg_multi.format(linia['name'], linia['id'], res))
                         sys.stderr.flush()
                     edge = {'start_node': (0, '%s_0' % linia['name']),
                             'end_node': (0, '%s_1' % linia['name'])}
@@ -168,7 +167,7 @@ class LBT(MultiprocessBased):
                     estado = 0
 
                 output = [
-                    'B%s' % linia['name'],
+                    'B{}'.format(linia['name']),
                     linia['cini'] or '',
                     origen or '',
                     final or '',
