@@ -99,6 +99,10 @@ class SUB(MultiprocessBased):
                     estado = '2'
                 else:
                     estado = '0'
+                if 'posicons' in sub:
+                    num_pos = len(sub['posicions'])
+                else:
+                    num_pos = 0
                 output = [
                     '{}'.format(sub['name']),
                     sub['cini'] or '',
@@ -108,7 +112,7 @@ class SUB(MultiprocessBased):
                     format_f(round(100 - int(sub['perc_financament']))),
                     data_pm,
                     fecha_baja,
-                    len(sub['posicions']),
+                    num_pos,
                     estado
                 ]
 
