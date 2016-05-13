@@ -16,6 +16,11 @@ class FIA(MultiprocessBased):
     Class that generates the fiabilidad(7) file of the 4131
     """
     def __init__(self, **kwargs):
+        """
+        Class constructor
+        :param kwargs: year(generation year), codi_r1 R1 code
+        :return: CT
+        """
         super(FIA, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
@@ -23,6 +28,10 @@ class FIA(MultiprocessBased):
         self.report_name = 'CNMC INVENTARI FIA'
 
     def get_sequence(self):
+        """
+        Method that generates a list of ids to pass to the consummer
+        :return: List of ids
+        """
         search_params = [('inventari', '=', 'fiabilitat')]
         data_pm = '{0}-01-01' .format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
@@ -41,6 +50,10 @@ class FIA(MultiprocessBased):
             search_params, 0, 0, False, {'active_test': False})
 
     def consumer(self):
+        """
+        Method that generates the csb file
+        :return: List of arrays
+        """
         O = self.connection
         fields_to_read = [
             'name', 'cini', 'tipus_element', 'cnmc_tipo_instalacion',
