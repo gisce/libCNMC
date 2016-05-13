@@ -18,6 +18,11 @@ class LAT(MultiprocessBased):
     Class that generates the LAT(1) file of  4131
     """
     def __init__(self, **kwargs):
+        """
+        Class constructor
+        :param kwargs: year(generation year), codi_r1 R1 code
+        :return: CT
+        """
         super(LAT, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
@@ -32,7 +37,10 @@ class LAT(MultiprocessBased):
                 id_res_like, ['value'])[0]['value']
 
     def get_sequence(self):
-
+        """
+        Method that generates a list of ids to pass to the consummer
+        :return: List of ids
+        """
         search_params = [('propietari', '=', True)]
         obj_lat = self.connection.GiscedataAtLinia
         ids = obj_lat.search(search_params, 0, 0, False, {'active_test': False})
@@ -43,6 +51,10 @@ class LAT(MultiprocessBased):
         return ids + id_lat_emb
 
     def consumer(self):
+        """
+        Method that generates the csb file
+        :return: List of arrays
+        """
         O = self.connection
         fields_to_read = ['baixa', 'data_pm', 'data_industria',
                           'coeficient', 'cini', 'propietari',
