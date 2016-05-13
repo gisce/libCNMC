@@ -41,7 +41,9 @@ class DES(MultiprocessBased):
         :return: List of arrays
         """
         O = self.connection
-        fields_to_read = ['name', 'cini', 'denominacio', 'any_ps', 'vai']
+        fields_to_read = [
+            'name', 'cini', 'denominacio', 'any_ps', 'vai', 'data_apm'
+        ]
         while True:
             try:
                 item = self.input_q.get()
@@ -49,16 +51,18 @@ class DES(MultiprocessBased):
 
                 despatx = O.GiscedataDespatx.read(
                     item, fields_to_read)
-                if despatx['any_ps'] == self.year:
-                    estado = '2'
-                else:
+                tmp_date = datetime.strptime(despatx['data_apm'], '%Y-%m-%d')
+                data_apm = tmp_date.strftime('%d/%m/%Y')
+                if despatx['data_apm'] < '{0}-01-01'.format(self.year):
                     estado = '0'
+                else:
+                    estado = '2'
                 fecha_baja = ''
                 output = [
                     '{0}'.format(despatx['name']),
                     despatx['cini'] or '',
                     despatx['denominacio'] or '',
-                    despatx['any_ps'],
+                    data_apm,
                     fecha_baja,
                     format_f(despatx['vai']),
                     estado
