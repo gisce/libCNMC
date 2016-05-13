@@ -107,7 +107,7 @@ class LBT(MultiprocessBased):
 
                 try:
                     tensio = (int(linia['voltatge']) / 1000.0)
-                except:
+                except Exception:
                     tensio = 0.0
 
                 propietari = linia['propietari'] and '1' or '0'
