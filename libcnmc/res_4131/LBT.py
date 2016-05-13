@@ -20,6 +20,11 @@ class LBT(MultiprocessBased):
     Class that generates the LBT(2) file of the 4131
     """
     def __init__(self, **kwargs):
+        """
+        Class constructor
+        :param kwargs: year(generation year), codi_r1 R1 code
+        :return: CT
+        """
         super(LBT, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
@@ -28,7 +33,10 @@ class LBT(MultiprocessBased):
         self.embarrats = kwargs.pop('embarrats', False)
 
     def get_sequence(self):
-
+        """
+        Method that generates a list of ids to pass to the consummer
+        :return: List of ids
+        """
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-01-01' % self.year
         search_params = []
@@ -49,10 +57,14 @@ class LBT(MultiprocessBased):
             search_params, 0, 0, False, {'active_test': False})
 
     def consumer(self):
+        """
+        Method that generates the csb file
+        :return: List of arrays
+        """
         O = self.connection
         count = 0
         fields_to_read = [
-            'name', 'municipi', 'data_pm', 'ct','coeficient', 'cini',
+            'name', 'municipi', 'data_pm', 'ct', 'coeficient', 'cini',
             'perc_financament', 'longitud_cad', 'cable', 'voltatge',
             'data_alta', 'propietari', 'cnmc_tipo_instalacion',
             'data_baixa'
