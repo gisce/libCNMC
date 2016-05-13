@@ -109,7 +109,7 @@ class CTS(MultiprocessBased):
                     estado = '0'
 
                 output = [
-                    '%s' % ct['name'],
+                    '{0}'.format(ct['name']),
                     ct['cini'] or '',
                     ct['descripcio'] or '',
                     str(ct['cnmc_tipo_instalacion']) or '',
