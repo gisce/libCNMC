@@ -38,7 +38,7 @@ class LBT(MultiprocessBased):
         :return: List of ids
         """
         data_pm = '{0}-01-01'.format(self.year + 1)
-        data_baixa = '{0}-01-01'.format( self.year)
+        data_baixa = '{0}-01-01'.format(self.year)
         search_params = []
         if not self.embarrats:
             search_params += [('cable.tipus.codi', '!=', 'E')]
