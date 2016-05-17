@@ -129,8 +129,8 @@ class CON(MultiprocessBased):
                     comunidad = O.ResComunitat_autonoma.read(
                         id_comunitat, ['codi'])
                     comunitat = comunidad[0]['codi']
-
-                tensio_primari = self.get_norm_tension(cond['tensio_id'][1])
+                tensio_primari = O.GiscedataTensionsTensio.read(
+                    cond['tensio_id'][0], ['tensio'])['tensio']
                 tensio_secundari = tensio_primari
                 if cond['data_baixa']:
                     if cond['data_baixa'] < data_pm_limit:
