@@ -114,9 +114,13 @@ class SUB(MultiprocessBased):
                 else:
                     estado = '0'
                 if 'posicions' in sub:
-                    num_pos = len(sub['posicions'])
-                else:
                     num_pos = 0
+                    for pos in sub['posicions']:
+                        pos_data = O.GiscedataCtsSubestacionsPosicio.read(pos, ['interruptor'])
+                        if pos_data['interruptor'] == '2':
+                            num_pos += 1
+                else:
+                    num_pos = 1
                 output = [
                     '{}'.format(sub['name']),
                     sub['cini'] or '',
