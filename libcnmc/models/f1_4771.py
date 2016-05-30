@@ -28,7 +28,7 @@ class F1Res4771(CNMCModel):
 
     @property
     def ref(self):
-        return self.store['identificador'][1:]
+        return self.store.identificador[1:]
 
     def __cmp__(self, other):
         comp_fields = [

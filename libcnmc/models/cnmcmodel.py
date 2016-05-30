@@ -14,7 +14,7 @@ class CNMCModel(object):
         return 1
 
     def __init__(self, *values, **kwvalues):
-        stored = namedtuple('{0}_store'.format(self.__classname__), self.fields)
+        stored = namedtuple('{0}_store'.format(self.__class__.__name__), self.fields)
         self.store = stored(*values, **kwvalues)
 
     def dump(self, out_format='json'):

@@ -9,6 +9,7 @@ class F2Res4771(CNMCModel):
         'identificador',
         'cini',
         'origen',
+        'destino',
         'codigo_tipo_linea',
         'codigo_ccaa_1',
         'codigo_ccaa_2',
@@ -26,7 +27,7 @@ class F2Res4771(CNMCModel):
 
     @property
     def ref(self):
-        return self.store['identificador'][1:]
+        return self.store.identificador[1:]
 
     def __cmp__(self, other):
         comp_fields = ['longitud', 'cini', 'seccion', 'capacidad', 'fecha_aps']
