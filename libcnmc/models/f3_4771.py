@@ -9,6 +9,7 @@ class F3Res4771(CNMCModel):
         'identificador',
         'cini',
         'denominacion',
+        'codigo_ccaa',
         'participacion',
         'fecha_aps',
         'posiciones',
@@ -16,7 +17,7 @@ class F3Res4771(CNMCModel):
 
     @property
     def ref(self):
-        return self.store['identificador']
+        return self.store.identificador
 
     def __cmp__(self, other):
         comp_fields = ['fecha_aps']
