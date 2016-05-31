@@ -9,6 +9,7 @@ import traceback
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import format_f, get_id_municipi_from_company
+from libcnmc.models.f8_4771 import F8Res4771
 
 
 class CTS(MultiprocessBased):
@@ -57,8 +58,8 @@ class CTS(MultiprocessBased):
         """
         O = self.connection
         fields_to_read = [
-            'name', 'cini', 'data_pm', 'cnmc_tipo_instalacion','id_municipi',
-            'perc_financament', 'descripcio', 'data_baixa'
+            'name', 'cini', 'data_pm', 'cnmc_tipo_instalacion', 'id_municipi',
+            'perc_financament', 'descripcio', 'data_baixa', '4771_entregada'
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         data_baixa_limit = '{0}-01-01'.format(self.year)
@@ -103,10 +104,24 @@ class CTS(MultiprocessBased):
                 else:
                     fecha_baja = ''
 
-                if ct['data_pm'] > data_baixa_limit:
-                    estado = '2'
+                if ct['4771_entregada']:
+                    data_4771 = ct['4771_entregada']
+                    entregada = F8Res4771(**data_4771)
+                    actual = F8Res4771(
+                        ct['name'],
+                        ct['cini'],
+                        ct['descripcio'],
+                        str(ct['cnmc_tipo_instalacion']),
+                        comunitat_codi,
+                        format_f(round(100 - int(ct['perc_financament']))),
+                        fecha_baja,
+                    )
+                    if entregada == actual:
+                        estado = '0'
+                    else:
+                        estado = '1'
                 else:
-                    estado = '0'
+                    estado = '2'
 
                 output = [
                     '{0}'.format(ct['name']),

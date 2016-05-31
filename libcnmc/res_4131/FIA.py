@@ -9,6 +9,7 @@ import traceback
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import get_id_expedient
+from libcnmc.models.f7_4771 import F7Res4771
 
 
 class FIA(MultiprocessBased):
@@ -57,7 +58,8 @@ class FIA(MultiprocessBased):
         O = self.connection
         fields_to_read = [
             'name', 'cini', 'tipus_element', 'cnmc_tipo_instalacion',
-            'installacio', 'data_pm', 'data_baixa', 'tram_id']
+            'installacio', 'data_pm', 'data_baixa', 'tram_id', '4771_entregada'
+        ]
         data_pm_limit= '{0}-01-01' .format(self.year + 1)
         data_baixa_limit = '{0}-01-01'.format(self.year)
         while True:
@@ -122,10 +124,23 @@ class FIA(MultiprocessBased):
                 else:
                     fecha_baja = ''
 
-                if cll['data_pm'] > data_baixa_limit:
-                    estado = '2'
+                if cll['4771_entregada']:
+                    data_4771 = cll['4771_entregada']
+                    entregada = F7Res4771(**data_4771)
+                    actual = F7Res4771(
+                        cll['name'],
+                        cll['cini'],
+                        element_act,
+                        codigo_ccuu,
+                        ccaa,
+                        data_pm
+                    )
+                    if entregada == actual:
+                        estado = '0'
+                    else:
+                        estado = '1'
                 else:
-                    estado = '0'
+                    estado = '2'
 
                 output = [
                     '{0}'.format(cll['name']),

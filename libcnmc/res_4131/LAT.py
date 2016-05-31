@@ -11,6 +11,7 @@ import time
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import format_f, tallar_text
+from libcnmc.models.f1_4771 import F1Res4771
 
 
 class LAT(MultiprocessBased):
@@ -56,12 +57,12 @@ class LAT(MultiprocessBased):
         :return: List of arrays
         """
         O = self.connection
-        fields_to_read = ['baixa', 'data_pm', 'data_industria',
-                          'coeficient', 'cini', 'propietari',
-                          'tensio_max_disseny', 'name', 'origen',
-                          'final', 'perc_financament', 'circuits',
-                          'longitud_cad', 'cable', 'cnmc_tipo_instalacion',
-                          'data_baixa']
+        fields_to_read = [
+            'baixa', 'data_pm', 'data_industria', 'coeficient', 'cini',
+            'propietari', 'tensio_max_disseny', 'name', 'origen', 'final',
+            'perc_financament', 'circuits', 'longitud_cad', 'cable',
+            'cnmc_tipo_instalacion', 'data_baixa', '4771_entregada'
+        ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
 
@@ -194,16 +195,28 @@ class LAT(MultiprocessBased):
                     else:
                        fecha_baja = ''
 
-                    if data_pm:
-                        dpm = time.strptime(data_pm, '%d/%m/%Y')
-                        db = time.strptime(data_baixa, '%Y-%m-%d')
-                        if dpm > db:
-                            estado = 2
-                        else:
-
+                    if tram['4771_entregada']:
+                        data_4771 = tram['4771_entregada']
+                        entregada = F1Res4771(**data_4771)
+                        actual = F1Res4771(
+                            tram['id'], tram['cini'], tram['origen'],
+                            tram['final'], tram['cnmc_tipo_instalacion'],
+                            comunitat, comunitat,
+                            format_f(round(100 - int(tram.get('perc_financament', 0) or 0))),
+                            data_pm, tram.get('circuits', 1) or 1, 1,
+                            tensio,
+                            format_f(longitud, 3),
+                            format_f(cable.get('intensitat_admisible', 0) or 0),
+                            format_f(float(cable.get('seccio', 0)), 2),
+                            str(capacitat),
+                            propietari
+                        )
+                        if actual == entregada:
                             estado = 0
+                        else:
+                            estado = 1
                     else:
-                        estado = 0
+                        estado = 2
 
                     output = [
                         'A{0}'.format(tram['name']),

@@ -9,6 +9,7 @@ import traceback
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import format_f
+from libcnmc.models.f6_4771 import F6Res4771
 
 
 class DES(MultiprocessBased):
@@ -42,7 +43,8 @@ class DES(MultiprocessBased):
         """
         O = self.connection
         fields_to_read = [
-            'name', 'cini', 'denominacio', 'any_ps', 'vai', 'data_apm'
+            'name', 'cini', 'denominacio', 'any_ps', 'vai', 'data_apm',
+            '4771_entregada'
         ]
         while True:
             try:
@@ -53,11 +55,24 @@ class DES(MultiprocessBased):
                     item, fields_to_read)
                 tmp_date = datetime.strptime(despatx['data_apm'], '%Y-%m-%d')
                 data_apm = tmp_date.strftime('%d/%m/%Y')
-                if despatx['data_apm'] < '{0}-01-01'.format(self.year):
-                    estado = '0'
+                fecha_baja = ''
+
+                if despatx['4771_entregada']:
+                    data_4771 = despatx['4771_entregada']
+                    entregada = F6Res4771(**data_4771)
+                    actual = F6Res4771(
+                        despatx['name'],
+                        despatx['cini'],
+                        despatx['denominacion'],
+                        data_apm,
+                        format_f(despatx['vai'])
+                                       )
+                    if actual == entregada:
+                        estado = '0'
+                    else:
+                        estado = '1'
                 else:
                     estado = '2'
-                fecha_baja = ''
                 output = [
                     '{0}'.format(despatx['name']),
                     despatx['cini'] or '',

@@ -10,6 +10,7 @@ import sys
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import get_id_municipi_from_company, format_f
+from libcnmc.models.f4_4771 import F4Res4771
 
 QUIET = False
 
@@ -91,7 +92,8 @@ class POS(MultiprocessBased):
         O = self.connection
         fields_to_read = [
             'name', 'cini', 'data_pm', 'subestacio_id',
-            'cnmc_tipo_instalacion', 'perc_financament', 'tensio', 'data_baixa'
+            'cnmc_tipo_instalacion', 'perc_financament', 'tensio', 'data_baixa',
+            '4771_entregada'
         ]
         not_found_msg = '**** ERROR: El ct {0} (id:{1}) no està a giscedata_cts_subestacions_posicio.\n'
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
@@ -154,10 +156,25 @@ class POS(MultiprocessBased):
                         fecha_baja = ''
                 else:
                     fecha_baja = ''
-                if pos['data_pm'] > data_baixa_limit:
-                    estado = '2'
+                if pos['4771_entregada']:
+                    data_4771 = pos['4771_entregada']
+                    entregada = F4Res4771(**data_4771)
+                    actual = F4Res4771(
+                        o_sub,
+                        pos['cini'],
+                        denominacio,
+                        codigo_ccuu,
+                        comunitat,
+                        format_f(tensio),
+                        format_f(round(100 - int(pos['perc_financament']))),
+                        data_pm
+                    )
+                    if entregada == actual:
+                        estado = 0
+                    else:
+                        estado = 1
                 else:
-                    estado = '0'
+                    estado = 2
                 output = [
                     o_sub,
                     pos['cini'] or '',

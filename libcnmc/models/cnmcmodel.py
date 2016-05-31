@@ -29,8 +29,8 @@ class CNMCModel(object):
         if fields is None:
             fields = self.store._fields
         for field in fields:
-            self_value = getattr(self, field)
-            other_value = getattr(obj, field)
+            self_value = getattr(self.store, field)
+            other_value = getattr(obj.store, field)
             if self_value != other_value:
                 diffs[field] = (self_value, other_value)
         return diffs

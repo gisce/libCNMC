@@ -11,6 +11,7 @@ import sys
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import format_f, tallar_text
+from libcnmc.models.f2_4771 import F2Res4771
 
 QUIET = False
 
@@ -67,7 +68,7 @@ class LBT(MultiprocessBased):
             'name', 'municipi', 'data_pm', 'ct', 'coeficient', 'cini',
             'perc_financament', 'longitud_cad', 'cable', 'voltatge',
             'data_alta', 'propietari', 'cnmc_tipo_instalacion',
-            'data_baixa'
+            'data_baixa', '4771_entregada'
         ]
         data_baixa_limit = '{0}-01-01'.format(self.year)
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
@@ -158,13 +159,34 @@ class LBT(MultiprocessBased):
                         fecha_baja = tmp_date.strftime('%d/%m/%Y')
                 else:
                     fecha_baja = ''
-                if linia['data_pm']:
-                    if linia['data_pm'] > data_baixa_limit:
-                        estado = 2
-                    else:
+
+                if linia['4771_entregada']:
+                    data_4771 = linia['4771_entregada']
+                    entregada = F2Res4771(**data_4771)
+                    actual = F2Res4771(
+                        'B{}'.format(linia['name']),
+                        linia['cini'],
+                        origen or '',
+                        final or '',
+                        codi_ccuu or '',
+                        comunitat,
+                        comunitat,
+                        format_f(round(100 - int(linia['perc_financament']))),
+                        data_pm,
+                        1,
+                        1,
+                        format_f(tensio),
+                        format_f(longitud, 3),
+                        format_f(intensitat),
+                        format_f(float(cable['seccio']),2),
+                        format_f(capacitat),
+                        propietari)
+                    if actual == entregada:
                         estado = 0
+                    else:
+                        estado = 1
                 else:
-                    estado = 0
+                    estado = 2
 
                 output = [
                     'B{}'.format(linia['name']),
