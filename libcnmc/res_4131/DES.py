@@ -55,10 +55,6 @@ class DES(MultiprocessBased):
                     item, fields_to_read)
                 tmp_date = datetime.strptime(despatx['data_apm'], '%Y-%m-%d')
                 data_apm = tmp_date.strftime('%d/%m/%Y')
-                if despatx['data_apm'] < '{0}-01-01'.format(self.year):
-                    estado = '0'
-                else:
-                    estado = '2'
                 fecha_baja = ''
 
                 if despatx['4771_entregada']:
