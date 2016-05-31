@@ -11,7 +11,7 @@ from operator import itemgetter
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import get_id_municipi_from_company, format_f
-
+from libcnmc.models.f5_4771 import F5Res4771
 
 class MAQ(MultiprocessBased):
     """
@@ -107,7 +107,8 @@ class MAQ(MultiprocessBased):
         fields_to_read = [
             'cini', 'historic', 'data_pm', 'ct', 'name', 'potencia_nominal',
             'numero_fabricacio', 'perc_financament', 'cnmc_tipo_instalacion',
-            'conexions', 'data_baixa']
+            'conexions', 'data_baixa', '4771_entregada'
+        ]
 
         con_fields_to_read = ['conectada', 'tensio_primari', 'tensio_p2',
                               'tensio_b1', 'tensio_b2', 'tensio_b3']
@@ -183,11 +184,28 @@ class MAQ(MultiprocessBased):
                         fecha_baja = ''
                 else:
                     fecha_baja = ''
-                if trafo['data_pm'] > data_baixa_limit:
-                    estado = '2'
-                else:
-                    estado = '0'
 
+                if trafo['4771_entregada']:
+                    data_4771 = trafo['4771_entregada']
+                    entregada = F5Res4771(**data_4771)
+                    actual = F5Res4771(
+                        trafo['name'],
+                        trafo['cini'],
+                        denominacio,
+                        codigo_ccuu,
+                        comunitat,
+                        format_f(tensio_primari),
+                        format_f(tensio_secundari),
+                        format_f(financiacio),
+                        data_pm,
+                        format_f(capacitat, 3)
+                    )
+                    if entregada == actual:
+                        estado = '0'
+                    else:
+                        estado = '1'
+                else:
+                    estado = '2'
 
                 output = [
                     '{0}'.format(trafo['name']),
