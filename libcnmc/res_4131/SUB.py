@@ -10,6 +10,7 @@ import sys
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import get_id_municipi_from_company, format_f
+from libcnmc.models.f3_4771 import F3Res4771
 
 QUIET = False
 
@@ -61,7 +62,7 @@ class SUB(MultiprocessBased):
         fields_to_read = [
             'name', 'data_industria', 'data_pm', 'id_municipi', 'cini',
             'descripcio', 'perc_financament', 'data_baixa', 'posicions',
-            'cnmc_tipo_instalacion'
+            'cnmc_tipo_instalacion', '4771_entregada'
         ]
         data_pm_limit = '{}-01-01'.format(self.year + 1)
         data_baixa_limit = '{}-01-01'.format(self.year)
@@ -109,10 +110,7 @@ class SUB(MultiprocessBased):
                         fecha_baja = ''
                 else:
                     fecha_baja = ''
-                if sub['data_pm'] > data_baixa_limit:
-                    estado = '2'
-                else:
-                    estado = '0'
+
                 if 'posicions' in sub:
                     num_pos = 0
                     for pos in sub['posicions']:
@@ -121,6 +119,26 @@ class SUB(MultiprocessBased):
                             num_pos += 1
                 else:
                     num_pos = 1
+
+                if sub['4771_entregada']:
+                    data_4771 = sub['4771_entregada']
+                    entregada = F3Res4771(**data_4771)
+                    actual = F3Res4771(
+                        sub['name'],
+                        sub['cini'],
+                        sub['descripcio'],
+                        comunitat,
+                        format_f(round(100 - int(sub['perc_financament']))),
+                        data_pm,
+                        num_pos
+                    )
+                    if entregada == actual:
+                        estado = 0
+                    else:
+                        estado = 1
+                else:
+                    estado = 2
+                    
                 output = [
                     '{}'.format(sub['name']),
                     sub['cini'] or '',
