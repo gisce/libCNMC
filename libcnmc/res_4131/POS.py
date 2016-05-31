@@ -92,7 +92,7 @@ class POS(MultiprocessBased):
         O = self.connection
         fields_to_read = [
             'name', 'cini', 'data_pm', 'subestacio_id',
-            'cnmc_tipo_instalacion', 'perc_financament', 'tensio', 'data_baixa'
+            'cnmc_tipo_instalacion', 'perc_financament', 'tensio', 'data_baixa',
             '4771_entregada'
         ]
         not_found_msg = '**** ERROR: El ct {0} (id:{1}) no està a giscedata_cts_subestacions_posicio.\n'
