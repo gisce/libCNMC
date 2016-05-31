@@ -204,10 +204,11 @@ class LAT(MultiprocessBased):
                             comunitat, comunitat,
                             format_f(round(100 - int(tram.get('perc_financament', 0) or 0))),
                             data_pm, tram.get('circuits', 1) or 1, 1,
-                            format_f(tensio),format_f(longitud, 3),
+                            tensio,
+                            format_f(longitud, 3),
                             format_f(cable.get('intensitat_admisible', 0) or 0),
-                            format_f(cable.get('seccio', 0) or 0),
-                            capacitat,
+                            format_f(float(cable.get('seccio', 0)), 2),
+                            str(capacitat),
                             propietari
                         )
                         if actual == entregada:
