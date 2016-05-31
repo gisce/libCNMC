@@ -165,6 +165,7 @@ class LBT(MultiprocessBased):
                     entregada = F2Res4771(**data_4771)
                     actual = F2Res4771(
                         'B{}'.format(linia['name']),
+                        linia['cini'],
                         origen or '',
                         final or '',
                         codi_ccuu or '',
@@ -177,7 +178,7 @@ class LBT(MultiprocessBased):
                         format_f(tensio),
                         format_f(longitud, 3),
                         format_f(intensitat),
-                        format_f(cable['seccio']),
+                        format_f(float(cable['seccio']),2),
                         format_f(capacitat),
                         propietari)
                     if actual == entregada:
