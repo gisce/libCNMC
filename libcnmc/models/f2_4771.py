@@ -1,29 +1,34 @@
-from cnmcmodel import CNMCModel
+from __future__ import absolute_import
+from collections import OrderedDict
+
+from .cnmcmodel import CNMCModel
+from .fields import String, Integer, Decimal
 
 
 class F2Res4771(CNMCModel):
     """
         Class for second file of resolution 4771(BT)
     """
-    fields = [
-        'identificador',
-        'cini',
-        'origen',
-        'destino',
-        'codigo_tipo_linea',
-        'codigo_ccaa_1',
-        'codigo_ccaa_2',
-        'participacion',
-        'fecha_aps',
-        'numero_circuitos',
-        'numero_conductores',
-        'nivel_tension',
-        'longitud',
-        'intensidad_maxima',
-        'seccion',
-        'capacidad',
-        'propiedad'
-    ]
+
+    schema = OrderedDict([
+        ('identificador', String()),
+        ('cini', String()),
+        ('origen', String()),
+        ('destino', String()),
+        ('codigo_tipo_linea', String()),
+        ('codigo_ccaa_1', Integer()),
+        ('codigo_ccaa_2', Integer()),
+        ('participacion', String()),
+        ('fecha_aps', String()),
+        ('numero_circuitos', Integer()),
+        ('numero_conductores', Integer()),
+        ('nivel_tension', Decimal(2)),
+        ('longitud', Decimal(3)),
+        ('intensidad_maxima', Decimal(2)),
+        ('seccion', Decimal(2)),
+        ('capacidad', Decimal(2)),
+        ('propiedad', String())
+    ])
 
     @property
     def ref(self):
