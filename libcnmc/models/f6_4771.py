@@ -1,18 +1,20 @@
 from cnmcmodel import CNMCModel
+from collections import OrderedDict
 
+from .fields import String, Integer
 
 class F6Res4771(CNMCModel):
     """
         Class for sixth file of resolution 4771(Despatxos)
     """
 
-    fields = [
-        'identificador',
-        'cini',
-        'denominacion',
-        'anio_aps',
-        'valor_inversion'
-    ]
+    schema = OrderedDict([
+        ('identificador', String()),
+        ('cini', String()),
+        ('denominacion', String()),
+        ('anio_aps', String()),
+        ('valor_inversion', Integer())
+    ])
 
     @property
     def ref(self):

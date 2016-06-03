@@ -1,20 +1,23 @@
 from cnmcmodel import CNMCModel
+from collections import OrderedDict
+
+from .fields import String, Integer, Decimal
 
 
 class F4Res4771(CNMCModel):
     """
         Class for forth file of resolution 4771(Posiciones)
     """
-    fields = [
-        'identificador',
-        'cini',
-        'denominacion',
-        'codigo_tipo_posicion',
-        'codigo_ccaa',
-        'nivel_tension',
-        'participacion',
-        'fecha_aps',
-    ]
+    schema = OrderedDict([
+        ('identificador', String()),
+        ('cini', String()),
+        ('denominacion', String()),
+        ('codigo_tipo_posicion', String()),
+        ('codigo_ccaa', Integer()),
+        ('nivel_tension', Decimal(2)),
+        ('participacion', Decimal(2)),
+        ('fecha_aps', String()),
+    ])
 
     @property
     def ref(self):
