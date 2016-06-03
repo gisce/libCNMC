@@ -1,4 +1,7 @@
 from cnmcmodel import CNMCModel
+from collections import OrderedDict
+
+from .fields import String, Integer
 
 
 class F7Res4771(CNMCModel):
@@ -6,14 +9,14 @@ class F7Res4771(CNMCModel):
         Class for seventh file of resolution 4771(Fiabilidad)
     """
 
-    fields = [
-        'identificador',
-        'cini',
-        'elemento_act',
-        'codigo_tipo_inst',
-        'codigo_ccaa',
-        'fecha_aps'
-    ]
+    schema = OrderedDict([
+        {'identificador': String()},
+        {'cini': String()},
+        {'elemento_act': String()},
+        {'codigo_tipo_inst': String()},
+        {'codigo_ccaa': Integer()},
+        {'fecha_aps': String()}
+    ])
 
     @property
     def ref(self):
