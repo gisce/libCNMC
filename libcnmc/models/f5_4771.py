@@ -3,6 +3,7 @@ from collections import OrderedDict
 
 from .fields import String, Integer, Decimal
 
+
 class F5Res4771(CNMCModel):
     """
         Class for fifth file of resolution 4771(Maquines)
