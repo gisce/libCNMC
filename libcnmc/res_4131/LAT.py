@@ -199,7 +199,8 @@ class LAT(MultiprocessBased):
                         data_4771 = tram['4771_entregada']
                         entregada = F1Res4771(**data_4771)
                         actual = F1Res4771(
-                            tram['id'], tram['cini'], tram['origen'],
+                            'A{0}'.format(tram['name']),
+                            tram['cini'], tram['origen'],
                             tram['final'], tram['cnmc_tipo_instalacion'],
                             comunitat, comunitat,
                             format_f(round(100 - int(tram.get('perc_financament', 0) or 0))),
