@@ -7,6 +7,10 @@ from cerberus.errors import ERROR_BAD_TYPE
 
 
 class CNMCValidator(Validator):
+    """CNMC Schema validator
+
+    - Add support for decimal type
+    """
     def _validate_type_decimal(self, field, value):
         if not isinstance(value, Decimal):
             try:
@@ -16,11 +20,19 @@ class CNMCValidator(Validator):
 
 
 def json_decimal_default(o):
+    """
+    Let export decimal values in JSON
+    :param o: value to export
+    :return: value converted to string
+    """
     if isinstance(o, Decimal):
         return str(o)
 
 
 class CNMCModel(object):
+    """
+    CNMC Model base
+    """
 
     schema = OrderedDict([
         ('id', {'type': 'string'}),
