@@ -9,16 +9,16 @@ class F5Res4771(CNMCModel):
         Class for fifth file of resolution 4771(Maquines)
     """
     schema = OrderedDict([
-        {'identificador': String()},
-        {'cini': String()},
-        {'denominacion': String()},
-        {'codigo_tipo_maquina': String()},
-        {'codigo_ccaa': Integer()},
-        {'tension_primario': Decimal(2)},
-        {'tension_secundario': Decimal(2)},
-        {'participacion': Decimal(2)},
-        {'fecha_aps': String()},
-        {'capacidad': Decimal(2)}
+        ('identificador', String()),
+        ('cini', String()),
+        ('denominacion', String()),
+        ('codigo_tipo_maquina', String()),
+        ('codigo_ccaa', Integer()),
+        ('tension_primario', Decimal(2)),
+        ('tension_secundario', Decimal(2)),
+        ('participacion', Decimal(2)),
+        ('fecha_aps', String()),
+        ('capacidad', Decimal(2))
     ])
 
     @property

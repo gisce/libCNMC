@@ -10,13 +10,13 @@ class F8Res4771(CNMCModel):
     """
 
     schema = OrderedDict([
-        {'identificador': String()},
-        {'cini': String()},
-        {'denominacion': String()},
-        {'codigo_tipo_ct': String()},
-        {'codigo_ccaa': Integer()},
-        {'participacion': Decimal(2)},
-        {'fecha_aps': String()}
+        ('identificador', String()),
+        ('cini', String()),
+        ('denominacion', String()),
+        ('codigo_tipo_ct', String()),
+        ('codigo_ccaa', Integer()),
+        ('participacion', Decimal(2)),
+        ('fecha_aps', String())
     ])
 
     @property
