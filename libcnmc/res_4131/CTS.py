@@ -114,7 +114,7 @@ class CTS(MultiprocessBased):
                         str(ct['cnmc_tipo_instalacion']),
                         comunitat_codi,
                         format_f(round(100 - int(ct['perc_financament']))),
-                        fecha_baja,
+                        data_pm
                     )
                     if entregada == actual:
                         estado = '0'
