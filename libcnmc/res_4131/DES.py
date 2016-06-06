@@ -63,7 +63,7 @@ class DES(MultiprocessBased):
                     actual = F6Res4771(
                         despatx['name'],
                         despatx['cini'],
-                        despatx['denominacion'],
+                        despatx['denominacio'],
                         data_apm,
                         format_f(despatx['vai'])
                                        )
