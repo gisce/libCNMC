@@ -49,37 +49,33 @@ class MAQ(MultiprocessBased):
         """
         data_pm = '{0}-01-01'.format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
-        search_params = [('propietari', '=', True),
-                               '|', ('data_pm', '=', False),
-                               ('data_pm', '<', data_pm),
-                               '|', ('data_baixa', '>', data_baixa),
-                               ('data_baixa', '=', False)
-                               ]
-        # Revisem que si està de baixa ha de tenir la data informada.
-        search_params += ['|',
-                          '&', ('active', '=', False),
-                          ('data_baixa', '!=', False),
-                          ('active', '=', True)]
-        # Transformadors funcionament
-        search_params_func = [('id_estat.cnmc_inventari', '=', True),
-                              ('id_estat.codi', '=', 1)]
-        # Transformadors no funcionament
-        search_params_no_func = [('id_estat.cnmc_inventari', '=', True),
-                                 ('id_estat.codi', '!=', 1)]
-        search_params_func += search_params
-        ids_func = self.connection.GiscedataTransformadorTrafo.search(
-            search_params_func, 0, 0, False, {'active_test': False})
-        search_params_no_func += search_params
-        ids_no_func = self.connection.GiscedataTransformadorTrafo.search(
-            search_params_no_func, 0, 0, False, {'active_test': False})
+        search_params = [
+            ('propietari', '=', True),
+            '|', ('data_pm', '=', False),
+            ('data_pm', '<', data_pm),
+            '|', ('data_baixa', '>', data_baixa),
+            ('data_baixa', '=', False)
+        ]
+
         # Transformadors reductors
-        search_params_reductor = [('id_estat.cnmc_inventari', '=', True),
-                                  ('reductor', '=', True)]
-        search_params_reductor += search_params
+        search_params_reductor = search_params + [
+            ('id_estat.cnmc_inventari', '=', True),
+            ('reductor', '=', True)]
+
+        # Transformadors
+        search_params_transformadors = search_params + [
+            ('id_estat.cnmc_inventari', '=', True),
+            ('localitzacio.code', '=', '1'),
+            ('id_estat.codi', '!=', '1')]
+
+        #search_params_reductor += search_params
         ids_reductor = self.connection.GiscedataTransformadorTrafo.search(
             search_params_reductor, 0, 0, False, {'active_test': False})
 
-        return list(set(ids_func + ids_no_func + ids_reductor))
+        ids_transformadors = self.connection.GiscedataTransformadorTrafo.search(
+            search_params_transformadors, 0, 0, False, {'active_test': False})
+        print 'ids:{}'.format(list(set(ids_reductor + ids_transformadors)))
+        return list(set(ids_reductor + ids_transformadors))
 
     def get_norm_tension(self, tension):
         """
