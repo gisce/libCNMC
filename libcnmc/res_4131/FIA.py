@@ -92,7 +92,7 @@ class FIA(MultiprocessBased):
                 #Comprovo si la cella pertany a ct o lat per trobar la ccaa
                 if cll['tram_id']:
                     tram_id = cll['tram_id'][0]
-                    element_act = 'A{}'.format(O.GiscedataAtTram.read(tram_id, ['name'])['name'])
+                    element_act = 'A{0}'.format(O.GiscedataAtTram.read(tram_id, ['name'])['name'])
 
                 if cllinst[0] == 'giscedata.cts':
                     ct_vals = O.GiscedataCts.read(int(cllinst[1]),
