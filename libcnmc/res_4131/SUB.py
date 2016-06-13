@@ -140,7 +140,7 @@ class SUB(MultiprocessBased):
                     estado = 2
                     
                 output = [
-                    '{}'.format(sub['name']),
+                    '{0}'.format(sub['name']),
                     sub['cini'] or '',
                     sub['descripcio'] or '',
                     comunitat,

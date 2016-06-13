@@ -13,6 +13,7 @@ from libcnmc.core import MultiprocessBased
 from libcnmc.utils import get_id_municipi_from_company, format_f
 from libcnmc.models.f5_4771 import F5Res4771
 
+
 class MAQ(MultiprocessBased):
     """
     Class that generates the Maquinas/Transofrmadores(5) file of the 4131
@@ -74,7 +75,6 @@ class MAQ(MultiprocessBased):
 
         ids_transformadors = self.connection.GiscedataTransformadorTrafo.search(
             search_params_transformadors, 0, 0, False, {'active_test': False})
-        print 'ids:{}'.format(list(set(ids_reductor + ids_transformadors)))
         return list(set(ids_reductor + ids_transformadors))
 
     def get_norm_tension(self, tension):

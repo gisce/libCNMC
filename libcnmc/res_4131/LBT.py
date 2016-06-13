@@ -164,7 +164,7 @@ class LBT(MultiprocessBased):
                     data_4771 = linia['4771_entregada']
                     entregada = F2Res4771(**data_4771)
                     actual = F2Res4771(
-                        'B{}'.format(linia['name']),
+                        'B{0}'.format(linia['name']),
                         linia['cini'],
                         origen or '',
                         final or '',
