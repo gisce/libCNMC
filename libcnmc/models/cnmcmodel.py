@@ -52,12 +52,14 @@ class CNMCModel(object):
         self.validator = CNMCValidator(self.schema)
         stored = namedtuple('{0}_store'.format(self.__class__.__name__), self.fields)
         self.store = stored(*values, **kwvalues)
+        for key in self.store.keys():
+            self.store[key] = self.store[key].encode('utf-8')
         self.validator.validate(self.store._asdict())
         self.store = stored(**self.validator.document)
 
     def dump(self, out_format='json'):
         if out_format == 'json':
-            return json.dumps(self.store._asdict(), default=json_decimal_default, ensure_ascii=False)
+            return json.dumps(self.store._asdict(), default=json_decimal_default)
         else:
             return list(self.store)
 
