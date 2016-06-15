@@ -49,7 +49,7 @@ class CNMCModel(object):
         return 1
 
     def __init__(self, *values, **kwvalues):
-        evalues = [e.decode('latin-1').encode('utf-8') for e in values]
+        evalues = [e.encode('latin-1').decode('utf-8') for e in values]
         self.validator = CNMCValidator(self.schema)
         stored = namedtuple('{0}_store'.format(self.__class__.__name__), self.fields)
         self.store = stored(*evalues, **kwvalues)
