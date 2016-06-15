@@ -57,7 +57,7 @@ class CNMCModel(object):
 
     def dump(self, out_format='json'):
         if out_format == 'json':
-            return json.dumps(self.store._asdict(), default=json_decimal_default)
+            return json.dumps(self.store._asdict(), default=json_decimal_default, ensure_ascii=False)
         else:
             return list(self.store)
 
