@@ -77,6 +77,7 @@ class FIA(MultiprocessBased):
 
                 codigo_ccuu = cll['cnmc_tipo_instalacion']
 
+
                 #Instal·lació a la que pertany
                 cllinst = cll['installacio'].split(',')
 
@@ -113,6 +114,10 @@ class FIA(MultiprocessBased):
                 if id_municipi:
                     ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi(
                         id_municipi)[0]
+                    ccaa = str(ccaa)
+                    while len(ccaa) < 2:
+                        ccaa = '0' + ccaa
+
 
                 if cll['data_baixa']:
                     if cll['data_baixa'] < data_pm_limit:
