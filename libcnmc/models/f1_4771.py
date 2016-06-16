@@ -34,7 +34,7 @@ class F1Res4771(CNMCModel):
 
     def __cmp__(self, other):
         comp_fields = [
-            'longitud', 'cini', 'seccion', 'capacidad', 'fecha_aps'
+            'longitud', 'cini', 'seccion', 'capacidad'
         ]
         if self.diff(other, comp_fields):
             return True

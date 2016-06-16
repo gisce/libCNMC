@@ -21,7 +21,6 @@ class F6Res4771(CNMCModel):
         return self.store.identificador
 
     def __cmp__(self, other):
-        # TODO: Add comparsion fields
         comp_fields = []
         if self.diff(other, comp_fields):
             return True
