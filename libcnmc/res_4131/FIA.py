@@ -76,6 +76,8 @@ class FIA(MultiprocessBased):
                         cll['tipus_element'][0], ['name'])
 
                 codigo_ccuu = cll['cnmc_tipo_instalacion']
+                while len(codigo_ccuu) < 2:
+                    codigo_ccuu = '0' + codigo_ccuu
 
                 #Instal·lació a la que pertany
                 cllinst = cll['installacio'].split(',')
