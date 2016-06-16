@@ -114,6 +114,7 @@ class FIA(MultiprocessBased):
                 if id_municipi:
                     ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi(
                         id_municipi)[0]
+                    ccaa = str(ccaa)
                     while len(ccaa) < 2:
                         ccaa = '0' + ccaa
 
