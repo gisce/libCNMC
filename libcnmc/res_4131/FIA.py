@@ -129,7 +129,7 @@ class FIA(MultiprocessBased):
                 else:
                     fecha_baja = ''
 
-                if cll['4771_entregada']:
+                if cll['4771_entregada'] and '2015' not in str(data_pm):
                     data_4771 = cll['4771_entregada']
                     entregada = F7Res4771(**data_4771)
                     actual = F7Res4771(

@@ -35,7 +35,7 @@ class F2Res4771(CNMCModel):
         return self.store.identificador[1:]
 
     def __cmp__(self, other):
-        comp_fields = ['longitud', 'cini', 'seccion', 'capacidad', 'fecha_aps']
+        comp_fields = ['longitud', 'cini', 'seccion', 'capacidad']
         if self.diff(other, comp_fields):
             return True
         else:

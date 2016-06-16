@@ -28,7 +28,7 @@ class F5Res4771(CNMCModel):
     def __cmp__(self, other):
         comp_fields = [
             'cini', 'tension_primario', 'tension_secundario',
-            'capacidad', 'denominacion', 'fecha_aps',
+            'capacidad', 'denominacion',
         ]
         if self.diff(other, comp_fields):
             return True
