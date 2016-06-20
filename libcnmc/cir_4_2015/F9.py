@@ -119,7 +119,7 @@ class F9(MultiprocessBased):
             t += '{0};{1};{2}\n'.format(
                 format_f(res_srid[0], decimals=6),
                 format_f(res_srid[1], decimals=6),
-                0)
+                '')
         return t[:-1]
 
     def consumer(self):
