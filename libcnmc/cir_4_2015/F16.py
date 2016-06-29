@@ -36,6 +36,8 @@ class F16(MultiprocessBased):
         vertex = None
         if bloc:
             bloc = O.GiscegisBlocsCtat.read(bloc[0], ['node', 'vertex'])
+            if not bloc['node']:
+                return '', ''
             node = bloc['node'][1]
             if bloc['vertex']:
                 v = O.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
