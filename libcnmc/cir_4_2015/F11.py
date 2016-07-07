@@ -137,8 +137,7 @@ class F11(MultiprocessBased):
                     o_tipo = self.get_tipus(ct['id_subtipus'][0])
                 else:
                     o_tipo = ''
-                o_potencia = format_f(self.get_potencia_trafos(item),
-                                      decimals=3)
+                o_potencia = self.get_potencia_trafos(item)
                 cups = O.GiscedataCupsPs.search([('et', '=', ct['name'])])
                 o_energia = sum(
                     x['cne_anual_activa']
@@ -173,7 +172,7 @@ class F11(MultiprocessBased):
                     o_ine_prov,
                     o_tensio_p,
                     o_tipo,
-                    o_potencia,
+                    format_f(float('%.3f' % o_potencia), decimals=3),
                     format_f(o_energia, decimals=3),
                     o_pic_activa,
                     o_pic_reactiva,
