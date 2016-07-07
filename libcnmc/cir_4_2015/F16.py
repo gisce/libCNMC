@@ -97,7 +97,7 @@ class F16(MultiprocessBased):
                     o_ine_muni,
                     o_ine_prov,
                     o_tensio,
-                    o_potencia,
+                    format_f(o_potencia, decimals=3),
                     o_codi_r1,
                     o_propietari,
                     o_any
