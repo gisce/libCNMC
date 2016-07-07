@@ -129,7 +129,8 @@ class F15(MultiprocessBased):
                 z = ''
                 o_municipi = dict_linia.get('municipi')
                 o_provincia = dict_linia.get('provincia')
-                o_tensio = format_f(dict_linia.get('tensio'), decimals=3)
+                tensio = float(str.replace(dict_linia.get('tensio'), ',', '.'))
+                o_tensio = format_f(tensio, decimals=3)
                 o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
                 o_prop = int(celles['propietari'])
                 o_any = self.year
