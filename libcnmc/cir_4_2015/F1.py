@@ -111,7 +111,7 @@ class F1(MultiprocessBased):
                 o_codi_prov = ''
                 o_zona = ''
                 o_potencia_facturada = format_f(
-                    cups['cnmc_potencia_facturada'], 3) or ''
+                    cups['cnmc_potencia_facturada'] or 0.0, 3) or ''
                 if 'et' in cups:
                     o_zona = self.get_zona_qualitat(cups['et'])
                 if cups['id_municipi']:
@@ -212,11 +212,8 @@ class F1(MultiprocessBased):
                     # "Contrato no activo (CNA)"
                     o_equip = 'CNA'
                     o_estat_contracte = 1
-                    o_potencia_facturada = 0
                     o_pot_ads = 0
                     o_potencia = 0
-                    o_anual_activa = 0
-                    o_anual_reactiva = 0
 
                     search_modcon = [
                         ('id', 'in', cups['polisses']),
