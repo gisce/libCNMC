@@ -63,15 +63,15 @@ class F12(MultiprocessBased):
                 o_cini = trafo['cini'] or ''
                 o_maquina = trafo['name']
                 o_pot = format_f(
-                    float('%.3f' % trafo['potencia_nominal']),
+                    float(trafo['potencia_nominal']),
                     decimals=3
                 )
                 o_perdues_buit = format_f(
-                    float('%.3f' % trafo['perdues_buit'] or 0),
+                    trafo['perdues_buit'] or 0.0,
                     decimals=3
                 )
                 o_perdues_nominal = format_f(
-                    float('%.3f' % trafo['perdues_curtcircuit_nominal'] or 0),
+                    trafo['perdues_curtcircuit_nominal'] or 0.0,
                     decimals=3
                 )
                 o_propietari = int(trafo['propietari'])
