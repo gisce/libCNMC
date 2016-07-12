@@ -96,7 +96,7 @@ class F15(MultiprocessBased):
         provincia = ''
         id_municipi = linia['municipi'][0]
         id_provincia = linia['provincia'][0]
-        tensio = format_f(float(linia['tensio']) / 1000.0)
+        tensio = format_f(float(linia['tensio']) / 1000.0, decimals=3)
         if id_municipi and id_provincia:
             provincia = o.ResCountryState.read(id_provincia, ['code'])['code']
             municipi_dict = o.ResMunicipi.read(id_municipi, ['ine', 'dc'])
@@ -129,7 +129,7 @@ class F15(MultiprocessBased):
                 z = ''
                 o_municipi = dict_linia.get('municipi')
                 o_provincia = dict_linia.get('provincia')
-                o_tensio = format_f(dict_linia.get('tensio'), decimals=3)
+                o_tensio = dict_linia.get('tensio')
                 o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
                 o_prop = int(celles['propietari'])
                 o_any = self.year
