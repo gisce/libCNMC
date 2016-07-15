@@ -78,6 +78,7 @@ class F13bis(MultiprocessBased):
                 o_parc = self.get_parc(sub['parc_id'][0], 'codi')
                 subestacio = self.get_subestacio(sub['id'])
                 o_node = subestacio['node']
+                o_node = o_node.replace('*', '')
                 o_cini = subestacio['cini']
                 o_tipus = self.get_parc(sub['parc_id'][0], 'tipus')
                 tensio = self.get_parc(sub['parc_id'][0], 'tensio')
