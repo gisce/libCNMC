@@ -60,6 +60,7 @@ class F12(MultiprocessBased):
                 )
                 o_ct = trafo['ct'] and trafo['ct'][1] or ''
                 o_node = self.get_node(item)
+                o_node = o_node.replace('*', '')
                 o_cini = trafo['cini'] or ''
                 o_maquina = trafo['name']
                 o_pot = format_f(
