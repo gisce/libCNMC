@@ -151,7 +151,7 @@ class F1(MultiprocessBased):
                                 node = O.GiscegisNodes.read(
                                     [bloc_escomesa['node'][0]], ['name'])
                                 o_nom_node = node[0]['name']
-                o_nom_nodes = o_nom_nodes.replace('*', '')
+                o_nom_node = o_nom_node.replace('*', '')
                 search_params = [('cups', '=', cups['id'])] + search_glob
                 polissa_id = O.GiscedataPolissa.search(
                     search_params, 0, 1, 'data_alta desc', context_glob)
