@@ -117,7 +117,7 @@ def format_f(num, decimals=2):
 
 def convert_srid(codi, srid_source, point):
         assert srid_source in ['25829', '25830', '25831']
-        if codi == '0056':
+        if codi == '056':
             return point
         else:
             if srid_source == '25830':
