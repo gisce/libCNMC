@@ -66,7 +66,7 @@ class F9(MultiprocessBased):
         # BT
 
         search_params = [
-            ('cable.tipus.codi', 'in', ['T', 'D', 'S', 'E'])
+            ('cable.tipus.codi', 'in', ['T', 'D', 'S', 'E', 'I'])
         ]
         search_params += static_search_params
         ids_bt = o.GiscedataBtElement.search(
