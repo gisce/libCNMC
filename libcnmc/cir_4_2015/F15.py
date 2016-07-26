@@ -125,6 +125,7 @@ class F15(MultiprocessBased):
                 dict_linia = self.obtenir_camps_linia(celles['installacio'])
                 o_fiabilitat = celles['name']
                 o_node, vertex, o_tram = self.get_node_vertex_tram(o_fiabilitat)
+                o_node = o_node.replace('*', '')
                 o_cini = celles['cini']
                 z = ''
                 o_municipi = dict_linia.get('municipi')

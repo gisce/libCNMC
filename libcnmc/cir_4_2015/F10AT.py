@@ -109,7 +109,9 @@ class F10AT(MultiprocessBased):
                         edge = o.GiscegisEdge.read(res[0], ['start_node',
                                                             'end_node'])
                     o_node_inicial = tallar_text(edge['start_node'][1], 20)
+                    o_node_inicial = o_node_inicial.replace('*', '')
                     o_node_final = tallar_text(edge['end_node'][1], 20)
+                    o_node_final = o_node_final.replace('*', '')
                     o_cini = at['cini']
                     o_provincia = ''
                     if linia['provincia']:

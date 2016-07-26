@@ -99,7 +99,9 @@ class F10BT(MultiprocessBased):
                     o_nivell_tensio = 0.0
                 o_tram = 'B%s' % linia['name']
                 o_node_inicial = tallar_text(edge['start_node'][1], 20)
+                o_node_inicial = o_node_inicial.replace('*', '')
                 o_node_final = tallar_text(edge['end_node'][1], 20)
+                o_node_final = o_node_final.replace('*', '')
                 o_cini = linia['cini']
                 o_provincia = ''
                 if linia['municipi']:

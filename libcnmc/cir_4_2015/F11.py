@@ -120,6 +120,7 @@ class F11(MultiprocessBased):
                 self.progress_q.put(item)
                 ct = O.GiscedataCts.read(item, fields_to_read)
                 o_node, vertex = self.get_node_vertex(item)
+                o_node = o_node.replace('*', '')
                 o_ct = ct['name']
                 o_cini = ct['cini'] or ''
                 if ct['id_municipi']:
