@@ -33,7 +33,8 @@ class DES(MultiprocessBased):
         Method that generates a list of ids to pass to the consummer
         :return: List of ids
         """
-        search_params = [('any_ps', '<=', self.year)]
+        data_limit = '01-01-{}'.format(self.year+1)
+        search_params = [('data_apm', '<=', data_limit)]
         return self.connection.GiscedataDespatx.search(search_params)
 
     def consumer(self):
