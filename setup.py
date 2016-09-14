@@ -11,7 +11,7 @@ PACKAGES_DATA = {}
 
 INSTALL_REQUIRES = [
     'progressbar', 'click', 'libcomxml', 'ooop', 'chardet', 'pyproj',
-    'osconf', 'cerberus>=0.9'
+    'osconf', 'cerberus==0.9'
 ]
 if sys.version_info[1] < 6:
     INSTALL_REQUIRES += ['multiprocessing']
