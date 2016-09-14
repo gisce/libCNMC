@@ -38,12 +38,25 @@ class F10BT(MultiprocessBased):
         return self.connection.GiscedataBtElement.search(
             search_params, 0, 0, False, {'active_test': False})
 
-    def get_tipus_cable(self, id_cable):
+    def get_tipus_cable(self, id_cable, id_tipus_linia):
         o = self.connection
         cable = o.GiscedataBtTipuscable.read(id_cable, ['codi'])
-        res = ''
-        if cable:
-            res = cable['codi']
+        tipus_linia = o.GiscedataBtTipuslinia.read(
+            id_tipus_linia, ['name'])['name'][0]
+        res = 'I'
+        if tipus_linia == 'S':
+            # Subterrània
+            res = 'S'
+        elif tipus_linia == 'A':
+            # Aèria
+            if cable:
+                codi = cable['codi']
+                if codi in ['S', 'T', 'I']:
+                    res = 'T'
+                elif codi == 'D':
+                    res = 'D'
+                elif codi == 'E':
+                    res = 'S'
         return res
 
     def get_provincia(self, id_mun):
@@ -58,7 +71,7 @@ class F10BT(MultiprocessBased):
         o = self.connection
         fields_to_read = [
             'name', 'propietari', 'coeficient', 'cable', 'voltatge', 'cini',
-            'longitud_cad', 'municipi', 'longitud_cad'
+            'longitud_cad', 'municipi', 'longitud_cad', 'tipus_linia'
         ]
         while True:
             try:
@@ -110,9 +123,9 @@ class F10BT(MultiprocessBased):
                         round(float(linia['longitud_cad']) *
                               coeficient / 1000.0, 3) or 0.001, decimals=3)
                 o_num_circuits = 1  # a BT suposarem que sempre hi ha 1
-                o_tipus = self.get_tipus_cable(cable['tipus'][0])
-                if o_tipus == 'E':
-                    o_tipus = 'S'
+                o_tipus = self.get_tipus_cable(
+                    cable['tipus'][0], linia['tipus_linia'][0]
+                )
                 o_r = format_f(
                     cable['resistencia'] * (float(linia['longitud_cad']) * coeficient / 1000.0) or 0.0, 6)
                 o_x = format_f(
