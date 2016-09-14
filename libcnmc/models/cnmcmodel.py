@@ -3,7 +3,6 @@ import json
 from decimal import Decimal, InvalidOperation
 
 from cerberus import Validator
-from cerberus.errors import ERROR_BAD_TYPE
 
 
 class CNMCValidator(Validator):
@@ -11,12 +10,12 @@ class CNMCValidator(Validator):
 
     - Add support for decimal type
     """
-    def _validate_type_decimal(self, field, value):
+    def _validate_type_decimal(self, value):
         if not isinstance(value, Decimal):
             try:
                 Decimal(value)
             except InvalidOperation:
-                self._error(field, ERROR_BAD_TYPE.format('Decimal'))
+                return True
 
 
 def json_decimal_default(o):
