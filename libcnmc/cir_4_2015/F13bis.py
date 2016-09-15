@@ -13,29 +13,17 @@ class F13bis(MultiprocessBased):
         self.base_object = 'CTS'
 
     def get_sequence(self):
-        data_pm = '%s-01-01' % (self.year + 1)
-        data_baixa = '%s-12-31' % self.year
-        search_params = [('ct_id.propietari', '=', True),
-                         '|', ('ct_id.data_pm', '=', False),
-                         ('ct_id.data_pm', '<', data_pm),
-                         '|', ('ct_id.data_baixa', '>', data_baixa),
-                         ('ct_id.data_baixa', '=', False),
-                         ]
-        # Revisem que si està de baixa ha de tenir la data informada.
-        search_params += ['|',
-                          '&', ('ct_id.active', '=', False),
-                          ('ct_id.data_baixa', '!=', False),
-                          ('ct_id.active', '=', True)]
-        # Revisem que tingui un parc assignat
-        search_params += [('parc_id', '!=', False)]
-        return self.connection.GiscedataCtsSubestacions.search(
+        # Revisem que estigui actiu
+        search_params = [('active', '!=', False)]
+        return self.connection.GiscedataParcs.search(
             search_params, 0, 0, False, {'active_test': False})
 
     def get_subestacio(self, sub_id):
         o = self.connection
-        sub = o.GiscedataCtsSubestacions.read(sub_id, ['ct_id', 'cini'])
+        sub = o.GiscedataCtsSubestacions.read(sub_id, ['ct_id', 'cini', 'name'])
         ct_id = sub['ct_id'][0]
         cini = sub['cini']
+        name = sub['name']
         bloc_ids = o.GiscegisBlocsCtat.search([('ct', '=', ct_id)])
         node = ''
         if bloc_ids:
@@ -43,60 +31,40 @@ class F13bis(MultiprocessBased):
             node = bloc['node'][1]
         else:
             print "ct id: {}".format(ct_id)
-        return {'node': node, 'cini': cini}
+        return {'node': node, 'cini': cini, 'name': name}
 
-    def get_parc(self, parc_id, data):
+    def get_tensio(self, parc_id):
         o = self.connection
-        res = ''
-        if data == 'codi':
-            res = o.GiscedataParcs.read(parc_id, ['name'])['name']
-        elif data == 'tipus':
-            res = o.GiscedataParcs.read(parc_id, ['tipus'])['tipus'] - 1
-        elif data == 'tensio':
-            tensio_id = o.GiscedataParcs.read(
-                parc_id, ['tensio_id'])['tensio_id'][0]
-            res = o.GiscedataTensionsTensio.read(
-                tensio_id, ['tensio'])['tensio']
-        return res
+        tensio_id = o.GiscedataParcs.read(
+            parc_id, ['tensio_id'])['tensio_id'][0]
+        return o.GiscedataTensionsTensio.read(tensio_id, ['tensio'])['tensio']
 
     def consumer(self):
         o = self.connection
         fields_to_read = [
-            'id', 'propietari', 'name', 'parc_id'
+            'id', 'subestacio_id', 'name', 'tipus', 'propietari'
         ]
-        dict_cts = {}
         while True:
             try:
                 # generar linies
                 item = self.input_q.get()
                 self.progress_q.put(item)
-                sub = o.GiscedataCtsSubestacions.read(
+                parc = o.GiscedataParcs.read(
                     item, fields_to_read
                 )
-                o_subestacio = sub['name']
-                # o_parc = sub['subestacio_id'][1] + "-" + sub['tensio'][1]
-                o_parc = self.get_parc(sub['parc_id'][0], 'codi')
-                subestacio = self.get_subestacio(sub['id'])
+                subestacio = self.get_subestacio(parc['subestacio_id'][0])
+                o_subestacio = subestacio['name']
+                o_parc = parc['name']
                 o_node = subestacio['node']
                 o_node = o_node.replace('*', '')
                 o_cini = subestacio['cini']
-                o_tipus = self.get_parc(sub['parc_id'][0], 'tipus')
-                tensio = self.get_parc(sub['parc_id'][0], 'tensio')
+                o_tipus = parc['tipus'] - 1
+                tensio = self.get_tensio(parc['id'])
                 o_tensio = format_f(
                     float(tensio) / 1000.0, decimals=3)
-                o_prop = int(sub['propietari'])
+                o_prop = int(parc['propietari'])
                 o_any = self.year
                 insert = True
-                if o_subestacio not in dict_cts.keys():
-                    dict_cts[o_subestacio] = [o_tensio]
-                else:
-                    llista_valors = dict_cts[o_subestacio]
-                    for valor in llista_valors:
-                        if valor == o_tensio:
-                            insert = False
-                    if insert:
-                        dict_cts[o_subestacio].append(o_tensio)
-
                 if insert:
                     self.output_q.put([
                         o_subestacio,
