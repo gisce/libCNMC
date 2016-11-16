@@ -30,7 +30,7 @@ class F13bis(MultiprocessBased):
             bloc = o.GiscegisBlocsCtat.read(bloc_ids[0], ['node'])
             node = bloc['node'][1]
         else:
-            print "ct id: {}".format(ct_id)
+            print("ct id: {}".format(ct_id))
         return {'node': node, 'cini': cini, 'name': name}
 
     def get_tensio(self, parc_id):
@@ -76,7 +76,7 @@ class F13bis(MultiprocessBased):
                         o_prop,
                         o_any
                     ])
-            except:
+            except Exception as e:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
