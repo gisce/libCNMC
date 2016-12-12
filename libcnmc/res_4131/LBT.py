@@ -67,7 +67,7 @@ class LBT(MultiprocessBased):
         fields_to_read = [
             'name', 'municipi', 'data_pm', 'ct', 'coeficient', 'cini',
             'perc_financament', 'longitud_cad', 'cable', 'voltatge',
-            'data_alta', 'propietari', 'cnmc_tipo_instalacion',
+            'data_alta', 'propietari', 'tipus_instalacio_cnmc_id',
             'data_baixa', '4771_entregada'
         ]
         data_baixa_limit = '{0}-01-01'.format(self.year)
@@ -127,7 +127,14 @@ class LBT(MultiprocessBased):
 
                 propietari = linia['propietari'] and '1' or '0'
 
-                codi_ccuu = linia['cnmc_tipo_instalacion']
+                if linia['tipus_instalacio_cnmc_id']:
+                    id_ti = linia.get('tipus_instalacio_cnmc_id')[0]
+                    codi_ccuu = O.GiscedataTipusInstallacio.read(
+                        id_ti,
+                        fields_to_read)['name']
+                else:
+                    codi_ccuu = ''
+
                 # Agafem el cable de la linia
                 if linia['cable']:
                     cable = O.GiscedataBtCables.read(linia['cable'][0], [
