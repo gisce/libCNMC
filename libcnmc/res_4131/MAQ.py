@@ -102,7 +102,7 @@ class MAQ(MultiprocessBased):
         O = self.connection
         fields_to_read = [
             'cini', 'historic', 'data_pm', 'ct', 'name', 'potencia_nominal',
-            'numero_fabricacio', 'perc_financament', 'cnmc_tipo_instalacion',
+            'numero_fabricacio', 'perc_financament', 'tipus_instalacio_cnmc_id',
             'conexions', 'data_baixa', '4771_entregada'
         ]
 
@@ -119,7 +119,13 @@ class MAQ(MultiprocessBased):
                 trafo = O.GiscedataTransformadorTrafo.read(
                     item, fields_to_read)
 
-                codigo_ccuu = trafo['cnmc_tipo_instalacion'] or ''
+                if trafo['tipus_instalacio_cnmc_id']:
+                    id_ti = trafo.get('tipus_instalacio_cnmc_id')[0]
+                    codigo_ccuu = O.GiscedataTipusInstallacio.read(
+                        id_ti,
+                        fields_to_read)['name']
+                else:
+                    codigo_ccuu = ''
 
                 data_pm = ''
                 if trafo['data_pm']:
