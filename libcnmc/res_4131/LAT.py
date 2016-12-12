@@ -61,7 +61,7 @@ class LAT(MultiprocessBased):
             'baixa', 'data_pm', 'data_industria', 'coeficient', 'cini',
             'propietari', 'tensio_max_disseny', 'name', 'origen', 'final',
             'perc_financament', 'circuits', 'longitud_cad', 'cable',
-            'cnmc_tipo_instalacion', 'data_baixa', '4771_entregada'
+            'tipus_instalacio_cnmc_id', 'data_baixa', '4771_entregada'
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
@@ -123,8 +123,13 @@ class LAT(MultiprocessBased):
 
                     # Coeficient per ajustar longituds de trams
                     coeficient = tram.get('coeficient',1.0)
-
-                    codi_ccuu = tram.get('cnmc_tipo_instalacion', '')
+                    if tram.get('tipus_instalacio_cnmc_id', False):
+                        id_ti = tram.get('tipus_instalacio_cnmc_id')[0]
+                        codi_ccuu = O.GiscedataTipusInstallacio.read(
+                            id_ti,
+                            fields_to_read)['name']
+                    else:
+                        codi_ccuu = ''
 
                     #Agafem la tensió
                     if 'tensio_max_disseny' in tram :
@@ -198,10 +203,19 @@ class LAT(MultiprocessBased):
                     if tram['4771_entregada']:
                         data_4771 = tram['4771_entregada']
                         entregada = F1Res4771(**data_4771)
+                        if tram['tipus_instalacio_cnmc_id']:
+                            id_ti = tram['tipus_instalacio_cnmc_id'][0]
+                            ti = O.GiscedataTipusInstallacio.read(
+                                id_ti,
+                                fields_to_read)['name']
+                        else:
+                            ti = ''
                         actual = F1Res4771(
                             'A{0}'.format(tram['name']),
-                            tram['cini'], tram['origen'],
-                            tram['final'], tram['cnmc_tipo_instalacion'],
+                            tram['cini'],
+                            tram['origen'],
+                            tram['final'],
+                            ti,
                             comunitat, comunitat,
                             format_f(round(100 - int(tram.get('perc_financament', 0) or 0))),
                             data_pm, tram.get('circuits', 1) or 1, 1,
