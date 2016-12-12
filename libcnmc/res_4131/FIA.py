@@ -57,7 +57,7 @@ class FIA(MultiprocessBased):
         """
         O = self.connection
         fields_to_read = [
-            'name', 'cini', 'tipus_element', 'cnmc_tipo_instalacion',
+            'name', 'cini', 'tipus_element', 'tipus_instalacio_cnmc_id',
             'installacio', 'data_pm', 'data_baixa', 'tram_id', '4771_entregada'
         ]
         data_pm_limit= '{0}-01-01' .format(self.year + 1)
@@ -74,8 +74,14 @@ class FIA(MultiprocessBased):
 
                     cllt = O.GiscedataCellesTipusElement.read(
                         cll['tipus_element'][0], ['name'])
-
-                codigo_ccuu = cll['cnmc_tipo_instalacion']
+                print 'id:{} ti:{}'.format(cll['id'],cll['tipus_instalacio_cnmc_id'])
+                if cll['tipus_instalacio_cnmc_id']:
+                    id_cll = cll['tipus_instalacio_cnmc_id'][0]
+                    codigo_ccuu = O.GiscedataTipusInstallacio.read(
+                        id_cll,
+                        fields_to_read)['name']
+                else:
+                    codigo_ccuu = ''
 
 
                 #Instal·lació a la que pertany
