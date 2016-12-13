@@ -58,7 +58,7 @@ class CTS(MultiprocessBased):
         """
         O = self.connection
         fields_to_read = [
-            'name', 'cini', 'data_pm', 'cnmc_tipo_instalacion', 'id_municipi',
+            'name', 'cini', 'data_pm', 'tipus_instalacio_cnmc_id', 'id_municipi',
             'perc_financament', 'descripcio', 'data_baixa', '4771_entregada'
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
@@ -107,11 +107,18 @@ class CTS(MultiprocessBased):
                 if ct['4771_entregada']:
                     data_4771 = ct['4771_entregada']
                     entregada = F8Res4771(**data_4771)
+                    if ct['tipus_instalacio_cnmc_id']:
+                        id_ti = ct['tipus_instalacio_cnmc_id'][0]
+                        ti = O.GiscedataTipusInstallacio.read(
+                            id_ti,
+                            fields_to_read)['name']
+                    else:
+                        ti = ''
                     actual = F8Res4771(
                         ct['name'],
                         ct['cini'],
                         ct['descripcio'],
-                        str(ct['cnmc_tipo_instalacion']),
+                        str(ti),
                         comunitat_codi,
                         format_f(round(100 - int(ct['perc_financament']))),
                         data_pm
@@ -122,12 +129,19 @@ class CTS(MultiprocessBased):
                         estado = '1'
                 else:
                     estado = '2'
+                if ct['tipus_instalacio_cnmc_id']:
+                    id_ti = ct['tipus_instalacio_cnmc_id'][0]
+                    ti = O.GiscedataTipusInstallacio.read(
+                        id_ti,
+                        fields_to_read)['name']
 
+                else:
+                    ti = ''
                 output = [
                     '{0}'.format(ct['name']),
                     ct['cini'] or '',
                     ct['descripcio'] or '',
-                    str(ct['cnmc_tipo_instalacion']) or '',
+                    str(ti),
                     comunitat_codi or '',
                     format_f(round(100 - int(ct['perc_financament']))),
                     data_pm,

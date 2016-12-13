@@ -92,7 +92,7 @@ class POS(MultiprocessBased):
         O = self.connection
         fields_to_read = [
             'name', 'cini', 'data_pm', 'subestacio_id',
-            'cnmc_tipo_instalacion', 'perc_financament', 'tensio', 'data_baixa',
+            'tipus_instalacio_cnmc_id', 'perc_financament', 'tensio', 'data_baixa',
             '4771_entregada'
         ]
         not_found_msg = '**** ERROR: El ct {0} (id:{1}) no està a giscedata_cts_subestacions_posicio.\n'
@@ -119,7 +119,14 @@ class POS(MultiprocessBased):
                     data_pm = data_pm.strftime('%d/%m/%Y')
 
                 #Codi tipus de instalació
-                codigo_ccuu = pos['cnmc_tipo_instalacion']
+                if pos['tipus_instalacio_cnmc_id']:
+                    id_ti = pos.get('tipus_instalacio_cnmc_id')[0]
+                    codigo_ccuu = O.GiscedataTipusInstallacio.read(
+                        id_ti,
+                        fields_to_read)['name']
+                else:
+                    codigo_ccuu = ''
+
 
                 comunitat = ''
 
