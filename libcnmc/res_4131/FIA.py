@@ -74,7 +74,6 @@ class FIA(MultiprocessBased):
 
                     cllt = O.GiscedataCellesTipusElement.read(
                         cll['tipus_element'][0], ['name'])
-                print 'id:{} ti:{}'.format(cll['id'],cll['tipus_instalacio_cnmc_id'])
                 if cll['tipus_instalacio_cnmc_id']:
                     id_cll = cll['tipus_instalacio_cnmc_id'][0]
                     codigo_ccuu = O.GiscedataTipusInstallacio.read(
