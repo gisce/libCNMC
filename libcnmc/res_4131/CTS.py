@@ -107,18 +107,12 @@ class CTS(MultiprocessBased):
                 if ct['4771_entregada']:
                     data_4771 = ct['4771_entregada']
                     entregada = F8Res4771(**data_4771)
-                    if ct['tipus_instalacio_cnmc_id']:
-                        id_ti = ct['tipus_instalacio_cnmc_id'][0]
-                        ti = O.GiscedataTipusInstallacio.read(
-                            id_ti,
-                            fields_to_read)['name']
-                    else:
-                        ti = ''
+
                     actual = F8Res4771(
                         ct['name'],
                         ct['cini'],
                         ct['descripcio'],
-                        str(ti),
+                        str(ct['cnmc_tipo_instalacion']),
                         comunitat_codi,
                         format_f(round(100 - int(ct['perc_financament']))),
                         data_pm
@@ -133,7 +127,7 @@ class CTS(MultiprocessBased):
                     id_ti = ct['tipus_instalacio_cnmc_id'][0]
                     ti = O.GiscedataTipusInstallacio.read(
                         id_ti,
-                        fields_to_read)['name']
+                        ['name'])['name']
 
                 else:
                     ti = ''

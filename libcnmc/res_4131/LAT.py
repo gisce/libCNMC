@@ -127,7 +127,7 @@ class LAT(MultiprocessBased):
                         id_ti = tram.get('tipus_instalacio_cnmc_id')[0]
                         codi_ccuu = O.GiscedataTipusInstallacio.read(
                             id_ti,
-                            fields_to_read)['name']
+                            ['name'])['name']
                     else:
                         codi_ccuu = ''
 
@@ -207,7 +207,7 @@ class LAT(MultiprocessBased):
                             id_ti = tram['tipus_instalacio_cnmc_id'][0]
                             ti = O.GiscedataTipusInstallacio.read(
                                 id_ti,
-                                fields_to_read)['name']
+                                ['name'])['name']
                         else:
                             ti = ''
                         actual = F1Res4771(
