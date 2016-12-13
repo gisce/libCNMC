@@ -131,7 +131,7 @@ class LBT(MultiprocessBased):
                     id_ti = linia.get('tipus_instalacio_cnmc_id')[0]
                     codi_ccuu = O.GiscedataTipusInstallacio.read(
                         id_ti,
-                        fields_to_read)['name']
+                        ['name'])['name']
                 else:
                     codi_ccuu = ''
 

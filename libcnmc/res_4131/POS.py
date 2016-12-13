@@ -123,7 +123,7 @@ class POS(MultiprocessBased):
                     id_ti = pos.get('tipus_instalacio_cnmc_id')[0]
                     codigo_ccuu = O.GiscedataTipusInstallacio.read(
                         id_ti,
-                        fields_to_read)['name']
+                        ['name'])['name']
                 else:
                     codigo_ccuu = ''
 

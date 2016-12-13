@@ -78,7 +78,7 @@ class FIA(MultiprocessBased):
                     id_cll = cll['tipus_instalacio_cnmc_id'][0]
                     codigo_ccuu = O.GiscedataTipusInstallacio.read(
                         id_cll,
-                        fields_to_read)['name']
+                        ['name'])['name']
                 else:
                     codigo_ccuu = ''
 
@@ -122,7 +122,6 @@ class FIA(MultiprocessBased):
                     ccaa = str(ccaa)
                     while len(ccaa) < 2:
                         ccaa = '0' + ccaa
-
 
                 if cll['data_baixa']:
                     if cll['data_baixa'] < data_pm_limit:
