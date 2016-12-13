@@ -111,7 +111,7 @@ class CTS(MultiprocessBased):
                         id_ti = ct['tipus_instalacio_cnmc_id'][0]
                         ti = O.GiscedataTipusInstallacio.read(
                             id_ti,
-                            fields_to_read)['name']
+                            ['name'])['name']
                     else:
                         ti = ''
                     actual = F8Res4771(
