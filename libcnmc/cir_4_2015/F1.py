@@ -259,7 +259,7 @@ class F1(MultiprocessBased):
                     o_connexio,
                     o_tensio,
                     o_estat_contracte,
-                    format_f(o_potencia, decimals=3),
+                    format_f(o_potencia or '0.0', decimals=3),
                     format_f(o_potencia_facturada, decimals=3),
                     format_f(o_pot_ads or o_potencia or '0.0', decimals=3),
                     format_f(o_anual_activa, decimals=3),
