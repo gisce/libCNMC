@@ -14,11 +14,13 @@ class F4Res4131(CNMCModel):
         ('identificador', String()),
         ('cini', String()),
         ('denominacion', String()),
-        ('codigo_tipo_posicion', String()),
+        ('codigo_ccuu', String()),
         ('codigo_ccaa', Integer()),
         ('nivel_tension', Decimal(2)),
         ('participacion', Decimal(2)),
         ('fecha_aps', String()),
+        ('fecha_baja', String()),
+        ('estado', Integer()),
     ])
 
     @property

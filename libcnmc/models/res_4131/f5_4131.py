@@ -14,13 +14,15 @@ class F5Res4131(CNMCModel):
         ('identificador', String()),
         ('cini', String()),
         ('denominacion', String()),
-        ('codigo_tipo_maquina', String()),
+        ('codigo_ccuu', String()),
         ('codigo_ccaa', Integer()),
         ('tension_primario', Decimal(2)),
         ('tension_secundario', Decimal(2)),
         ('participacion', Decimal(2)),
         ('fecha_aps', String()),
-        ('capacidad', Decimal(2))
+        ('fecha_baja', String()),
+        ('capacidad', Decimal(2)),
+        ('estado', Integer())
     ])
 
     @property

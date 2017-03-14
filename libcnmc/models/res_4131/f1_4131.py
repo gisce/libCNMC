@@ -13,11 +13,12 @@ class F1Res4131(CNMCModel):
         ('cini', String()),
         ('origen', String()),
         ('destino', String()),
-        ('codigo_tipo_linea', String()),
+        ('codigo_ccuu', String()),
         ('codigo_ccaa_1', Integer()),
         ('codigo_ccaa_2', Integer()),
         ('participacion', Decimal(2)),
         ('fecha_aps', String()),
+        ('fecha_baja', String()),
         ('numero_circuitos', Integer()),
         ('numero_conductores', Integer()),
         ('nivel_tension', Decimal(2)),
@@ -25,7 +26,8 @@ class F1Res4131(CNMCModel):
         ('intensidad_maxima', Decimal(2)),
         ('seccion', Decimal(2)),
         ('capacidad', Integer()),
-        ('propiedad', Integer())
+        ('propiedad', Integer()),
+        ('estado', Integer())
         ])
 
     @property

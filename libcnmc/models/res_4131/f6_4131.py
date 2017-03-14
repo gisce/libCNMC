@@ -15,8 +15,10 @@ class F6Res4131(CNMCModel):
         ('identificador', String()),
         ('cini', String()),
         ('denominacion', String()),
-        ('anio_aps', String()),
-        ('valor_inversion', Integer())
+        ('fecha_aps', String()),
+        ('fecha_baja', String()),
+        ('valor_inversion', Integer()),
+        ('estado', Integer())
     ])
 
     @property

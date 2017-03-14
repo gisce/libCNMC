@@ -14,10 +14,12 @@ class F8Res4131(CNMCModel):
         ('identificador', String()),
         ('cini', String()),
         ('denominacion', String()),
-        ('codigo_tipo_ct', String()),
+        ('codigo_ccuu', String()),
         ('codigo_ccaa', Integer()),
         ('participacion', Decimal(2)),
-        ('fecha_aps', String())
+        ('fecha_aps', String()),
+        ('fecha_baja', String()),
+        ('estado', Integer())
     ])
 
     @property

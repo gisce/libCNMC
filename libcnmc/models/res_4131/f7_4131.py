@@ -14,9 +14,11 @@ class F7Res4131(CNMCModel):
         ('identificador', String()),
         ('cini', String()),
         ('elemento_act', String()),
-        ('codigo_tipo_inst', String()),
+        ('codigo_ccuu', String()),
         ('codigo_ccaa', Integer()),
-        ('fecha_aps', String())
+        ('fecha_aps', String()),
+        ('fecha_baja', String()),
+        ('estado', Integer())
     ])
 
     @property

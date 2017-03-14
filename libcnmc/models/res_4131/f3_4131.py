@@ -17,7 +17,9 @@ class F3Res4131(CNMCModel):
         ('codigo_ccaa', Integer()),
         ('participacion', Decimal(2)),
         ('fecha_aps', String()),
-        ('posiciones', Integer())
+        ('fecha_baja', String()),
+        ('posiciones', Integer()),
+        ('estado', Integer())
     ])
 
     @property
