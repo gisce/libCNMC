@@ -1,7 +1,9 @@
-from cnmcmodel import CNMCModel
+from __future__ import absolute_import
+from libcnmc.models.cnmcmodel import CNMCModel
+
 from collections import OrderedDict
 
-from .fields import String, Integer, Decimal
+from libcnmc.models.fields import String, Integer, Decimal
 
 
 class F4Res4131(CNMCModel):

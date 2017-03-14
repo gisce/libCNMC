@@ -1,8 +1,8 @@
 from __future__ import absolute_import
 from collections import OrderedDict
 
-from .cnmcmodel import CNMCModel
-from .fields import String, Integer, Decimal
+from libcnmc.models.cnmcmodel import CNMCModel
+from libcnmc.models.fields import String, Integer, Decimal
 
 
 class F2Res4771(CNMCModel):
