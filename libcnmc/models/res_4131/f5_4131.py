@@ -16,12 +16,12 @@ class F5Res4131(CNMCModel):
         ('denominacion', String()),
         ('codigo_ccuu', String()),
         ('codigo_ccaa', Integer()),
-        ('tension_primario', Decimal(2)),
-        ('tension_secundario', Decimal(2)),
-        ('participacion', Decimal(2)),
+        ('tension_primario', Decimal(3)),
+        ('tension_secundario', Decimal(3)),
+        ('participacion', Decimal(3)),
         ('fecha_aps', String()),
         ('fecha_baja', String()),
-        ('capacidad', Decimal(2)),
+        ('capacidad', Decimal(3)),
         ('estado', Integer())
     ])
 

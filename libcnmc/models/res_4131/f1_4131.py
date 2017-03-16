@@ -21,10 +21,10 @@ class F1Res4131(CNMCModel):
         ('fecha_baja', String()),
         ('numero_circuitos', Integer()),
         ('numero_conductores', Integer()),
-        ('nivel_tension', Decimal(2)),
+        ('nivel_tension', Decimal(3)),
         ('longitud', Decimal(3)),
-        ('intensidad_maxima', Decimal(2)),
-        ('seccion', Decimal(2)),
+        ('intensidad_maxima', Decimal(3)),
+        ('seccion', Decimal(3)),
         ('capacidad', Integer()),
         ('propiedad', Integer()),
         ('estado', Integer())

@@ -16,7 +16,7 @@ class F8Res4131(CNMCModel):
         ('denominacion', String()),
         ('codigo_ccuu', String()),
         ('codigo_ccaa', Integer()),
-        ('participacion', Decimal(2)),
+        ('participacion', Decimal(3)),
         ('fecha_aps', String()),
         ('fecha_baja', String()),
         ('estado', Integer())

@@ -15,7 +15,7 @@ class F3Res4131(CNMCModel):
         ('cini', String()),
         ('denominacion', String()),
         ('codigo_ccaa', Integer()),
-        ('participacion', Decimal(2)),
+        ('participacion', Decimal(3)),
         ('fecha_aps', String()),
         ('fecha_baja', String()),
         ('posiciones', Integer()),
