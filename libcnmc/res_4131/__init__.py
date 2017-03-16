@@ -1,4 +1,4 @@
-from LAT import LAT
+from LAT import LAT, LAT_2016
 from LBT import LBT
 from SUB import SUB
 from POS import POS
