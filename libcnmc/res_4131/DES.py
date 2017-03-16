@@ -4,12 +4,13 @@
 """
 INVENTARI DE CNMC Despatxos
 """
+from __future__ import absolute_import
 from datetime import datetime
 import traceback
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import format_f
-from libcnmc.models.f6_4771 import F6Res4771
+from libcnmc.models import F6Res4771
 
 
 class DES(MultiprocessBased):

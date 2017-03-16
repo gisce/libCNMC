@@ -4,6 +4,7 @@
 """
 INVENTARI DE CNMC AT
 """
+from __future__ import absolute_import
 from datetime import datetime
 import traceback
 import math
@@ -11,7 +12,7 @@ import time
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import format_f, tallar_text
-from libcnmc.models.f1_4771 import F1Res4771
+from libcnmc.models import F1Res4771
 
 
 class LAT(MultiprocessBased):

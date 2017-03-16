@@ -4,6 +4,7 @@
 """
 INVENTARI DE CNMC BT
 """
+from __future__ import absolute_import
 from datetime import datetime
 import traceback
 import math
@@ -11,7 +12,7 @@ import sys
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import format_f, tallar_text
-from libcnmc.models.f2_4771 import F2Res4771
+from libcnmc.models import F2Res4771
 
 QUIET = False
 

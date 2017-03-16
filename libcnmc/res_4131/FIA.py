@@ -4,12 +4,13 @@
 """
 INVENTARI DE CNMC Equips de fiabilitat
 """
+from __future__ import absolute_import
 from datetime import datetime
 import traceback
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import get_id_expedient
-from libcnmc.models.f7_4771 import F7Res4771
+from libcnmc.models import F7Res4771
 
 
 class FIA(MultiprocessBased):

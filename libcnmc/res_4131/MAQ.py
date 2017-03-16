@@ -4,6 +4,7 @@
 """
 INVENTARI DE CNMC Maquines
 """
+from __future__ import absolute_import
 import sys
 from datetime import datetime
 import traceback
@@ -11,7 +12,7 @@ from operator import itemgetter
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import get_id_municipi_from_company, format_f
-from libcnmc.models.f5_4771 import F5Res4771
+from libcnmc.models import F5Res4771
 
 
 class MAQ(MultiprocessBased):

@@ -4,13 +4,14 @@
 """
 INVENTARI DE CNMC Posicions
 """
+from __future__ import absolute_import
 from datetime import datetime
 import traceback
 import sys
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import get_id_municipi_from_company, format_f
-from libcnmc.models.f4_4771 import F4Res4771
+from libcnmc.models import F4Res4771
 
 QUIET = False
 

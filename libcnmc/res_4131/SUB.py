@@ -4,13 +4,14 @@
 """
 INVENTARI DE CNMC Subestacions
 """
+from __future__ import absolute_import
 from datetime import datetime
 import traceback
 import sys
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import get_id_municipi_from_company, format_f
-from libcnmc.models.f3_4771 import F3Res4771
+from libcnmc.models import F3Res4771
 
 QUIET = False
 
