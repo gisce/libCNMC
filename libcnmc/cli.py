@@ -1531,8 +1531,12 @@ def res_4131_lbt(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_cts(**kwargs):
-    from libcnmc.res_4131 import CTS
-    res_lat(CTS, **kwargs)
+    from libcnmc.res_4131 import CTS, CTS_2016
+    if kwargs['year'] == 2016:
+        res_lat(CTS_2016, **kwargs)
+    else:
+        res_lat(CTS, **kwargs)
+
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
@@ -1659,7 +1663,7 @@ def res_4131_des(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_fia(**kwargs):
-    from libcnmc.res_4131 import FIA
+    from libcnmc.res_4131 import FIA, FIA_2016
     if kwargs['year'] == 2016:
         res_lat(FIA_2016, **kwargs)
     else:

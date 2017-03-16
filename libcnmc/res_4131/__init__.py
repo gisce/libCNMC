@@ -5,5 +5,5 @@ from POS import POS, POS_2016
 from MAQ import MAQ, MAQ_2016
 from DES import DES, DES_2016
 from FIA import FIA, FIA_2016
-from CTS import CTS
+from CTS import CTS, CTS_2016
 from CON import CON
