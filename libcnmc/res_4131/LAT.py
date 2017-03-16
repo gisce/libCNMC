@@ -513,10 +513,10 @@ class LAT(MultiprocessBased):
                         fecha_baja or '',
                         tram.get('circuits', 1) or 1,
                         1,
-                        format_f(tensio),
+                        format_f(tensio, 3),
                         format_f(longitud, 3),
-                        format_f(cable.get('intensitat_admisible', 0) or 0),
-                        format_f(cable.get('seccio', 0) or 0),
+                        format_f(cable.get('intensitat_admisible', 0) or 0, 3),
+                        format_f(cable.get('seccio', 0) or 0, 3),
                         capacitat,
                         propietari,
                         estado
