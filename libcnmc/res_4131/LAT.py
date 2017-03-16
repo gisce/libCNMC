@@ -26,7 +26,7 @@ class LAT_2016(MultiprocessBased):
         :param kwargs: year(generation year), codi_r1 R1 code
         :return: CT
         """
-        super(LAT, self).__init__(**kwargs)
+        super(LAT_2016, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies AT'
