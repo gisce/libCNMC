@@ -314,7 +314,8 @@ class LAT(MultiprocessBased):
             'baixa', 'data_pm', 'data_industria', 'coeficient', 'cini',
             'propietari', 'tensio_max_disseny', 'name', 'origen', 'final',
             'perc_financament', 'circuits', 'longitud_cad', 'cable',
-            'tipus_instalacio_cnmc_id', 'data_baixa', '4131_entregada_2016'
+            'tipus_instalacio_cnmc_id', 'data_baixa', '4131_entregada_2016',
+            'baixa', 'data_baixa'
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
@@ -373,6 +374,13 @@ class LAT(MultiprocessBased):
                         data_pm = datetime.strptime(str(tram['data_pm']),
                                                     '%Y-%m-%d')
                         data_pm = data_pm.strftime('%d/%m/%Y')
+
+                    # Calculem la data de baixa
+                    data_baixa = ''
+                    if tram['data_baixa'] and tram['baixa']:
+                        data_baixa = datetime.strptime(str(tram['data_baixa']),
+                                                    '%Y-%m-%d')
+                        data_baixa = data_baixa.strftime('%d/%m/%Y')
 
                     # Coeficient per ajustar longituds de trams
                     coeficient = tram.get('coeficient',1.0)
@@ -455,7 +463,7 @@ class LAT(MultiprocessBased):
 
                     if tram['4131_entregada_2016']:
                         data_4131 = tram['4131_entregada_2016']
-                        entregada = F1Res4771(**data_4131)
+                        entregada = F1Res4131(**data_4131)
                         if tram['tipus_instalacio_cnmc_id']:
                             id_ti = tram['tipus_instalacio_cnmc_id'][0]
                             ti = O.GiscedataTipusInstallacio.read(
@@ -471,13 +479,16 @@ class LAT(MultiprocessBased):
                             ti,
                             comunitat, comunitat,
                             format_f(round(100 - int(tram.get('perc_financament', 0) or 0))),
-                            data_pm, tram.get('circuits', 1) or 1, 1,
+                            data_pm,
+                            data_baixa,
+                            tram.get('circuits', 1) or 1, 1,
                             tensio,
                             format_f(longitud, 3),
                             format_f(cable.get('intensitat_admisible', 0) or 0),
                             format_f(float(cable.get('seccio', 0)), 2),
                             str(capacitat),
-                            propietari
+                            propietari,
+                            0
                         )
                         if actual == entregada:
                             estado = 0
