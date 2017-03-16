@@ -49,6 +49,12 @@ class CNMCModel(object):
         return 1
 
     def __init__(self, *values, **kwvalues):
+        """
+        CNMCModel constructor
+
+        :param values:
+        :param kwvalues:
+        """
         self.validator = CNMCValidator(self.schema)
         stored = namedtuple('{0}_store'.format(self.__class__.__name__), self.fields)
         self.store = stored(*values, **kwvalues)
