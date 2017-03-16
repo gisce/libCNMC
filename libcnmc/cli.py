@@ -1660,7 +1660,10 @@ def res_4131_des(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_fia(**kwargs):
     from libcnmc.res_4131 import FIA
-    res_lat(FIA, **kwargs)
+    if kwargs['year'] == 2016:
+        res_lat(FIA_2016, **kwargs)
+    else:
+        res_lat(FIA, **kwargs)
 
 
 @cnmc.command()
