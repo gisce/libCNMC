@@ -98,16 +98,17 @@ class LAT_2016(MultiprocessBased):
                     [('name', '=', 'DESCONEGUT')])
 
                 if not id_desconegut:
+                    search_params_cab = [('name', '=', 'DESCONOCIDO')]
                     id_desconegut = O.GiscedataAtCables.search(
-                    [('name', '=', 'DESCONOCIDO')])[0]
+                        search_params_cab)[0]
                 for tram in O.GiscedataAtTram.read(ids, fields_to_read):
                     # Comprovar el tipus del cable
                     if 'cable' in tram:
-                        cable = O.GiscedataAtCables.read(tram['cable'][0],
-                                                     ['tipus'])
+                        t_cab = tram['cable'][0]
+                        cable = O.GiscedataAtCables.read(t_cab, ['tipus'])
                         if not self.embarrats and cable['tipus']:
                             tipus = O.GiscedataAtTipuscable.read(
-                                        cable['tipus'][0], ['codi']
+                                cable['tipus'][0], ['codi']
                             )
                             # Si el tram tram es embarrat no l'afegim
                             if tipus['codi'] == 'E':
@@ -124,7 +125,7 @@ class LAT_2016(MultiprocessBased):
                         data_pm = data_pm.strftime('%d/%m/%Y')
 
                     # Coeficient per ajustar longituds de trams
-                    coeficient = tram.get('coeficient',1.0)
+                    coeficient = tram.get('coeficient', 1.0)
                     if tram.get('tipus_instalacio_cnmc_id', False):
                         id_ti = tram.get('tipus_instalacio_cnmc_id')[0]
                         codi_ccuu = O.GiscedataTipusInstallacio.read(
@@ -134,7 +135,7 @@ class LAT_2016(MultiprocessBased):
                         codi_ccuu = ''
 
                     #Agafem la tensió
-                    if 'tensio_max_disseny' in tram :
+                    if 'tensio_max_disseny' in tram:
                         tensio = tram['tensio_max_disseny'] / 1000.0
                     elif 'tensio' in linia:
                         tensio = linia['tensio'] / 1000.0
@@ -182,10 +183,11 @@ class LAT_2016(MultiprocessBased):
                         longitud = 0
                     if not origen or not final:
                         res = O.GiscegisEdge.search(
-                            [('id_linktemplate', '=', tram['name']),
-                             ('layer', 'not ilike', self.layer),
-                             ('layer', 'not ilike', 'EMBARRA%BT%')
-                             ])
+                            [
+                                ('id_linktemplate', '=', tram['name']),
+                                ('layer', 'not ilike', self.layer),
+                                ('layer', 'not ilike', 'EMBARRA%BT%')
+                            ])
                         if not res or len(res) > 1:
                             edge = {'start_node': (0, '{0}_0'.format(tram.get('name'))),
                                     'end_node': (0, '{0}_1'.format(tram.get('name')))}
@@ -200,7 +202,7 @@ class LAT_2016(MultiprocessBased):
                                 tram.get('data_baixa'), '%Y-%m-%d')
                             fecha_baja = tmp_date.strftime('%d/%m/%Y')
                     else:
-                       fecha_baja = ''
+                        fecha_baja = ''
 
                     if tram['4771_entregada']:
                         data_4771 = tram['4771_entregada']
@@ -351,15 +353,15 @@ class LAT(MultiprocessBased):
 
                 if not id_desconegut:
                     id_desconegut = O.GiscedataAtCables.search(
-                    [('name', '=', 'DESCONOCIDO')])[0]
+                        [('name', '=', 'DESCONOCIDO')])[0]
                 for tram in O.GiscedataAtTram.read(ids, fields_to_read):
                     # Comprovar el tipus del cable
                     if 'cable' in tram:
-                        cable = O.GiscedataAtCables.read(tram['cable'][0],
-                                                     ['tipus'])
+                        cable = O.GiscedataAtCables.read(
+                            tram['cable'][0], ['tipus'])
                         if not self.embarrats and cable['tipus']:
                             tipus = O.GiscedataAtTipuscable.read(
-                                        cable['tipus'][0], ['codi']
+                                cable['tipus'][0], ['codi']
                             )
                             # Si el tram tram es embarrat no l'afegim
                             if tipus['codi'] == 'E':
@@ -379,11 +381,11 @@ class LAT(MultiprocessBased):
                     data_baixa = ''
                     if tram['data_baixa'] and tram['baixa']:
                         data_baixa = datetime.strptime(str(tram['data_baixa']),
-                                                    '%Y-%m-%d')
+                                                       '%Y-%m-%d')
                         data_baixa = data_baixa.strftime('%d/%m/%Y')
 
                     # Coeficient per ajustar longituds de trams
-                    coeficient = tram.get('coeficient',1.0)
+                    coeficient = tram.get('coeficient', 1.0)
                     if tram.get('tipus_instalacio_cnmc_id', False):
                         id_ti = tram.get('tipus_instalacio_cnmc_id')[0]
                         codi_ccuu = O.GiscedataTipusInstallacio.read(
@@ -393,7 +395,7 @@ class LAT(MultiprocessBased):
                         codi_ccuu = ''
 
                     #Agafem la tensió
-                    if 'tensio_max_disseny' in tram :
+                    if 'tensio_max_disseny' in tram:
                         tensio = tram['tensio_max_disseny'] / 1000.0
                     elif 'tensio' in linia:
                         tensio = linia['tensio'] / 1000.0
@@ -441,10 +443,11 @@ class LAT(MultiprocessBased):
                         longitud = 0
                     if not origen or not final:
                         res = O.GiscegisEdge.search(
-                            [('id_linktemplate', '=', tram['name']),
-                             ('layer', 'not ilike', self.layer),
-                             ('layer', 'not ilike', 'EMBARRA%BT%')
-                             ])
+                            [
+                                ('id_linktemplate', '=', tram['name']),
+                                ('layer', 'not ilike', self.layer),
+                                ('layer', 'not ilike', 'EMBARRA%BT%')
+                            ])
                         if not res or len(res) > 1:
                             edge = {'start_node': (0, '{0}_0'.format(tram.get('name'))),
                                     'end_node': (0, '{0}_1'.format(tram.get('name')))}
@@ -459,7 +462,7 @@ class LAT(MultiprocessBased):
                                 tram.get('data_baixa'), '%Y-%m-%d')
                             fecha_baja = tmp_date.strftime('%d/%m/%Y')
                     else:
-                       fecha_baja = ''
+                        fecha_baja = ''
 
                     if tram['4131_entregada_2016']:
                         data_4131 = tram['4131_entregada_2016']
