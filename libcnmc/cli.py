@@ -1631,8 +1631,11 @@ def res_4131_maq(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_des(**kwargs):
-    from libcnmc.res_4131 import DES
-    res_lat(DES, **kwargs)
+    from libcnmc.res_4131 import DES, DES_2016
+    if kwargs['year'] == 2016:
+        res_lat(DES_2016, **kwargs)
+    else:
+        res_lat(DES, **kwargs)
 
 
 @cnmc.command()
