@@ -1603,9 +1603,11 @@ def res_4131_pos(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_maq(**kwargs):
-    from libcnmc.res_4131 import MAQ
-    res_lat(MAQ, **kwargs)
-
+    from libcnmc.res_4131 import MAQ, MAQ_2016
+    if kwargs['yerar'] == 2016:
+        res_lat(MAQ_2016, **kwargs)
+    else:
+        res_lat(MAQ, **kwargs)
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
