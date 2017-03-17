@@ -292,7 +292,7 @@ class SUB(MultiprocessBased):
                     sub['cini'] or '',
                     sub['descripcio'] or '',
                     comunitat,
-                    format_f(round(100 - int(sub['perc_financament']))),
+                    format_f(round(100 - int(sub['perc_financament'])), 3),
                     data_pm,
                     fecha_baja,
                     num_pos,
