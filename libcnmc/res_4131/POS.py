@@ -378,8 +378,8 @@ class POS(MultiprocessBased):
                     denominacio,
                     codigo_ccuu,
                     comunitat,
-                    format_f(tensio),
-                    format_f(round(100 - int(pos['perc_financament']))),
+                    format_f(tensio, 3),
+                    format_f(round(100 - int(pos['perc_financament'])), 3),
                     data_pm or '',
                     fecha_baja,
                     estado
