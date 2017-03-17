@@ -278,7 +278,7 @@ class LBT(MultiprocessBased):
         fields_to_read = [
             'name', 'municipi', 'data_pm', 'ct', 'coeficient', 'cini',
             'perc_financament', 'longitud_cad', 'cable', 'voltatge',
-            'data_alta', 'propietari', 'tipus_instalacio_cnmc_id',
+            'data_alta', 'propietari', 'tipus_instalacio_cnmc_id', 'baixa',
             'data_baixa', '4131_entregada_2016'
         ]
         data_baixa_limit = '{0}-01-01'.format(self.year)
@@ -327,6 +327,11 @@ class LBT(MultiprocessBased):
                     data_pm_linia = datetime.strptime(str(linia['data_pm']),
                                                       '%Y-%m-%d')
                     data_pm = data_pm_linia.strftime('%d/%m/%Y')
+                data_baixa = ''
+                if linia['baixa'] and linia['data_baixa']:
+                    data_baixa = datetime.strptime(str(linia['data_baixa']),
+                                                      '%Y-%m-%d')
+                    data_baixa = data_baixa.strftime('%d/%m/%Y')
 
                 # Coeficient per ajustar longituds de trams
                 coeficient = linia['coeficient'] or 1.0
@@ -391,6 +396,7 @@ class LBT(MultiprocessBased):
                         comunitat,
                         format_f(round(100 - int(linia['perc_financament']))),
                         data_pm,
+                        data_baixa,
                         1,
                         1,
                         format_f(tensio),
@@ -398,7 +404,9 @@ class LBT(MultiprocessBased):
                         format_f(intensitat),
                         format_f(float(cable['seccio']),2),
                         format_f(capacitat),
-                        propietari)
+                        propietari,
+                        0
+                    )
                     if actual == entregada:
                         estado = 0
                     else:
