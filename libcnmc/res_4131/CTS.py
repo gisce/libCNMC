@@ -279,7 +279,7 @@ class CTS(MultiprocessBased):
                     ct['descripcio'] or '',
                     str(ti),
                     comunitat_codi or '',
-                    format_f(round(100 - int(ct['perc_financament']))),
+                    format_f(round(100 - int(ct['perc_financament'])), 3),
                     data_pm,
                     fecha_baja,
                     estado
