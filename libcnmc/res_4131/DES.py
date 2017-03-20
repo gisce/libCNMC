@@ -162,7 +162,7 @@ class DES(MultiprocessBased):
                     despatx['denominacio'] or '',
                     data_apm,
                     fecha_baja,
-                    format_f(despatx['vai']),
+                    format_f(despatx['vai'], 3),
                     estado
                 ]
 
