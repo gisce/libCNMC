@@ -27,7 +27,7 @@ class F3Res4131(CNMCModel):
         return self.store.identificador
 
     def __cmp__(self, other):
-        comp_fields = []
+        comp_fields = ['cini', 'participacion']
         if self.diff(other, comp_fields):
             return True
         else:
