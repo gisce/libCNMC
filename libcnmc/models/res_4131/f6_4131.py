@@ -26,7 +26,7 @@ class F6Res4131(CNMCModel):
         return self.store.identificador
 
     def __cmp__(self, other):
-        comp_fields = []
+        comp_fields = ['cini']
         if self.diff(other, comp_fields):
             return True
         else:
