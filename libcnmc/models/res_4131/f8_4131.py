@@ -27,7 +27,7 @@ class F8Res4131(CNMCModel):
         return self.store.identificador
 
     def __cmp__(self, other):
-        comp_fields = ['cini']
+        comp_fields = ['cini', 'codigo_ccuu']
         if self.diff(other, comp_fields):
             return True
         else:
