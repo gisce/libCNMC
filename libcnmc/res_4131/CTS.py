@@ -108,11 +108,16 @@ class CTS(MultiprocessBased):
                     data_4771 = ct['4771_entregada']
                     entregada = F8Res4771(**data_4771)
 
+                    id_ti = ct['tipus_instalacio_cnmc_id'][0]
+                    ti = O.GiscedataTipusInstallacio.read(
+                        id_ti,
+                        ['name'])['name']
+
                     actual = F8Res4771(
                         ct['name'],
                         ct['cini'],
                         ct['descripcio'],
-                        str(ct['cnmc_tipo_instalacion']),
+                        ti,
                         comunitat_codi,
                         format_f(round(100 - int(ct['perc_financament']))),
                         data_pm
