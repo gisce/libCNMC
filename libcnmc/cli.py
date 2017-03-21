@@ -1583,8 +1583,11 @@ def res_4131_sub(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_pos(**kwargs):
-    from libcnmc.res_4131 import POS
-    res_lat(POS, **kwargs)
+    from libcnmc.res_4131 import POS, POS_2016
+    if kwargs['year'] == 2016:
+        res_lat(POS_2016, **kwargs)
+    else:
+        res_lat(POS, **kwargs)
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
