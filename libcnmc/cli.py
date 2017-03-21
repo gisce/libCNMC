@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import click
 from datetime import datetime
+import os
+import tempfile
 
 from libcnmc.utils import N_PROC
 from libcnmc.core import UpdateCNMCStats, UpdateCINISComptador
@@ -179,7 +181,7 @@ def cir_4_2014_f11(**kwargs):
     proc.calc()
 
 
-#CSV LAT
+# CSV LAT
 def res_lat(LAT, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
@@ -195,6 +197,66 @@ def res_lat(LAT, **kwargs):
         embarrats=kwargs['embarrats']
     )
     proc.calc()
+
+
+# CSV POS
+def res_pos2(proc1, proc2, **kwargs):
+    """
+
+    :param proc1: generation proces 1
+    :param proc2: generation proces 1
+    :param kwargs:
+    :return:
+    """
+
+    O = OOOPFactory(dbname=kwargs["database"], user=kwargs["user"],
+                    pwd=kwargs["password"], port=kwargs["port"],
+                    uri=kwargs["server"])
+    output = kwargs["output"]
+    temp_fd = tempfile.NamedTemporaryFile()
+
+    tmp_out1 = temp_fd.name
+    temp_fd.close()
+    temp_fd = tempfile.NamedTemporaryFile()
+    tmp_out2 = temp_fd.name
+    temp_fd.close()
+
+    proc = proc1(
+        quiet=kwargs["quiet"],
+        interactive=kwargs["interactive"],
+        output=tmp_out1,
+        connection=O,
+        num_proc=kwargs["num_proc"],
+        codi_r1=kwargs["codi_r1"],
+        year=kwargs["year"],
+        embarrats=kwargs["embarrats"]
+    )
+    proc.calc()
+
+    proc_2 = proc2(
+        quiet=kwargs["quiet"],
+        interactive=kwargs["interactive"],
+        output=tmp_out2,
+        connection=O,
+        num_proc=kwargs["num_proc"],
+        codi_r1=kwargs["codi_r1"],
+        year=kwargs["year"],
+        embarrats=kwargs["embarrats"]
+    )
+    proc_2.calc()
+
+    final_out = ""
+    with open(tmp_out1, 'r') as fd1:
+        final_out += fd1.read()
+
+    with open(tmp_out2, 'r') as fd2:
+        final_out += fd2.read()
+
+    with open(output, 'w') as fd_out:
+        fd_out.write(final_out)
+
+    os.unlink(tmp_out1)
+    os.unlink(tmp_out2)
 
 
 @cnmc.command()
@@ -1588,11 +1650,11 @@ def res_4131_sub(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_pos(**kwargs):
-    from libcnmc.res_4131 import POS, POS_2016
+    from libcnmc.res_4131 import POS, POS_2016, POS_INT
     if kwargs['year'] == 2016:
         res_lat(POS_2016, **kwargs)
     else:
-        res_lat(POS, **kwargs)
+        res_pos2(POS, POS_INT, **kwargs)
 
 
 @cnmc.command()

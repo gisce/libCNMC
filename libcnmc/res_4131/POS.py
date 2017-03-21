@@ -392,3 +392,156 @@ class POS(MultiprocessBased):
                     self.raven.captureException()
             finally:
                 self.input_q.task_done()
+
+
+class POS_INT(MultiprocessBased):
+    """
+    Class that generates the POS/Cel·les(4) of 4131 report
+    """
+    def __init__(self, **kwargs):
+        """
+        Class constructor
+        :param kwargs: year(generation year), codi_r1 R1 code
+        :return: CT
+        """
+        super(POS_INT, self).__init__(**kwargs)
+        self.year = kwargs.pop('year', datetime.now().year - 1)
+        self.codi_r1 = kwargs.pop('codi_r1')
+        self.base_object = 'Línies POS'
+        self.report_name = 'CNMC INVENTARI POS'
+
+    def get_sequence(self):
+        """
+        Method that generates a list of ids to pass to the consummer
+        :return: List of ids
+        """
+        search_params = [('cini', 'like', 'I28')]
+        data_pm = '{0}-01-01'.format(self.year + 1)
+        search_params += ['|', ('data_pm', '=', False),
+                          ('data_pm', '<', data_pm)]
+        return self.connection.GiscedataCellesCella.search(
+            search_params, 0, 0, False, {'active_test': False})
+
+    def get_comunitat(self, id_subestacion):
+        """
+        Gets the comunitat from a subestacion
+
+        :param id_subestacion: Id of subestacion
+        :return: Comunitat name
+        """
+        O = self.connection
+        comunitat = ''
+        cts = O.GiscedataCtsSubestacions.read(id_subestacion, ['id_municipi'])
+        if cts['id_municipi']:
+            id_municipi = cts['id_municipi'][0]
+        else:
+            id_municipi = get_id_municipi_from_company(O)
+
+        if id_municipi:
+            # funció per trobar la ccaa desde el municipi
+            fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
+            id_comunitat = fun_ccaa(id_municipi)
+            comunitat_vals = O.ResComunitat_autonoma.read(
+                id_comunitat[0], ['codi'])
+            if comunitat_vals:
+                comunitat = comunitat_vals['codi']
+        return comunitat
+
+    def get_denominacion(self, id_subestacion):
+        """
+        Returns the name of the CT
+
+        :param id_subestacion:  Name of the subestacio
+        :return: Name of the CT
+        """
+        o = self.connection
+        res = ''
+        ct_id = o.GiscedataCtsSubestacions.read(id_subestacion,
+                                                ['ct_id'])['ct_id'][0]
+        if ct_id:
+            denom = o.GiscedataCts.read(ct_id, ['descripcio'])['descripcio']
+            if denom:
+                res = denom
+        return res
+
+    def consumer(self):
+        """
+        Method that generates the csv file
+        :return: List of arrays
+        """
+        O = self.connection
+        fields_to_read = [
+            'name', 'cini', 'subestacio_id', 'tipus_instalacio_cnmc_id',
+            'perc_financament', 'tensio', 'data_baixa', 'data_pm',
+            '4131_entregada_2016'
+        ]
+        not_found_msg = '**** ERROR: El ct {0} (id:{1}) no està a giscedata_cts_subestacions_posicio.\n'
+        data_pm_limit = '{0}-01-01'.format(self.year + 1)
+        data_baixa_limit = '{0}-01-01'.format(self.year)
+        while True:
+            try:
+                item = self.input_q.get()
+                self.progress_q.put(item)
+                cel = O.GiscedataCellesCella.read(
+                    item, fields_to_read)
+                identificador = cel["name"]
+
+                denominacion = ""
+                codigo_ccaa = ""
+                if cel["subestacio_id"]:
+                    sub_id = cel["subestacio_id"][0]
+
+                    denominacion = self.get_denominacion(sub_id)
+                    codigo_ccaa = self.get_comunitat(sub_id)
+
+                codigo_ccuu = ""
+                if cel["tipus_instalacio_cnmc_id"]:
+                    id_ti = cel["tipus_instalacio_cnmc_id"][0]
+                    codigo_ccuu = O.GiscedataTipusInstallacio.read(
+                        id_ti, ["name"])["name"]
+
+                tensio = cel["tensio"]
+                # Calculem any posada en marxa
+                data_pm = cel["data_pm"]
+                if data_pm:
+                    data_pm = datetime.strptime(str(data_pm), "%Y-%m-%d")
+                    data_pm = data_pm.strftime("%d/%m/%Y")
+
+                if cel['4131_entregada_2016']:
+                    data_4131 = cel['4131_entregada_2016']
+                    entregada = F4Res4131(**data_4131)
+                    actual = F4Res4771(
+                        identificador,
+                        cel['cini'],
+                        denominacion,
+                        codigo_ccuu,
+                        codigo_ccaa,
+                        format_f(tensio, 3),
+                        format_f(round(100 - int(cel['perc_financament']))),
+                        data_pm
+                    )
+                    if entregada == actual:
+                        estado = 0
+                    else:
+                        estado = 1
+                else:
+                    estado = 2
+                output = [
+                    identificador,
+                    cel["cini"] or "",
+                    denominacion,
+                    codigo_ccuu,
+                    codigo_ccaa,
+                    format_f(tensio, 3),
+                    format_f(round(100 - int(cel['perc_financament'])), 3),
+                    data_pm or '',
+                    data_pm,
+                    estado
+                ]
+                self.output_q.put(output)
+            except Exception:
+                traceback.print_exc()
+                if self.raven:
+                    self.raven.captureException()
+            finally:
+                self.input_q.task_done()
