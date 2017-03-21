@@ -486,12 +486,16 @@ class POS_INT(MultiprocessBased):
                     item, fields_to_read)
                 identificador = cel["name"]
 
+                data_baixa = ""
+                if cel["data_baixa"]:
+                    data_baixa = cel["data_baixa"]
+
                 denominacion = ""
                 codigo_ccaa = ""
                 if cel["subestacio_id"]:
                     sub_id = cel["subestacio_id"][0]
 
-                    denominacion = self.get_denominacion(sub_id)
+                    denominacion = self.get_denominacion(sub_id) + "-CT"
                     codigo_ccaa = self.get_comunitat(sub_id)
 
                 codigo_ccuu = ""
@@ -500,12 +504,17 @@ class POS_INT(MultiprocessBased):
                     codigo_ccuu = O.GiscedataTipusInstallacio.read(
                         id_ti, ["name"])["name"]
 
-                tensio = cel["tensio"]
+                tensio = ""
+                if cel["tensio"]:
+                    tensio = float(cel["tensio"][1])
+
+                data_pm = ""
                 # Calculem any posada en marxa
-                data_pm = cel["data_pm"]
-                if data_pm:
-                    data_pm = datetime.strptime(str(data_pm), "%Y-%m-%d")
-                    data_pm = data_pm.strftime("%d/%m/%Y")
+                if cel["data_pm"]:
+                    data_pm = cel["data_pm"]
+                    if data_pm:
+                        data_pm = datetime.strptime(str(data_pm), "%Y-%m-%d")
+                        data_pm = data_pm.strftime("%d/%m/%Y")
 
                 if cel['4131_entregada_2016']:
                     data_4131 = cel['4131_entregada_2016']
@@ -527,7 +536,7 @@ class POS_INT(MultiprocessBased):
                 else:
                     estado = 2
                 output = [
-                    denominacion + "-CT",
+                    identificador,
                     cel["cini"] or "",
                     denominacion,
                     codigo_ccuu,
@@ -535,7 +544,7 @@ class POS_INT(MultiprocessBased):
                     format_f(tensio, 3),
                     format_f(round(100 - int(cel['perc_financament'])), 3),
                     data_pm or '',
-                    data_pm,
+                    data_baixa,
                     estado
                 ]
                 self.output_q.put(output)
