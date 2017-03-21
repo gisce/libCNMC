@@ -527,7 +527,7 @@ class POS_INT(MultiprocessBased):
                 else:
                     estado = 2
                 output = [
-                    identificador,
+                    denominacion + "-CT",
                     cel["cini"] or "",
                     denominacion,
                     codigo_ccuu,
