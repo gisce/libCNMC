@@ -1510,6 +1510,7 @@ def res_4131_lbt(**kwargs):
     else:
         res_lat(LBT, **kwargs)
 
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -1559,8 +1560,12 @@ def res_4131_cts(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_sub(**kwargs):
-    from libcnmc.res_4131 import SUB
-    res_lat(SUB, **kwargs)
+    from libcnmc.res_4131 import SUB, SUB_2016
+    if kwargs['year'] == 2016:
+        res_lat(SUB_2016, **kwargs)
+    else:
+        res_lat(SUB, **kwargs)
+
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
@@ -1588,6 +1593,7 @@ def res_4131_pos(**kwargs):
         res_lat(POS_2016, **kwargs)
     else:
         res_lat(POS, **kwargs)
+
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
