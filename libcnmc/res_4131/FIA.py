@@ -171,7 +171,7 @@ class FIA(MultiprocessBased):
                 self.input_q.task_done()
 
 
-class FIA_2016(MultiprocessBased):
+class FIA_2015(MultiprocessBased):
     """
     Class that generates the fiabilidad(7) file of the 4131
     """
@@ -181,7 +181,7 @@ class FIA_2016(MultiprocessBased):
         :param kwargs: year(generation year), codi_r1 R1 code
         :return: CT
         """
-        super(FIA_2016, self).__init__(**kwargs)
+        super(FIA_2015, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies FIA'

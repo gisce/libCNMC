@@ -17,7 +17,7 @@ from libcnmc.models import F2Res4771, F2Res4131
 QUIET = False
 
 
-class LBT_2016(MultiprocessBased):
+class LBT_2015(MultiprocessBased):
     """
     Class that generates the LBT(2) file of the 4131
     """
@@ -27,7 +27,7 @@ class LBT_2016(MultiprocessBased):
         :param kwargs: year(generation year), codi_r1 R1 code
         :return: CT
         """
-        super(LBT_2016, self).__init__(**kwargs)
+        super(LBT_2015, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies BT'

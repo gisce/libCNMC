@@ -16,7 +16,7 @@ from libcnmc.models import F1Res4771
 from libcnmc.models import F1Res4131
 
 
-class LAT_2016(MultiprocessBased):
+class LAT_2015(MultiprocessBased):
     """
     Class that generates the LAT(1) file of  4131
     """
@@ -26,7 +26,7 @@ class LAT_2016(MultiprocessBased):
         :param kwargs: year(generation year), codi_r1 R1 code
         :return: CT
         """
-        super(LAT_2016, self).__init__(**kwargs)
+        super(LAT_2015, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies AT'

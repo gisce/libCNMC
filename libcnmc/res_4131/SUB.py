@@ -16,7 +16,7 @@ from libcnmc.models import F3Res4771, F3Res4131
 QUIET = False
 
 
-class SUB_2016(MultiprocessBased):
+class SUB_2015(MultiprocessBased):
     """
     Class that generates the SUB(3) report of the 4131
     """
@@ -26,7 +26,7 @@ class SUB_2016(MultiprocessBased):
         :param kwargs: year(generation year), codi_r1 R1 code
         :return: CT
         """
-        super(SUB_2016, self).__init__(**kwargs)
+        super(SUB_2015, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Subestacions'

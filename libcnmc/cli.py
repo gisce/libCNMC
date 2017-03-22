@@ -1538,9 +1538,9 @@ def invoke():
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_lat(**kwargs):
-    from libcnmc.res_4131 import LAT, LAT_2016
-    if kwargs['year'] == 2016:
-        res_lat(LAT_2016, **kwargs)
+    from libcnmc.res_4131 import LAT, LAT_2015
+    if kwargs['year'] == 2015:
+        res_lat(LAT_2015, **kwargs)
     else:
         res_lat(LAT, **kwargs)
 
@@ -1566,9 +1566,9 @@ def res_4131_lat(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_lbt(**kwargs):
-    from libcnmc.res_4131 import LBT, LBT_2016
-    if kwargs['year'] == 2016:
-        res_lat(LBT_2016, **kwargs)
+    from libcnmc.res_4131 import LBT, LBT_2015
+    if kwargs['year'] == 2015:
+        res_lat(LBT_2015, **kwargs)
     else:
         res_lat(LBT, **kwargs)
 
@@ -1594,9 +1594,9 @@ def res_4131_lbt(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_cts(**kwargs):
-    from libcnmc.res_4131 import CTS, CTS_2016
-    if kwargs['year'] == 2016:
-        res_lat(CTS_2016, **kwargs)
+    from libcnmc.res_4131 import CTS, CTS_2015
+    if kwargs['year'] == 2015:
+        res_lat(CTS_2015, **kwargs)
     else:
         res_lat(CTS, **kwargs)
 
@@ -1622,9 +1622,9 @@ def res_4131_cts(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_sub(**kwargs):
-    from libcnmc.res_4131 import SUB, SUB_2016
-    if kwargs['year'] == 2016:
-        res_lat(SUB_2016, **kwargs)
+    from libcnmc.res_4131 import SUB, SUB_2015
+    if kwargs['year'] == 2015:
+        res_lat(SUB_2015, **kwargs)
     else:
         res_lat(SUB, **kwargs)
 
@@ -1650,9 +1650,9 @@ def res_4131_sub(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_pos(**kwargs):
-    from libcnmc.res_4131 import POS, POS_2016, POS_INT
-    if kwargs['year'] == 2016:
-        res_lat(POS_2016, **kwargs)
+    from libcnmc.res_4131 import POS, POS_2015, POS_INT
+    if kwargs['year'] == 2015:
+        res_lat(POS_2015, **kwargs)
     else:
         res_pos2(POS, POS_INT, **kwargs)
 
@@ -1678,9 +1678,9 @@ def res_4131_pos(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_maq(**kwargs):
-    from libcnmc.res_4131 import MAQ, MAQ_2016
-    if kwargs['year'] == 2016:
-        res_lat(MAQ_2016, **kwargs)
+    from libcnmc.res_4131 import MAQ, MAQ_2015
+    if kwargs['year'] == 2015:
+        res_lat(MAQ_2015, **kwargs)
     else:
         res_lat(MAQ, **kwargs)
 
@@ -1706,9 +1706,9 @@ def res_4131_maq(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_des(**kwargs):
-    from libcnmc.res_4131 import DES, DES_2016
-    if kwargs['year'] == 2016:
-        res_lat(DES_2016, **kwargs)
+    from libcnmc.res_4131 import DES, DES_2015
+    if kwargs['year'] == 2015:
+        res_lat(DES_2015, **kwargs)
     else:
         res_lat(DES, **kwargs)
 
@@ -1734,9 +1734,9 @@ def res_4131_des(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_fia(**kwargs):
-    from libcnmc.res_4131 import FIA, FIA_2016
-    if kwargs['year'] == 2016:
-        res_lat(FIA_2016, **kwargs)
+    from libcnmc.res_4131 import FIA, FIA_2015
+    if kwargs['year'] == 2015:
+        res_lat(FIA_2015, **kwargs)
     else:
         res_lat(FIA, **kwargs)
 

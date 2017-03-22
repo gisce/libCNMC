@@ -13,7 +13,7 @@ from libcnmc.utils import format_f
 from libcnmc.models import F6Res4771, F6Res4131
 
 
-class DES_2016(MultiprocessBased):
+class DES_2015(MultiprocessBased):
     """
     Class that generates the Despachos(6) file of the 4131
     """
@@ -23,7 +23,7 @@ class DES_2016(MultiprocessBased):
         :param kwargs: year(generation year), codi_r1 R1 code
         :return: CT
         """
-        super(DES_2016, self).__init__(**kwargs)
+        super(DES_2015, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies DES'

@@ -15,7 +15,7 @@ from libcnmc.utils import get_id_municipi_from_company, format_f
 from libcnmc.models import F5Res4771, F5Res4131
 
 
-class MAQ_2016(MultiprocessBased):
+class MAQ_2015(MultiprocessBased):
     """
     Class that generates the Maquinas/Transofrmadores(5) file of the 4131
     """
@@ -25,7 +25,7 @@ class MAQ_2016(MultiprocessBased):
         :param kwargs: year(generation year), codi_r1 R1 code
         :return: CT
         """
-        super(MAQ_2016, self).__init__(**kwargs)
+        super(MAQ_2015, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies MAQ'
