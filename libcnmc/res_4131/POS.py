@@ -447,21 +447,19 @@ class POS_INT(MultiprocessBased):
                 comunitat = comunitat_vals['codi']
         return comunitat
 
-    def get_denominacion(self, id_subestacion):
+    def get_denominacion(self, ct_id):
         """
         Returns the name of the CT
 
-        :param id_subestacion:  Name of the subestacio
+        :param ct_id:  Name of the ct
         :return: Name of the CT
         """
         o = self.connection
         res = ''
-        ct_id = o.GiscedataCtsSubestacions.read(id_subestacion,
-                                                ['ct_id'])['ct_id'][0]
-        if ct_id:
-            denom = o.GiscedataCts.read(ct_id, ['descripcio'])['descripcio']
-            if denom:
-                res = denom
+
+        denom = o.GiscedataCts.read(ct_id, ['descripcio'])['descripcio']
+        if denom:
+            res = denom
         return res
 
     def consumer(self):
@@ -473,7 +471,7 @@ class POS_INT(MultiprocessBased):
         fields_to_read = [
             'name', 'cini', 'subestacio_id', 'tipus_instalacio_cnmc_id',
             'perc_financament', 'tensio', 'data_baixa', 'data_pm',
-            '4131_entregada_2016'
+            '4131_entregada_2016', 'installacio'
         ]
         not_found_msg = '**** ERROR: El ct {0} (id:{1}) no està a giscedata_cts_subestacions_posicio.\n'
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
@@ -494,9 +492,11 @@ class POS_INT(MultiprocessBased):
                 codigo_ccaa = ""
                 if cel["subestacio_id"]:
                     sub_id = cel["subestacio_id"][0]
-
-                    denominacion = self.get_denominacion(sub_id) + "-CT"
                     codigo_ccaa = self.get_comunitat(sub_id)
+
+                if cel["installacio"]:
+                    ct_id = int(cel["installacio"].split(',')[1])
+                    denominacion = self.get_denominacion(ct_id) + "-CT"
 
                 codigo_ccuu = ""
                 if cel["tipus_instalacio_cnmc_id"]:
@@ -506,7 +506,8 @@ class POS_INT(MultiprocessBased):
 
                 tensio = ""
                 if cel["tensio"]:
-                    tensio = float(cel["tensio"][1])
+                    tensio = float(cel["tensio"][1])/1000.0
+
 
                 data_pm = ""
                 # Calculem any posada en marxa
