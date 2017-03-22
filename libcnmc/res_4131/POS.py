@@ -422,16 +422,16 @@ class POS_INT(MultiprocessBased):
         return self.connection.GiscedataCellesCella.search(
             search_params, 0, 0, False, {'active_test': False})
 
-    def get_comunitat(self, id_subestacion):
+    def get_comunitat(self, id_ct):
         """
         Gets the comunitat from a subestacion
 
-        :param id_subestacion: Id of subestacion
+        :param id_ct: Id of ct
         :return: Comunitat name
         """
         O = self.connection
         comunitat = ''
-        cts = O.GiscedataCtsSubestacions.read(id_subestacion, ['id_municipi'])
+        cts = O.GiscedataCts.read(id_ct, ['id_municipi'])
         if cts['id_municipi']:
             id_municipi = cts['id_municipi'][0]
         else:
@@ -496,6 +496,7 @@ class POS_INT(MultiprocessBased):
 
                 if cel["installacio"]:
                     ct_id = int(cel["installacio"].split(',')[1])
+                    codigo_ccaa = self.get_comunitat(ct_id)
                     denominacion = self.get_denominacion(ct_id) + "-CT"
 
                 codigo_ccuu = ""
@@ -504,7 +505,7 @@ class POS_INT(MultiprocessBased):
                     codigo_ccuu = O.GiscedataTipusInstallacio.read(
                         id_ti, ["name"])["name"]
 
-                tensio = ""
+                tensio = 0.000
                 if cel["tensio"]:
                     tensio = float(cel["tensio"][1])/1000.0
 
