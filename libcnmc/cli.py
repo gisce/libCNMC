@@ -307,7 +307,7 @@ def res_4771_lat(**kwargs):
     res_lat(LAT, **kwargs)
 
 
-#CSV LBT
+# CSV LBT
 def res_lbt(LBT, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
@@ -373,7 +373,7 @@ def res_4771_lbt(**kwargs):
     res_lbt(LBT, **kwargs)
 
 
-#CSV SUB
+# CSV SUB
 def res_sub(SUB, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
@@ -436,7 +436,7 @@ def res_4771_sub(**kwargs):
     res_sub(SUB, **kwargs)
 
 
-#CSV POS
+# CSV POS
 def res_pos(POS, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
@@ -499,7 +499,7 @@ def res_4771_pos(**kwargs):
     res_pos(POS, **kwargs)
 
 
-#CSV MAQ
+# CSV MAQ
 def res_maq(MAQ, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
@@ -625,7 +625,7 @@ def res_4771_des(**kwargs):
     res_des(DES, **kwargs)
 
 
-#CSV FIA
+# CSV FIA
 def res_fia(FIA, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
@@ -688,7 +688,7 @@ def res_4771_fia(**kwargs):
     res_fia(FIA, **kwargs)
 
 
-#CSV CTS
+# CSV CTS
 def res_cts(CTS, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
@@ -751,7 +751,7 @@ def res_4771_cts(**kwargs):
     res_cts(CTS, **kwargs)
 
 
-#CSV INV
+# CSV INV
 @cnmc.command()
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
@@ -787,7 +787,7 @@ def res_4603_inv(**kwargs):
     proc.calc()
 
 
-#CINIS Maquines
+# CINIS Maquines
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -822,7 +822,7 @@ def res_4603_cinimaq(**kwargs):
     proc.calc()
 
 
-#CINIS Posicions
+# CINIS Posicions
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -968,6 +968,7 @@ def update_cinis_cts(**kwargs):
         file_input=kwargs['file_input'])
     proc.calc()
 
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -1000,6 +1001,7 @@ def cir_4_2015_f1(**kwargs):
         year=kwargs['year']
     )
     proc.calc()
+
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
@@ -1034,6 +1036,7 @@ def cir_4_2015_f11(**kwargs):
     )
     proc.calc()
 
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -1067,6 +1070,7 @@ def cir_4_2015_f1bis(**kwargs):
     )
     proc.calc()
 
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -1098,6 +1102,7 @@ def cir_4_2015_f12(**kwargs):
     )
     proc.calc()
 
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -1128,6 +1133,7 @@ def cir_4_2015_f12bis(**kwargs):
         year=kwargs['year']
     )
     proc.calc()
+
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
@@ -1162,6 +1168,7 @@ def cir_4_2015_f13(**kwargs):
     )
     proc.calc()
 
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -1192,6 +1199,7 @@ def cir_4_2015_f13bis(**kwargs):
         year=kwargs['year']
     )
     proc.calc()
+
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
@@ -1224,6 +1232,7 @@ def cir_4_2015_f13c(**kwargs):
     )
     proc.calc()
 
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -1254,6 +1263,7 @@ def cir_4_2015_f14(**kwargs):
         year=kwargs['year']
     )
     proc.calc()
+
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
@@ -1288,6 +1298,7 @@ def cir_4_2015_f15(**kwargs):
     )
     proc.calc()
 
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -1320,6 +1331,7 @@ def cir_4_2015_f10at(**kwargs):
         year=kwargs['year']
     )
     proc.calc()
+
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
@@ -1354,6 +1366,7 @@ def cir_4_2015_f10bt(**kwargs):
     )
     proc.calc()
 
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -1386,6 +1399,7 @@ def cir_4_2015_f20(**kwargs):
         year=kwargs['year']
     )
     proc.calc()
+
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
