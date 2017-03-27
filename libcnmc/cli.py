@@ -1671,8 +1671,10 @@ def res_4131_sub(**kwargs):
 def res_4131_pos(**kwargs):
     from libcnmc.res_4131 import POS, POS_2015, POS_INT
     if kwargs['year'] == 2015:
+        kwargs["compare_field"] = "4771_entregada"
         res_lat(POS_2015, **kwargs)
     else:
+        kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
         res_pos2(POS, POS_INT, **kwargs)
 
 

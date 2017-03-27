@@ -31,6 +31,7 @@ class POS_2015(MultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies POS'
         self.report_name = 'CNMC INVENTARI POS'
+        self.compare_field = kwargs["compare_field"]
 
     def get_sequence(self):
         """
@@ -92,9 +93,9 @@ class POS_2015(MultiprocessBased):
         """
         O = self.connection
         fields_to_read = [
-            'name', 'cini', 'data_pm', 'subestacio_id',
-            'tipus_instalacio_cnmc_id', 'perc_financament', 'tensio', 'data_baixa',
-            '4771_entregada'
+            'name', 'cini', 'data_pm', 'subestacio_id', 'data_baixa',
+            'tipus_instalacio_cnmc_id', 'perc_financament', 'tensio',
+            self.compare_field
         ]
         not_found_msg = '**** ERROR: El ct {0} (id:{1}) no està a giscedata_cts_subestacions_posicio.\n'
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
@@ -164,9 +165,9 @@ class POS_2015(MultiprocessBased):
                         fecha_baja = ''
                 else:
                     fecha_baja = ''
-                if pos['4771_entregada']:
-                    data_4771 = pos['4771_entregada']
-                    entregada = F4Res4771(**data_4771)
+                if pos[self.compare_field]:
+                    last_data = pos[self.compare_field]
+                    entregada = F4Res4771(**last_data)
                     actual = F4Res4771(
                         o_sub,
                         pos['cini'],
@@ -220,6 +221,7 @@ class POS(MultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies POS'
         self.report_name = 'CNMC INVENTARI POS'
+        self.compare_field = kwargs["compare_field"]
 
     def get_sequence(self):
         """
@@ -281,9 +283,9 @@ class POS(MultiprocessBased):
         """
         O = self.connection
         fields_to_read = [
-            'name', 'cini', 'data_pm', 'subestacio_id',
-            'tipus_instalacio_cnmc_id', 'perc_financament', 'tensio', 'data_baixa',
-            '4131_entregada_2016'
+            'name', 'cini', 'data_pm', 'subestacio_id', 'data_baixa',
+            'tipus_instalacio_cnmc_id', 'perc_financament', 'tensio',
+            self.compare_field
         ]
         not_found_msg = '**** ERROR: El ct {0} (id:{1}) no està a giscedata_cts_subestacions_posicio.\n'
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
@@ -353,9 +355,9 @@ class POS(MultiprocessBased):
                         fecha_baja = ''
                 else:
                     fecha_baja = ''
-                if pos['4131_entregada_2016']:
-                    data_4131 = pos['4131_entregada_2016']
-                    entregada = F4Res4131(**data_4131)
+                if pos[self.compare_field]:
+                    last_data = pos[self.compare_field]
+                    entregada = F4Res4131(**last_data)
                     actual = F4Res4771(
                         o_sub,
                         pos['cini'],
@@ -409,6 +411,7 @@ class POS_INT(MultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies POS'
         self.report_name = 'CNMC INVENTARI POS'
+        self.compare_field = kwargs["compare_field"]
 
     def get_sequence(self):
         """
@@ -471,7 +474,7 @@ class POS_INT(MultiprocessBased):
         fields_to_read = [
             'name', 'cini', 'subestacio_id', 'tipus_instalacio_cnmc_id',
             'perc_financament', 'tensio', 'data_baixa', 'data_pm',
-            '4131_entregada_2016', 'installacio'
+            self.compare_field, 'installacio'
         ]
         not_found_msg = '**** ERROR: El ct {0} (id:{1}) no està a giscedata_cts_subestacions_posicio.\n'
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
@@ -518,9 +521,9 @@ class POS_INT(MultiprocessBased):
                         data_pm = datetime.strptime(str(data_pm), "%Y-%m-%d")
                         data_pm = data_pm.strftime("%d/%m/%Y")
 
-                if cel['4131_entregada_2016']:
-                    data_4131 = cel['4131_entregada_2016']
-                    entregada = F4Res4131(**data_4131)
+                if cel[self.compare_field]:
+                    last_data= cel[self.compare_field]
+                    entregada = F4Res4131(**last_data)
                     actual = F4Res4771(
                         identificador,
                         cel['cini'],
