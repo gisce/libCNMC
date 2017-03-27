@@ -28,6 +28,7 @@ class CTS_2015(MultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies CTS'
         self.report_name = 'CNMC INVENTARI CTS'
+        self.compare_field = kwargs["compare_field"]
 
     def get_sequence(self):
         """
@@ -59,8 +60,9 @@ class CTS_2015(MultiprocessBased):
         """
         O = self.connection
         fields_to_read = [
-            'name', 'cini', 'data_pm', 'tipus_instalacio_cnmc_id', 'id_municipi',
-            'perc_financament', 'descripcio', 'data_baixa', '4771_entregada'
+            'name', 'cini', 'data_pm', 'tipus_instalacio_cnmc_id',
+            'id_municipi', 'perc_financament', 'descripcio', 'data_baixa',
+            self.compare_field
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         data_baixa_limit = '{0}-01-01'.format(self.year)
@@ -105,9 +107,9 @@ class CTS_2015(MultiprocessBased):
                 else:
                     fecha_baja = ''
 
-                if ct['4771_entregada']:
-                    data_4771 = ct['4771_entregada']
-                    entregada = F8Res4771(**data_4771)
+                if ct[self.compare_field]:
+                    last_data = ct[self.compare_field]
+                    entregada = F8Res4771(**last_data)
 
                     actual = F8Res4771(
                         ct['name'],
@@ -168,6 +170,7 @@ class CTS(MultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies CTS'
         self.report_name = 'CNMC INVENTARI CTS'
+        self.compare_field = kwargs["compare_field"]
 
     def get_sequence(self):
         """
@@ -199,9 +202,9 @@ class CTS(MultiprocessBased):
         """
         O = self.connection
         fields_to_read = [
-            'name', 'cini', 'data_pm', 'tipus_instalacio_cnmc_id', 'id_municipi',
-            'perc_financament', 'descripcio', 'data_baixa',
-            '4131_entregada_2016'
+            'name', 'cini', 'data_pm', 'tipus_instalacio_cnmc_id',
+            'id_municipi', 'perc_financament', 'descripcio', 'data_baixa',
+            self.compare_field
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         data_baixa_limit = '{0}-01-01'.format(self.year)
@@ -246,9 +249,9 @@ class CTS(MultiprocessBased):
                 else:
                     fecha_baja = ''
 
-                if ct['4131_entregada_2016']:
-                    data_4771 = ct['4131_entregada_2016']
-                    entregada = F8Res4131(**data_4771)
+                if ct[self.compare_field]:
+                    last_data = ct[self.compare_field]
+                    entregada = F8Res4131(**last_data)
 
                     actual = F8Res4771(
                         ct['name'],
