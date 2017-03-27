@@ -1558,6 +1558,7 @@ def res_4131_lat(**kwargs):
     from libcnmc.res_4131 import LAT, LAT_2015
     if kwargs['year'] == 2015:
         kwargs["compare_field"] = "4771_entregada"
+        kwargs["compare_field"] = "4771_entregada"
         res_lat(LAT_2015, **kwargs)
     else:
         last_year = datetime.now().year - 1
