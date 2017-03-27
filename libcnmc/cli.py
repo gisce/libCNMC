@@ -1555,12 +1555,16 @@ def invoke():
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_lat(**kwargs):
-    from libcnmc.res_4131 import LAT, LAT_2015
+    from libcnmc.res_4131 import LAT
+    from libcnmc.models import F1Res4131, F1Res4771
     if kwargs['year'] == 2015:
         kwargs["compare_field"] = "4771_entregada"
-        kwargs["compare_field"] = "4771_entregada"
-        res_lat(LAT_2015, **kwargs)
+        kwargs["actual_obj"] = F1Res4771
+        kwargs["prev_obj"] = F1Res4771
+        res_lat(LAT, **kwargs)
     else:
+        kwargs["actual_obj"] = F1Res4131
+        kwargs["prev_obj"] = F1Res4131
         last_year = datetime.now().year - 1
         kwargs["compare_field"] = "4131_entregada_{}".format(last_year)
         res_lat(LAT, **kwargs)
