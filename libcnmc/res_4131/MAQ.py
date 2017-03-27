@@ -29,6 +29,7 @@ class MAQ_2015(MultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies MAQ'
+        self.compare_field = kwargs["compare_field"]
 
         tension_fields_to_read = ['l_inferior', 'l_superior', 'tensio']
         tension_vals = self.connection.GiscedataTensionsTensio.read(
@@ -104,7 +105,7 @@ class MAQ_2015(MultiprocessBased):
         fields_to_read = [
             'cini', 'historic', 'data_pm', 'ct', 'name', 'potencia_nominal',
             'numero_fabricacio', 'perc_financament', 'tipus_instalacio_cnmc_id',
-            'conexions', 'data_baixa', '4771_entregada'
+            'conexions', 'data_baixa', self.compare_field
         ]
 
         con_fields_to_read = ['conectada', 'tensio_primari', 'tensio_p2',
@@ -188,9 +189,9 @@ class MAQ_2015(MultiprocessBased):
                 else:
                     fecha_baja = ''
 
-                if trafo['4771_entregada']:
-                    data_4771 = trafo['4771_entregada']
-                    entregada = F5Res4771(**data_4771)
+                if trafo[self.compare_field]:
+                    last_data = trafo[self.compare_field]
+                    entregada = F5Res4771(**last_data)
                     actual = F5Res4771(
                         trafo['name'],
                         trafo['cini'],
@@ -248,6 +249,7 @@ class MAQ(MultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies MAQ'
+        self.compare_field = kwargs["compare_field"]
 
         tension_fields_to_read = ['l_inferior', 'l_superior', 'tensio']
         tension_vals = self.connection.GiscedataTensionsTensio.read(
@@ -323,7 +325,7 @@ class MAQ(MultiprocessBased):
         fields_to_read = [
             'cini', 'historic', 'data_pm', 'ct', 'name', 'potencia_nominal',
             'numero_fabricacio', 'perc_financament', 'tipus_instalacio_cnmc_id',
-            'conexions', 'data_baixa', '4131_entregada_2016'
+            'conexions', 'data_baixa', self.compare_field
         ]
 
         con_fields_to_read = ['conectada', 'tensio_primari', 'tensio_p2',
@@ -407,10 +409,10 @@ class MAQ(MultiprocessBased):
                 else:
                     fecha_baja = ''
 
-                if trafo['4131_entregada_2016']:
-                    data_4771 = trafo['4131_entregada_2016']
-                    entregada = F5Res4771(**data_4771)
-                    actual = F5Res4771(
+                if trafo[self.compare_field]:
+                    last_data = trafo[self.compare_field]
+                    entregada = F5Res4131(**last_data)
+                    actual = F5Res4131(
                         trafo['name'],
                         trafo['cini'],
                         denominacio,

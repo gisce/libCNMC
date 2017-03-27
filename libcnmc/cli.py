@@ -1698,9 +1698,11 @@ def res_4131_pos(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_maq(**kwargs):
     from libcnmc.res_4131 import MAQ, MAQ_2015
-    if kwargs['year'] == 2015:
+    if kwargs["year"] == 2015:
+        kwargs["compare_field"] = "4771_entregada"
         res_lat(MAQ_2015, **kwargs)
     else:
+        kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
         res_lat(MAQ, **kwargs)
 
 
