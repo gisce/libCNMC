@@ -28,6 +28,7 @@ class FIA(MultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies FIA'
         self.report_name = 'CNMC INVENTARI FIA'
+        self.compare_filed = kwargs["compare_field"]
 
     def get_sequence(self):
         """
@@ -59,7 +60,8 @@ class FIA(MultiprocessBased):
         O = self.connection
         fields_to_read = [
             'name', 'cini', 'tipus_element', 'tipus_instalacio_cnmc_id',
-            'installacio', 'data_pm', 'data_baixa', 'tram_id', '4771_entregada'
+            'installacio', 'data_pm', 'data_baixa', 'tram_id',
+            self.compare_filed
         ]
         data_pm_limit= '{0}-01-01' .format(self.year + 1)
         data_baixa_limit = '{0}-01-01'.format(self.year)
@@ -134,9 +136,9 @@ class FIA(MultiprocessBased):
                 else:
                     fecha_baja = ''
 
-                if cll['4771_entregada'] and '2015' not in str(data_pm):
-                    data_4771 = cll['4771_entregada']
-                    entregada = F7Res4771(**data_4771)
+                if cll[self.compare_filed] and str(self.year + 1) not in str(data_pm):
+                    last_data = cll[self.compare_filed]
+                    entregada = F7Res4771(**last_data)
                     actual = F7Res4771(
                         cll['name'],
                         cll['cini'],
@@ -186,6 +188,7 @@ class FIA_2015(MultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies FIA'
         self.report_name = 'CNMC INVENTARI FIA'
+        self.compare_filed = kwargs["compare_field"]
 
     def get_sequence(self):
         """
@@ -218,7 +221,7 @@ class FIA_2015(MultiprocessBased):
         fields_to_read = [
             'name', 'cini', 'tipus_element', 'tipus_instalacio_cnmc_id',
             'installacio', 'data_pm', 'data_baixa', 'tram_id',
-            '4131_entregada_2016'
+            self.compare_filed
         ]
         data_pm_limit= '{0}-01-01' .format(self.year + 1)
         data_baixa_limit = '{0}-01-01'.format(self.year)
@@ -293,9 +296,9 @@ class FIA_2015(MultiprocessBased):
                 else:
                     fecha_baja = ''
 
-                if cll['4131_entregada_2016'] and '2016' not in str(data_pm):
-                    data_4131= cll['4131_entregada_2016']
-                    entregada = F7Res4131(**data_4131)
+                if cll[self.compare_filed] and str(self.year + 1) not in str(data_pm):
+                    last_data = cll[self.compare_filed]
+                    entregada = F7Res4131(**last_data)
                     actual = F7Res4131(
                         cll['name'],
                         cll['cini'],
