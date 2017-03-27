@@ -31,6 +31,7 @@ class SUB_2015(MultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Subestacions'
         self.report_name = 'CNMC INVENTARI SUB'
+        self.compare_field = kwargs["compare_field"]
 
     def get_sequence(self):
         """
@@ -63,7 +64,7 @@ class SUB_2015(MultiprocessBased):
         fields_to_read = [
             'name', 'data_industria', 'data_pm', 'id_municipi', 'cini',
             'descripcio', 'perc_financament', 'data_baixa', 'posicions',
-            'cnmc_tipo_instalacion', '4131_entregada_2016'
+            'cnmc_tipo_instalacion', self.compare_field
         ]
         data_pm_limit = '{}-01-01'.format(self.year + 1)
         data_baixa_limit = '{}-01-01'.format(self.year)
@@ -121,9 +122,9 @@ class SUB_2015(MultiprocessBased):
                 else:
                     num_pos = 1
 
-                if sub['4131_entregada_2016']:
-                    data_4131 = sub['4131_entregada_2016']
-                    entregada = F3Res4131(**data_4131)
+                if sub[self.compare_field]:
+                    last_data = sub[self.compare_field]
+                    entregada = F3Res4131(**last_data)
                     actual = F3Res4131(
                         sub['name'],
                         sub['cini'],
@@ -177,6 +178,7 @@ class SUB(MultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Subestacions'
         self.report_name = 'CNMC INVENTARI SUB'
+        self.compare_field = kwargs["compare_field"]
 
     def get_sequence(self):
         """
@@ -209,7 +211,7 @@ class SUB(MultiprocessBased):
         fields_to_read = [
             'name', 'data_industria', 'data_pm', 'id_municipi', 'cini',
             'descripcio', 'perc_financament', 'data_baixa', 'posicions',
-            'cnmc_tipo_instalacion', '4771_entregada'
+            'cnmc_tipo_instalacion', self.compare_field
         ]
         data_pm_limit = '{}-01-01'.format(self.year + 1)
         data_baixa_limit = '{}-01-01'.format(self.year)
@@ -268,9 +270,9 @@ class SUB(MultiprocessBased):
                 else:
                     num_pos = 1
 
-                if sub['4771_entregada']:
-                    data_4771 = sub['4771_entregada']
-                    entregada = F3Res4771(**data_4771)
+                if sub[self.compare_field]:
+                    last_data = sub[self.compare_field]
+                    entregada = F3Res4771(**last_data)
                     actual = F3Res4771(
                         sub['name'],
                         sub['cini'],
