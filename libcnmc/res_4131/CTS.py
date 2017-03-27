@@ -248,12 +248,11 @@ class CTS(MultiprocessBased):
                         fecha_baja = ''
                 else:
                     fecha_baja = ''
-
                 if ct[self.compare_field]:
                     last_data = ct[self.compare_field]
                     entregada = F8Res4131(**last_data)
 
-                    actual = F8Res4771(
+                    actual = F8Res4131(
                         ct['name'],
                         ct['cini'],
                         ct['descripcio'],

@@ -194,7 +194,10 @@ def res_lat(LAT, **kwargs):
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
-        embarrats=kwargs['embarrats']
+        embarrats=kwargs['embarrats'],
+        compare_field=kwargs["compare_field"],
+        actual_obj=kwargs["actual_obj"],
+        prev_obj=kwargs["prev_obj"]
     )
     proc.calc()
 
@@ -1592,6 +1595,7 @@ def res_4131_lbt(**kwargs):
         kwargs["compare_field"] = "4131_entregada_{}".format(last_year)
         res_lat(LBT, **kwargs)
 
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -1614,10 +1618,16 @@ def res_4131_lbt(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_cts(**kwargs):
     from libcnmc.res_4131 import CTS, CTS_2015
+    from libcnmc.models import F8Res4771, F8Res4131
+
     if kwargs['year'] == 2015:
         kwargs["compare_field"] = "4771_entregada"
+        kwargs["actual_obj"] = F8Res4771
+        kwargs["prev_obj"] = F8Res4771
         res_lat(CTS_2015, **kwargs)
     else:
+        kwargs["actual_obj"] = F8Res4131
+        kwargs["prev_obj"] = F8Res4131
         kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
         res_lat(CTS, **kwargs)
 
