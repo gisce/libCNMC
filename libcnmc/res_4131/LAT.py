@@ -33,6 +33,7 @@ class LAT_2015(MultiprocessBased):
         self.report_name = 'CNMC INVENTARI AT'
         self.layer = 'LBT\_%'
         self.embarrats = kwargs.pop('embarrats', False)
+        self.compare_field = kwargs["compare_field"]
         id_res_like = self.connection.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')])
         if id_res_like:
@@ -63,7 +64,7 @@ class LAT_2015(MultiprocessBased):
             'baixa', 'data_pm', 'data_industria', 'coeficient', 'cini',
             'propietari', 'tensio_max_disseny', 'name', 'origen', 'final',
             'perc_financament', 'circuits', 'longitud_cad', 'cable',
-            'tipus_instalacio_cnmc_id', 'data_baixa', '4771_entregada'
+            'tipus_instalacio_cnmc_id', 'data_baixa', self.compare_field
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
@@ -204,9 +205,9 @@ class LAT_2015(MultiprocessBased):
                     else:
                         fecha_baja = ''
 
-                    if tram['4771_entregada']:
-                        data_4771 = tram['4771_entregada']
-                        entregada = F1Res4771(**data_4771)
+                    if tram[self.compare_field]:
+                        last_data = tram[self.compare_field]
+                        entregada = F1Res4771(**last_data)
                         if tram['tipus_instalacio_cnmc_id']:
                             id_ti = tram['tipus_instalacio_cnmc_id'][0]
                             ti = O.GiscedataTipusInstallacio.read(
@@ -286,6 +287,7 @@ class LAT(MultiprocessBased):
         self.report_name = 'CNMC INVENTARI AT'
         self.layer = 'LBT\_%'
         self.embarrats = kwargs.pop('embarrats', False)
+        self.compare_field = kwargs["compare_field"]
         id_res_like = self.connection.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')])
         if id_res_like:
@@ -316,7 +318,7 @@ class LAT(MultiprocessBased):
             'baixa', 'data_pm', 'data_industria', 'coeficient', 'cini',
             'propietari', 'tensio_max_disseny', 'name', 'origen', 'final',
             'perc_financament', 'circuits', 'longitud_cad', 'cable',
-            'tipus_instalacio_cnmc_id', 'data_baixa', '4131_entregada_2016',
+            'tipus_instalacio_cnmc_id', 'data_baixa', self.compare_field,
             'baixa', 'data_baixa'
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
@@ -464,8 +466,8 @@ class LAT(MultiprocessBased):
                     else:
                         fecha_baja = ''
 
-                    if tram['4131_entregada_2016']:
-                        data_4131 = tram['4131_entregada_2016']
+                    if tram[self.compare_field]:
+                        data_4131 = tram[self.compare_field]
                         entregada = F1Res4131(**data_4131)
                         if tram['tipus_instalacio_cnmc_id']:
                             id_ti = tram['tipus_instalacio_cnmc_id'][0]
