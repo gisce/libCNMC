@@ -1624,7 +1624,7 @@ def res_4131_cts(**kwargs):
         kwargs["compare_field"] = "4771_entregada"
         kwargs["actual_obj"] = F8Res4771
         kwargs["prev_obj"] = F8Res4771
-        res_lat(CTS, **kwargs)
+        res_lat(CTS_2015, **kwargs)
     else:
         kwargs["actual_obj"] = F8Res4131
         kwargs["prev_obj"] = F8Res4131
