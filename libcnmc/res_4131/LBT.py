@@ -33,6 +33,7 @@ class LBT_2015(MultiprocessBased):
         self.base_object = 'Línies BT'
         self.report_name = 'CNMC INVENTARI BT'
         self.embarrats = kwargs.pop('embarrats', False)
+        self.compare_field = kwargs["compare_field"]
 
     def get_sequence(self):
         """
@@ -69,7 +70,7 @@ class LBT_2015(MultiprocessBased):
             'name', 'municipi', 'data_pm', 'ct', 'coeficient', 'cini',
             'perc_financament', 'longitud_cad', 'cable', 'voltatge',
             'data_alta', 'propietari', 'tipus_instalacio_cnmc_id',
-            'data_baixa', '4771_entregada'
+            'data_baixa', self.compare_field
         ]
         data_baixa_limit = '{0}-01-01'.format(self.year)
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
@@ -168,9 +169,9 @@ class LBT_2015(MultiprocessBased):
                 else:
                     fecha_baja = ''
 
-                if linia['4771_entregada']:
-                    data_4771 = linia['4771_entregada']
-                    entregada = F2Res4771(**data_4771)
+                if linia[self.compare_field]:
+                    last_data = linia[self.compare_field]
+                    entregada = F2Res4771(**last_data)
                     actual = F2Res4771(
                         'B{0}'.format(linia['name']),
                         linia['cini'],
@@ -238,11 +239,12 @@ class LBT(MultiprocessBased):
         :return: CT
         """
         super(LBT, self).__init__(**kwargs)
-        self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.codi_r1 = kwargs.pop('codi_r1')
-        self.base_object = 'Línies BT'
-        self.report_name = 'CNMC INVENTARI BT'
-        self.embarrats = kwargs.pop('embarrats', False)
+        self.year = kwargs.pop("year", datetime.now().year - 1)
+        self.codi_r1 = kwargs.pop("codi_r1")
+        self.base_object = "Línies BT"
+        self.report_name = "CNMC INVENTARI BT"
+        self.embarrats = kwargs.pop("embarrats", False)
+        self.compare_field = kwargs["compare_field"]
 
     def get_sequence(self):
         """
@@ -279,7 +281,7 @@ class LBT(MultiprocessBased):
             'name', 'municipi', 'data_pm', 'ct', 'coeficient', 'cini',
             'perc_financament', 'longitud_cad', 'cable', 'voltatge',
             'data_alta', 'propietari', 'tipus_instalacio_cnmc_id', 'baixa',
-            'data_baixa', '4131_entregada_2016'
+            'data_baixa', self.compare_field
         ]
         data_baixa_limit = '{0}-01-01'.format(self.year)
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
@@ -383,9 +385,9 @@ class LBT(MultiprocessBased):
                 else:
                     fecha_baja = ''
 
-                if linia['4131_entregada_2016']:
-                    data_4131 = linia['4131_entregada_2016']
-                    entregada = F2Res4131(**data_4131)
+                if linia[self.compare_field]:
+                    last_data = linia[self.compare_field]
+                    entregada = F2Res4131(**last_data)
                     actual = F2Res4131(
                         'B{0}'.format(linia['name']),
                         linia['cini'],
