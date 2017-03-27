@@ -1727,8 +1727,10 @@ def res_4131_maq(**kwargs):
 def res_4131_des(**kwargs):
     from libcnmc.res_4131 import DES, DES_2015
     if kwargs['year'] == 2015:
+        kwargs["compare_field"] = "4771_entregada"
         res_lat(DES_2015, **kwargs)
     else:
+        kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
         res_lat(DES, **kwargs)
 
 

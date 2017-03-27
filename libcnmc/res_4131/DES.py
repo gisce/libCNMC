@@ -28,6 +28,7 @@ class DES_2015(MultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies DES'
         self.report_name = 'CNMC INVENTARI DES'
+        self.compare_field = kwargs["compare_field"]
 
     def get_sequence(self):
         """
@@ -46,7 +47,7 @@ class DES_2015(MultiprocessBased):
         O = self.connection
         fields_to_read = [
             'name', 'cini', 'denominacio', 'any_ps', 'vai', 'data_apm',
-            '4771_entregada'
+            self.compare_field
         ]
         while True:
             try:
@@ -59,9 +60,9 @@ class DES_2015(MultiprocessBased):
                 data_apm = tmp_date.strftime('%d/%m/%Y')
                 fecha_baja = ''
 
-                if despatx['4771_entregada']:
-                    data_4771 = despatx['4771_entregada']
-                    entregada = F6Res4771(**data_4771)
+                if despatx[self.compare_field]:
+                    last_data = despatx[self.compare_field]
+                    entregada = F6Res4771(**last_data)
                     actual = F6Res4771(
                         despatx['name'],
                         despatx['cini'],
@@ -109,6 +110,7 @@ class DES(MultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies DES'
         self.report_name = 'CNMC INVENTARI DES'
+        self.compare_field = kwargs["compare_field"]
 
     def get_sequence(self):
         """
@@ -127,7 +129,7 @@ class DES(MultiprocessBased):
         O = self.connection
         fields_to_read = [
             'name', 'cini', 'denominacio', 'any_ps', 'vai', 'data_apm',
-            '4131_entregada_2016'
+            self.compare_field
         ]
         while True:
             try:
@@ -140,8 +142,8 @@ class DES(MultiprocessBased):
                 data_apm = tmp_date.strftime('%d/%m/%Y')
                 fecha_baja = ''
 
-                if despatx['4131_entregada_2016']:
-                    data_4131 = despatx['4131_entregada_2016']
+                if despatx[self.compare_field]:
+                    data_4131 = despatx[self.compare_field]
                     entregada = F6Res4131(**data_4131)
                     actual = F6Res4131(
                         despatx['name'],
