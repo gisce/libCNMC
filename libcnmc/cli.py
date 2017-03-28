@@ -578,7 +578,8 @@ def res_des(DES, **kwargs):
         connection=O,
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
-        year=kwargs['year']
+        year=kwargs['year'],
+        compare_field=kwargs["compare_field"]
     )
     proc.calc()
 
