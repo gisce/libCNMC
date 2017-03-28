@@ -230,7 +230,8 @@ def res_pos2(proc1, proc2, **kwargs):
         num_proc=kwargs["num_proc"],
         codi_r1=kwargs["codi_r1"],
         year=kwargs["year"],
-        embarrats=kwargs["embarrats"]
+        embarrats=kwargs["embarrats"],
+        compare_field=kwargs["compare_field"]
     )
     proc.calc()
 
