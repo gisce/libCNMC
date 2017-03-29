@@ -422,7 +422,9 @@ class MAQ(MultiprocessBased):
                         format_f(tensio_secundari),
                         format_f(financiacio),
                         data_pm,
-                        format_f(capacitat, 2)
+                        fecha_baja,
+                        format_f(capacitat, 2),
+                        0
                     )
                     if entregada == actual:
                         estado = '0'
