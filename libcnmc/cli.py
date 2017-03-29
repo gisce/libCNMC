@@ -1770,7 +1770,7 @@ def res_4131_des(**kwargs):
 def res_4131_fia(**kwargs):
     from libcnmc.res_4131 import FIA, FIA_2015
     if kwargs['year'] == 2015:
-        kwargs["compare_field"] = "4771_entregada_{}"
+        kwargs["compare_field"] = "4771_entregada"
         res_lat(FIA_2015, **kwargs)
     else:
         kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
@@ -1799,7 +1799,12 @@ def res_4131_fia(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_con(**kwargs):
     from libcnmc.res_4131 import CON
-    res_lat(CON, **kwargs)
+    if kwargs['year'] == 2015:
+        kwargs["compare_field"] = "4771_entregada"
+        res_lat(CON, **kwargs)
+    else:
+        kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
+        res_lat(CON, **kwargs)
 
 if __name__ == '__main__':
     invoke()
