@@ -1,22 +1,26 @@
-from cnmcmodel import CNMCModel
+from __future__ import absolute_import
+from libcnmc.models.cnmcmodel import CNMCModel
+
 from collections import OrderedDict
 
-from .fields import String, Integer, Decimal
+from libcnmc.models.fields import String, Integer, Decimal
 
 
-class F4Res4771(CNMCModel):
+class F4Res4131(CNMCModel):
     """
-        Class for forth file of resolution 4771(Posiciones)
+        Class for forth file of resolution 4131(Posiciones)
     """
     schema = OrderedDict([
         ('identificador', String()),
         ('cini', String()),
         ('denominacion', String()),
-        ('codigo_tipo_posicion', String()),
+        ('codigo_ccuu', String()),
         ('codigo_ccaa', Integer()),
-        ('nivel_tension', Decimal(2)),
-        ('participacion', Decimal(2)),
+        ('nivel_tension', Decimal(3)),
+        ('participacion', Decimal(3)),
         ('fecha_aps', String()),
+        ('fecha_baja', String()),
+        ('estado', Integer()),
     ])
 
     @property
@@ -25,7 +29,7 @@ class F4Res4771(CNMCModel):
 
     def __cmp__(self, other):
         comp_fields = [
-            'cini', 'nivel_tension', 'participacion',
+            'cini', 'codigo_ccaa', 'nivel_tension', 'participacion',
             'denominacion'
         ]
         if self.diff(other, comp_fields):

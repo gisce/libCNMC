@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import click
 from datetime import datetime
+import os
+import tempfile
 
 from libcnmc.utils import N_PROC
 from libcnmc.core import UpdateCNMCStats, UpdateCINISComptador
@@ -179,7 +181,7 @@ def cir_4_2014_f11(**kwargs):
     proc.calc()
 
 
-#CSV LAT
+# CSV LAT
 def res_lat(LAT, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
@@ -192,9 +194,72 @@ def res_lat(LAT, **kwargs):
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
-        embarrats=kwargs['embarrats']
+        embarrats=kwargs['embarrats'],
+        compare_field=kwargs["compare_field"]
     )
     proc.calc()
+
+
+# CSV POS
+def res_pos2(proc1, proc2, **kwargs):
+    """
+
+    :param proc1: generation proces 1
+    :param proc2: generation proces 1
+    :param kwargs:
+    :return:
+    """
+
+    O = OOOPFactory(dbname=kwargs["database"], user=kwargs["user"],
+                    pwd=kwargs["password"], port=kwargs["port"],
+                    uri=kwargs["server"])
+    output = kwargs["output"]
+    temp_fd = tempfile.NamedTemporaryFile()
+
+    tmp_out1 = temp_fd.name
+    temp_fd.close()
+    temp_fd = tempfile.NamedTemporaryFile()
+    tmp_out2 = temp_fd.name
+    temp_fd.close()
+
+    proc = proc1(
+        quiet=kwargs["quiet"],
+        interactive=kwargs["interactive"],
+        output=tmp_out1,
+        connection=O,
+        num_proc=kwargs["num_proc"],
+        codi_r1=kwargs["codi_r1"],
+        year=kwargs["year"],
+        embarrats=kwargs["embarrats"],
+        compare_field=kwargs["compare_field"]
+    )
+    proc.calc()
+
+    proc_2 = proc2(
+        quiet=kwargs["quiet"],
+        interactive=kwargs["interactive"],
+        output=tmp_out2,
+        connection=O,
+        num_proc=kwargs["num_proc"],
+        codi_r1=kwargs["codi_r1"],
+        year=kwargs["year"],
+        embarrats=kwargs["embarrats"],
+        compare_field=kwargs["compare_field"]
+    )
+    proc_2.calc()
+
+    final_out = ""
+    with open(tmp_out1, 'r') as fd1:
+        final_out += fd1.read()
+
+    with open(tmp_out2, 'r') as fd2:
+        final_out += fd2.read()
+
+    with open(output, 'w') as fd_out:
+        fd_out.write(final_out)
+
+    os.unlink(tmp_out1)
+    os.unlink(tmp_out2)
 
 
 @cnmc.command()
@@ -245,7 +310,7 @@ def res_4771_lat(**kwargs):
     res_lat(LAT, **kwargs)
 
 
-#CSV LBT
+# CSV LBT
 def res_lbt(LBT, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
@@ -311,7 +376,7 @@ def res_4771_lbt(**kwargs):
     res_lbt(LBT, **kwargs)
 
 
-#CSV SUB
+# CSV SUB
 def res_sub(SUB, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
@@ -374,7 +439,7 @@ def res_4771_sub(**kwargs):
     res_sub(SUB, **kwargs)
 
 
-#CSV POS
+# CSV POS
 def res_pos(POS, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
@@ -437,7 +502,7 @@ def res_4771_pos(**kwargs):
     res_pos(POS, **kwargs)
 
 
-#CSV MAQ
+# CSV MAQ
 def res_maq(MAQ, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
@@ -449,7 +514,8 @@ def res_maq(MAQ, **kwargs):
         connection=O,
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
-        year=kwargs['year']
+        year=kwargs['year'],
+        compare_field=kwargs["compare_field"]
     )
     proc.calc()
 
@@ -512,7 +578,8 @@ def res_des(DES, **kwargs):
         connection=O,
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
-        year=kwargs['year']
+        year=kwargs['year'],
+        compare_field=kwargs["compare_field"]
     )
     proc.calc()
 
@@ -563,7 +630,7 @@ def res_4771_des(**kwargs):
     res_des(DES, **kwargs)
 
 
-#CSV FIA
+# CSV FIA
 def res_fia(FIA, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
@@ -626,7 +693,7 @@ def res_4771_fia(**kwargs):
     res_fia(FIA, **kwargs)
 
 
-#CSV CTS
+# CSV CTS
 def res_cts(CTS, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
@@ -689,7 +756,7 @@ def res_4771_cts(**kwargs):
     res_cts(CTS, **kwargs)
 
 
-#CSV INV
+# CSV INV
 @cnmc.command()
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
@@ -725,7 +792,7 @@ def res_4603_inv(**kwargs):
     proc.calc()
 
 
-#CINIS Maquines
+# CINIS Maquines
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -760,7 +827,7 @@ def res_4603_cinimaq(**kwargs):
     proc.calc()
 
 
-#CINIS Posicions
+# CINIS Posicions
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -906,6 +973,7 @@ def update_cinis_cts(**kwargs):
         file_input=kwargs['file_input'])
     proc.calc()
 
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -938,6 +1006,7 @@ def cir_4_2015_f1(**kwargs):
         year=kwargs['year']
     )
     proc.calc()
+
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
@@ -972,6 +1041,7 @@ def cir_4_2015_f11(**kwargs):
     )
     proc.calc()
 
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -1005,6 +1075,7 @@ def cir_4_2015_f1bis(**kwargs):
     )
     proc.calc()
 
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -1036,6 +1107,7 @@ def cir_4_2015_f12(**kwargs):
     )
     proc.calc()
 
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -1066,6 +1138,7 @@ def cir_4_2015_f12bis(**kwargs):
         year=kwargs['year']
     )
     proc.calc()
+
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
@@ -1100,6 +1173,7 @@ def cir_4_2015_f13(**kwargs):
     )
     proc.calc()
 
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -1130,6 +1204,7 @@ def cir_4_2015_f13bis(**kwargs):
         year=kwargs['year']
     )
     proc.calc()
+
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
@@ -1162,6 +1237,7 @@ def cir_4_2015_f13c(**kwargs):
     )
     proc.calc()
 
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -1192,6 +1268,7 @@ def cir_4_2015_f14(**kwargs):
         year=kwargs['year']
     )
     proc.calc()
+
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
@@ -1226,6 +1303,7 @@ def cir_4_2015_f15(**kwargs):
     )
     proc.calc()
 
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -1258,6 +1336,7 @@ def cir_4_2015_f10at(**kwargs):
         year=kwargs['year']
     )
     proc.calc()
+
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
@@ -1292,6 +1371,7 @@ def cir_4_2015_f10bt(**kwargs):
     )
     proc.calc()
 
+
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -1324,6 +1404,7 @@ def cir_4_2015_f20(**kwargs):
         year=kwargs['year']
     )
     proc.calc()
+
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
@@ -1476,8 +1557,14 @@ def invoke():
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_lat(**kwargs):
-    from libcnmc.res_4131 import LAT
-    res_lat(LAT, **kwargs)
+    from libcnmc.res_4131 import LAT, LAT_2015
+    if kwargs['year'] == 2015:
+        kwargs["compare_field"] = "4771_entregada"
+        res_lat(LAT_2015, **kwargs)
+    else:
+        last_year = datetime.now().year - 1
+        kwargs["compare_field"] = "4131_entregada_{}".format(last_year)
+        res_lat(LAT, **kwargs)
 
 
 @cnmc.command()
@@ -1501,9 +1588,14 @@ def res_4131_lat(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_lbt(**kwargs):
-    from libcnmc.res_4131 import LBT
-    res_lat(LBT, **kwargs)
-
+    from libcnmc.res_4131 import LBT, LBT_2015
+    if kwargs['year'] == 2015:
+        kwargs["compare_field"] = "4771_entregada"
+        res_lat(LBT_2015, **kwargs)
+    else:
+        last_year = datetime.now().year-1
+        kwargs["compare_field"] = "4131_entregada_{}".format(last_year)
+        res_lat(LBT, **kwargs)
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
@@ -1526,8 +1618,14 @@ def res_4131_lbt(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_cts(**kwargs):
-    from libcnmc.res_4131 import CTS
-    res_lat(CTS, **kwargs)
+    from libcnmc.res_4131 import CTS, CTS_2015
+    if kwargs['year'] == 2015:
+        kwargs["compare_field"] = "4771_entregada"
+        res_lat(CTS_2015, **kwargs)
+    else:
+        kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
+        res_lat(CTS, **kwargs)
+
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
@@ -1550,8 +1648,14 @@ def res_4131_cts(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_sub(**kwargs):
-    from libcnmc.res_4131 import SUB
-    res_lat(SUB, **kwargs)
+    from libcnmc.res_4131 import SUB, SUB_2015
+    if kwargs['year'] == 2015:
+        kwargs["compare_field"] = "4771_entregada"
+        res_lat(SUB_2015, **kwargs)
+    else:
+        kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
+        res_lat(SUB, **kwargs)
+
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
@@ -1574,8 +1678,14 @@ def res_4131_sub(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_pos(**kwargs):
-    from libcnmc.res_4131 import POS
-    res_lat(POS, **kwargs)
+    from libcnmc.res_4131 import POS, POS_2015, POS_INT
+    if kwargs['year'] == 2015:
+        kwargs["compare_field"] = "4771_entregada"
+        res_lat(POS_2015, **kwargs)
+    else:
+        kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
+        res_pos2(POS, POS_INT, **kwargs)
+
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
@@ -1598,8 +1708,13 @@ def res_4131_pos(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_maq(**kwargs):
-    from libcnmc.res_4131 import MAQ
-    res_lat(MAQ, **kwargs)
+    from libcnmc.res_4131 import MAQ, MAQ_2015
+    if kwargs["year"] == 2015:
+        kwargs["compare_field"] = "4771_entregada"
+        res_lat(MAQ_2015, **kwargs)
+    else:
+        kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
+        res_lat(MAQ, **kwargs)
 
 
 @cnmc.command()
@@ -1623,8 +1738,13 @@ def res_4131_maq(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_des(**kwargs):
-    from libcnmc.res_4131 import DES
-    res_lat(DES, **kwargs)
+    from libcnmc.res_4131 import DES, DES_2015
+    if kwargs['year'] == 2015:
+        kwargs["compare_field"] = "4771_entregada"
+        res_lat(DES_2015, **kwargs)
+    else:
+        kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
+        res_lat(DES, **kwargs)
 
 
 @cnmc.command()
@@ -1648,8 +1768,13 @@ def res_4131_des(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_fia(**kwargs):
-    from libcnmc.res_4131 import FIA
-    res_lat(FIA, **kwargs)
+    from libcnmc.res_4131 import FIA, FIA_2015
+    if kwargs['year'] == 2015:
+        kwargs["compare_field"] = "4771_entregada_{}"
+        res_lat(FIA_2015, **kwargs)
+    else:
+        kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
+        res_lat(FIA, **kwargs)
 
 
 @cnmc.command()

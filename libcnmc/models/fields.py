@@ -8,7 +8,7 @@ class DecimalCoerce(object):
     :param decimals: precision to get the decimal
     """
 
-    def __init__(self, decimals=1):
+    def __init__(self, decimals=3):
         self.deciamls = decimals * -1
 
     def __call__(self, value):

@@ -1,19 +1,22 @@
-from cnmcmodel import CNMCModel
+from __future__ import absolute_import
+from libcnmc.models.cnmcmodel import CNMCModel
 from collections import OrderedDict
 
-from .fields import String, Integer
+from libcnmc.models.fields import String, Integer, Decimal
 
-class F6Res4771(CNMCModel):
-    """
-        Class for sixth file of resolution 4771(Despatxos)
-    """
 
+class F3Res4771(CNMCModel):
+    """
+        Model for third file of 4771 resolution(Subestacions)
+    """
     schema = OrderedDict([
         ('identificador', String()),
         ('cini', String()),
         ('denominacion', String()),
-        ('anio_aps', String()),
-        ('valor_inversion', Integer())
+        ('codigo_ccaa', Integer()),
+        ('participacion', Decimal(2)),
+        ('fecha_aps', String()),
+        ('posiciones', Integer())
     ])
 
     @property
