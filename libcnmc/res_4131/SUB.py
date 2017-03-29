@@ -272,15 +272,17 @@ class SUB(MultiprocessBased):
 
                 if sub[self.compare_field]:
                     last_data = sub[self.compare_field]
-                    entregada = F3Res4771(**last_data)
-                    actual = F3Res4771(
+                    entregada = F3Res4131(**last_data)
+                    actual = F3Res4131(
                         sub['name'],
                         sub['cini'],
                         sub['descripcio'],
                         comunitat,
                         format_f(round(100 - int(sub['perc_financament']))),
                         data_pm,
-                        num_pos
+                        fecha_baja,
+                        num_pos,
+                        0
                     )
                     if entregada == actual:
                         estado = 0
