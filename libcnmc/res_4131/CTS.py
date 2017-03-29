@@ -258,14 +258,16 @@ class CTS(MultiprocessBased):
                         id_ti,
                         ['name'])['name']
 
-                    actual = F8Res4771(
+                    actual = F8Res4131(
                         ct['name'],
                         ct['cini'],
                         ct['descripcio'],
                         ti,
                         comunitat_codi,
                         format_f(round(100 - int(ct['perc_financament']))),
-                        data_pm
+                        data_pm,
+                        fecha_baja,
+                        0
                     )
                     if entregada == actual:
                         estado = '0'
