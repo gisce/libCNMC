@@ -150,8 +150,10 @@ class DES(MultiprocessBased):
                         despatx['cini'],
                         despatx['denominacio'],
                         data_apm,
-                        format_f(despatx['vai'])
-                                       )
+                        fecha_baja,
+                        format_f(despatx['vai']),
+                        0
+                    )
                     if actual == entregada:
                         estado = '0'
                     else:
