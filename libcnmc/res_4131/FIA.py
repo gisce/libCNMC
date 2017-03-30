@@ -145,7 +145,9 @@ class FIA(MultiprocessBased):
                         element_act,
                         codigo_ccuu,
                         ccaa,
-                        data_pm
+                        data_pm,
+                        fecha_baja,
+                        0
                     )
                     if entregada == actual:
                         estado = '0'
