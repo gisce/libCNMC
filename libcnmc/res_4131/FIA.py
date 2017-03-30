@@ -138,14 +138,16 @@ class FIA(MultiprocessBased):
 
                 if cll[self.compare_filed] and str(self.year + 1) not in str(data_pm):
                     last_data = cll[self.compare_filed]
-                    entregada = F7Res4771(**last_data)
-                    actual = F7Res4771(
+                    entregada = F7Res4131(**last_data)
+                    actual = F7Res4131(
                         cll['name'],
                         cll['cini'],
                         element_act,
                         codigo_ccuu,
                         ccaa,
-                        data_pm
+                        data_pm,
+                        fecha_baja,
+                        0
                     )
                     if entregada == actual:
                         estado = '0'
