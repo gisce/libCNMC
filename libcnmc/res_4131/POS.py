@@ -358,7 +358,7 @@ class POS(MultiprocessBased):
                 if pos[self.compare_field]:
                     last_data = pos[self.compare_field]
                     entregada = F4Res4131(**last_data)
-                    actual = F4Res4771(
+                    actual = F4Res4131(
                         o_sub,
                         pos['cini'],
                         denominacio,
@@ -366,7 +366,9 @@ class POS(MultiprocessBased):
                         comunitat,
                         format_f(tensio),
                         format_f(round(100 - int(pos['perc_financament']))),
-                        data_pm
+                        data_pm,
+                        fecha_baja,
+                        0
                     )
                     if entregada == actual:
                         estado = 0
