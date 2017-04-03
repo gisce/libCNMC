@@ -49,6 +49,7 @@ class FIA(MultiprocessBased):
                           '&', ('active', '=', False),
                                ('data_baixa', '!=', False),
                           ('active', '=', True)]
+        search_params += [("cini", "not like", "I28")]
         return self.connection.GiscedataCellesCella.search(
             search_params, 0, 0, False, {'active_test': False})
 
