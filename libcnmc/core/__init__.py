@@ -55,14 +55,15 @@ class MultiprocessBased(object):
         """
         widgets = ['Informe %s: ' % self.report_name,
                    Percentage(), ' ', Bar(), ' ', ETA()]
-        pbar = ProgressBar(widgets=widgets, maxval=total).start()
-        done = 0
-        while True:
-            self.progress_q.get()
-            done += 1
-            pbar.update(done)
-            if done >= total:
-                pbar.finish()
+        if total:
+            pbar = ProgressBar(widgets=widgets, maxval=total).start()
+            done = 0
+            while True:
+                self.progress_q.get()
+                done += 1
+                pbar.update(done)
+                if done >= total:
+                    pbar.finish()
 
     def writer(self):
         if self.file_output:
