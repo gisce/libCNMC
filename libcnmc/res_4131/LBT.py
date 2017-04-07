@@ -401,7 +401,7 @@ class LBT(MultiprocessBased):
                         data_baixa,
                         1,
                         1,
-                        format_f(tensio),
+                        format_f(tensio, 3),
                         format_f(longitud, 3),
                         format_f(intensitat),
                         format_f(float(cable['seccio']),2),
