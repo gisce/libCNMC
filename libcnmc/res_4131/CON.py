@@ -146,7 +146,7 @@ class CON(MultiprocessBased):
                     estado = '2'
                 else:
                     estado = '0'
-                capacidad = format_f(cond['potencia_instalada'], 3)
+                capacidad = format_f(cond['potencia_instalada']/1000, 3)
                 output = [
                     '{0}'.format(cond['name']),
                     cond['cini'] or '',
