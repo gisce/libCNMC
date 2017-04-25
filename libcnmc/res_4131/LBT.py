@@ -387,8 +387,6 @@ class LBT(MultiprocessBased):
 
                 if linia[self.compare_field]:
                     last_data = linia[self.compare_field]
-                    if 'propiedad' in last_data:
-                        last_data.pop('propiedad')
                     entregada = F2Res4131(**last_data)
                     actual = F2Res4131(
                         'B{0}'.format(linia['name']),
@@ -406,8 +404,9 @@ class LBT(MultiprocessBased):
                         format_f(tensio, 3),
                         format_f(longitud, 3),
                         format_f(intensitat),
-                        format_f(float(cable['seccio']), 2),
+                        format_f(float(cable['seccio']),2),
                         format_f(capacitat),
+                        propietari,
                         0
                     )
                     if actual == entregada:
@@ -435,6 +434,7 @@ class LBT(MultiprocessBased):
                     format_f(intensitat, 3),
                     format_f(cable['seccio'], 3),
                     format_f(capacitat, 3),
+                    propietari,
                     estado
                 ]
 

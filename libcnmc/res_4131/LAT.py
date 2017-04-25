@@ -330,6 +330,7 @@ class LAT(MultiprocessBased):
             '|', ('data_baixa', '=', False), ('data_baixa', '>', data_baixa)
             ]
 
+        #print 'static_search_params:{}'.format(static_search_params)
         # Revisem que si està de baixa ha de tenir la data informada.
         static_search_params += [
             '|',
@@ -344,6 +345,7 @@ class LAT(MultiprocessBased):
                 linia = O.GiscedataAtLinia.read(
                     item, ['trams', 'tensio', 'municipi', 'propietari']
                 )
+                propietari = linia['propietari'] and '1' or '0'
                 search_params = [('linia', '=', linia['id'])]
                 search_params += static_search_params
                 ids = O.GiscedataAtTram.search(
@@ -466,8 +468,6 @@ class LAT(MultiprocessBased):
 
                     if tram[self.compare_field]:
                         data_4131 = tram[self.compare_field]
-                        if 'propiedad' in data_4131:
-                            data_4131.pop('propiedad')
                         entregada = F1Res4131(**data_4131)
                         if tram['tipus_instalacio_cnmc_id']:
                             id_ti = tram['tipus_instalacio_cnmc_id'][0]
@@ -492,6 +492,7 @@ class LAT(MultiprocessBased):
                             format_f(cable.get('intensitat_admisible', 0) or 0),
                             format_f(float(cable.get('seccio', 0)), 2),
                             str(capacitat),
+                            propietari,
                             0
                         )
                         if actual == entregada:
@@ -519,6 +520,7 @@ class LAT(MultiprocessBased):
                         format_f(cable.get('intensitat_admisible', 0) or 0, 3),
                         format_f(cable.get('seccio', 0) or 0, 3),
                         capacitat,
+                        propietari,
                         estado
                     ]
 
