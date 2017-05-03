@@ -225,7 +225,7 @@ class LAT(MultiprocessBased):
                             tram['origen'],
                             tram['final'],
                             ti,
-                            comunitat, comunitat,
+                            comunitat,
                             format_f(round(100 - int(tram.get('perc_financament', 0) or 0))),
                             data_pm,
                             data_baixa,
