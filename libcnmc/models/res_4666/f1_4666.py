@@ -26,7 +26,6 @@ class F1Res4666(CNMCModel):
         ('intensidad_maxima', Decimal(3)),
         ('seccion', Decimal(3)),
         ('capacidad', Integer()),
-        ('propiedad', Integer()),
         ('estado', Integer())
         ])
 

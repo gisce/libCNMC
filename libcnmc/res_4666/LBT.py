@@ -150,7 +150,7 @@ class LBT(MultiprocessBased):
                     cable = {'seccio': 0, 'intensitat_admisible': 0}
 
                 intensitat = cable['intensitat_admisible']
-                #Capacitat
+                # Capacitat
                 capacitat = round(
                     (cable['intensitat_admisible'] * int(linia['voltatge'])
                      * math.sqrt(3)) / 1000, 3)
@@ -158,7 +158,7 @@ class LBT(MultiprocessBased):
                 if not capacitat:
                     capacitat = 1.0
 
-                #Descripció
+                # Descripció
                 origen = tallar_text(edge['start_node'][1], 50)
                 final = tallar_text(edge['end_node'][1], 50)
 
@@ -223,7 +223,6 @@ class LBT(MultiprocessBased):
                     format_f(intensitat, 3),
                     format_f(cable['seccio'], 3),
                     format_f(capacitat, 3),
-                    propietari,
                     estado
                 ]
 

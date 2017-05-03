@@ -74,7 +74,7 @@ class LAT(MultiprocessBased):
             '|', ('data_baixa', '=', False), ('data_baixa', '>', data_baixa)
             ]
 
-        #print 'static_search_params:{}'.format(static_search_params)
+        # print 'static_search_params:{}'.format(static_search_params)
         # Revisem que si està de baixa ha de tenir la data informada.
         static_search_params += [
             '|',
@@ -140,14 +140,13 @@ class LAT(MultiprocessBased):
                     else:
                         codi_ccuu = ''
 
-                    #Agafem la tensió
+                    # Agafem la tensió
                     if 'tensio_max_disseny' in tram:
                         tensio = tram['tensio_max_disseny'] / 1000.0
                     elif 'tensio' in linia:
                         tensio = linia['tensio'] / 1000.0
                     else:
                         tensio = 0
-
 
                     comunitat = ''
                     if linia['municipi']:
@@ -168,7 +167,7 @@ class LAT(MultiprocessBased):
                         cable = O.GiscedataAtCables.read(
                             id_desconegut[0], ['tipus'])
 
-                    #Capacitat
+                    # Capacitat
                     if 'intensitat_admisible' in cable:
                         cap = (cable['intensitat_admisible'] * tensio *
                                math.sqrt(3) / 1000.0)
@@ -180,7 +179,7 @@ class LAT(MultiprocessBased):
                     else:
                         capacitat = int(round(cap))
 
-                    #Descripció
+                    # Descripció
                     origen = tallar_text(tram['origen'], 50)
                     final = tallar_text(tram['final'], 50)
                     if 'longitud_cad' in tram:
@@ -264,7 +263,6 @@ class LAT(MultiprocessBased):
                         format_f(cable.get('intensitat_admisible', 0) or 0, 3),
                         format_f(cable.get('seccio', 0) or 0, 3),
                         capacitat,
-                        propietari,
                         estado
                     ]
 
