@@ -11,7 +11,7 @@ import traceback
 from operator import itemgetter
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import get_id_municipi_from_company, format_f
+from libcnmc.utils import format_f
 
 
 class CON(MultiprocessBased):
