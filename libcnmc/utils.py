@@ -42,6 +42,7 @@ def get_norm_tension(connection, tension):
 
     return tension
 
+
 def get_ine(connection, ine):
     """Retornem dos valors el codi de l'estat i el codi ine sense estat.
     """

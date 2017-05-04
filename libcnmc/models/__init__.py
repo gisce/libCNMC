@@ -17,3 +17,12 @@ from res_4131 import F5Res4131
 from res_4131 import F6Res4131
 from res_4131 import F7Res4131
 from res_4131 import F8Res4131
+
+from res_4666 import F1Res4666
+from res_4666 import F2Res4666
+from res_4666 import F3Res4666
+from res_4666 import F4Res4666
+from res_4666 import F5Res4666
+from res_4666 import F6Res4666
+from res_4666 import F7Res4666
+from res_4666 import F8Res4666
