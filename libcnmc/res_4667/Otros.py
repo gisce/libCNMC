@@ -3,6 +3,7 @@
 
 import traceback
 
+from libcnmc.res_4667.utils import get_resum_any_id
 from libcnmc.core import MultiprocessBased
 
 
@@ -26,9 +27,10 @@ class Otros(MultiprocessBased):
         :return: List of ids
         :rtype: list
         """
+        id_resum = get_resum_any_id(self.connection, self.year)
+        search_otro = [("resums_inversio", "=", id_resum)]
 
-        search_params = []
-        return self.connection.GiscedataCnmcAltres.search(search_params)
+        return self.connection.GiscedataCnmcAltres.search(search_otro)
 
     def consumer(self):
         """

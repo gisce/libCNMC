@@ -3,6 +3,7 @@
 
 import traceback
 
+from libcnmc.res_4667.utils import get_resum_any_id
 from libcnmc.core import MultiprocessBased
 
 
@@ -27,8 +28,9 @@ class RES(MultiprocessBased):
         :rtype: list
         """
 
-        search_params = []
-        return self.connection.GiscedataCnmcResumAny.search(search_params)
+        id_resum = get_resum_any_id(self.connection, self.year)
+
+        return [id_resum]
 
     def consumer(self):
         """

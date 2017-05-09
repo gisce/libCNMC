@@ -3,6 +3,7 @@
 
 import traceback
 
+from libcnmc.res_4667.utils import get_resum_any_id
 from libcnmc.core import MultiprocessBased
 
 
@@ -26,6 +27,7 @@ class PRO(MultiprocessBased):
         :return: List of ids
         :rtype: list
         """
+
 
         search_params = []
         return self.connection.GiscedataCnmcProjectes.search(search_params)

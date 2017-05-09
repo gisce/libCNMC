@@ -3,6 +3,7 @@
 
 import traceback
 
+from libcnmc.res_4667.utils import get_resum_any_id
 from libcnmc.core import MultiprocessBased
 
 
@@ -27,8 +28,10 @@ class RESCCAA(MultiprocessBased):
         :rtype: list
         """
 
-        search_params = []
-        return self.connection.GiscedataCnmcResumCCAA.search(search_params)
+        id_resum = get_resum_any_id(self.connection, self.year)
+        search_res = [("resums_inversio", "=", id_resum)]
+
+        return self.connection.GiscedataCnmcResumCCAA.search(search_res)
 
     def consumer(self):
         """

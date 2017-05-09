@@ -6,6 +6,7 @@ INVENTARI DE CNMC AT
 """
 import traceback
 
+from libcnmc.res_4667.utils import get_resum_any_id
 from libcnmc.core import MultiprocessBased
 
 
@@ -30,8 +31,10 @@ class FIA(MultiprocessBased):
         :rtype: list
         """
 
-        search_params = []
-        return self.connection.GiscedataCnmcFiabilitat.search(search_params)
+        id_resum = get_resum_any_id(self.connection, self.year)
+        search_fia = [("resums_inversio", "=", id_resum)]
+
+        return self.connection.GiscedataCnmcFiabilitat.search(search_fia)
 
     def consumer(self):
         """
