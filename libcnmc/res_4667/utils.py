@@ -15,4 +15,4 @@ def get_resum_any_id(connection, any):
 
     search_pla = [("pla_inversio", "=", ids[0])]
     id_resum = connection.GiscedataCnmcResum_any.search(search_pla)
-    return id_resum[0]
+    return id_resum

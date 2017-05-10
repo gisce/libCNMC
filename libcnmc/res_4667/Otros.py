@@ -4,6 +4,7 @@
 import traceback
 
 from libcnmc.res_4667.utils import get_resum_any_id
+from libcnmc.utils import get_codigo_ccaa, format_f
 from libcnmc.core import MultiprocessBased
 
 
@@ -18,6 +19,7 @@ class Otros(MultiprocessBased):
         :param kwargs: 
         """
 
+        self.year = kwargs.pop("year")
         super(Otros, self).__init__(**kwargs)
 
     def get_sequence(self):
@@ -28,7 +30,7 @@ class Otros(MultiprocessBased):
         :rtype: list
         """
         id_resum = get_resum_any_id(self.connection, self.year)
-        search_otro = [("resums_inversio", "=", id_resum)]
+        search_otro = [("resums_inversio", "in", id_resum)]
 
         return self.connection.GiscedataCnmcAltres.search(search_otro)
 
@@ -53,16 +55,16 @@ class Otros(MultiprocessBased):
 
                 otro = O.GiscedataCnmcAltres.read(item, fields_to_read)
                 output = [
-                    otro["codi"],
+                    otro["codi"][1],
                     otro["finalitat"],
                     otro["identificador_py"],
                     otro["cini"],
-                    otro["codigo_ccaa"],
+                    get_codigo_ccaa(O, otro["codigo_ccaa"][0]),
                     otro["any_apm"],
-                    otro["vol_total_inv"],
-                    otro["ajudes"],
-                    otro["inv_financiada"],
-                    otro["vpi_retri"],
+                    format_f(otro["vol_total_inv"], 3),
+                    format_f(otro["ajudes"], 3),
+                    format_f(otro["inv_financiada"], 3),
+                    format_f(otro["vpi_retri"], 3),
                     otro["estado"],
                 ]
                 self.output_q.put(output)

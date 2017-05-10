@@ -42,8 +42,44 @@ def get_norm_tension(connection, tension):
 
     return tension
 
+
+def get_name_ti(connection, ti):
+    """
+    Returns the name of the TI
+    
+    :param connection: Database connection
+    :param ti: Id of the TI
+    :type ti: int
+    :return: Name of the TI
+    :rtype: str
+    """
+    data = connection.GiscedataTipusInstallacio.read(ti, ["name"])
+    if data:
+        return data["name"]
+    else:
+        return ""
+
+
+def get_codigo_ccaa(connection, ccaa):
+    """
+    Return the code from CCAA
+    
+    :param connection: Database conection
+    :param ccaaa: Id of the CCAA
+    :return: Codigo CCAA
+    :rtype: int
+    """
+
+    data = connection.ResComunitat_autonoma.read(ccaa, ["codi"])
+    if data:
+        return data["codi"]
+    else:
+        return 0
+
+
 def get_ine(connection, ine):
-    """Retornem dos valors el codi de l'estat i el codi ine sense estat.
+    """
+    Retornem dos valors el codi de l'estat i el codi ine sense estat.
     """
     if not INES:
         ids = connection.ResMunicipi.search([('dc', '!=', False)])

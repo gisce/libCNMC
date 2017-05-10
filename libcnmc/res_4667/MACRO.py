@@ -5,6 +5,7 @@ import traceback
 
 from libcnmc.res_4667.utils import get_resum_any_id
 from libcnmc.core import MultiprocessBased
+from libcnmc.utils import format_f
 
 
 class MACRO(MultiprocessBased):
@@ -18,6 +19,7 @@ class MACRO(MultiprocessBased):
         :param kwargs: 
         """
 
+        self.year = kwargs.pop('year')
         super(MACRO, self).__init__(**kwargs)
 
     def get_sequence(self):
@@ -27,10 +29,9 @@ class MACRO(MultiprocessBased):
         :return: List of ids
         :rtype: list
         """
-        id_resum = get_resum_any_id(self.connection, self.year)
-        search_pos = [("resums_inversio", "=", id_resum)]
+        ids_resum = get_resum_any_id(self.connection, self.year)
 
-        return self.connection.GiscedataCnmcMacro.search(search_pos)
+        return ids_resum
 
     def consumer(self):
         """
@@ -41,8 +42,8 @@ class MACRO(MultiprocessBased):
 
         O = self.connection
         fields_to_read = [
-            "anio_periodo", "crec_pib", "pib_prev", "limite_sector",
-            "inc_demanda_sector"
+            "anyo", "macro_crec_pib", "macro_pib_prev", "macro_limite_sector",
+            "macro_inc_demanda_sector"
         ]
 
         while True:
@@ -50,13 +51,13 @@ class MACRO(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-                macro = O.GiscedataCnmcMacro.read(item, fields_to_read)
+                macro = O.GiscedataCnmcResum_any.read(item, fields_to_read)
                 output = [
-                    macro["anio_periodo"],
-                    macro["crec_pib"],
-                    macro["pib_prev"],
-                    macro["limite_sector"],
-                    macro["inc_demanda_sector"]
+                    macro["anyo"],
+                    format_f(macro["macro_crec_pib"], 4),
+                    format_f(macro["macro_pib_prev"], 3),
+                    format_f(macro["macro_limite_sector"], 3),
+                    format_f(macro["macro_inc_demanda_sector"], 3)
                 ]
                 self.output_q.put(output)
 

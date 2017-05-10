@@ -4,6 +4,7 @@
 import traceback
 
 from libcnmc.res_4667.utils import get_resum_any_id
+from libcnmc.utils import format_f, get_name_ti, get_codigo_ccaa
 from libcnmc.core import MultiprocessBased
 
 
@@ -15,9 +16,12 @@ class MAQ(MultiprocessBased):
     def __init__(self, **kwargs):
         """
         Class constructor
-        :param kwargs: 
+        
+        :param kwargs:
+        :type kwargs: dict
         """
 
+        self.year = kwargs.pop("year")
         super(MAQ, self).__init__(**kwargs)
 
     def get_sequence(self):
@@ -27,8 +31,9 @@ class MAQ(MultiprocessBased):
         :return: List of ids
         :rtype: list
         """
+
         id_resum = get_resum_any_id(self.connection, self.year)
-        search_maq = [("resums_inversio", "=", id_resum)]
+        search_maq = [("resums_inversio", "in", id_resum)]
 
         return self.connection.GiscedataCnmcMaquines.search(search_maq)
 
@@ -42,7 +47,7 @@ class MAQ(MultiprocessBased):
         O = self.connection
         fields_to_read = [
             "codi", "finalitat", "id_instalacio", "cini", "codi_tipus_inst",
-            "ccaa", "any_apm", "capacidad_prv", "vol_total_inv", "ajudes",
+            "ccaa", "any_apm", "pot_inst_prev", "vol_total_inv", "ajudes",
             "inv_financiada", "vpi_retri", "estado"
         ]
 
@@ -53,18 +58,18 @@ class MAQ(MultiprocessBased):
 
                 maq = O.GiscedataCnmcMaquines.read(item, fields_to_read)
                 output = [
-                    maq["codi"],
+                    maq["codi"][0],
                     maq["finalitat"],
                     maq["id_instalacio"],
                     maq["cini"],
-                    maq["codi_tipus_inst"],
-                    maq["ccaa"],
+                    get_name_ti(O, maq["codi_tipus_inst"][0]),
+                    get_codigo_ccaa(O, maq["ccaa"][0]),
                     maq["any_apm"],
-                    maq["capacidad_prv"],
-                    maq["vol_total_inv"],
-                    maq["ajudes"],
-                    maq["inv_financiada"],
-                    maq["vpi_retri"],
+                    format_f(maq["pot_inst_prev"], 3),
+                    format_f(maq["vol_total_inv"], 3),
+                    format_f(maq["ajudes"], 3),
+                    format_f(maq["inv_financiada"], 3),
+                    format_f(maq["vpi_retri"], 3),
                     maq["estado"]
                 ]
                 self.output_q.put(output)

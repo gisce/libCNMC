@@ -5,6 +5,7 @@ import traceback
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.res_4667.utils import get_resum_any_id
+from libcnmc.utils import get_codigo_ccaa, get_name_ti, format_f
 
 
 class LBT(MultiprocessBased):
@@ -17,7 +18,7 @@ class LBT(MultiprocessBased):
         Class constructor
         :param kwargs: 
         """
-
+        self.year = kwargs.pop("year")
         super(LBT, self).__init__(**kwargs)
 
     def get_sequence(self):
@@ -28,9 +29,9 @@ class LBT(MultiprocessBased):
         :rtype: list
         """
         id_resum = get_resum_any_id(self.connection, self.year)
-        search_macro = [("resums_inversio", "=", id_resum)]
+        search_macro = [("resums_inversio", "in", id_resum)]
 
-        return self.connection.GiscedataCnmcLiniesBT.search(search_macro)
+        return self.connection.GiscedataCnmcLiniesbt.search(search_macro)
 
     def consumer(self):
         """
@@ -52,22 +53,22 @@ class LBT(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-                lbt = O.GiscedataCnmcLiniesBT.read(item, fields_to_read)
+                lbt = O.GiscedataCnmcLiniesbt.read(item, fields_to_read)
                 output = [
-                    lbt["cod_proyecto"],
+                    lbt["cod_proyecto"][1],
                     lbt["finalidad"],
                     lbt["identificador_py"],
                     lbt["cini_prv"],
-                    lbt["cod_tipo_inst"],
-                    lbt["codigo_ccaa_1"],
-                    lbt["codigo_ccaa_2"],
+                    get_name_ti(O, lbt["cod_tipo_inst"][0]),
+                    get_codigo_ccaa(O, lbt["codigo_ccaa_1"][0]),
+                    get_codigo_ccaa(O, lbt["codigo_ccaa_2"][0]),
                     lbt["anio_prev_aps"],
-                    lbt["longitud_prv"],
+                    format_f(lbt["longitud_prv"],3),
                     lbt["capacidad_prv"],
-                    lbt["vol_inv_prev"],
-                    lbt["ayudas_prv"],
-                    lbt["financiacion_prv"],
-                    lbt["vpi_retribuible_prv"],
+                    format_f(lbt["vol_inv_prev"], 3),
+                    format_f(lbt["ayudas_prv"], 3),
+                    format_f(lbt["financiacion_prv"], 3),
+                    format_f(lbt["vpi_retribuible_prv"], 3),
                     lbt["estado"]
                 ]
                 self.output_q.put(output)

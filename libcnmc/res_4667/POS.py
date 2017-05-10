@@ -4,6 +4,7 @@
 import traceback
 
 from libcnmc.res_4667.utils import get_resum_any_id
+from libcnmc.utils import format_f, get_name_ti, get_codigo_ccaa
 from libcnmc.core import MultiprocessBased
 
 
@@ -18,6 +19,7 @@ class POS(MultiprocessBased):
         :param kwargs: 
         """
 
+        self.year = kwargs.pop("year")
         super(POS, self).__init__(**kwargs)
 
     def get_sequence(self):
@@ -29,13 +31,14 @@ class POS(MultiprocessBased):
         """
 
         id_resum = get_resum_any_id(self.connection, self.year)
-        search_pos = [("resums_inversio", "=", id_resum)]
+        search_pos = [("resums_inversio", "in", id_resum)]
 
-        return self.connection.GiscedataCnmcMaquines.search(search_pos)
+        return self.connection.GiscedataCnmcPosicions.search(search_pos)
 
     def consumer(self):
         """
         Generates the line of the file
+        
         :return: Line 
         :rtype: str
         """
@@ -52,19 +55,19 @@ class POS(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-                pos = O.GiscedataCnmcMaquines.read(item, fields_to_read)
+                pos = O.GiscedataCnmcPosicions.read(item, fields_to_read)
                 output = [
-                    pos["codi"],
+                    pos["codi"][1],
                     pos["finalitat"],
                     pos["id_instalacio"],
                     pos["cini"],
-                    pos["codi_tipus_inst"],
-                    pos["ccaa"],
+                    get_name_ti(O, pos["codi_tipus_inst"][0]),
+                    get_codigo_ccaa(O, pos["ccaa"][0]),
                     pos["any_apm"],
-                    pos["vol_total_inv"],
-                    pos["ajudes"],
-                    pos["inv_financiada"],
-                    pos["vpi_retri"],
+                    format_f(pos["vol_total_inv"], 3),
+                    format_f(pos["ajudes"], 3),
+                    format_f(pos["inv_financiada"], 3),
+                    format_f(pos["vpi_retri"], 3),
                     pos["estado"]
                 ]
                 self.output_q.put(output)
