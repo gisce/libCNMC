@@ -10,8 +10,9 @@ PACKAGES_DATA = {}
 
 
 INSTALL_REQUIRES = [
-    'progressbar', 'click', 'libcomxml', 'ooop==0.2.2-xt', 'chardet', 'pyproj',
-    'osconf', 'cerberus>=1.0'
+    'progressbar', 'click', 'libcomxml',
+    'https://github.com/gisce/ooop/archive/xmlrpc_transaction.zip',
+    'chardet', 'pyproj', 'osconf', 'cerberus>=1.0'
 ]
 if sys.version_info[1] < 6:
     INSTALL_REQUIRES += ['multiprocessing']
