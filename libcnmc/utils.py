@@ -82,7 +82,7 @@ def get_id_expedient(connection, expedients_id):
     return id_expedient
 
 
-def get_id_municipi_from_company(connection):
+def get_id_municipi_from_company(connection, get_name=False):
     O = connection
     id_municipi = False
     #Si no hi ha ct agafem la comunitat del rescompany
@@ -95,6 +95,9 @@ def get_id_municipi_from_company(connection):
             partner_address['address'][0], ['id_municipi'])
         if address['id_municipi']:
             id_municipi = address['id_municipi'][0]
+        if get_name:
+            name_municipi = id_municipi = address['id_municipi'][1]
+            return  id_municipi, name_municipi
     return id_municipi
 
 
