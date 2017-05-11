@@ -63,7 +63,7 @@ class LAT(MultiprocessBased):
             'propietari', 'tensio_max_disseny', 'name', 'origen', 'final',
             'perc_financament', 'circuits', 'longitud_cad', 'cable',
             'tipus_instalacio_cnmc_id', 'data_baixa', self.compare_field,
-            'baixa', 'data_baixa'
+            'baixa', 'data_baixa',
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
@@ -87,8 +87,9 @@ class LAT(MultiprocessBased):
                 self.progress_q.put(item)
 
                 linia = O.GiscedataAtLinia.read(
-                    item, ['trams', 'tensio', 'municipi', 'propietari']
+                    item, ['trams', 'tensio', 'municipi', 'propietari', 'provincia']
                 )
+                provincia = linia['provincia'][1]
                 propietari = linia['propietari'] and '1' or '0'
                 search_params = [('linia', '=', linia['id'])]
                 search_params += static_search_params
@@ -263,7 +264,8 @@ class LAT(MultiprocessBased):
                         format_f(cable.get('intensitat_admisible', 0) or 0, 3),
                         format_f(cable.get('seccio', 0) or 0, 3),
                         capacitat,
-                        estado
+                        estado,
+                        provincia
                     ]
 
                     self.output_q.put(output)
