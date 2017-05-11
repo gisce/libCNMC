@@ -95,6 +95,10 @@ class FIA(MultiprocessBased):
                                                    '%Y-%m-%d')
                     data_pm = data_pm_ct.strftime('%d/%m/%Y')
 
+                municipi = ''
+                provincia = ''
+                zona = ''
+
                 #Per trobar la comunitat autonoma
                 ccaa = ''
                 element_act = ''
@@ -104,20 +108,29 @@ class FIA(MultiprocessBased):
                     element_act = 'A{0}'.format(O.GiscedataAtTram.read(tram_id, ['name'])['name'])
 
                 if cllinst[0] == 'giscedata.cts':
-                    ct_vals = O.GiscedataCts.read(int(cllinst[1]),
-                                                  ['id_municipi', 'name'])
+                    ct_vals = O.GiscedataCts.read(int(cllinst[1]), [
+                        'id_municipi', 'name', 'id_provincia', 'zona_id'
+                    ])
                     if ct_vals['id_municipi']:
-                        id_municipi = ct_vals['id_municipi'][0]
+                        id_municipi, municipi = ct_vals['id_municipi']
                     if not cll['tram_id']:
                         element_act = ct_vals['name']
+                    if ct_vals['id_provincia']:
+                        provincia = ct_vals['id_provincia'][1]
+                    if ct_vals['zona_id']:
+                        zona = ct_vals['zona_id'][1]
 
                 elif cllinst[0] == 'giscedata.at.suport':
                     linia_vals = O.GiscedataAtSuport.read(int(cllinst[1]),
                                                           ['linia'])
                     linia_id = int(linia_vals['linia'][0])
-                    lat_vals = O.GiscedataAtLinia.read(linia_id, ['municipi'])
+                    lat_vals = O.GiscedataAtLinia.read(linia_id, [
+                        'municipi', 'provincia'
+                    ])
                     if lat_vals['municipi']:
-                        id_municipi = lat_vals['municipi'][0]
+                        id_municipi, municipi = lat_vals['municipi']
+                    if lat_vals['provincia']:
+                        provincia = lat_vals['provincia'][1]
 
                 if id_municipi:
                     ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi(
@@ -164,7 +177,10 @@ class FIA(MultiprocessBased):
                     ccaa or '',
                     data_pm,
                     fecha_baja,
-                    estado
+                    estado,
+                    provincia,
+                    municipi,
+                    zona
                 ]
                 self.output_q.put(output)
             except Exception:
