@@ -87,6 +87,11 @@ class LBT(MultiprocessBased):
                 res = O.GiscegisEdge.search([('id_linktemplate', '=',
                                               linia['name']),
                                              ('layer', 'ilike', '%BT%')])
+                ct_name = linia['ct'][1]
+                zona = O.GiscedataCts.read(
+                    linia['ct'][0], ['zona_id']
+                )['zona_id'][1]
+                municipi = linia['municipi'][1]
                 if not res:
                     if not QUIET:
                         sys.stderr.write(
@@ -223,7 +228,10 @@ class LBT(MultiprocessBased):
                     format_f(intensitat, 3),
                     format_f(cable['seccio'], 3),
                     format_f(capacitat, 3),
-                    estado
+                    estado,
+                    ct_name,
+                    municipi,
+                    zona,
                 ]
 
                 self.output_q.put(output)
