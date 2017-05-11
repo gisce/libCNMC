@@ -62,7 +62,7 @@ class CTS(MultiprocessBased):
         fields_to_read = [
             'name', 'cini', 'data_pm', 'tipus_instalacio_cnmc_id',
             'id_municipi', 'perc_financament', 'descripcio', 'data_baixa',
-            self.compare_field
+            'zona_id', 'id_provincia', self.compare_field
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         data_baixa_limit = '{0}-01-01'.format(self.year)
@@ -74,6 +74,9 @@ class CTS(MultiprocessBased):
 
                 ct = O.GiscedataCts.read(item, fields_to_read)
 
+                municipi = ct['id_municipi'][1]
+                provincia = ct['id_provincia'][1]
+                zona = ct['zona_id'][1]
                 comunitat_codi = ''
                 data_pm = ''
 
@@ -150,7 +153,10 @@ class CTS(MultiprocessBased):
                     format_f(round(100 - int(ct['perc_financament'])), 3),
                     data_pm,
                     fecha_baja,
-                    estado
+                    estado,
+                    provincia,
+                    municipi,
+                    zona
                 ]
 
                 self.output_q.put(output)
