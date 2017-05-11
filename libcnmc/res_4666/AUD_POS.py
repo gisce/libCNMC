@@ -131,21 +131,30 @@ class POS(MultiprocessBased):
 
 
                 comunitat = ''
+                provincia = ''
+                zona = ''
 
                 #tensio
                 ten = O.GiscedataTensionsTensio.read(pos['tensio'][0],
                                                      ['tensio'])
                 tensio = (ten['tensio'] / 1000.0) or 0.0
 
-                cts = O.GiscedataCtsSubestacions.read(pos['subestacio_id'][0],
-                                                      ['id_municipi'])
+                cts = O.GiscedataCtsSubestacions.read(pos['subestacio_id'][0], [
+                    'id_municipi', 'id_provincia', 'zona_id'
+                ])
 
                 denominacio = self.get_denom(pos['subestacio_id'][0])
 
                 if cts['id_municipi']:
-                    id_municipi = cts['id_municipi'][0]
+                    id_municipi, municipi = cts['id_municipi']
                 else:
-                    id_municipi = get_id_municipi_from_company(O)
+                    id_municipi, municipi = get_id_municipi_from_company(
+                        O, get_name=True
+                    )
+                if cts['id_provincia']:
+                    provincia = cts['id_provincia'][1]
+                if cts['zona_id']:
+                    zona = cts['zona_id'][1]
 
                 if id_municipi:
                     #funció per trobar la ccaa desde el municipi
@@ -196,7 +205,10 @@ class POS(MultiprocessBased):
                     format_f(round(100 - int(pos['perc_financament'])), 3),
                     data_pm or '',
                     fecha_baja,
-                    estado
+                    estado,
+                    provincia,
+                    municipi,
+                    zona,
                 ]
 
                 self.output_q.put(output)
