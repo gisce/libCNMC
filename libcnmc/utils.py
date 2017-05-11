@@ -53,9 +53,12 @@ def get_name_ti(connection, ti):
     :return: Name of the TI
     :rtype: str
     """
-    data = connection.GiscedataTipusInstallacio.read(ti, ["name"])
-    if data:
-        return data["name"]
+    if ti:
+        data = connection.GiscedataTipusInstallacio.read(ti, ["name"])
+        if data:
+            return data["name"]
+        else:
+            return ""
     else:
         return ""
 
@@ -65,14 +68,16 @@ def get_codigo_ccaa(connection, ccaa):
     Return the code from CCAA
     
     :param connection: Database conection
-    :param ccaaa: Id of the CCAA
+    :param ccaa: Id of the CCAA
     :return: Codigo CCAA
     :rtype: int
     """
-
-    data = connection.ResComunitat_autonoma.read(ccaa, ["codi"])
-    if data:
-        return data["codi"]
+    if ccaa:
+        data = connection.ResComunitat_autonoma.read(ccaa, ["codi"])
+        if data:
+            return data["codi"]
+        else:
+            return 0
     else:
         return 0
 
@@ -144,7 +149,14 @@ def tallar_text(text, longitud):
 
 
 def format_f(num, decimals=2):
-    '''formats float with comma decimal separator'''
+    """
+    Formats float with comma decimal separator
+    
+    :param num: 
+    :param decimals: 
+    :return: 
+    """
+
     if isinstance(num, float):
         fstring = '%%.%df' % decimals
         return (fstring % num).replace('.', ',')

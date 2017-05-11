@@ -7,6 +7,7 @@ INVENTARI DE CNMC AT
 import traceback
 
 from libcnmc.res_4667.utils import get_resum_any_id
+from libcnmc.utils import get_name_ti, get_codigo_ccaa, format_f
 from libcnmc.core import MultiprocessBased
 
 
@@ -18,9 +19,12 @@ class DES(MultiprocessBased):
     def __init__(self, **kwargs):
         """
         Class constructor
-        :param kwargs: 
+        
+        :param kwargs:
+        :type kwargs: dict
         """
 
+        self.year = kwargs.pop("year")
         super(DES, self).__init__(**kwargs)
 
     def get_sequence(self):
@@ -32,7 +36,7 @@ class DES(MultiprocessBased):
         """
 
         id_resum = get_resum_any_id(self.connection, self.year)
-        search_des = [("resums_inversio", "=", id_resum)]
+        search_des = [("resums_inversio", "in", id_resum)]
 
         return self.connection.GiscedataCnmcDespatx.search(search_des)
 
@@ -56,15 +60,15 @@ class DES(MultiprocessBased):
 
                 des = O.GiscedataCnmcDespatx.read(item, fields_to_read)
                 output = [
-                    des["codi"],
+                    des["codi"][1],
                     des["finalitat"],
                     des["id_instalacio"],
                     des["cini"],
-                    des["codigo_ccaa"],
+                    get_codigo_ccaa(O, des["codigo_ccaa"][0]),
                     des["any_apm"],
-                    des["vol_total_inv"],
-                    des["ajudes"],
-                    des["vpi_retri"],
+                    format_f(des["vol_total_inv"], 3),
+                    format_f(des["ajudes"], 3),
+                    format_f(des["vpi_retri"], 3),
                     des["estado"]
                 ]
                 self.output_q.put(output)
