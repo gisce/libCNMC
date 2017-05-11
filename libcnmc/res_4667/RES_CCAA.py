@@ -87,7 +87,7 @@ class RESCCAA(MultiprocessBased):
         :return: Line 
         :rtype: str
         """
-
+        self.input_q.get()
         O = self.connection
         try:
             for year in self.years:
