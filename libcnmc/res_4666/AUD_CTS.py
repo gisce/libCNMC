@@ -113,24 +113,26 @@ class CTS(MultiprocessBased):
                 if ct[self.compare_field]:
                     last_data = ct[self.compare_field]
                     entregada = F8Res4131(**last_data)
+                    actual = False
 
-                    id_ti = ct['tipus_instalacio_cnmc_id'][0]
-                    ti = O.GiscedataTipusInstallacio.read(
-                        id_ti,
-                        ['name'])['name']
+                    if ct['tipus_instalacio_cnmc_id']:
+                        id_ti = ct['tipus_instalacio_cnmc_id'][0]
+                        ti = O.GiscedataTipusInstallacio.read(
+                            id_ti,
+                            ['name'])['name']
 
-                    actual = F8Res4131(
-                        ct['name'],
-                        ct['cini'],
-                        ct['descripcio'],
-                        ti,
-                        comunitat_codi,
-                        format_f(round(100 - int(ct['perc_financament']))),
-                        data_pm,
-                        fecha_baja,
-                        0
-                    )
-                    if entregada == actual:
+                        actual = F8Res4131(
+                            ct['name'],
+                            ct['cini'],
+                            ct['descripcio'],
+                            ti,
+                            comunitat_codi,
+                            format_f(round(100 - int(ct['perc_financament']))),
+                            data_pm,
+                            fecha_baja,
+                            0
+                        )
+                    if actual and entregada == actual:
                         estado = '0'
                     else:
                         estado = '1'
