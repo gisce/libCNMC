@@ -1838,7 +1838,8 @@ def res_4666_lat(**kwargs):
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
               help="Deshabilitar el mode interactiu")
-@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-o', '--output', help="Fitxer de sortida",
+              default = "aud_Inventario-R1-XXX_1.txt")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
@@ -1892,7 +1893,8 @@ def res_4666_lbt(**kwargs):
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
               help="Deshabilitar el mode interactiu")
-@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-o', '--output', help="Fitxer de sortida",
+              default="aud_Inventario-R1-XXX_2.txt")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
@@ -1945,7 +1947,8 @@ def res_4666_cts(**kwargs):
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
               help="Deshabilitar el mode interactiu")
-@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-o', '--output', help="Fitxer de sortida",
+              default="aud_Inventario-R1-XXX_8.txt")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
@@ -2022,7 +2025,8 @@ def res_4666_pos(**kwargs):
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
               help="Deshabilitar el mode interactiu")
-@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-o', '--output', help="Fitxer de sortida",
+              default = "aud_Inventario-R1-XXX_4.txt")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
@@ -2126,7 +2130,8 @@ def res_4666_fia(**kwargs):
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
               help="Deshabilitar el mode interactiu")
-@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-o', '--output', help="Fitxer de sortida",
+              default = "aud_Inventario-R1-XXX_7.txt")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
