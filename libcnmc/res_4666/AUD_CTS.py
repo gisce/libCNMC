@@ -74,9 +74,9 @@ class CTS(MultiprocessBased):
 
                 ct = O.GiscedataCts.read(item, fields_to_read)
 
-                municipi = ct['id_municipi'][1]
-                provincia = ct['id_provincia'][1]
-                zona = ct['zona_id'][1]
+                municipi = ct['id_municipi'][1] if ct['id_municipi'] else ''
+                provincia = ct['id_provincia'][1] if ct['id_provincia'] else ''
+                zona = ct['zona_id'][1] if ct['zona_id'] else ''
                 comunitat_codi = ''
                 data_pm = ''
 
