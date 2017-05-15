@@ -3,6 +3,7 @@ import click
 from datetime import datetime
 import os
 import tempfile
+import subprocess
 
 from libcnmc.utils import N_PROC
 from libcnmc.core import UpdateCNMCStats, UpdateCINISComptador
@@ -1805,6 +1806,24 @@ def res_4131_con(**kwargs):
     else:
         kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
         res_lat(CON, **kwargs)
+
+
+@cnmc.command()
+@click.option('-d', '--dir', help='Ruta de la carpeta amb els formularis')
+def validate_files(**kwargs):
+    from libcnmc import checker
+    # from os import path
+    # if path.exists(kwargs['dir']):
+    if kwargs['dir']:
+        if os.path.exists(kwargs['dir']):
+            if "cli.pyc" in __file__:
+                path = str(__file__).replace("/cli.pyc", "")
+            else:
+                path = str(__file__).replace("/cli.py", "")
+            checker_file = '{}/checker.py'.format(path)
+            print(subprocess.check_output(
+                ['python', checker_file, '--dir={}'.format(kwargs['dir'])]
+            ))
 
 if __name__ == '__main__':
     invoke()
