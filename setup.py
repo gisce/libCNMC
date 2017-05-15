@@ -10,8 +10,11 @@ PACKAGES_DATA = {}
 
 
 INSTALL_REQUIRES = [
-    'progressbar', 'click', 'libcomxml', 'ooop', 'chardet', 'pyproj',
-    'osconf', 'cerberus>=1.0'
+    'progressbar', 'click', 'libcomxml',
+    'chardet', 'pyproj', 'osconf', 'cerberus>=1.0'
+]
+DEPENDENCY_LINKS= [
+    'https://github.com/gisce/ooop/archive/xmlrpc_transaction.zip'
 ]
 if sys.version_info[1] < 6:
     INSTALL_REQUIRES += ['multiprocessing']
@@ -21,12 +24,13 @@ setup(name='libcnmc',
       author='GISCE-TI, S.L.',
       author_email='devel@gisce.net',
       url='http://www.gisce.net',
-      version='0.17.10',
+      version='0.17.13',
       license='General Public Licence 2',
       long_description='''Long description''',
       provides=['libcnmc'],
       install_requires=INSTALL_REQUIRES,
       packages=find_packages(exclude=['tests']),
+      dependency_links=DEPENDENCY_LINKS,
       package_data=PACKAGES_DATA,
       entry_points={
           'console_scripts': [
