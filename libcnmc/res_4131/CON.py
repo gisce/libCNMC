@@ -158,7 +158,7 @@ class CON(MultiprocessBased):
                     format_f(financiacio),
                     data_pm,
                     fecha_baja,
-                    capacidad,
+                    int(capacidad)/1000,
                     estado
                 ]
 
