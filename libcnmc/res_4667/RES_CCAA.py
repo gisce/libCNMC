@@ -57,7 +57,7 @@ class RESCCAA(MultiprocessBased):
         for line in data:
             self.years.append(line["anyo"])
 
-        for line in model_ccaa.read(ids_resums, ["codigo_ccaa"]):
+        for line in model_ccaa.read(ids_resums_ccaa, ["codigo_ccaa"]):
             self.ccaas.append(line["codigo_ccaa"][0])
         self.ccaas = list(set(self.ccaas))
         for year in self.years:
