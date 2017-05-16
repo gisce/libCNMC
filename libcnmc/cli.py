@@ -207,6 +207,34 @@ def csv_4667(obj, **kwargs):
     proc.calc()
 
 
+def res_mod(procs, **kwargs):
+    """
+    Generates the file of modificacions from a list of process
+    
+    :param procs:process to generate
+    :type procs: list
+    :param kwargs: Parameters to generate
+    :type kwargs: dict
+    :return: None
+    :rtype: None
+    """
+
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
+
+    for proc_fnc in procs:
+        proc = proc_fnc(
+            quiet=kwargs['quiet'],
+            interactive=kwargs['interactive'],
+            output=kwargs['output'],
+            connection=O,
+            num_proc=kwargs['num_proc'],
+            year=kwargs['year']
+        )
+        proc.calc()
+
+
 # CSV LAT
 def res_lat(LAT, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
@@ -1880,8 +1908,11 @@ def res_4666_lat(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4666_mod(**kwargs):
-    from libcnmc.res_4666 import MOD
-    res_lat(MOD, **kwargs)
+    from libcnmc.res_4666 import MOD_CON, MOD_CTS, MOD_DES, MOD_FIA, MOD_LAT
+    from libcnmc.res_4666 import MOD_LBT, MOD_MAQ, MOD_POS, MOD_SUB
+    procs = [MOD_CON, MOD_CTS, MOD_DES, MOD_FIA, MOD_LAT, MOD_LBT, MOD_MAQ,
+                 MOD_POS, MOD_SUB]
+    res_mod(procs, **kwargs)
 
 
 @cnmc.command()

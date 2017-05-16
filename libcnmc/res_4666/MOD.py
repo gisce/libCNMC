@@ -7,14 +7,8 @@ INVENTARI DE CNMC Condensadors
 from __future__ import absolute_import
 from datetime import datetime
 import traceback
-
+from operator import itemgetter
 from libcnmc.core import MultiprocessBased
-from datetime import datetime
-import traceback
-
-from libcnmc.core import MultiprocessBased
-from libcnmc.utils import format_f, get_id_municipi_from_company
-from libcnmc.models import F8Res4131
 
 
 class MOD_CON(MultiprocessBased):
@@ -31,7 +25,6 @@ class MOD_CON(MultiprocessBased):
 
         super(MOD_CON, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.codi_r1 = kwargs.pop('codi_r1')
 
     def get_sequence(self):
         """
@@ -107,10 +100,6 @@ class MOD_CTS(MultiprocessBased):
 
         super(MOD_CTS, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.codi_r1 = kwargs.pop('codi_r1')
-        self.base_object = 'Línies CTS'
-        self.report_name = 'CNMC INVENTARI CTS'
-        self.compare_field = kwargs["compare_field"]
 
     def get_sequence(self):
         """
@@ -181,10 +170,6 @@ class MOD_DES(MultiprocessBased):
         """
         super(MOD_DES, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.codi_r1 = kwargs.pop('codi_r1')
-        self.base_object = 'Línies DES'
-        self.report_name = 'CNMC INVENTARI DES'
-        self.compare_field = kwargs["compare_field"]
 
     def get_sequence(self):
         """
@@ -204,8 +189,7 @@ class MOD_DES(MultiprocessBased):
         """
         O = self.connection
         fields_to_read = [
-            'name', 'cini', 'denominacio', 'any_ps', 'vai', 'data_apm',
-            self.compare_field
+            'name', 'cini', 'denominacio', 'any_ps', 'vai', 'data_apm'
         ]
         while True:
             try:
@@ -244,10 +228,6 @@ class MOD_FIA(MultiprocessBased):
 
         super(MOD_FIA, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.codi_r1 = kwargs.pop('codi_r1')
-        self.base_object = 'Línies FIA'
-        self.report_name = 'CNMC INVENTARI FIA'
-        self.compare_filed = kwargs["compare_field"]
 
     def get_sequence(self):
         """
@@ -323,12 +303,7 @@ class MOD_LAT(MultiprocessBased):
 
         super(MOD_LAT, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.codi_r1 = kwargs.pop('codi_r1')
-        self.base_object = 'Línies AT'
-        self.report_name = 'CNMC INVENTARI AT'
-        self.layer = 'LBT\_%'
-        self.embarrats = kwargs.pop('embarrats', False)
-        self.compare_field = kwargs["compare_field"]
+
         id_res_like = self.connection.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')])
         if id_res_like:
@@ -345,11 +320,8 @@ class MOD_LAT(MultiprocessBased):
         search_params = [('propietari', '=', True)]
         obj_lat = self.connection.GiscedataAtLinia
         ids = obj_lat.search(search_params, 0, 0, False, {'active_test': False})
-        id_lat_emb = []
-        if self.embarrats:
-            id_lat_emb = obj_lat.search(
-                [('name', '=', '1')], 0, 0, False, {'active_test': False})
-        return ids + id_lat_emb
+
+        return ids
 
     def consumer(self):
         """
@@ -364,7 +336,7 @@ class MOD_LAT(MultiprocessBased):
             'baixa', 'data_pm', 'data_industria', 'coeficient', 'cini',
             'propietari', 'tensio_max_disseny', 'name', 'origen', 'final',
             'perc_financament', 'circuits', 'longitud_cad', 'cable',
-            'tipus_instalacio_cnmc_id', 'data_baixa', self.compare_field,
+            'tipus_instalacio_cnmc_id', 'data_baixa'
             'baixa', 'data_baixa'
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
@@ -438,11 +410,6 @@ class MOD_LBT(MultiprocessBased):
 
         super(MOD_LBT, self).__init__(**kwargs)
         self.year = kwargs.pop("year", datetime.now().year - 1)
-        self.codi_r1 = kwargs.pop("codi_r1")
-        self.base_object = "Línies BT"
-        self.report_name = "CNMC INVENTARI BT"
-        self.embarrats = kwargs.pop("embarrats", False)
-        self.compare_field = kwargs["compare_field"]
 
     def get_sequence(self):
         """
@@ -455,8 +422,6 @@ class MOD_LBT(MultiprocessBased):
         data_pm = '{0}-01-01'.format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
         search_params = []
-        if not self.embarrats:
-            search_params += [('cable.tipus.codi', '!=', 'E')]
         search_params += [('propietari', '=', True),
                           '|', ('data_pm', '=', False),
                                ('data_pm', '<', data_pm),
@@ -485,7 +450,7 @@ class MOD_LBT(MultiprocessBased):
             'name', 'municipi', 'data_pm', 'ct', 'coeficient', 'cini',
             'perc_financament', 'longitud_cad', 'cable', 'voltatge',
             'data_alta', 'propietari', 'tipus_instalacio_cnmc_id', 'baixa',
-            'data_baixa', self.compare_field
+            'data_baixa'
         ]
         while True:
             try:
@@ -526,9 +491,6 @@ class MOD_MAQ(MultiprocessBased):
         """
         super(MOD_MAQ, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.codi_r1 = kwargs.pop('codi_r1')
-        self.base_object = 'Línies MAQ'
-        self.compare_field = kwargs["compare_field"]
 
         tension_fields_to_read = ['l_inferior', 'l_superior', 'tensio']
         tension_vals = self.connection.GiscedataTensionsTensio.read(
@@ -588,7 +550,7 @@ class MOD_MAQ(MultiprocessBased):
         fields_to_read = [
             'cini', 'historic', 'data_pm', 'ct', 'name', 'potencia_nominal',
             'numero_fabricacio', 'perc_financament', 'tipus_instalacio_cnmc_id',
-            'conexions', 'data_baixa', self.compare_field
+            'conexions', 'data_baixa'
         ]
 
         while True:
@@ -629,10 +591,6 @@ class MOD_POS(MultiprocessBased):
 
         super(MOD_POS, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.codi_r1 = kwargs.pop('codi_r1')
-        self.base_object = 'Línies POS'
-        self.report_name = 'CNMC INVENTARI POS'
-        self.compare_field = kwargs["compare_field"]
 
     def get_sequence(self):
         """
@@ -670,8 +628,7 @@ class MOD_POS(MultiprocessBased):
         O = self.connection
         fields_to_read = [
             'name', 'cini', 'data_pm', 'subestacio_id', 'data_baixa',
-            'tipus_instalacio_cnmc_id', 'perc_financament', 'tensio',
-            self.compare_field
+            'tipus_instalacio_cnmc_id', 'perc_financament', 'tensio'
         ]
 
         while True:
@@ -710,10 +667,6 @@ class MOD_SUB(MultiprocessBased):
         """
         super(MOD_SUB, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.codi_r1 = kwargs.pop('codi_r1')
-        self.base_object = 'Subestacions'
-        self.report_name = 'CNMC INVENTARI SUB'
-        self.compare_field = kwargs["compare_field"]
 
     def get_sequence(self):
         """
@@ -751,7 +704,7 @@ class MOD_SUB(MultiprocessBased):
         fields_to_read = [
             'name', 'data_industria', 'data_pm', 'id_municipi', 'cini',
             'descripcio', 'perc_financament', 'data_baixa', 'posicions',
-            'cnmc_tipo_instalacion', self.compare_field
+            'cnmc_tipo_instalacion'
         ]
 
         while True:
