@@ -8,7 +8,6 @@ from __future__ import absolute_import
 from datetime import datetime
 import traceback
 import math
-import time
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import format_f, tallar_text
