@@ -7,3 +7,4 @@ from DES import DES
 from FIA import FIA
 from CTS import CTS
 from CON import CON
+from MOD import *
