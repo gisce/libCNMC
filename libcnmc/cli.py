@@ -254,6 +254,7 @@ def res_lat(LAT, **kwargs):
     :return: None
     :rtype: None
     """
+
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -1839,6 +1840,14 @@ def res_4131_des(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_fia(**kwargs):
+    """
+    Click entry to generate the fiabilitat file of 4131
+    
+    :param kwargs: Parameters to generate the file
+    :type kwargs: dict(str,str)
+    :return: None
+    :rtype: None
+    """
     from libcnmc.res_4131 import FIA, FIA_2015
     if kwargs['year'] == 2015:
         kwargs["compare_field"] = "4771_entregada"
@@ -1869,6 +1878,15 @@ def res_4131_fia(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_con(**kwargs):
+    """
+    Click entry to generate the file of condensaodrs of 4131
+    
+    :param kwargs: Params to generate
+    :type kwargs: dict(str, str)
+    :return: None
+    :rtype: None
+    """
+
     from libcnmc.res_4131 import CON
     if kwargs['year'] == 2015:
         kwargs["compare_field"] = "4771_entregada"
@@ -1876,6 +1894,7 @@ def res_4131_con(**kwargs):
     else:
         kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
         res_lat(CON, **kwargs)
+
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
