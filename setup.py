@@ -13,7 +13,7 @@ INSTALL_REQUIRES = [
     'progressbar', 'click', 'libcomxml',
     'chardet', 'pyproj', 'osconf', 'cerberus>=1.0'
 ]
-DEPENDENCY_LINKS= [
+DEPENDENCY_LINKS = [
     'https://github.com/gisce/ooop/archive/xmlrpc_transaction.zip'
 ]
 if sys.version_info[1] < 6:

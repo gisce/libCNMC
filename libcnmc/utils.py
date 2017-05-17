@@ -25,6 +25,13 @@ INES = {}
 
 
 def get_norm_tension(connection, tension):
+    """
+    Returns the tension normalizada from a given tensio
+    
+    :param connection: OpenERP connection  
+    :param tension: Tensio
+    :return: Tensio normalitzada 
+    """
 
     if not TENS_NORM:
         tension_fields_to_read = ['l_inferior', 'l_superior', 'tensio']
@@ -85,6 +92,11 @@ def get_codigo_ccaa(connection, ccaa):
 def get_ine(connection, ine):
     """
     Retornem dos valors el codi de l'estat i el codi ine sense estat.
+    
+    :param connection: OpenERP connection
+    :param ine:
+    :return:
+    :rtype: tuple
     """
     if not INES:
         ids = connection.ResMunicipi.search([('dc', '!=', False)])
@@ -178,6 +190,14 @@ def convert_srid(codi, srid_source, point):
 
 
 def get_srid(connection):
+    """
+    Returns the SRID from the configuration
+    
+    :param connection: OpenERP connection  
+    :return: SRID
+    :rtype: str
+    """
+
     giscegis_srid_id = connection.ResConfig.search(
                     [('name', '=', 'giscegis_srid')])
     giscegis_srid = connection.ResConfig.read(giscegis_srid_id)[0]['value']
