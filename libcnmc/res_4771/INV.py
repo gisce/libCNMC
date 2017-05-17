@@ -42,6 +42,13 @@ class INV():
             self.raven = None
 
     def check_encoding(self):
+        """
+        Checks the encoding of the files
+        
+        :return: None
+        :rtype: None
+        """
+
         input_files = ['liniesat', 'liniesbt', 'subestacions', 'posicions',
                        'maquinas', 'despatxos', 'fiabilidad', 'transformacion']
         for input_f in input_files:
