@@ -101,7 +101,7 @@ class F12bis(MultiprocessBased):
                     o_data,
                     o_any
                 ])
-            except:
+            except Exception:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
