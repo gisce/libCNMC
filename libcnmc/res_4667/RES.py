@@ -50,7 +50,6 @@ class RES(MultiprocessBased):
         model_resum = self.connection.GiscedataCnmcResum_any
         ids_resums = get_resum_any_id(self.connection, self.year)
 
-        return ids_resums
         r_fields = ["anyo"]
         data = self.connection.GiscedataCnmcResum_any.read(ids_resums, r_fields)
         for line in data:
