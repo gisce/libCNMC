@@ -42,6 +42,13 @@ class INV():
             self.raven = None
 
     def check_encoding(self):
+        """
+        Checks the encoding of the files
+        
+        :return: None
+        :rtype: None
+        """
+
         input_files = ['liniesat', 'liniesbt', 'subestacions', 'posicions',
                        'maquinas', 'despatxos', 'fiabilidad', 'transformacion']
         for input_f in input_files:
@@ -51,6 +58,15 @@ class INV():
                     raise Exception('File: %s is not in UTF-8.' % input_f)
 
     def open_csv_file(self, csv_file):
+        """
+        Opens a CSV file 
+        
+        :param csv_file: URL of the file
+        :type csv_file: str
+        :return: csv reader
+        :rtype: csv.reader
+        """
+
         reader = csv.reader(open(csv_file), delimiter=';')
         return reader
 
