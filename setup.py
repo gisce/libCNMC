@@ -37,7 +37,7 @@ setup(name='libcnmc',
               'f1 = libcnmc.cli:cir_4_2014_f1',
               'f1bis = libcnmc.cli:cir_4_2014_f1bis',
               'f11 = libcnmc.cli:cir_4_2014_f11',
-              'cnmc = libcnmc.cli:invoke',
+              'cnmc = libcnmc.cli:cli',
               'cnmc_checker = libcnmc.checker:node_check'
           ]
       })
