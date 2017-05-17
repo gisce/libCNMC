@@ -1908,9 +1908,18 @@ def res_4666_lat(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4666_mod(**kwargs):
-    from libcnmc.res_4666 import MOD_CON, MOD_CTS, MOD_DES, MOD_FIA, MOD_LAT
-    from libcnmc.res_4666 import MOD_LBT, MOD_MAQ, MOD_POS, MOD_SUB
-    procs = [MOD_CON, MOD_CTS, MOD_DES, MOD_FIA, MOD_LAT, MOD_LBT, MOD_MAQ,
+    """
+    Click entry to generate the modification file for 4666
+    
+    :param kwargs: generation arguments
+    :type kwargs: dict
+    :return: None
+    :rtype: None
+    """
+
+    from libcnmc.res_4666 import MOD_CTS, MOD_FIA, MOD_LAT, MOD_SUB, MOD_POS
+    from libcnmc.res_4666 import MOD_LBT, MOD_MAQ
+    procs = [MOD_CTS, MOD_FIA, MOD_LAT, MOD_LBT, MOD_MAQ,
                  MOD_POS, MOD_SUB]
     res_mod(procs, **kwargs)
 
