@@ -58,6 +58,15 @@ class INV():
                     raise Exception('File: %s is not in UTF-8.' % input_f)
 
     def open_csv_file(self, csv_file):
+        """
+        Opens a CSV file 
+        
+        :param csv_file: URL of the file
+        :type csv_file: str
+        :return: csv reader
+        :rtype: csv.reader
+        """
+
         reader = csv.reader(open(csv_file), delimiter=';')
         return reader
 
