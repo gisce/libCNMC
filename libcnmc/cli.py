@@ -14,6 +14,7 @@ from libcnmc import cir_4_2015
 from libcnmc.res_4603 import INV
 from libcnmc.res_4603 import CINIMAQ, CINIPOS, CreateCelles, UpdateCINISTrafo
 from libcnmc.res_4603 import UpdateCINISTrams, UpdateCINISCts
+from libcnmc.pla_inversons_1048 import resum, projectes
 
 
 @click.group()
@@ -1967,6 +1968,75 @@ def cir_4_2015_f16(**kwargs):
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year']
+    )
+    proc.calc()
+
+
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('-c', '--complet', default=False,
+              help="Generar tots els informes corresponents als plans "
+                   "d'inversió els quals la seva distribució estigui "
+                   "prevista al 2015-2017.")
+def pla_inv_1048_resum(**kwargs):
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
+    proc = resum(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        year=1, # No es fa servir
+        complet=kwargs['complet']
+    )
+    proc.calc()
+
+@cnmc.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('-c', '--complet', default=False,
+              help="Generar tots els informes corresponents als plans "
+                   "d'inversió els quals la seva distribució estigui "
+                   "prevista al 2015-2017.")
+def pla_inv_1048_projectes(**kwargs):
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
+    proc = projectes(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        year=1, # No es fa servir
+        complet=kwargs['complet']
     )
     proc.calc()
 
