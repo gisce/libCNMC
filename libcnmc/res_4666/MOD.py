@@ -167,7 +167,7 @@ class ModFia(MultiprocessBased):
                 ]
                 cll = O.GiscedataCellesCella.read(item, fields_to_read)
 
-                ti_old = cll["4771_entregada"].get("codigo_tipo_ct", "")
+                ti_old = cll["4771_entregada"].get("codigo_tipo_inst", "")
                 ti = get_ti_name(O, cll["tipus_instalacio_cnmc_id"])
 
                 if ti_old and ti_old != ti:
@@ -264,7 +264,7 @@ class ModLat(MultiprocessBased):
                 ]
 
                 for tram in O.GiscedataAtTram.read(ids, fields_to_read_tram):
-                    ti_old = tram["4771_entregada"].get("codigo_tipo_ct", "")
+                    ti_old = tram["4771_entregada"].get("codigo_tipo_linea", "")
                     ti = get_ti_name(O, tram["tipus_instalacio_cnmc_id"])
 
                     if ti_old and ti_old != ti:
@@ -345,7 +345,7 @@ class ModLbt(MultiprocessBased):
                 self.progress_q.put(item)
 
                 linia = O.GiscedataBtElement.read(item, fields_to_read)
-                ti_old = linia["4771_entregada"].get("codigo_tipo_ct", "")
+                ti_old = linia["4771_entregada"].get("codigo_tipo_linea", "")
                 ti = get_ti_name(O, linia["tipus_instalacio_cnmc_id"])
                 if ti_old and ti_old != ti:
                     output = [
@@ -434,7 +434,7 @@ class ModMaq(MultiprocessBased):
                 self.progress_q.put(item)
 
                 trafo = O.GiscedataTransformadorTrafo.read(item, fields_to_read)
-                ti_old = trafo["4771_entregada"].get("codigo_tipo_ct", "")
+                ti_old = trafo["4771_entregada"].get("codigo_tipo_maquina", "")
                 ti = get_ti_name(O, trafo["tipus_instalacio_cnmc_id"])
 
                 if ti_old and ti != ti_old:
@@ -527,88 +527,6 @@ class ModPos(MultiprocessBased):
                     ]
                     self.output_q.put(output)
 
-            except Exception:
-                traceback.print_exc()
-                if self.raven:
-                    self.raven.captureException()
-            finally:
-                self.input_q.task_done()
-
-
-class ModSub(MultiprocessBased):
-    """
-    Class that generates the modification file of SUB(3) 
-    """
-
-    def __init__(self, **kwargs):
-        """
-        Class constructor
-        
-        :param kwargs: year(generation year), codi_r1 R1 code
-        :return: None
-        :rtype: None
-        """
-
-        super(ModSub, self).__init__(**kwargs)
-        self.year = kwargs.pop('year', datetime.now().year - 1)
-
-    def get_sequence(self):
-        """
-        Method that generates a list of ids to pass to the consumer
-        
-        :return: Ids to generate
-        :rtype: list
-        """
-
-        search_params = []
-        data_pm = '{}-01-01'.format(self.year + 1)
-        data_baixa = '{}-01-01'.format(self.year)
-        search_params += [('propietari', '=', True),
-                          '|', ('data_pm', '=', False),
-                          ('data_pm', '<', data_pm),
-                          '|', ('data_baixa', '>', data_baixa),
-                          ('data_baixa', '=', False)
-                          ]
-        # Revisem que si està de baixa ha de tenir la data informada.
-        search_params += ['|',
-                          '&', ('active', '=', False),
-                          ('data_baixa', '!=', False),
-                          ('active', '=', True)]
-        return self.connection.GiscedataCtsSubestacions.search(
-            search_params, 0, 0, False, {'active_test': False})
-
-    def consumer(self):
-        """
-        Method that generates the csb file
-        
-        :return: None
-        :rtype: None
-        """
-
-        O = self.connection
-        fields_to_read = [
-            "4771_entregada", "tipus_instalacio_cnmc_id", "name"
-        ]
-
-        while True:
-            try:
-                item = self.input_q.get()
-                self.progress_q.put(item)
-
-                sub = O.GiscedataCtsSubestacions.read(item, fields_to_read)
-
-                ti_old = sub["4771_entregada"].get("codigo_tipo_ct", "")
-                ti = get_ti_name(O, sub["tipus_instalacio_cnmc_id"])
-
-                if ti_old and ti != ti_old:
-                    output = [
-                        sub["name"],
-                        sub["name"],
-                        ti_old,
-                        ti
-                    ]
-
-                    self.output_q.put(output)
             except Exception:
                 traceback.print_exc()
                 if self.raven:
