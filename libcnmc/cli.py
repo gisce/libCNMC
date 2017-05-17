@@ -2644,6 +2644,15 @@ def res_4667_pos(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4666_pos(**kwargs):
+    """
+    Click entry to generate the POS file of 4666
+    
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str) 
+    :return: None
+    :rtype: None 
+    """
+
     from libcnmc.res_4666 import POS, POS_INT
     kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
     res_pos2(POS, POS_INT, **kwargs)
@@ -2700,6 +2709,15 @@ def res_4667_maq(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4666_maq(**kwargs):
+    """
+    Click entry to generate the MAQ file of 4666
+    
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str) 
+    :return: None
+    :rtype: None 
+    """
+
     from libcnmc.res_4131 import MAQ
     kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
     res_lat(MAQ, **kwargs)
@@ -2756,6 +2774,15 @@ def res_4667_des(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4666_des(**kwargs):
+    """
+    Click entry to generate the DES file of 4666
+    
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str) 
+    :return: None
+    :rtype: None 
+    """
+
     from libcnmc.res_4131 import DES
     kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
     res_lat(DES, **kwargs)
@@ -2812,6 +2839,14 @@ def res_4667_fia(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4666_fia(**kwargs):
+    """
+    Click entry to generate the FIA file of 4666
+    
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str) 
+    :return: None
+    :rtype: None 
+    """
     from libcnmc.res_4131 import FIA
     kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
     res_lat(FIA, **kwargs)
@@ -2838,6 +2873,15 @@ def res_4666_fia(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4666_con(**kwargs):
+    """
+    Click entry to generate the CON file of 4666
+    
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str) 
+    :return: None
+    :rtype: None 
+    """
+
     from libcnmc.res_4666 import CON
     kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
     res_lat(CON, **kwargs)
