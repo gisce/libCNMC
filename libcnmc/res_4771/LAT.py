@@ -45,8 +45,8 @@ class LAT(MultiprocessBased):
                           'tensio_max_disseny', 'name', 'origen',
                           'final', 'perc_financament', 'circuits',
                           'longitud_cad', 'cable', 'cnmc_tipo_instalacion']
-        data_pm_limit = '%s-01-01' % (self.year + 1)
-        data_baixa = '%s-12-31' % self.year
+        data_pm_limit = '{}-01-01'.format(self.year + 1)
+        data_baixa = '{}-12-31'.format(self.year)
         static_search_params = [('propietari', '=', True),
                                 '|', ('data_pm', '=', False),
                                      ('data_pm', '<', data_pm_limit),
@@ -160,14 +160,14 @@ class LAT(MultiprocessBased):
                              ('layer', 'not ilike', 'EMBARRA%BT%')
                              ])
                         if not res or len(res) > 1:
-                            edge = {'start_node': (0, '%s_0' % tram.get('name')),
-                                    'end_node': (0, '%s_1' % tram.get('name'))}
+                            edge = {'start_node': (0, '{}_0'.format(tram.get('name'))),
+                                    'end_node': (0, '{}_1'.format(tram.get('name')))}
                         else:
                             edge = O.GiscegisEdge.read(res[0], ['start_node',
                                                                 'end_node'])
 
                     output = [
-                        'A%s' % tram['name'],
+                        'A{}'.format(tram['name']),
                         tram.get('cini', '') or '',
                         origen or edge['start_node'][1],
                         final or edge['end_node'][1],
