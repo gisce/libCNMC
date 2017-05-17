@@ -347,15 +347,15 @@ class ModLbt(MultiprocessBased):
                 linia = O.GiscedataBtElement.read(item, fields_to_read)
                 ti_old = linia["4771_entregada"].get("codigo_tipo_ct", "")
                 ti = get_ti_name(O, linia["tipus_instalacio_cnmc_id"])
+                if ti_old and ti_old != ti:
+                    output = [
+                        "B{}".format(linia["name"]),
+                        "B{}".format(linia["name"]),
+                        ti_old,
+                        ti
+                    ]
 
-                output = [
-                    "B{}".format(linia["name"]),
-                    "B{}".format(linia["name"]),
-                    ti_old,
-                    ti
-                ]
-
-                self.output_q.put(output)
+                    self.output_q.put(output)
             except Exception:
                 traceback.print_exc()
                 if self.raven:
@@ -409,7 +409,7 @@ class ModMaq(MultiprocessBased):
             ('localitzacio.code', '=', '1'),
             ('id_estat.codi', '!=', '1')]
 
-        #search_params_reductor += search_params
+        # search_params_reductor += search_params
         ids_reductor = self.connection.GiscedataTransformadorTrafo.search(
             search_params_reductor, 0, 0, False, {'active_test': False})
 
