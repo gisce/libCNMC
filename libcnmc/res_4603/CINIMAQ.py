@@ -136,7 +136,7 @@ class CINIMAQ(MultiprocessBased):
                     O.GiscedataTransformadorTrafo.write([item], {'cini': cini})
 
                 self.output_q.put(cini)
-            except:
+            except Exception:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()

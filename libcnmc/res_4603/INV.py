@@ -323,7 +323,7 @@ class INV():
 
             # Escrivim l'arxiu XML
             self.escriure_xml(arxiuxml)
-        except:
+        except Exception:
             traceback.print_exc()
             if self.raven:
                 self.raven.captureException()
