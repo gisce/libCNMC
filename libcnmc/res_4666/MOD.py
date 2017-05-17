@@ -71,7 +71,8 @@ class ModCts(MultiprocessBased):
         """
         Method that generates the csb file
         
-        :return: List of arrays
+        :return: None
+        :rtype: None
         """
 
         O = self.connection
@@ -81,15 +82,17 @@ class ModCts(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-                fields_to_read = ["tipus_instalacio_cnmc_id", "4771_entregada"]
+                fields_to_read = [
+                    "tipus_instalacio_cnmc_id", "4771_entregada", "name"
+                ]
                 ct = O.GiscedataCts.read(item, fields_to_read)
                 ti_old = ct["4771_entregada"].get("codigo_tipo_ct", "")
                 ti = get_ti_name(O, ct["tipus_instalacio_cnmc_id"])
 
                 if ti_old and ti_old != ti:
                     output = [
-                        ct["id"],
-                        ct["id"],
+                        ct["name"],
+                        ct["name"],
                         ti_old,
                         ti
                     ]
@@ -159,7 +162,9 @@ class ModFia(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-                fields_to_read = ["tipus_instalacio_cnmc_id", "4771_entregada"]
+                fields_to_read = [
+                    "tipus_instalacio_cnmc_id", "4771_entregada", "name"
+                ]
                 cll = O.GiscedataCellesCella.read(item, fields_to_read)
 
                 ti_old = cll["4771_entregada"].get("codigo_tipo_ct", "")
@@ -167,8 +172,8 @@ class ModFia(MultiprocessBased):
 
                 if ti_old and ti_old != ti:
                     output = [
-                        cll["id"],
-                        cll["id"],
+                        cll["name"],
+                        cll["name"],
                         ti_old,
                         ti
                     ]
@@ -264,8 +269,8 @@ class ModLat(MultiprocessBased):
 
                     if ti_old and ti_old != ti:
                         output = [
-                            tram["id"],
-                            tram["id"],
+                            'A{0}'.format(tram["name"]),
+                            'A{0}'.format(tram["name"]),
                             ti_old,
                             ti
                         ]
@@ -331,7 +336,7 @@ class ModLbt(MultiprocessBased):
         O = self.connection
         count = 0
         fields_to_read = [
-            "tipus_instalacio_cnmc_id", "4771_entregada"
+            "tipus_instalacio_cnmc_id", "4771_entregada", "name"
         ]
         while True:
             try:
@@ -344,8 +349,8 @@ class ModLbt(MultiprocessBased):
                 ti = get_ti_name(O, linia["tipus_instalacio_cnmc_id"])
 
                 output = [
-                    linia["id"],
-                    linia["id"],
+                    "B{}".format(linia["name"]),
+                    "B{}".format(linia["name"]),
                     ti_old,
                     ti
                 ]
@@ -421,7 +426,7 @@ class ModMaq(MultiprocessBased):
         """
 
         O = self.connection
-        fields_to_read = ["tipus_instalacio_cnmc_id", "4771_entregada"]
+        fields_to_read = ["tipus_instalacio_cnmc_id", "4771_entregada", "name"]
 
         while True:
             try:
@@ -434,8 +439,8 @@ class ModMaq(MultiprocessBased):
 
                 if ti_old and ti != ti_old:
                     output = [
-                        trafo["id"],
-                        trafo["id"],
+                        trafo["name"],
+                        trafo["name"],
                         ti_old,
                         ti
                     ]
@@ -500,7 +505,8 @@ class ModPos(MultiprocessBased):
         O = self.connection
         fields_to_read = [
             "tipus_instalacio_cnmc_id",
-            "4771_entregada"
+            "4771_entregada",
+            "name"
         ]
 
         while True:
@@ -514,8 +520,8 @@ class ModPos(MultiprocessBased):
 
                 if ti_old and ti != ti_old:
                     output = [
-                        pos["id"],
-                        pos["id"],
+                        pos["name"],
+                        pos["name"],
                         ti_old,
                         ti
                     ]
@@ -581,7 +587,7 @@ class ModSub(MultiprocessBased):
 
         O = self.connection
         fields_to_read = [
-            "4771_entregada", "tipus_instalacio_cnmc_id"
+            "4771_entregada", "tipus_instalacio_cnmc_id", "name"
         ]
 
         while True:
@@ -596,8 +602,8 @@ class ModSub(MultiprocessBased):
 
                 if ti_old and ti != ti_old:
                     output = [
-                        sub["id"],
-                        sub["id"],
+                        sub["name"],
+                        sub["name"],
                         ti_old,
                         ti
                     ]
