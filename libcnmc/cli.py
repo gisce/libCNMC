@@ -518,6 +518,15 @@ def res_4603_lbt(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4771_lbt(**kwargs):
+    """
+    Click entry to generate the LBT of 4771
+    
+    :param kwargs:Params to pass to the process 
+    :type kwargs: dict(str,str) 
+    :return: None 
+    :rtype: None 
+    """
+
     from libcnmc.res_4771 import LBT
     res_lbt(LBT, **kwargs)
 
@@ -558,6 +567,14 @@ def res_sub(SUB, **kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_sub(**kwargs):
+    """
+    Click entry to generate the SUB file of the 4603
+    
+    :param kwargs:Params to pass to the process 
+    :type kwargs: dict(str, str) 
+    :return: None
+    :rtype: None 
+    """
     from libcnmc.res_4603 import SUB
     res_sub(SUB, **kwargs)
 
@@ -581,6 +598,14 @@ def res_4603_sub(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4771_sub(**kwargs):
+    """
+    Click entry to generate the SUB file of the 4771 
+    
+    :param kwargs: Params to pass to the process  
+    :type kwargs: dict(str,str) 
+    :return: None
+    :rtype: None 
+    """
     from libcnmc.res_4771 import SUB
     res_sub(SUB, **kwargs)
 
@@ -621,6 +646,15 @@ def res_pos(POS, **kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_pos(**kwargs):
+    """
+    Click entry to generate the POS file of 4603
+    
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str, str) 
+    :return: None
+    :rtype: None
+    """
+
     from libcnmc.res_4603 import POS
     res_pos(POS, **kwargs)
 
@@ -644,6 +678,14 @@ def res_4603_pos(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4771_pos(**kwargs):
+    """
+    Click entry to generate the POS file of 4771
+    
+    :param kwargs: Parameters to pas to the process
+    :type kwargs: dict(str, str)
+    :return: None 
+    :rtype: None 
+    """
     from libcnmc.res_4771 import POS
     res_pos(POS, **kwargs)
 
@@ -685,6 +727,14 @@ def res_maq(MAQ, **kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_maq(**kwargs):
+    """
+    Click entry to generate the MAQ file of the 4603
+    
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str, str) 
+    :return:None 
+    :rtype: None
+    """
     from libcnmc.res_4603 import MAQ
     res_maq(MAQ, **kwargs)
 
@@ -708,6 +758,15 @@ def res_4603_maq(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4771_maq(**kwargs):
+    """
+    Click entry to generate the MAQ file of 4771
+    
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str,str) 
+    :return: None 
+    :rtype: None 
+    """
+
     from libcnmc.res_4771 import MAQ
     res_maq(MAQ, **kwargs)
 
@@ -749,6 +808,15 @@ def res_des(DES, **kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_des(**kwargs):
+    """
+    Click entry to generate the DES file of 4603
+    
+    :param kwargs: Params to pass to the process 
+    :type kwargs: dict(str,str) 
+    :return: None
+    :rtype: None
+    """
+
     from libcnmc.res_4603 import DES
     res_des(DES, **kwargs)
 
@@ -772,6 +840,15 @@ def res_4603_des(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4771_des(**kwargs):
+    """
+    Click entry to generate the DES file of 4771
+    
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str, str)
+    :return: None
+    :rtype: None 
+    """
+    
     from libcnmc.res_4771 import DES
     res_des(DES, **kwargs)
 
