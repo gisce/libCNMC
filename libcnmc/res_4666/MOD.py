@@ -260,7 +260,8 @@ class ModLat(MultiprocessBased):
                     search_params, 0, 0, False, {'active_test': False})
                 fields_to_read_tram = [
                     "tipus_instalacio_cnmc_id",
-                    "4771_entregada"
+                    "4771_entregada",
+                    "name"
                 ]
 
                 for tram in O.GiscedataAtTram.read(ids, fields_to_read_tram):
