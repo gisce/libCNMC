@@ -117,7 +117,7 @@ def get_comptador(connection, polissa_id, year):
         comp_obj = O.GiscedataLecturesComptador
         comp_id = comp_obj.search([
             ('polissa', '=', polissa_id),
-            ('data_alta', '<', '%s-01-01' % (year + 1))
+            ('data_alta', '<', '{}-01-01'.format(year + 1))
         ], 0, 1, 'data_alta desc', {'active_test': False})
         return comp_id
 
