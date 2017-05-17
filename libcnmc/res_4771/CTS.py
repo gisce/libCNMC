@@ -21,8 +21,8 @@ class CTS(MultiprocessBased):
 
     def get_sequence(self):
         search_params = [('id_installacio.name', '!=', 'SE')]
-        data_pm = '%s-01-01' % (self.year + 1)
-        data_baixa = '%s-12-31' % self.year
+        data_pm = '{}-01-01'.format(self.year + 1)
+        data_baixa = '{}-12-31'.format(self.year)
         search_params += [('propietari', '=', True),
                           '|', ('data_pm', '=', False),
                                ('data_pm', '<', data_pm),
@@ -72,7 +72,7 @@ class CTS(MultiprocessBased):
                         comunitat_codi = comunitat_vals['codi']
 
                 output = [
-                    '%s' % ct['name'],
+                    '{}'.format(ct['name']),
                     ct['cini'] or '',
                     ct['descripcio'] or '',
                     str(ct['cnmc_tipo_instalacion']) or '',
