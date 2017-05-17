@@ -213,8 +213,8 @@ def res_mod(procs, **kwargs):
     
     :param procs:process to generate
     :type procs: list
-    :param kwargs: Parameters to generate
-    :type kwargs: dict
+    :param kwargs: Parameters to generate the file, passed to the process
+    :type kwargs: dict(str, str)
     :return: None
     :rtype: None
     """
@@ -223,20 +223,37 @@ def res_mod(procs, **kwargs):
                     pwd=kwargs['password'], port=kwargs['port'],
                     uri=kwargs['server'])
 
-    for proc_fnc in procs:
-        proc = proc_fnc(
-            quiet=kwargs['quiet'],
-            interactive=kwargs['interactive'],
-            output=kwargs['output'],
-            connection=O,
-            num_proc=kwargs['num_proc'],
-            year=kwargs['year']
-        )
-        proc.calc()
+    with open(kwargs["output"], "w") as fd:
+        for proc_fnc in procs:
+            temp_fd = tempfile.NamedTemporaryFile()
+            tmp_url = temp_fd.name
+
+            proc = proc_fnc(
+                quiet=kwargs['quiet'],
+                interactive=kwargs['interactive'],
+                output=tmp_url,
+                connection=O,
+                num_proc=kwargs['num_proc'],
+                year=kwargs['year']
+            )
+            proc.calc()
+            with open(tmp_url, "r") as fd_tmp:
+                tmp_data = fd_tmp.read()
+            fd.write(tmp_data)
 
 
 # CSV LAT
 def res_lat(LAT, **kwargs):
+    """
+    Generates the CSV file for LAT process
+    
+    :param LAT: process to generate
+    :type LAT: MultiprocessBased
+    :param kwargs: Parameters to generate the file, passed to the process
+    :type kwargs: dict(str,str)
+    :return: None
+    :rtype: None
+    """
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
