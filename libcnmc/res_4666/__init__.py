@@ -7,4 +7,4 @@ from DES import DES
 from FIA import FIA
 from CTS import CTS
 from CON import CON
-from MOD import MOD_CTS, MOD_FIA, MOD_LAT, MOD_LBT, MOD_MAQ, MOD_POS,MOD_SUB
+from MOD import ModCts, ModFia, ModLat, ModLbt, ModMaq, ModPos, ModSub

@@ -1917,10 +1917,9 @@ def res_4666_mod(**kwargs):
     :rtype: None
     """
 
-    from libcnmc.res_4666 import MOD_CTS, MOD_FIA, MOD_LAT, MOD_SUB, MOD_POS
-    from libcnmc.res_4666 import MOD_LBT, MOD_MAQ
-    procs = [MOD_CTS, MOD_FIA, MOD_LAT, MOD_LBT, MOD_MAQ,
-                 MOD_POS, MOD_SUB]
+    from libcnmc.res_4666 import ModCts, ModFia, ModLat, ModSub, ModPos
+    from libcnmc.res_4666 import ModLbt, ModMaq
+    procs = [ModCts, ModFia, ModLat, ModLbt, ModMaq,ModPos, ModSub]
     res_mod(procs, **kwargs)
 
 
