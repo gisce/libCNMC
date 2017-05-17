@@ -848,7 +848,7 @@ def res_4771_des(**kwargs):
     :return: None
     :rtype: None 
     """
-    
+
     from libcnmc.res_4771 import DES
     res_des(DES, **kwargs)
 
@@ -889,6 +889,15 @@ def res_fia(FIA, **kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_fia(**kwargs):
+    """
+    Click entry to generate the FIA file of 4603
+     
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str,str) 
+    :return: None
+    :rtype: None
+    """
+
     from libcnmc.res_4603 import FIA
     res_fia(FIA, **kwargs)
 
@@ -912,6 +921,14 @@ def res_4603_fia(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4771_fia(**kwargs):
+    """
+    Click entry to generate the FIA file of 4771
+    
+    :param kwargs: Parameters to pass to the process
+    :type kwargs: dict(str,str) 
+    :return: None 
+    :rtype: None
+    """
     from libcnmc.res_4771 import FIA
     res_fia(FIA, **kwargs)
 
@@ -952,6 +969,14 @@ def res_cts(CTS, **kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_cts(**kwargs):
+    """
+    Click entry to generate the CTs file of 4603
+    
+    :param kwargs: Parameters to pass to the process 
+    :type kwargs: dict(str,str) 
+    :return: None
+    :rtype: None
+    """
     from libcnmc.res_4603 import CTS
     res_cts(CTS, **kwargs)
 
@@ -975,6 +1000,14 @@ def res_4603_cts(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4771_cts(**kwargs):
+    """
+    Click entry to generate the CT file of 4771
+    
+    :param kwargs: Parameters to pass to the process
+    :type kwargs: dict(str, str) 
+    :return: None
+    :rtype: None
+    """
     from libcnmc.res_4771 import CTS
     res_cts(CTS, **kwargs)
 
@@ -1000,6 +1033,15 @@ def res_4771_cts(**kwargs):
 @click.option("-t", "--transformacio", help="Fitxers CSV de transformacio",
               type=click.Path(exists=True))
 def res_4603_inv(**kwargs):
+    """
+    Click entry to generate the INV file of the 4603 
+    
+    :param kwargs: Params to pass to the process 
+    :type kwargs: dict(str,str)
+    :return: None 
+    :rtype: None 
+    """
+
     proc = INV(
         output=kwargs['output'],
         codi_r1=kwargs['codi_r1'],
@@ -1129,6 +1171,14 @@ def create_celles(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('-f',  '--file-input', type=click.Path(exists=True))
 def update_cinis_trafo(**kwargs):
+    """
+    Click entry to update cinis of trafos
+    
+    :param kwargs: Params to pass to the process 
+    :type kwargs:  
+    :return: None 
+    :rtype: None
+    """
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -1157,6 +1207,14 @@ def update_cinis_trafo(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('-f',  '--file-input', type=click.Path(exists=True))
 def update_cinis_trams(**kwargs):
+    """
+    Click entry to update the CINI of trams
+    
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str,str) 
+    :return: 
+    :rtype: 
+    """
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -1185,6 +1243,15 @@ def update_cinis_trams(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('-f',  '--file-input', type=click.Path(exists=True))
 def update_cinis_cts(**kwargs):
+    """
+    Click entry to update CINI of CT
+    
+    :param kwargs: Params to pass to the process 
+    :type kwargs: dict(str,str) 
+    :return: None
+    :rtype: None
+    """
+
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -1216,6 +1283,14 @@ def update_cinis_cts(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f1(**kwargs):
+    """
+    Click entry to generate the F1 of 4/2015
+    
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str,str) 
+    :return: None
+    :rtype: None
+    """
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -1250,6 +1325,15 @@ def cir_4_2015_f1(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f11(**kwargs):
+    """
+    Click entry to generate the F11 of 4/2015
+    
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str,str)
+    :return: None
+    :rtype: None
+    """
+
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -1284,6 +1368,15 @@ def cir_4_2015_f11(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f1bis(**kwargs):
+    """
+    Click entry to gneerate the F1BIS of 4/2015
+    
+    :param kwargs: Params to pass to the process
+    :type kwargs:dict(str, str) 
+    :return: None
+    :rtype: None
+    """
+
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -1317,6 +1410,14 @@ def cir_4_2015_f1bis(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f12(**kwargs):
+    """
+    Click entry to generate the F12 of the 4/2015
+    
+    :param kwargs: Params to pass to the proces  
+    :type kwargs: dict(str, str) 
+    :return: None 
+    :rtype: None
+    """
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -1349,6 +1450,15 @@ def cir_4_2015_f12(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f12bis(**kwargs):
+    """
+    Click entry to generate the F12 BIS of the 4/2015
+    
+    :param kwargs: Params to pass to the process 
+    :type kwargs: dict(str, str) 
+    :return: None
+    :rtype: None 
+    """
+
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -1382,6 +1492,15 @@ def cir_4_2015_f12bis(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f13(**kwargs):
+    """
+    Click entry to generate the F13 file of 4/2015
+    
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str,str) 
+    :return: None
+    :rtype: None
+    """
+
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -1415,6 +1534,15 @@ def cir_4_2015_f13(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f13bis(**kwargs):
+    """
+    Click entry to generate the F13 BIS of 4/2015
+    
+    :param kwargs: Params to pas to the process 
+    :type kwargs: dict(str,str) 
+    :return: None
+    :rtype: None
+    """
+
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -1447,6 +1575,15 @@ def cir_4_2015_f13bis(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f13c(**kwargs):
+    """
+    Click entry to generate the F13C of 4/2015
+    
+    :param kwargs: Params to pass to the process 
+    :type kwargs: dict(str, str) 
+    :return: None
+    :return: None
+    """
+
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -1479,6 +1616,15 @@ def cir_4_2015_f13c(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f14(**kwargs):
+    """
+    Click entry to generate the F14 file of 4/2015
+    
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str,str) 
+    :return: None
+    :rtype: None
+    """
+
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -1512,6 +1658,15 @@ def cir_4_2015_f14(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f15(**kwargs):
+    """
+    Click ent ry to generate F15 of 4/2015
+    
+    :param kwargs: Params to pass to the process 
+    :type kwargs: dict(str, str) 
+    :return: None 
+    :rtype: None
+    """
+
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -1546,6 +1701,15 @@ def cir_4_2015_f15(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f10at(**kwargs):
+    """
+    Click entry to gnerate the F10AT of 4/2015
+    
+    :param kwargs: Params to pass to the process 
+    :type kwargs: dict(str, str) 
+    :return: None
+    :rtype: None
+    """
+
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -1580,6 +1744,15 @@ def cir_4_2015_f10at(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f10bt(**kwargs):
+    """
+    Click entry to genertate the F10BT fo 4/2015
+    
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str,str)
+    :return: None
+    :rtype: None
+    """
+
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -1614,6 +1787,14 @@ def cir_4_2015_f10bt(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f20(**kwargs):
+    """
+    Click entry to generate the F20 file of 4/2015
+    
+    :param kwargs: Params to pass to the process
+    :type kwargs:dict(str,str) 
+    :return: None 
+    :rtype: None
+    """
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -1647,6 +1828,15 @@ def cir_4_2015_f20(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f9(**kwargs):
+    """
+    Click entry to generate the F9 of 4/20105
+    
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str, str)
+    :return: None
+    :rtype: None
+    """
+
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -1677,6 +1867,15 @@ def cir_4_2015_f9(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('-f',  '--file-input', type=click.Path(exists=True))
 def cir_4_2015_create_celles(**kwargs):
+    """
+    Click entry to create celles of 4/2015
+    
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str,str) 
+    :return: None
+    :rtype: None
+    """
+
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -1707,6 +1906,15 @@ def cir_4_2015_create_celles(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_3_2015_f3(**kwargs):
+    """
+    Click entry to generate the F3 of the 3/2015
+    
+    :param kwargs: Params to pass to the process 
+    :type kwargs: dict(str,str) 
+    :return: None
+    :rtype: None
+    """
+
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
                     pwd=kwargs['password'], port=kwargs['port'],
                     uri=kwargs['server'])
@@ -1740,6 +1948,14 @@ def cir_3_2015_f3(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2015_f16(**kwargs):
+    """
+    Click entry to generate the F16 of 4/2015
+    
+    :param kwargs: Params to pass to the process 
+    :type kwargs: dict(str,str) 
+    :return: None
+    :rtype: None
+    """
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
                     pwd=kwargs['password'], port=kwargs['port'],
                     uri=kwargs['server'])
@@ -1780,6 +1996,14 @@ def invoke():
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_lat(**kwargs):
+    """
+    Click entry to gnerate the LAT of 4131
+    
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str) 
+    :return: None
+    :rtype: None 
+    """
     from libcnmc.res_4131 import LAT, LAT_2015
     if kwargs['year'] == 2015:
         kwargs["compare_field"] = "4771_entregada"
@@ -1811,6 +2035,14 @@ def res_4131_lat(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_lbt(**kwargs):
+    """
+    Click entry to generate the LBT of 4131
+    
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str) 
+    :return: None
+    :rtype: None 
+    """
     from libcnmc.res_4131 import LBT, LBT_2015
     if kwargs['year'] == 2015:
         kwargs["compare_field"] = "4771_entregada"
@@ -1819,6 +2051,7 @@ def res_4131_lbt(**kwargs):
         last_year = datetime.now().year-1
         kwargs["compare_field"] = "4131_entregada_{}".format(last_year)
         res_lat(LBT, **kwargs)
+
 
 @cnmc.command()
 @click.option('-q', '--quiet', default=False,
@@ -1841,6 +2074,15 @@ def res_4131_lbt(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_cts(**kwargs):
+    """
+    Click entry to generate the CTs of 4131
+    
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str) 
+    :return: None
+    :rtype: None 
+    """
+
     from libcnmc.res_4131 import CTS, CTS_2015
     if kwargs['year'] == 2015:
         kwargs["compare_field"] = "4771_entregada"
@@ -1871,6 +2113,15 @@ def res_4131_cts(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_sub(**kwargs):
+    """
+    Click entry to generate the SUB fil of 4131
+    
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str) 
+    :return: None
+    :rtype: None 
+    """
+
     from libcnmc.res_4131 import SUB, SUB_2015
     if kwargs['year'] == 2015:
         kwargs["compare_field"] = "4771_entregada"
@@ -1901,6 +2152,15 @@ def res_4131_sub(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_pos(**kwargs):
+    """
+    Click entry to generate the POS file of 4131
+    
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str) 
+    :return: None
+    :rtype: None 
+    """
+
     from libcnmc.res_4131 import POS, POS_2015, POS_INT
     if kwargs['year'] == 2015:
         kwargs["compare_field"] = "4771_entregada"
@@ -1931,6 +2191,15 @@ def res_4131_pos(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_maq(**kwargs):
+    """
+    Click entry to generate the MAQ file of 4131
+    
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str) 
+    :return: None
+    :rtype: None 
+    """
+
     from libcnmc.res_4131 import MAQ, MAQ_2015
     if kwargs["year"] == 2015:
         kwargs["compare_field"] = "4771_entregada"
@@ -1961,6 +2230,15 @@ def res_4131_maq(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4131_des(**kwargs):
+    """
+    Click entry to generate the DES file
+    
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str) 
+    :return: None
+    :rtype: None 
+    """
+
     from libcnmc.res_4131 import DES, DES_2015
     if kwargs['year'] == 2015:
         kwargs["compare_field"] = "4771_entregada"
@@ -2170,6 +2448,15 @@ def res_4667_lat(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4666_lbt(**kwargs):
+    """
+    Click entry to generate the LBT of 4666
+    
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str) 
+    :return: None
+    :rtype: None 
+    """
+
     from libcnmc.res_4666 import LBT
     last_year = datetime.now().year-1
     kwargs["compare_field"] = "4131_entregada_{}".format(last_year)
@@ -2227,6 +2514,15 @@ def res_4667_lbt(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4666_cts(**kwargs):
+    """
+    Click entry to generate the CTs of 4666
+    
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str) 
+    :return: None
+    :rtype: None 
+    """
+
     from libcnmc.res_4666 import CTS
     kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
     res_lat(CTS, **kwargs)
@@ -2283,6 +2579,15 @@ def res_4667_otros(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4666_sub(**kwargs):
+    """
+    Click entry to generate the CTs file of 4666
+    
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str) 
+    :return: None
+    :rtype: None 
+    """
+
     from libcnmc.res_4666 import SUB
     kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
     res_lat(SUB, **kwargs)
