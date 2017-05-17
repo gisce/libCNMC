@@ -57,7 +57,7 @@ class F20(MultiprocessBased):
                     o_cini,
                     o_codi_ct
                 ])
-            except:
+            except Exception:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()

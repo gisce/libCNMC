@@ -266,7 +266,7 @@ class F1(MultiprocessBased):
                     format_f(o_anual_reactiva, decimals=3),
                     o_any_incorporacio
                 ])
-            except:
+            except Exception:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()

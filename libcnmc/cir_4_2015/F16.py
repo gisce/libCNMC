@@ -105,7 +105,7 @@ class F16(MultiprocessBased):
                     o_propietari,
                     o_any
                 ])
-            except:
+            except Exception:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()

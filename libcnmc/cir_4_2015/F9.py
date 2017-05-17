@@ -163,7 +163,7 @@ class F9(MultiprocessBased):
                     item
                 )
                 fio.write(str(msg[0])+'\n')
-            except:
+            except Exception:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
