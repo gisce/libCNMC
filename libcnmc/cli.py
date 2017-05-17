@@ -1881,6 +1881,15 @@ def res_4131_con(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4666_lat(**kwargs):
+    """
+    Click entry to generate LAT file of 4666
+    
+    :param kwargs: Parameters to generate the LAT file
+    :type kwargs: dict
+    :return: None
+    :rtype: None
+    """
+
     from libcnmc.res_4666 import LAT
     last_year = datetime.now().year - 1
     kwargs["compare_field"] = "4131_entregada_{}".format(last_year)
