@@ -37,6 +37,15 @@ def cnmc():
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('-f', '--file-input', type=click.Path(exists=True))
 def update_cnmc_stats(**kwargs):
+    """
+    Click entry to update CNMC stats
+    
+    :param kwargs:  
+    :typekwargs: dict(str,str) 
+    :return: None
+    :rtype: None
+    """
+
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -66,6 +75,15 @@ def update_cnmc_stats(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('-f',  '--file-input', type=click.Path(exists=True))
 def update_cinis_comptador(**kwargs):
+    """
+    Click entry to update CINI of comptador
+    
+    :param kwargs: Parametrs to pass to the process 
+    :type kwargs: dict(str, str) 
+    :return: None 
+    :rtype: None 
+    """
+
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -98,6 +116,15 @@ def update_cinis_comptador(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2014_f1(**kwargs):
+    """
+    Click entry to generate the circular F1 of 4/2014
+    
+    :param kwargs: Params to pass to the process  
+    :type kwargs: dict(str, str)
+    :return: None
+    :rtype: None
+    """
+
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -132,6 +159,15 @@ def cir_4_2014_f1(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2014_f1bis(**kwargs):
+    """
+    Click entry to generate F1bis of 4/2014
+    
+    :param kwargs: Params to pass to the process 
+    :type kwargs: dict(str, str) 
+    :return: None
+    :rtype: None
+    """
+
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -166,6 +202,15 @@ def cir_4_2014_f1bis(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_4_2014_f11(**kwargs):
+    """
+    Click entry to generate the F11 of 4/2014
+    
+    :param kwargs: Params to pass to the process 
+    :type kwargs: dict(str, str) 
+    :return: None 
+    :rtype: None
+    """
+
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
              pwd=kwargs['password'], port=kwargs['port'],
              uri=kwargs['server'])
@@ -184,11 +229,13 @@ def cir_4_2014_f11(**kwargs):
 # CSV 4667
 def csv_4667(obj, **kwargs):
     """
-    Starts the proces to generate the 4667 rert
+    Starts the proces to generate the 4667
     
     :param obj: Object of the process to generate
     :param kwargs: kwargs to pass to the process
+    :type kwargs: dict(str,str)
     :return: None
+    :rtype: None
     """
 
     con = OOOPFactory(
@@ -353,6 +400,15 @@ def res_pos2(proc1, proc2, **kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_lat(**kwargs):
+    """
+    Click entry to generate the LAT file of the 4603
+    
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str,str)
+    :return: None
+    :rtype: None
+    """
+
     from libcnmc.res_4603 import LAT
     res_lat(LAT, **kwargs)
 
@@ -378,6 +434,15 @@ def res_4603_lat(**kwargs):
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4771_lat(**kwargs):
+    """
+    Click entry to generate the LAT file of 4771
+    
+    :param kwargs: Params to pass to the process 
+    :type kwargs: dict(str,str) 
+    :return: None 
+    :rtype: None 
+    """
+
     from libcnmc.res_4771 import LAT
     res_lat(LAT, **kwargs)
 
@@ -419,6 +484,15 @@ def res_lbt(LBT, **kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_lbt(**kwargs):
+    """
+    Click entry to generate the LBT file of the 4603
+    
+    :param kwargs: Params to pass to the process 
+    :type kwargs: dict(str,str) 
+    :return: None
+    :rtype: None
+    """
+
     from libcnmc.res_4603 import LBT
     res_lbt(LBT, **kwargs)
 
