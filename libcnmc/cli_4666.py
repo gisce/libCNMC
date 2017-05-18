@@ -63,12 +63,13 @@ def res_mod(procs, **kwargs):
             tmp_url = temp_fd.name
 
             proc = proc_fnc(
-                quiet=kwargs['quiet'],
-                interactive=kwargs['interactive'],
+                quiet=kwargs["quiet"],
+                interactive=kwargs["interactive"],
                 output=tmp_url,
                 connection=O,
-                num_proc=kwargs['num_proc'],
-                year=kwargs['year']
+                num_proc=kwargs["num_proc"],
+                year=kwargs["year"],
+                explain=kwargs["explain"]
             )
             proc.calc()
             with open(tmp_url, "r") as fd_tmp:
@@ -96,6 +97,8 @@ def res_mod(procs, **kwargs):
 @click.option('--embarrats/--no-embarrats', default=False,
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('--explain/--no-explain', default=False,
+              help="Explicar resultats")
 def res_4666_mod(**kwargs):
     """
     Click entry to generate the modification file for 4666

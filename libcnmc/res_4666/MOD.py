@@ -40,6 +40,7 @@ class ModCts(MultiprocessBased):
         """
 
         super(ModCts, self).__init__(**kwargs)
+        self.explain = kwargs.pop('explain', False)
         self.year = kwargs.pop('year', datetime.now().year - 1)
 
     def get_sequence(self):
@@ -89,6 +90,13 @@ class ModCts(MultiprocessBased):
                 ti_old = ct["4771_entregada"].get("codigo_tipo_ct", "")
                 ti = get_ti_name(O, ct["tipus_instalacio_cnmc_id"])
 
+                if self.explain:
+                    if ti_old:
+                        if ti_old == ti:
+                            print("[CT] id:{} ti_old:{} == ti:{}".format(ct["id"], ti_old, ti))
+                    else:
+                        print("[CT] id:{} has no old ti".format(ct["id"]))
+
                 if ti_old and ti_old != ti:
                     output = [
                         ct["name"],
@@ -120,6 +128,7 @@ class ModFia(MultiprocessBased):
         """
 
         super(ModFia, self).__init__(**kwargs)
+        self.explain = kwargs.pop("explain", False)
         self.year = kwargs.pop('year', datetime.now().year - 1)
 
     def get_sequence(self):
@@ -170,6 +179,13 @@ class ModFia(MultiprocessBased):
                 ti_old = cll["4771_entregada"].get("codigo_tipo_inst", "")
                 ti = get_ti_name(O, cll["tipus_instalacio_cnmc_id"])
 
+                if self.explain:
+                    if ti_old:
+                        if ti_old == ti:
+                            print("[FIA] id:{} ti_old:{} == ti:{}".format(cll["id"], ti_old, ti))
+                    else:
+                        print("[FIA] id:{} has no old ti".format(cll["id"]))
+
                 if ti_old and ti_old != ti:
                     output = [
                         cll["name"],
@@ -202,6 +218,7 @@ class ModLat(MultiprocessBased):
 
         super(ModLat, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
+        self.explain = kwargs.pop("explain", False)
 
         id_res_like = self.connection.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')])
@@ -268,6 +285,13 @@ class ModLat(MultiprocessBased):
                     ti_old = tram["4771_entregada"].get("codigo_tipo_linea", "")
                     ti = get_ti_name(O, tram["tipus_instalacio_cnmc_id"])
 
+                    if self.explain:
+                        if ti_old:
+                            if ti_old == ti:
+                                print("[LAT] id:{} ti_old:{} == ti:{}".format(tram["id"], ti_old, ti))
+                        else:
+                            print("[LAT] id:{} has no old ti".format(tram["id"]))
+
                     if ti_old and ti_old != ti:
                         output = [
                             'A{0}'.format(tram["name"]),
@@ -300,6 +324,7 @@ class ModLbt(MultiprocessBased):
 
         super(ModLbt, self).__init__(**kwargs)
         self.year = kwargs.pop("year", datetime.now().year - 1)
+        self.explain = kwargs.pop("explain", False)
 
     def get_sequence(self):
         """
@@ -348,6 +373,14 @@ class ModLbt(MultiprocessBased):
                 linia = O.GiscedataBtElement.read(item, fields_to_read)
                 ti_old = linia["4771_entregada"].get("codigo_tipo_linea", "")
                 ti = get_ti_name(O, linia["tipus_instalacio_cnmc_id"])
+
+                if self.explain:
+                    if ti_old:
+                        if ti_old == ti:
+                            print("[LBT] id:{} ti_old:{} == ti:{}".format(linia["id"], ti_old, ti))
+                    else:
+                        print("[LBT] id:{} has no old ti".format(linia["id"]))
+
                 if ti_old and ti_old != ti:
                     output = [
                         "B{}".format(linia["name"]),
@@ -380,6 +413,7 @@ class ModMaq(MultiprocessBased):
         """
         super(ModMaq, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
+        self.explain = kwargs.pop("explai", False)
 
     def get_sequence(self):
         """
@@ -438,6 +472,13 @@ class ModMaq(MultiprocessBased):
                 ti_old = trafo["4771_entregada"].get("codigo_tipo_maquina", "")
                 ti = get_ti_name(O, trafo["tipus_instalacio_cnmc_id"])
 
+                if self.explain:
+                    if ti_old:
+                        if ti_old == ti:
+                            print("[MAQ] id:{} ti_old:{} == ti:{}".format(trafo["id"], ti_old, ti))
+                    else:
+                        print("[MAQ] id:{} has no old ti".format(trafo["id"]))
+
                 if ti_old and ti != ti_old:
                     output = [
                         trafo["name"],
@@ -469,6 +510,7 @@ class ModPos(MultiprocessBased):
 
         super(ModPos, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
+        self.explain = kwargs.pop("explain", False)
 
     def get_sequence(self):
         """
@@ -518,6 +560,13 @@ class ModPos(MultiprocessBased):
 
                 ti_old = pos["4771_entregada"].get("codigo_tipo_ct", "")
                 ti = get_ti_name(O, pos["tipus_instalacio_cnmc_id"])
+
+                if self.explain:
+                    if ti_old:
+                        if ti_old == ti:
+                            print("[POS] id:{} ti_old:{} == ti:{}".format(pos["id"], ti_old, ti))
+                    else:
+                        print("[POS] id:{} has no old ti".format(pos["id"]))
 
                 if ti_old and ti != ti_old:
                     output = [
