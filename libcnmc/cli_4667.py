@@ -127,6 +127,7 @@ def res_4667_pro(**kwargs):
     from libcnmc.res_4667 import PRO
     csv_4667(PRO, **kwargs)
 
+
 @cnmc_4667.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
@@ -365,3 +366,32 @@ def res_4667_lat(**kwargs):
 
     from libcnmc.res_4667 import LAT
     csv_4667(LAT, **kwargs)
+
+@cnmc_4667.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def res_4667_ct(**kwargs):
+    """
+    Click entry to generate the resumen of 4667 report
+
+    :param kwargs: Options to generate the file 
+    :return: None 
+    """
+
+    from libcnmc.res_4667 import CT
+    csv_4667(CT, **kwargs)
