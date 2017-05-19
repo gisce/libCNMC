@@ -47,42 +47,8 @@ class RES(MultiprocessBased):
         :rtype: list
         """
 
-        model_resum = self.connection.GiscedataCnmcResum_any
         ids_resums = get_resum_any_id(self.connection, self.year)
-
-        r_fields = ["anyo"]
-        data = self.connection.GiscedataCnmcResum_any.read(ids_resums, r_fields)
-        for line in data:
-            self.years.append(line["anyo"])
-
-        self.limite_empresa = dict.fromkeys(self.years, 0)
-        self.demanda_empresa_p0 = dict.fromkeys(self.years, 0)
-        self.inc_demanda_empresa_prv = dict.fromkeys(self.years, 0)
-        self.frri = dict.fromkeys(self.years, 0)
-        self.vpi_superado_prv = dict.fromkeys(self.years, 0)
-        self.vol_total_inv_prv = dict.fromkeys(self.years, 0)
-        self.ayudas_prv = dict.fromkeys(self.years, 0)
-        self.financiacion_prv = dict.fromkeys(self.years, 0)
-        self.vpi_retribuible_prv = dict.fromkeys(self.years, 0)
-        self.num_proyectos = dict.fromkeys(self.years, 0)
-        self.vol_total_inv_bt_prv = dict.fromkeys(self.years, 0)
-
-        for line in model_resum.read(ids_resums, []):
-            year = line["anyo"]
-
-            self.limite_empresa[year] += line["limit_empresa"]
-            self.demanda_empresa_p0[year] += line["demanda_empresa_p0"]
-            self.inc_demanda_empresa_prv[year] += line["inc_demanda"]
-            self.frri[year] += line["frri"]
-            self.vpi_superado_prv[year] += line["vpi_sup"]
-            self.vol_total_inv_prv[year] += line["volum_total_inv"]
-            self.ayudas_prv[year] += line["ajudes_prev"]
-            self.financiacion_prv[year] += line["financiacio"]
-            self.vpi_retribuible_prv[year] += line["vpi_retribuible_prv"]
-            self.num_proyectos[year] += line["n_projectes"]
-            self.vol_total_inv_bt_prv[year] += ["voltotal_inv_bt_prv"]
-
-        return [1]
+        return ids_resums
 
     def consumer(self):
         """
