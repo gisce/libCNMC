@@ -13,7 +13,18 @@ from libcnmc.utils import format_f, tallar_text
 
 
 class LAT(MultiprocessBased):
+    """
+    Class that generates the LAT file of 4771
+    """
+
     def __init__(self, **kwargs):
+        """
+        Class constructor
+        
+        :param kwargs: Params to generate the file
+        :type kwargs: dict
+        """
+
         super(LAT, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
@@ -28,6 +39,12 @@ class LAT(MultiprocessBased):
                 id_res_like, ['value'])[0]['value']
 
     def get_sequence(self):
+        """
+        Generates a list of ids of the elements to include
+        
+        :return: Ids
+        :rtype: list
+        """
 
         search_params = [('propietari', '=', True)]
         ids = self.connection.GiscedataAtLinia.search(search_params)
@@ -39,6 +56,13 @@ class LAT(MultiprocessBased):
         return ids + id_lat_emb
 
     def consumer(self):
+        """
+        Generates each line of the file
+        
+        :return: None
+        :rtype: None
+        """
+
         O = self.connection
         fields_to_read = ['baixa', 'data_pm', 'data_industria',
                           'coeficient', 'cini', 'propietari',
