@@ -69,20 +69,20 @@ class RES(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-                macro = O.GiscedataCnmcResum_any.read(item, fields_to_read)
+                resumen = O.GiscedataCnmcResum_any.read(item, fields_to_read)
                 output = [
-                    macro["anyo"],
-                    format_f(macro["limit_empresa"], 3),
-                    format_f(macro["demanda_empresa_p0"], 3),
-                    format_f(macro["inc_demanda"], 3),
-                    format_f(macro["frri"], 3),
-                    macro["vpi_sup"],
-                    format_f(macro["volum_total_inv"], 3),
-                    format_f(macro["ajudes_prev"], 3),
-                    format_f(macro["financiacio"], 3),
-                    format_f(macro["vpi_retribuible_prv"], 3),
-                    macro["n_projectes"],
-                    format_f(macro["voltotal_inv_bt_prv"], 3)
+                    resumen["anyo"],
+                    format_f(resumen["limit_empresa"], 3),
+                    format_f(resumen["demanda_empresa_p0"], 3),
+                    format_f(resumen["inc_demanda"], 3),
+                    format_f(resumen["frri"], 3),
+                    resumen["vpi_sup"],
+                    format_f(resumen["volum_total_inv"], 3),
+                    format_f(resumen["ajudes_prev"], 3),
+                    format_f(resumen["financiacio"], 3),
+                    format_f(resumen["vpi_retribuible_prv"], 3),
+                    resumen["n_projectes"],
+                    format_f(resumen["voltotal_inv_bt_prv"], 3)
                 ]
                 self.output_q.put(output)
 
