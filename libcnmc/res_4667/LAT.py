@@ -66,12 +66,12 @@ class LAT(MultiprocessBased):
                     get_codigo_ccaa(O, linia["ccaa"][0]),
                     get_codigo_ccaa(O, linia["ccaa_2"][0]),
                     linia["any_apm"],
-                    format_f(linia["long_total"], 3),
+                    format_f(linia["long_total"], 3) or "0.00",
                     linia["capacidad_prv"],
-                    format_f(linia["vol_total_inv"], 3),
-                    format_f(linia["ajudes"], 3),
-                    format_f(linia["inv_financiada"], 3),
-                    format_f(linia["vpi_retri"], 3),
+                    format_f(linia["vol_total_inv"], 2) or "0.00",
+                    format_f(linia["ajudes"], 2) or "0.00",
+                    format_f(linia["inv_financiada"], 2) or "0.000",
+                    format_f(linia["vpi_retri"], 2) or "0.00",
                     linia["estado"]
                 ]
                 self.output_q.put(output)

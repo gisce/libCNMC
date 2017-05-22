@@ -97,10 +97,10 @@ class PRO(MultiprocessBased):
                     get_codigo_ccaa(O, ccaa),
                     get_codigo_ccaa(O, ccaa_2),
                     pro["memoria"].replace("\n", " ") or "",
-                    format_f(self.vol_total_inv_prev_proy[codigo], 2),
-                    format_f(self.ayudas_prv_proy[codigo], 2),
-                    format_f(self.financiacion_prv_proy[codigo], 2),
-                    format_f(self.vpi_retribuible_prv_proy[codigo], 2),
+                    format_f(self.vol_total_inv_prev_proy[codigo], 2) or "0.00",
+                    format_f(self.ayudas_prv_proy[codigo], 2) or "0.00",
+                    format_f(self.financiacion_prv_proy[codigo], 2) or "0.00",
+                    format_f(self.vpi_retribuible_prv_proy[codigo], 2) or "0.00",
                     pro["estado"]
                 ]
 

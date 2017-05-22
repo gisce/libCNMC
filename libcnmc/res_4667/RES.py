@@ -72,14 +72,14 @@ class RES(MultiprocessBased):
                 resumen = O.GiscedataCnmcResum_any.read(item, fields_to_read)
                 output = [
                     resumen["anyo"],
-                    format_f(resumen["limit_empresa"], 2),
+                    format_f(resumen["limit_empresa"], 2) or "0.00",
                     format_f(resumen["demanda_empresa_p0"], 3) or "0.00",
                     format_f(resumen["inc_demanda"], 3) or "0.00",
                     format_f(resumen["frri"], 3) or "0.00",
                     resumen["vpi_sup"],
-                    format_f(resumen["volum_total_inv"], 2),
-                    format_f(resumen["ajudes_prev"], 2),
-                    format_f(resumen["financiacio"], 2),
+                    format_f(resumen["volum_total_inv"], 2) or "0.00",
+                    format_f(resumen["ajudes_prev"], 2) or "0.00",
+                    format_f(resumen["financiacio"], 2) or "0.00",
                     format_f(resumen["vpi_retribuible_prv"], 2) or "0.00",
                     resumen["n_projectes"],
                     format_f(resumen["voltotal_inv_bt_prv"], 2) or "0.00"
