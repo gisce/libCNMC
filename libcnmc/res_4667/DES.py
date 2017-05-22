@@ -67,8 +67,8 @@ class DES(MultiprocessBased):
                     get_codigo_ccaa(O, des["codigo_ccaa"][0]),
                     des["any_apm"],
                     format_f(des["vol_total_inv"], 3),
-                    format_f(des["ajudes"], 3),
-                    format_f(des["vpi_retri"], 3),
+                    format_f(des["ajudes"], 3) or "0.00",
+                    format_f(des["vpi_retri"], 3) or "0.00",
                     des["estado"]
                 ]
                 self.output_q.put(output)

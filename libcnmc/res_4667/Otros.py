@@ -61,10 +61,10 @@ class Otros(MultiprocessBased):
                     otro["cini"],
                     get_codigo_ccaa(O, otro["codigo_ccaa"][0]),
                     otro["any_apm"],
-                    format_f(otro["vol_total_inv"], 3),
-                    format_f(otro["ajudes"], 3),
-                    format_f(otro["inv_financiada"], 3),
-                    format_f(otro["vpi_retri"], 3),
+                    format_f(otro["vol_total_inv"], 2) or "0.00",
+                    format_f(otro["ajudes"], 2) or "0.00",
+                    format_f(otro["inv_financiada"], 2) or "0.00",
+                    format_f(otro["vpi_retri"], 2) or "0.00",
                     otro["estado"],
                 ]
                 self.output_q.put(output)

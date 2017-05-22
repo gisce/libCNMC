@@ -66,10 +66,10 @@ class MAQ(MultiprocessBased):
                     get_codigo_ccaa(O, maq["ccaa"][0]),
                     maq["any_apm"],
                     format_f(maq["pot_inst_prev"], 3),
-                    format_f(maq["vol_total_inv"], 3),
-                    format_f(maq["ajudes"], 3),
-                    format_f(maq["inv_financiada"], 3),
-                    format_f(maq["vpi_retri"], 3),
+                    format_f(maq["vol_total_inv"], 2) or "0.00",
+                    format_f(maq["ajudes"], 2) or "0.00",
+                    format_f(maq["inv_financiada"], 2) or "0.00",
+                    format_f(maq["vpi_retri"], 2) or "0.00",
                     maq["estado"]
                 ]
                 self.output_q.put(output)

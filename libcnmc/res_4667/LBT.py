@@ -63,12 +63,12 @@ class LBT(MultiprocessBased):
                     get_codigo_ccaa(O, lbt["codigo_ccaa_1"][0]),
                     get_codigo_ccaa(O, lbt["codigo_ccaa_2"][0]),
                     lbt["anio_prev_aps"],
-                    format_f(lbt["longitud_prv"],3),
+                    format_f(lbt["longitud_prv"], 3) or "0.00",
                     lbt["capacidad_prv"],
-                    format_f(lbt["vol_inv_prev"], 3),
-                    format_f(lbt["ayudas_prv"], 3),
-                    format_f(lbt["financiacion_prv"], 3),
-                    format_f(lbt["vpi_retribuible_prv"], 3),
+                    format_f(lbt["vol_inv_prev"], 2) or "0.00",
+                    format_f(lbt["ayudas_prv"], 2) or "0.00",
+                    format_f(lbt["financiacion_prv"], 2) or "0.00",
+                    format_f(lbt["vpi_retribuible_prv"], 2) or "0.00",
                     lbt["estado"]
                 ]
                 self.output_q.put(output)

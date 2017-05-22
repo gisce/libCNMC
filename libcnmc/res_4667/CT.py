@@ -68,10 +68,10 @@ class CT(MultiprocessBased):
                     get_name_ti(O, ct["codi_tipus_inst"][0]),
                     get_codigo_ccaa(O, ct["ccaa"][0]),
                     ct["any_apm"],
-                    format_f(ct["vol_total_inv"], 3),
-                    format_f(ct["ajudes"], 3),
-                    format_f(ct["inv_financiada"], 3),
-                    format_f(ct["vpi_retri"], 3),
+                    format_f(ct["vol_total_inv"], 2) or "0.00",
+                    format_f(ct["ajudes"], 2) or "0.00",
+                    format_f(ct["inv_financiada"], 2) or "0.00",
+                    format_f(ct["vpi_retri"], 2) or "0.00",
                     ct["estado"]
                 ]
                 self.output_q.put(output)
