@@ -55,8 +55,8 @@ class MACRO(MultiprocessBased):
                 output = [
                     macro["anyo"],
                     format_f(macro["macro_crec_pib"], 4),
-                    format_f(macro["macro_pib_prev"], 3),
-                    format_f(macro["macro_limite_sector"], 3),
+                    format_f(macro["macro_pib_prev"], 2),
+                    format_f(macro["macro_limite_sector"], 2),
                     format_f(macro["macro_inc_demanda_sector"], 3)
                 ]
                 self.output_q.put(output)
