@@ -61,12 +61,12 @@ class RESCCAA(MultiprocessBased):
             self.ccaas.append(line["codigo_ccaa"][0])
         self.ccaas = list(set(self.ccaas))
         for year in self.years:
-            self.ayudas[year] = dict.fromkeys(self.ccaas, 0)
-            self.vol_inv[year] = dict.fromkeys(self.ccaas, 0)
-            self.financiacion[year] = dict.fromkeys(self.ccaas, 0)
-            self.vpi[year] = dict.fromkeys(self.ccaas, 0)
-            self.inv_bt[year] = dict.fromkeys(self.ccaas, 0)
-            self.num_proy[year] = dict.fromkeys(self.ccaas, 0)
+            self.ayudas[year] = dict.fromkeys(self.ccaas, 0.0)
+            self.vol_inv[year] = dict.fromkeys(self.ccaas, 0.0)
+            self.financiacion[year] = dict.fromkeys(self.ccaas, 0.0)
+            self.vpi[year] = dict.fromkeys(self.ccaas, 0.0)
+            self.inv_bt[year] = dict.fromkeys(self.ccaas, 0.0)
+            self.num_proy[year] = dict.fromkeys(self.ccaas, 0.0)
 
         for line in model_ccaa.read(ids_resums_ccaa, []):
             year = line["anio_periodo"]
