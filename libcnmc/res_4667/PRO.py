@@ -51,12 +51,11 @@ class PRO(MultiprocessBased):
             self.proyectos.append(proy["codi"])
         self.proyectos = list(set(self.proyectos))
 
-        self.vol_total_inv_prev_proy = dict.fromkeys(self.proyectos, 0)
-        self.ayudas_prv_proy = dict.fromkeys(self.proyectos, 0)
-        self.financiacion_prv_proy = dict.fromkeys(self.proyectos, 0)
-        self.vpi_retribuible_prv_proy = dict.fromkeys(self.proyectos, 0)
-        self.ids = dict.fromkeys(self.proyectos, 0)
-
+        self.vol_total_inv_prev_proy = dict.fromkeys(self.proyectos, 0.0)
+        self.ayudas_prv_proy = dict.fromkeys(self.proyectos, 0.0)
+        self.financiacion_prv_proy = dict.fromkeys(self.proyectos, 0.0)
+        self.vpi_retribuible_prv_proy = dict.fromkeys(self.proyectos, 0.0)
+        self.ids = dict.fromkeys(self.proyectos, 0.0)
 
         for proy in model_proy.read(ids_proy):
             self.vol_total_inv_prev_proy[proy["codi"]] += proy["vol_total_inv_prev_proy"]
