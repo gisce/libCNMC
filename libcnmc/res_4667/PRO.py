@@ -99,8 +99,8 @@ class PRO(MultiprocessBased):
                     pro["memoria"].replace("\n", " ") or "",
                     format_f(self.vol_total_inv_prev_proy[codigo], 3),
                     format_f(self.ayudas_prv_proy[codigo], 3),
-                    format_f(self.financiacion_prv_proy[codigo], 3),
-                    format_f(self.vpi_retribuible_prv_proy[codigo], 3),
+                    format_f(self.financiacion_prv_proy[codigo], 2),
+                    format_f(self.vpi_retribuible_prv_proy[codigo], 2),
                     pro["estado"]
                 ]
 
