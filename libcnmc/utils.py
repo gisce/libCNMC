@@ -77,16 +77,16 @@ def get_codigo_ccaa(connection, ccaa):
     :param connection: Database conection
     :param ccaa: Id of the CCAA
     :return: Codigo CCAA
-    :rtype: int
+    :rtype: int, str
     """
     if ccaa:
         data = connection.ResComunitat_autonoma.read(ccaa, ["codi"])
         if data:
             return data["codi"]
         else:
-            return 0
+            return '00'
     else:
-        return 0
+        return '00'
 
 
 def get_ine(connection, ine):
