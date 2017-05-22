@@ -64,10 +64,10 @@ class POS(MultiprocessBased):
                     get_name_ti(O, pos["codi_tipus_inst"][0]),
                     get_codigo_ccaa(O, pos["ccaa"][0]),
                     pos["any_apm"],
-                    format_f(pos["vol_total_inv"], 3),
-                    format_f(pos["ajudes"], 3),
-                    format_f(pos["inv_financiada"], 3),
-                    format_f(pos["vpi_retri"], 3),
+                    format_f(pos["vol_total_inv"], 2),
+                    format_f(pos["ajudes"], 2),
+                    format_f(pos["inv_financiada"], 2),
+                    format_f(pos["vpi_retri"], 2),
                     pos["estado"]
                 ]
                 self.output_q.put(output)
