@@ -95,12 +95,12 @@ class RESCCAA(MultiprocessBased):
                     output = [
                         get_codigo_ccaa(O, ccaa),
                         year,
-                        format_f(self.vol_inv[year][ccaa], 3),
-                        format_f(self.ayudas[year][ccaa], 3),
-                        format_f(self.financiacion[year][ccaa], 3),
-                        format_f(self.vpi[year][ccaa], 3),
+                        format_f(self.vol_inv[year][ccaa], 2),
+                        format_f(self.ayudas[year][ccaa], 2),
+                        format_f(self.financiacion[year][ccaa], 2),
+                        format_f(self.vpi[year][ccaa], 2),
                         self.num_proy[year][ccaa],
-                        format_f(self.inv_bt[year][ccaa], 3),
+                        format_f(self.inv_bt[year][ccaa], 2),
                     ]
                     self.output_q.put(output)
         except Exception:
