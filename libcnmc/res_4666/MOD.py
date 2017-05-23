@@ -100,7 +100,7 @@ class ModCts(MultiprocessBased):
                 if ti_old and ti_old != ti:
                     output = [
                         ct["name"],
-                        ct["name"],
+                        "",
                         ti_old,
                         ti
                     ]
@@ -189,7 +189,7 @@ class ModFia(MultiprocessBased):
                 if ti_old and ti_old != ti:
                     output = [
                         cll["name"],
-                        cll["name"],
+                        "",
                         ti_old,
                         ti
                     ]
@@ -295,7 +295,7 @@ class ModLat(MultiprocessBased):
                     if ti_old and ti_old != ti:
                         output = [
                             'A{0}'.format(tram["name"]),
-                            'A{0}'.format(tram["name"]),
+                            "",
                             ti_old,
                             ti
                         ]
@@ -384,7 +384,7 @@ class ModLbt(MultiprocessBased):
                 if ti_old and ti_old != ti:
                     output = [
                         "B{}".format(linia["name"]),
-                        "B{}".format(linia["name"]),
+                        "",
                         ti_old,
                         ti
                     ]
@@ -482,7 +482,7 @@ class ModMaq(MultiprocessBased):
                 if ti_old and ti != ti_old:
                     output = [
                         trafo["name"],
-                        trafo["name"],
+                        "",
                         ti_old,
                         ti
                     ]
