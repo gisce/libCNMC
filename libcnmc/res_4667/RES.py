@@ -68,8 +68,9 @@ class RES(MultiprocessBased):
             try:
                 item = self.input_q.get()
                 self.progress_q.put(item)
-                vpi_superado_prv = str(resumen["vpi_sup"]).capitalize()
+
                 resumen = O.GiscedataCnmcResum_any.read(item, fields_to_read)
+                vpi_superado_prv = str(resumen["vpi_sup"]).capitalize()
                 output = [
                     resumen["anyo"],
                     format_f(resumen["limit_empresa"], 2) or "0.00",
