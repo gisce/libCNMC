@@ -56,6 +56,15 @@ class LAT(MultiprocessBased):
                 self.progress_q.put(item)
 
                 linia = O.GiscedataCnmcLinies.read(item, fields_to_read)
+                if linia["ccaa"]:
+                    ccaa = linia["ccaa"][0]
+                else:
+                    ccaa = False
+
+                if linia["ccaa_2"]:
+                    ccaa_2 = linia["ccaa_2"][0]
+                else:
+                    ccaa_2 = False
 
                 output = [
                     linia["codi"][1],
@@ -63,8 +72,8 @@ class LAT(MultiprocessBased):
                     linia["id_instalacio"],
                     linia["cini"],
                     get_name_ti(O, linia["codi_tipus_inst"][0]),
-                    get_codigo_ccaa(O, linia["ccaa"][0]),
-                    get_codigo_ccaa(O, linia["ccaa_2"][0]),
+                    get_codigo_ccaa(O, ccaa),
+                    get_codigo_ccaa(O, ccaa_2),
                     linia["any_apm"],
                     format_f(linia["long_total"], 3) or "0.00",
                     linia["capacidad_prv"],
