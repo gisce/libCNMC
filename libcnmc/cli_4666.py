@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import click
 from libcnmc.utils import N_PROC
 from libcnmc.core.backend import OOOPFactory
@@ -9,6 +10,67 @@ from datetime import datetime
 @click.group()
 def cnmc_4666():
     pass
+
+
+# CSV POS
+def res_pos2(proc1, proc2, **kwargs):
+    """
+    :param proc1: generation proces 1
+    :param proc2: generation proces 1
+    :param kwargs:
+    :return:
+    """
+
+    O = OOOPFactory(dbname=kwargs["database"], user=kwargs["user"],
+                    pwd=kwargs["password"], port=kwargs["port"],
+                    uri=kwargs["server"])
+    output = kwargs["output"]
+    temp_fd = tempfile.NamedTemporaryFile()
+
+    tmp_out1 = temp_fd.name
+    temp_fd.close()
+    temp_fd = tempfile.NamedTemporaryFile()
+    tmp_out2 = temp_fd.name
+    temp_fd.close()
+
+    proc = proc1(
+        quiet=kwargs["quiet"],
+        interactive=kwargs["interactive"],
+        output=tmp_out1,
+        connection=O,
+        num_proc=kwargs["num_proc"],
+        codi_r1=kwargs["codi_r1"],
+        year=kwargs["year"],
+        embarrats=kwargs["embarrats"],
+        compare_field=kwargs["compare_field"]
+    )
+    proc.calc()
+
+    proc_2 = proc2(
+        quiet=kwargs["quiet"],
+        interactive=kwargs["interactive"],
+        output=tmp_out2,
+        connection=O,
+        num_proc=kwargs["num_proc"],
+        codi_r1=kwargs["codi_r1"],
+        year=kwargs["year"],
+        embarrats=kwargs["embarrats"],
+        compare_field=kwargs["compare_field"]
+    )
+    proc_2.calc()
+
+    final_out = ""
+    with open(tmp_out1, 'r') as fd1:
+        final_out += fd1.read()
+
+    with open(tmp_out2, 'r') as fd2:
+        final_out += fd2.read()
+
+    with open(output, 'w') as fd_out:
+        fd_out.write(final_out)
+
+    os.unlink(tmp_out1)
+    os.unlink(tmp_out2)
 
 
 # CSV LAT
