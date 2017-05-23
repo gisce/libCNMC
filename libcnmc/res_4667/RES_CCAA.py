@@ -99,7 +99,7 @@ class RESCCAA(MultiprocessBased):
                         format_f(self.ayudas[year][ccaa], 2) or "0.00",
                         format_f(self.financiacion[year][ccaa], 2) or "0.00",
                         format_f(self.vpi[year][ccaa], 2) or "0.00",
-                        self.num_proy[year][ccaa],
+                        format_f(self.num_proy[year][ccaa], 0) or "0",
                         format_f(self.inv_bt[year][ccaa], 2) or "0.00",
                     ]
                     self.output_q.put(output)
