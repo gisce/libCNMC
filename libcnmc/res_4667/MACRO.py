@@ -54,10 +54,10 @@ class MACRO(MultiprocessBased):
                 macro = O.GiscedataCnmcResum_any.read(item, fields_to_read)
                 output = [
                     macro["anyo"],
-                    format_f(macro["macro_crec_pib"], 4),
-                    format_f(macro["macro_pib_prev"], 2) or "0.00",
-                    format_f(macro["macro_limite_sector"], 2) or "0.00",
-                    format_f(macro["macro_inc_demanda_sector"], 2) or "0.00"
+                    format_f(float(macro["macro_crec_pib"]), 4),
+                    format_f(float(macro["macro_pib_prev"]), 2) or "0.00",
+                    format_f(float(macro["macro_limite_sector"]), 2) or "0.00",
+                    format_f(float(macro["macro_inc_demanda_sector"]), 2) or "0.00"
                 ]
                 self.output_q.put(output)
 
