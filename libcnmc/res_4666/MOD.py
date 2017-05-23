@@ -571,7 +571,7 @@ class ModPos(MultiprocessBased):
                 if ti_old and ti != ti_old:
                     output = [
                         pos["name"],
-                        pos["name"],
+                        "",
                         ti_old,
                         ti
                     ]
