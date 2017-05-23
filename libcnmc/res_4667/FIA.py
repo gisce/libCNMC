@@ -69,10 +69,10 @@ class FIA(MultiprocessBased):
                     get_name_ti(O, fia["codi_tipus_inst"][0]),
                     get_codigo_ccaa(O, fia["ccaa"][0]),
                     fia["any_apm"],
-                    format_f(fia["vol_total_inv"], 3) or "0.00",
-                    format_f(fia["ajudes"], 3) or "0.00",
-                    format_f(fia["inv_financiada"], 3) or "0.00",
-                    format_f(fia["vpi_retri"], 3) or "0.00",
+                    format_f(fia["vol_total_inv"], 2) or "0.00",
+                    format_f(fia["ajudes"], 2) or "0.00",
+                    format_f(fia["inv_financiada"], 2) or "0.00",
+                    format_f(fia["vpi_retri"], 2) or "0.00",
                     fia["estado"],
                 ]
                 self.output_q.put(output)
