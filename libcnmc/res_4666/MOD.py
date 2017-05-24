@@ -84,11 +84,11 @@ class ModCts(MultiprocessBased):
                 self.progress_q.put(item)
 
                 fields_to_read = [
-                    "tipus_instalacio_cnmc_id", "4771_entregada", "name"
+                    "4666_entregada_2017", "4771_entregada", "name"
                 ]
                 ct = O.GiscedataCts.read(item, fields_to_read)
                 ti_old = ct["4771_entregada"].get("codigo_tipo_ct", "")
-                ti = get_ti_name(O, ct["tipus_instalacio_cnmc_id"])
+                ti = ct["4666_entregada_2017"].get("codigo_ccuu", "")
 
                 if self.explain:
                     if ti_old:
@@ -100,7 +100,7 @@ class ModCts(MultiprocessBased):
                 if ti_old and ti_old != ti:
                     output = [
                         ct["name"],
-                        ct["name"],
+                        "",
                         ti_old,
                         ti
                     ]
@@ -172,12 +172,12 @@ class ModFia(MultiprocessBased):
                 self.progress_q.put(item)
 
                 fields_to_read = [
-                    "tipus_instalacio_cnmc_id", "4771_entregada", "name"
+                    "4666_entregada_2017", "4771_entregada", "name"
                 ]
                 cll = O.GiscedataCellesCella.read(item, fields_to_read)
 
                 ti_old = cll["4771_entregada"].get("codigo_tipo_inst", "")
-                ti = get_ti_name(O, cll["tipus_instalacio_cnmc_id"])
+                ti = cll["4666_entregada_2017"].get("codigo_ccuu", "")
 
                 if self.explain:
                     if ti_old:
@@ -189,7 +189,7 @@ class ModFia(MultiprocessBased):
                 if ti_old and ti_old != ti:
                     output = [
                         cll["name"],
-                        cll["name"],
+                        "",
                         ti_old,
                         ti
                     ]
@@ -276,14 +276,14 @@ class ModLat(MultiprocessBased):
                 ids = O.GiscedataAtTram.search(
                     search_params, 0, 0, False, {'active_test': False})
                 fields_to_read_tram = [
-                    "tipus_instalacio_cnmc_id",
+                    "4666_entregada_2017",
                     "4771_entregada",
                     "name"
                 ]
 
                 for tram in O.GiscedataAtTram.read(ids, fields_to_read_tram):
                     ti_old = tram["4771_entregada"].get("codigo_tipo_linea", "")
-                    ti = get_ti_name(O, tram["tipus_instalacio_cnmc_id"])
+                    ti = tram["4666_entregada_2017"].get("codigo_ccuu", "")
 
                     if self.explain:
                         if ti_old:
@@ -295,7 +295,7 @@ class ModLat(MultiprocessBased):
                     if ti_old and ti_old != ti:
                         output = [
                             'A{0}'.format(tram["name"]),
-                            'A{0}'.format(tram["name"]),
+                            "",
                             ti_old,
                             ti
                         ]
@@ -362,7 +362,7 @@ class ModLbt(MultiprocessBased):
         O = self.connection
         count = 0
         fields_to_read = [
-            "tipus_instalacio_cnmc_id", "4771_entregada", "name"
+            "4666_entregada_2017", "4771_entregada", "name"
         ]
         while True:
             try:
@@ -372,7 +372,7 @@ class ModLbt(MultiprocessBased):
 
                 linia = O.GiscedataBtElement.read(item, fields_to_read)
                 ti_old = linia["4771_entregada"].get("codigo_tipo_linea", "")
-                ti = get_ti_name(O, linia["tipus_instalacio_cnmc_id"])
+                ti = linia["4666_entregada_2017"].get("codigo_ccuu", "")
 
                 if self.explain:
                     if ti_old:
@@ -384,7 +384,7 @@ class ModLbt(MultiprocessBased):
                 if ti_old and ti_old != ti:
                     output = [
                         "B{}".format(linia["name"]),
-                        "B{}".format(linia["name"]),
+                        "",
                         ti_old,
                         ti
                     ]
@@ -470,7 +470,7 @@ class ModMaq(MultiprocessBased):
 
                 trafo = O.GiscedataTransformadorTrafo.read(item, fields_to_read)
                 ti_old = trafo["4771_entregada"].get("codigo_tipo_maquina", "")
-                ti = get_ti_name(O, trafo["tipus_instalacio_cnmc_id"])
+                ti = trafo["4666_entregada_2017"].get("codigo_ccuu", "")
 
                 if self.explain:
                     if ti_old:
@@ -482,7 +482,7 @@ class ModMaq(MultiprocessBased):
                 if ti_old and ti != ti_old:
                     output = [
                         trafo["name"],
-                        trafo["name"],
+                        "",
                         ti_old,
                         ti
                     ]
@@ -547,7 +547,7 @@ class ModPos(MultiprocessBased):
 
         O = self.connection
         fields_to_read = [
-            "tipus_instalacio_cnmc_id",
+            "4666_entregada_2017",
             "4771_entregada",
             "name"
         ]
@@ -559,7 +559,7 @@ class ModPos(MultiprocessBased):
                 pos = O.GiscedataCtsSubestacionsPosicio.read(item, fields_to_read)
 
                 ti_old = pos["4771_entregada"].get("codigo_tipo_ct", "")
-                ti = get_ti_name(O, pos["tipus_instalacio_cnmc_id"])
+                ti = pos["4666_entregada_2017"].get("codigo_ccuu", "")
 
                 if self.explain:
                     if ti_old:
