@@ -21,7 +21,7 @@ from libcnmc import VERSION
 
 class MultiprocessBased(object):
     """
-    Multiprocess class to generate the files
+    Multiprocess class to generate the files in multiple process
     """
 
     def __init__(self, **kwargs):
