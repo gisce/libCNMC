@@ -461,7 +461,7 @@ class ModMaq(MultiprocessBased):
         """
 
         O = self.connection
-        fields_to_read = ["tipus_instalacio_cnmc_id", "4771_entregada", "name"]
+        fields_to_read = ["4666_entregada_2017", "4771_entregada", "name"]
 
         while True:
             try:
