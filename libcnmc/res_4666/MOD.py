@@ -172,12 +172,12 @@ class ModFia(MultiprocessBased):
                 self.progress_q.put(item)
 
                 fields_to_read = [
-                    "4666_entragada_2017", "4771_entregada", "name"
+                    "4666_entregada_2017", "4771_entregada", "name"
                 ]
                 cll = O.GiscedataCellesCella.read(item, fields_to_read)
 
                 ti_old = cll["4771_entregada"].get("codigo_tipo_inst", "")
-                ti = cll["4666_entragada_2017"].get("codigo_ccuu", "")
+                ti = cll["4666_entregada_2017"].get("codigo_ccuu", "")
 
                 if self.explain:
                     if ti_old:
@@ -283,7 +283,7 @@ class ModLat(MultiprocessBased):
 
                 for tram in O.GiscedataAtTram.read(ids, fields_to_read_tram):
                     ti_old = tram["4771_entregada"].get("codigo_tipo_linea", "")
-                    ti = tram["4666_entragada_2017"].get("codigo_ccuu", "")
+                    ti = tram["4666_entregada_2017"].get("codigo_ccuu", "")
 
                     if self.explain:
                         if ti_old:
@@ -362,7 +362,7 @@ class ModLbt(MultiprocessBased):
         O = self.connection
         count = 0
         fields_to_read = [
-            "4666_entragada_2017", "4771_entregada", "name"
+            "4666_entregada_2017", "4771_entregada", "name"
         ]
         while True:
             try:
@@ -372,7 +372,7 @@ class ModLbt(MultiprocessBased):
 
                 linia = O.GiscedataBtElement.read(item, fields_to_read)
                 ti_old = linia["4771_entregada"].get("codigo_tipo_linea", "")
-                ti = linia["4666_entragada_2017"].get("codigo_ccuu", "")
+                ti = linia["4666_entregada_2017"].get("codigo_ccuu", "")
 
                 if self.explain:
                     if ti_old:
@@ -470,7 +470,7 @@ class ModMaq(MultiprocessBased):
 
                 trafo = O.GiscedataTransformadorTrafo.read(item, fields_to_read)
                 ti_old = trafo["4771_entregada"].get("codigo_tipo_maquina", "")
-                ti = trafo["4666_entragada_2017"].get("codigo_ccuu", "")
+                ti = trafo["4666_entregada_2017"].get("codigo_ccuu", "")
 
                 if self.explain:
                     if ti_old:
@@ -547,7 +547,7 @@ class ModPos(MultiprocessBased):
 
         O = self.connection
         fields_to_read = [
-            "4666_entragada_2017",
+            "4666_entregada_2017",
             "4771_entregada",
             "name"
         ]
@@ -559,7 +559,7 @@ class ModPos(MultiprocessBased):
                 pos = O.GiscedataCtsSubestacionsPosicio.read(item, fields_to_read)
 
                 ti_old = pos["4771_entregada"].get("codigo_tipo_ct", "")
-                ti = pos["4666_entragada_2017"].get("codigo_ccuu", "")
+                ti = pos["4666_entregada_2017"].get("codigo_ccuu", "")
 
                 if self.explain:
                     if ti_old:
