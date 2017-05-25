@@ -84,9 +84,9 @@ def get_codigo_ccaa(connection, ccaa):
         if data:
             return data["codi"]
         else:
-            return '00'
+            return ''
     else:
-        return '00'
+        return ''
 
 
 def get_ine(connection, ine):
