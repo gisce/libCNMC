@@ -69,7 +69,7 @@ class MAQ(MultiprocessBased):
         search_params_transformadors = search_params + [
             ('id_estat.cnmc_inventari', '=', True),
             ('localitzacio.code', '=', '1'),
-            ('id_estat.codi', '!=', '1')]
+            ('id_estat.codi', '=', '1')]
 
         #search_params_reductor += search_params
         ids_reductor = self.connection.GiscedataTransformadorTrafo.search(

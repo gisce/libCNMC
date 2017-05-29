@@ -384,7 +384,7 @@ def res_4666_maq(**kwargs):
     :rtype: None 
     """
 
-    from libcnmc.res_4131 import MAQ
+    from libcnmc.res_4666 import MAQ
     kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
     res_lat(MAQ, **kwargs)
 
