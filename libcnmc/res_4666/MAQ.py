@@ -221,7 +221,7 @@ class MAQ(MultiprocessBased):
                     comunitat or '',
                     format_f(tensio_primari, 3),
                     format_f(tensio_secundari, 3),
-                    format_f(financiacio, 3),
+                    format_f(financiacio, 2),
                     data_pm,
                     fecha_baja,
                     format_f(capacitat, 3),

@@ -155,7 +155,7 @@ class CON(MultiprocessBased):
                     comunitat or '',
                     format_f(float(tensio_primari)/1000.0),
                     format_f(float(tensio_secundari)/1000.0),
-                    format_f(financiacio),
+                    format_f(financiacio, 2),
                     data_pm,
                     fecha_baja,
                     capacidad,
