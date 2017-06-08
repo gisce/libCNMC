@@ -253,7 +253,7 @@ class LAT(MultiprocessBased):
                         codi_ccuu or '',
                         comunitat,
                         comunitat,
-                        format_f(round(100 - int(tram.get('perc_financament', 0) or 0))),
+                        format_f(round(100 - int(tram.get('perc_financament', 0) or 0)), 2),
                         data_pm,
                         fecha_baja or '',
                         tram.get('circuits', 1) or 1,
