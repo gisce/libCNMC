@@ -90,6 +90,8 @@ class F12bis(MultiprocessBased):
                 if celles['data_pm']:
                     o_data = datetime.strptime(celles['data_pm'], "%Y-%m-%d")
                     o_data = int(o_data.year)
+                if o_maquina == '':
+                    o_maquina = 999999
                 o_any = self.year
 
                 self.output_q.put([
