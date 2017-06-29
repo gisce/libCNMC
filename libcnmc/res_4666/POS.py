@@ -38,7 +38,7 @@ class POS(MultiprocessBased):
         Method that generates a list of ids to pass to the consummer
         :return: List of ids
         """
-        search_params = [('interruptor', '=', '2')]
+        search_params = [('cini', 'ilike', 'i28_2%')]
         data_pm = '{0}-01-01'.format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
         search_params += [('propietari', '=', True),
@@ -230,7 +230,8 @@ class POS_INT(MultiprocessBased):
         Method that generates a list of ids to pass to the consummer
         :return: List of ids
         """
-        search_params = [('cini', 'like', 'I28')]
+        search_params = [('inventari', '=', 'fiabilitat'),
+                         ('cini', 'ilike', 'i28_2%')]
         data_pm = '{0}-01-01'.format(self.year + 1)
         search_params += ['|', ('data_pm', '=', False),
                           ('data_pm', '<', data_pm)]
@@ -272,7 +273,7 @@ class POS_INT(MultiprocessBased):
         o = self.connection
         res = ''
 
-        denom = o.GiscedataCts.read(ct_id, ['descripcio'])['descripcio']
+        denom = o.GiscedataCts.read(ct_id, ['name'])['name']
         if denom:
             res = denom
         return res
