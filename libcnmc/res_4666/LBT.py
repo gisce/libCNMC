@@ -19,7 +19,7 @@ QUIET = False
 
 class LBT(MultiprocessBased):
     """
-    Class that generates the LBT(2) file of the 4131
+    Class that generates the LBT(2) file of the 4666
     """
     def __init__(self, **kwargs):
         """

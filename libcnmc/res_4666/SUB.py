@@ -18,7 +18,7 @@ QUIET = False
 
 class SUB(MultiprocessBased):
     """
-    Class that generates the SUB(3) report of the 4131
+    Class that generates the SUB(3) report of the 4666
     """
 
     def __init__(self, **kwargs):

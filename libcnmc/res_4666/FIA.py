@@ -14,7 +14,7 @@ from libcnmc.models import F7Res4131
 
 class FIA(MultiprocessBased):
     """
-    Class that generates the fiabilidad(7) file of the 4131
+    Class that generates the fiabilidad(7) file of the 4666
     """
     def __init__(self, **kwargs):
         """

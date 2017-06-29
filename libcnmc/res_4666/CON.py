@@ -16,7 +16,7 @@ from libcnmc.utils import format_f
 
 class CON(MultiprocessBased):
     """
-    Class that generates the Maquinas/Condensadores(5) file of the 4131
+    Class that generates the Maquinas/Condensadores(5) file of the 4666
     """
     def __init__(self, **kwargs):
         """

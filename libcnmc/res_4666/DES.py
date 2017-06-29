@@ -15,7 +15,7 @@ from libcnmc.models import F6Res4131
 
 class DES(MultiprocessBased):
     """
-    Class that generates the Despachos(6) file of the 4131
+    Class that generates the Despachos(6) file of the 4666
     """
     def __init__(self, **kwargs):
         """
