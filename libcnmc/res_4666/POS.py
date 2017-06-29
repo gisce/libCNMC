@@ -307,7 +307,7 @@ class POS_INT(MultiprocessBased):
                 denominacion = ""
                 codigo_ccaa = ""
                 if cel["subestacio_id"]:
-                    sub_id = cel["subestacio_id"][0]
+                    sub_id = int(cel["installacio"].split(",")[1])
                     codigo_ccaa = self.get_comunitat(sub_id)
 
                 if cel["installacio"]:
@@ -367,6 +367,7 @@ class POS_INT(MultiprocessBased):
                 ]
                 self.output_q.put(output)
             except Exception:
+                #print("item:{}".format(item))
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
