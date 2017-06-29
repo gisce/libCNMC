@@ -419,7 +419,7 @@ def res_4666_des(**kwargs):
     :rtype: None 
     """
 
-    from libcnmc.res_4131 import DES
+    from libcnmc.res_4666 import DES
     kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
     res_lat(DES, **kwargs)
 

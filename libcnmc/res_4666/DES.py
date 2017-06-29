@@ -62,7 +62,7 @@ class DES(MultiprocessBased):
 
                 if despatx[self.compare_field]:
                     data_4131 = despatx[self.compare_field]
-                    entregada = F6Res4131(**data_4131)
+                    entregada = F6Res4666(**data_4131)
                     actual = F6Res4666(
                         despatx['name'],
                         despatx['cini'],
