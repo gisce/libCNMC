@@ -16,7 +16,7 @@ from libcnmc.models import F1Res4131
 
 class LAT(MultiprocessBased):
     """
-    Class that generates the LAT(1) file of  4131
+    Class that generates the LAT(1) file of  4666
     """
     def __init__(self, **kwargs):
         """

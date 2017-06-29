@@ -18,7 +18,7 @@ QUIET = False
 
 class POS(MultiprocessBased):
     """
-    Class that generates the POS/Interruptores(4) of 4131 report
+    Class that generates the POS/Interruptores(4) of 4666 report
     """
     def __init__(self, **kwargs):
         """
@@ -210,7 +210,7 @@ class POS(MultiprocessBased):
 
 class POS_INT(MultiprocessBased):
     """
-    Class that generates the POS/Cel·les(4) of 4131 report
+    Class that generates the POS/Cel·les(4) of 4666 report
     """
     def __init__(self, **kwargs):
         """

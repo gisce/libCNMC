@@ -17,7 +17,7 @@ from libcnmc.models import F5Res4131
 
 class MAQ(MultiprocessBased):
     """
-    Class that generates the Maquinas/Transofrmadores(5) file of the 4131
+    Class that generates the Maquinas/Transofrmadores(5) file of the 4666
     """
     def __init__(self, **kwargs):
         """
