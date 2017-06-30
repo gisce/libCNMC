@@ -129,7 +129,7 @@ class POS(MultiprocessBased):
                 ]
 
                 self.output_q.put(output)
-            except:
+            except Exception:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()

@@ -17,6 +17,7 @@ class F1(MultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         manager = Manager()
         self.cts = manager.dict()
+        self.cnaes = manager.dict()
         self.base_object = 'CUPS'
         self.report_name = 'F1 - CUPS'
 
@@ -182,7 +183,12 @@ class F1(MultiprocessBased):
                     o_potencia = format_f(
                         polissa['potencia'], decimals=3)
                     if polissa['cnae']:
-                        o_cnae = polissa['cnae'][1]
+                        cnae_id = polissa['cnae'][0]
+                        if cnae_id in self.cnaes:
+                            o_cnae = self.cnaes[cnae_id]
+                        else:
+                            o_cnae = O.GiscemiscCnae.read(cnae_id, ['name'])['name']
+                            self.cnaes[cnae_id] = o_cnae
                     # Mirem si té l'actualització dels butlletins
                     if polissa.get('butlletins', []):
                         butlleti = O.GiscedataButlleti.read(
@@ -231,7 +237,12 @@ class F1(MultiprocessBased):
                         if modcon['tarifa']:
                             o_cod_tfa = self.get_codi_tarifa(modcon['tarifa'][1])
                         if modcon['cnae']:
-                            o_cnae = modcon['cnae'][1]
+                            cnae_id = modcon['cnae'][0]
+                            if cnae_id in self.cnaes:
+                                o_cnae = self.cnaes[cnae_id]
+                            else:
+                                o_cnae = O.GiscemiscCnae.read(cnae_id, ['name'])['name']
+                                self.cnaes[cnae_id] = o_cnae
                         if modcon['tensio']:
                             o_tensio = format_f(
                                 float(modcon['tensio']) / 1000.0, decimals=3)
@@ -266,7 +277,7 @@ class F1(MultiprocessBased):
                     format_f(o_anual_reactiva, decimals=3),
                     o_any_incorporacio
                 ])
-            except:
+            except Exception:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()

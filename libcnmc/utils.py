@@ -25,6 +25,13 @@ INES = {}
 
 
 def get_norm_tension(connection, tension):
+    """
+    Returns the tension normalizada from a given tensio
+    
+    :param connection: OpenERP connection  
+    :param tension: Tensio
+    :return: Tensio normalitzada 
+    """
 
     if not TENS_NORM:
         tension_fields_to_read = ['l_inferior', 'l_superior', 'tensio']
@@ -43,8 +50,53 @@ def get_norm_tension(connection, tension):
     return tension
 
 
+def get_name_ti(connection, ti):
+    """
+    Returns the name of the TI
+    
+    :param connection: Database connection
+    :param ti: Id of the TI
+    :type ti: int
+    :return: Name of the TI
+    :rtype: str
+    """
+    if ti:
+        data = connection.GiscedataTipusInstallacio.read(ti, ["name"])
+        if data:
+            return data["name"]
+        else:
+            return ""
+    else:
+        return ""
+
+
+def get_codigo_ccaa(connection, ccaa):
+    """
+    Return the code from CCAA
+    
+    :param connection: Database conection
+    :param ccaa: Id of the CCAA
+    :return: Codigo CCAA
+    :rtype: int, str
+    """
+    if ccaa:
+        data = connection.ResComunitat_autonoma.read(ccaa, ["codi"])
+        if data:
+            return data["codi"]
+        else:
+            return ''
+    else:
+        return ''
+
+
 def get_ine(connection, ine):
-    """Retornem dos valors el codi de l'estat i el codi ine sense estat.
+    """
+    Retornem dos valors el codi de l'estat i el codi ine sense estat.
+    
+    :param connection: OpenERP connection
+    :param ine:
+    :return:
+    :rtype: tuple
     """
     if not INES:
         ids = connection.ResMunicipi.search([('dc', '!=', False)])
@@ -65,7 +117,7 @@ def get_comptador(connection, polissa_id, year):
         comp_obj = O.GiscedataLecturesComptador
         comp_id = comp_obj.search([
             ('polissa', '=', polissa_id),
-            ('data_alta', '<', '%s-01-01' % (year + 1))
+            ('data_alta', '<', '{}-01-01'.format(year + 1))
         ], 0, 1, 'data_alta desc', {'active_test': False})
         return comp_id
 
@@ -109,7 +161,14 @@ def tallar_text(text, longitud):
 
 
 def format_f(num, decimals=2):
-    '''formats float with comma decimal separator'''
+    """
+    Formats float with comma decimal separator
+    
+    :param num: 
+    :param decimals: 
+    :return: 
+    """
+
     if isinstance(num, float):
         fstring = '%%.%df' % decimals
         return (fstring % num).replace('.', ',')
@@ -131,6 +190,14 @@ def convert_srid(codi, srid_source, point):
 
 
 def get_srid(connection):
+    """
+    Returns the SRID from the configuration
+    
+    :param connection: OpenERP connection  
+    :return: SRID
+    :rtype: str
+    """
+
     giscegis_srid_id = connection.ResConfig.search(
                     [('name', '=', 'giscegis_srid')])
     giscegis_srid = connection.ResConfig.read(giscegis_srid_id)[0]['value']

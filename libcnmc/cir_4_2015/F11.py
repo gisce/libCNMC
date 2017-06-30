@@ -184,7 +184,7 @@ class F11(MultiprocessBased):
                     o_num_max_maquines,
                     o_incorporacio
                 ])
-            except:
+            except Exception:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()

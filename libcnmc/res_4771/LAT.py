@@ -13,7 +13,18 @@ from libcnmc.utils import format_f, tallar_text
 
 
 class LAT(MultiprocessBased):
+    """
+    Class that generates the LAT file of 4771
+    """
+
     def __init__(self, **kwargs):
+        """
+        Class constructor
+        
+        :param kwargs: Params to generate the file
+        :type kwargs: dict
+        """
+
         super(LAT, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
@@ -28,6 +39,12 @@ class LAT(MultiprocessBased):
                 id_res_like, ['value'])[0]['value']
 
     def get_sequence(self):
+        """
+        Generates a list of ids of the elements to include
+        
+        :return: Ids
+        :rtype: list
+        """
 
         search_params = [('propietari', '=', True)]
         ids = self.connection.GiscedataAtLinia.search(search_params)
@@ -39,14 +56,21 @@ class LAT(MultiprocessBased):
         return ids + id_lat_emb
 
     def consumer(self):
+        """
+        Generates each line of the file
+        
+        :return: None
+        :rtype: None
+        """
+
         O = self.connection
         fields_to_read = ['baixa', 'data_pm', 'data_industria',
                           'coeficient', 'cini', 'propietari',
                           'tensio_max_disseny', 'name', 'origen',
                           'final', 'perc_financament', 'circuits',
                           'longitud_cad', 'cable', 'cnmc_tipo_instalacion']
-        data_pm_limit = '%s-01-01' % (self.year + 1)
-        data_baixa = '%s-12-31' % self.year
+        data_pm_limit = '{}-01-01'.format(self.year + 1)
+        data_baixa = '{}-12-31'.format(self.year)
         static_search_params = [('propietari', '=', True),
                                 '|', ('data_pm', '=', False),
                                      ('data_pm', '<', data_pm_limit),
@@ -160,14 +184,14 @@ class LAT(MultiprocessBased):
                              ('layer', 'not ilike', 'EMBARRA%BT%')
                              ])
                         if not res or len(res) > 1:
-                            edge = {'start_node': (0, '%s_0' % tram.get('name')),
-                                    'end_node': (0, '%s_1' % tram.get('name'))}
+                            edge = {'start_node': (0, '{}_0'.format(tram.get('name'))),
+                                    'end_node': (0, '{}_1'.format(tram.get('name')))}
                         else:
                             edge = O.GiscegisEdge.read(res[0], ['start_node',
                                                                 'end_node'])
 
                     output = [
-                        'A%s' % tram['name'],
+                        'A{}'.format(tram['name']),
                         tram.get('cini', '') or '',
                         origen or edge['start_node'][1],
                         final or edge['end_node'][1],
@@ -187,8 +211,7 @@ class LAT(MultiprocessBased):
                     ]
 
                     self.output_q.put(output)
-
-            except:
+            except Exception:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()

@@ -12,7 +12,17 @@ from libcnmc.utils import get_id_expedient, get_id_municipi_from_company
 
 
 class CTS(MultiprocessBased):
+    """
+    Class to generate the CTs file of 4603
+    """
+
     def __init__(self, **kwargs):
+        """
+        Class constructor
+        
+        :param kwargs: Parameters to generate file
+        :type kwargs: dict
+        """
         super(CTS, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
@@ -20,6 +30,12 @@ class CTS(MultiprocessBased):
         self.report_name = 'CNMC INVENTARI CTS'
 
     def get_sequence(self):
+        """
+        Gets a list of ids to generate
+        
+        :return: Ids
+        :rtype: list
+        """
         search_params = [('id_installacio.name', '!=', 'SE')]
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
@@ -38,6 +54,12 @@ class CTS(MultiprocessBased):
             search_params, 0, 0, False, {'active_test': False})
 
     def consumer(self):
+        """
+        Generates each line of the file
+        
+        :return: None
+        :rtype: None
+        """
         O = self.connection
         fields_to_read = ['name', 'cini', 'data_pm', 'expedients_ids',
                           'codi_instalacio', 'id_municipi', 'perc_financament',
@@ -84,7 +106,7 @@ class CTS(MultiprocessBased):
                 ]
 
                 self.output_q.put(output)
-            except:
+            except Exception:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()

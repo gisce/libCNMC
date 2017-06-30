@@ -13,7 +13,7 @@ INSTALL_REQUIRES = [
     'progressbar', 'click', 'libcomxml',
     'chardet', 'pyproj', 'osconf', 'cerberus>=1.0'
 ]
-DEPENDENCY_LINKS= [
+DEPENDENCY_LINKS = [
     'https://github.com/gisce/ooop/archive/xmlrpc_transaction.zip'
 ]
 if sys.version_info[1] < 6:
@@ -24,7 +24,7 @@ setup(name='libcnmc',
       author='GISCE-TI, S.L.',
       author_email='devel@gisce.net',
       url='http://www.gisce.net',
-      version='0.17.13',
+      version='0.18.19',
       license='General Public Licence 2',
       long_description='''Long description''',
       provides=['libcnmc'],
@@ -37,7 +37,7 @@ setup(name='libcnmc',
               'f1 = libcnmc.cli:cir_4_2014_f1',
               'f1bis = libcnmc.cli:cir_4_2014_f1bis',
               'f11 = libcnmc.cli:cir_4_2014_f11',
-              'cnmc = libcnmc.cli:invoke',
+              'cnmc = libcnmc.cli:cli',
               'cnmc_checker = libcnmc.checker:node_check'
           ]
       })

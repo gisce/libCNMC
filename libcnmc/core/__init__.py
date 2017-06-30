@@ -20,8 +20,17 @@ from libcnmc import VERSION
 
 
 class MultiprocessBased(object):
+    """
+    Multiprocess class to generate the files in multiple process
+    """
 
     def __init__(self, **kwargs):
+        """
+        Class constructor
+        :param kwargs: 
+        :type kwargs:dict 
+        """
+
         self.file_output = kwargs.pop('output', False)
         self.connection = kwargs.pop('connection')
         self.num_proc = max(1, kwargs.pop('num_proc', N_PROC))
@@ -40,19 +49,34 @@ class MultiprocessBased(object):
             self.raven = None
         self.content = ''
 
-
     def get_sequence(self):
+        """
+        Generates a list of ids to pass to consumer
+                
+        :return: List of ids
+        :rtype: list
+        """
+
         raise NotImplementedError()
 
     def producer(self, sequence):
-        """Posem els items que serviran per fer l'informe.
         """
+        Posem els items que serviran per fer l'informe.
+        :param sequence: 
+        :return: 
+        """
+
         for item in sequence:
             self.input_q.put(item)
 
     def progress(self, total):
-        """Rendering del progressbar de l'informe.
         """
+        Rendering del progressbar de l'informe.
+        
+        :param total: 
+        :return: 
+        """
+
         widgets = ['Informe %s: ' % self.report_name,
                    Percentage(), ' ', Bar(), ' ', ETA()]
         if total:
@@ -66,6 +90,13 @@ class MultiprocessBased(object):
                     pbar.finish()
 
     def writer(self):
+        """
+        Writes the data on the output file
+        
+        :return: None
+        :rtype: None
+        """
+
         if self.file_output:
             fio = open(self.file_output, 'wb')
         else:
@@ -90,10 +121,23 @@ class MultiprocessBased(object):
         fio.close()
 
     def consumer(self):
+        """
+        Generates the data for each file
+        
+        :return: None
+        :rtype: None
+        """
+
         raise NotImplementedError()
 
     def execute(self):
-        # Alias for calc
+        """
+        Alias for calc
+        
+        :return: None
+        :rtype: None
+        """
+
         self.calc()
 
     def calc(self):
@@ -134,7 +178,6 @@ class MultiprocessBased(object):
         self.output_q.join()
         self.output_q.close()
         self.input_q.close()
-
 
 
 class UpdateFile(MultiprocessBased):

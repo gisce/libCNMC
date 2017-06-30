@@ -213,7 +213,7 @@ class LBT(MultiprocessBased):
                     codi_ccuu or '',
                     comunitat,
                     comunitat,
-                    format_f(100.0 - linia['perc_financament'], 3),
+                    format_f(100.0 - linia['perc_financament'], 2),
                     data_pm or '',
                     fecha_baja,
                     1,
