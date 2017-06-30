@@ -2,6 +2,7 @@
 import click
 from datetime import datetime
 import subprocess
+import os
 
 from libcnmc.utils import N_PROC
 from libcnmc.core import UpdateCNMCStats, UpdateCINISComptador
