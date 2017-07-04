@@ -1212,11 +1212,11 @@ def cir_3_2015_f3(**kwargs):
 
 @cnmc.command()
 @click.option('-d', '--dir', help='Ruta de la carpeta amb els formularis')
+@click.option('-l', '--lang', help='Idioma amb el qual es generaràn les '
+                                   'validacions (es_ES o ca_ES)')
 def validate_files(**kwargs):
     from libcnmc import checker
-    # from os import path
-    # if path.exists(kwargs['dir']):
-    if kwargs['dir']:
+    if kwargs['dir'] and kwargs['lang']:
         if os.path.exists(kwargs['dir']):
             if "cli.pyc" in __file__:
                 path = str(__file__).replace("/cli.pyc", "")
@@ -1224,7 +1224,8 @@ def validate_files(**kwargs):
                 path = str(__file__).replace("/cli.py", "")
             checker_file = '{}/checker.py'.format(path)
             print(subprocess.check_output(
-                ['python', checker_file, '--dir={}'.format(kwargs['dir'])]
+                ['python', checker_file, '--dir={}'.format(kwargs['dir']),
+                 '--lang={}'.format(kwargs['lang'])]
             ))
 
 
