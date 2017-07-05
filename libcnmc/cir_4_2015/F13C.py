@@ -72,8 +72,11 @@ class F13c(MultiprocessBased):
                 o_pos = sub['name']
                 o_cini = sub['cini']
                 o_prop = int(sub['propietari'])
-                o_data = datetime.strptime(sub['data_pm'], "%Y-%m-%d")
-                o_data = int(o_data.year)
+                if not sub['data_pm']:
+                    o_data = ""
+                else:
+                    o_data = datetime.strptime(sub['data_pm'], "%Y-%m-%d")
+                    o_data = int(o_data.year)
                 o_any = self.year
 
                 self.output_q.put([
