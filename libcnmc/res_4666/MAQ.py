@@ -211,7 +211,13 @@ class MAQ(MultiprocessBased):
                     else:
                         estado = '1'
                 else:
-                    estado = '2'
+                    if trafo['data_pm']:
+                        if trafo['data_pm'][:4] != str(self.year):
+                            estado = '1'
+                        else:
+                            estado = '2'
+                    else:
+                        estado = '1'
 
                 output = [
                     '{0}'.format(trafo['name']),

@@ -203,7 +203,13 @@ class LBT(MultiprocessBased):
                     else:
                         estado = 1
                 else:
-                    estado = 2
+                    if linia['data_pm']:
+                        if linia['data_pm'][:4] != str(self.year):
+                            estado = '1'
+                        else:
+                            estado = '2'
+                    else:
+                        estado = '1'
 
                 output = [
                     'B{}'.format(linia['name']),

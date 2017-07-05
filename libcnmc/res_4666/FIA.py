@@ -154,7 +154,13 @@ class FIA(MultiprocessBased):
                     else:
                         estado = '1'
                 else:
-                    estado = '2'
+                    if cll['data_pm']:
+                        if cll['data_pm'][:4] != str(self.year):
+                            estado = '1'
+                        else:
+                            estado = '2'
+                    else:
+                        estado = '1'
 
                 output = [
                     '{0}'.format(cll['name']),

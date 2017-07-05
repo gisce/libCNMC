@@ -185,7 +185,13 @@ class POS(MultiprocessBased):
                     else:
                         estado = 1
                 else:
-                    estado = 2
+                    if pos['data_pm']:
+                        if pos['data_pm'][:4] != str(self.year):
+                            estado = '1'
+                        else:
+                            estado = '2'
+                    else:
+                        estado = '1'
                 output = [
                     o_sub,
                     pos['cini'] or '',
@@ -352,7 +358,14 @@ class POS_INT(MultiprocessBased):
                     else:
                         estado = 1
                 else:
-                    estado = 2
+                    if cel['data_pm']:
+                        if cel['data_pm'][:4] != str(self.year):
+                            estado = '1'
+                        else:
+                            estado = '2'
+                    else:
+                        estado = '1'
+
                 output = [
                     identificador,
                     cel["cini"] or "",

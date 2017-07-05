@@ -77,7 +77,13 @@ class DES(MultiprocessBased):
                     else:
                         estado = '1'
                 else:
-                    estado = '2'
+                    if despatx['data_pm']:
+                        if despatx['data_pm'][:4] != str(self.year):
+                            estado = '1'
+                        else:
+                            estado = '2'
+                    else:
+                        estado = '1'
                 output = [
                     '{0}'.format(despatx['name']),
                     despatx['cini'] or '',

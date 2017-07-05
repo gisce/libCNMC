@@ -132,7 +132,13 @@ class CTS(MultiprocessBased):
                     else:
                         estado = '1'
                 else:
-                    estado = '2'
+                    if ct['data_pm']:
+                        if ct['data_pm'][:4] != str(self.year):
+                            estado = '1'
+                        else:
+                            estado = '2'
+                    else:
+                        estado = '1'
                 if ct['tipus_instalacio_cnmc_id']:
                     id_ti = ct['tipus_instalacio_cnmc_id'][0]
                     ti = O.GiscedataTipusInstallacio.read(

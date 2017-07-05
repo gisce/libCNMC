@@ -243,7 +243,13 @@ class LAT(MultiprocessBased):
                         else:
                             estado = 1
                     else:
-                        estado = 2
+                        if tram['data_pm']:
+                            if tram['data_pm'][:4] != str(self.year):
+                                estado = '1'
+                            else:
+                                estado = '2'
+                        else:
+                            estado = '1'
 
                     output = [
                         'A{0}'.format(tram['name']),

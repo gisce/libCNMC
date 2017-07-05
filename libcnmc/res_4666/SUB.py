@@ -143,7 +143,13 @@ class SUB(MultiprocessBased):
                     else:
                         estado = 1
                 else:
-                    estado = 2
+                    if sub['data_pm']:
+                        if sub['data_pm'][:4] != str(self.year):
+                            estado = '1'
+                        else:
+                            estado = '2'
+                    else:
+                        estado = '1'
 
                 output = [
                     '{0}'.format(sub['name']),
