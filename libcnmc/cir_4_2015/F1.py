@@ -104,7 +104,6 @@ class F1(MultiprocessBased):
                     'cne_anual_reactiva', 'cnmc_potencia_facturada', 'et',
                     'polisses', 'potencia_conveni'
                 ]
-
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 if not cups or not cups.get('name'):
                     self.input_q.task_done()
@@ -220,6 +219,7 @@ class F1(MultiprocessBased):
                 else:
                     # Si no trobem polissa activa, considerem
                     # "Contrato no activo (CNA)"
+
                     o_equip = 'CNA'
                     o_estat_contracte = 1
 
@@ -227,9 +227,11 @@ class F1(MultiprocessBased):
                         ('id', 'in', cups['polisses']),
                         ('data_inici', '<=', ultim_dia_any)
                     ]
-                    modcons = O.GiscedataPolissaModcontractual.search(
-                        search_modcon, 0, 1, 'data_inici desc'
-                        , {'active_test': False})
+                    modcons = None
+                    if len(cups['polisses']) == 0:
+                        modcons = O.GiscedataPolissaModcontractual.search(
+                            search_modcon, 0, 1, 'data_inici desc'
+                            , {'active_test': False})
                     if modcons:
                         modcon_id = modcons[0]
 
@@ -265,6 +267,19 @@ class F1(MultiprocessBased):
                     else:
                         # No existeix modificació contractual per el CUPS
                         o_potencia = cups['potencia_conveni']
+                        search_params = [
+                            ('escomesa', '=', cups['id_escomesa'][0])
+                        ]
+                        id_esc_gis = O.GiscegisEscomesesTraceability.search(
+                            search_params
+                        )
+
+                        if id_esc_gis:
+                            tensio_gis = O.GiscegisEscomesesTraceability.read(
+                                id_esc_gis, ['tensio']
+                            )[0]['tensio']
+                            o_tensio = format_f(
+                                float(tensio_gis) / 1000.0, decimals=3)
 
                 o_any_incorporacio = self.year
                 res_srid = ['', '']
