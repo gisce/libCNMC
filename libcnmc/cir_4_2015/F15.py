@@ -160,7 +160,10 @@ class F15(MultiprocessBased):
                     o_node, vertex, o_tram = self.get_node_vertex_tram(
                         o_fiabilitat)
                 else:
-                    o_tram = celles['tram_id']
+                    o_tram = "A{0}".format(o.GiscedataAtTram.read(
+                        celles['tram_id'][0], ['name']
+                    )['name'])
+
                     o_node, vertex = self.get_node_vertex(o_fiabilitat)
 
                 o_node = o_node.replace('*', '')
