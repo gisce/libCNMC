@@ -228,7 +228,7 @@ class F1(MultiprocessBased):
                         ('data_inici', '<=', ultim_dia_any)
                     ]
                     modcons = None
-                    if len(cups['polisses']) == 0:
+                    if len(cups['polisses']):
                         modcons = O.GiscedataPolissaModcontractual.search(
                             search_modcon, 0, 1, 'data_inici desc'
                             , {'active_test': False})
