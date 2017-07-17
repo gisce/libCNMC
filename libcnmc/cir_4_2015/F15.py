@@ -153,7 +153,7 @@ class F15(MultiprocessBased):
                     o_prop,
                     o_any
                 ])
-            except:
+            except Exception:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()

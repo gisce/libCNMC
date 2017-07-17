@@ -193,7 +193,7 @@ class POS(MultiprocessBased):
                     codigo_ccuu,
                     comunitat,
                     format_f(tensio, 3),
-                    format_f(round(100 - int(pos['perc_financament'])), 3),
+                    format_f(round(100 - int(pos['perc_financament'])), 2),
                     data_pm or '',
                     fecha_baja,
                     estado
@@ -306,7 +306,7 @@ class POS_INT(MultiprocessBased):
                 denominacion = ""
                 codigo_ccaa = ""
                 if cel["subestacio_id"]:
-                    sub_id = cel["subestacio_id"][0]
+                    sub_id = int(cel["installacio"].split(",")[1])
                     codigo_ccaa = self.get_comunitat(sub_id)
 
                 if cel["installacio"]:
@@ -359,7 +359,7 @@ class POS_INT(MultiprocessBased):
                     codigo_ccuu,
                     codigo_ccaa,
                     format_f(tensio, 3),
-                    format_f(round(100 - int(cel['perc_financament'])), 3),
+                    format_f(round(100 - int(cel['perc_financament'])), 2),
                     data_pm or '',
                     data_baixa,
                     estado

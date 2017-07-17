@@ -131,7 +131,7 @@ class F1bis(MultiprocessBased):
                     o_baixa,
                     o_year
                 ])
-            except:
+            except Exception:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()

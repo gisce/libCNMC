@@ -15,7 +15,17 @@ QUIET = False
 
 
 class SUB(MultiprocessBased):
+    """
+    Class to generate the SUB file o f 4603
+    """
+
     def __init__(self, **kwargs):
+        """
+        Class costructor
+        
+        :param kwargs: Parameters to generate the file 
+        :type kwargs: dict
+        """
         super(SUB, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
@@ -23,6 +33,12 @@ class SUB(MultiprocessBased):
         self.report_name = 'CNMC INVENTARI SUB'
 
     def get_sequence(self):
+        """
+        Generates a list of ids to process
+        
+        :return: Ids
+        :rtype: list
+        """
         search_params = []
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
@@ -41,6 +57,12 @@ class SUB(MultiprocessBased):
             search_params, 0, 0, False, {'active_test': False})
 
     def consumer(self):
+        """
+        Process that generates each line of the file
+        
+        :return: None
+        :rtype: None
+        """
         O = self.connection
         fields_to_read = ['name', 'data_industria', 'data_pm', 'id_municipi',
                           'posicions', 'cini', 'descripcio', 'perc_financament']
@@ -98,7 +120,7 @@ class SUB(MultiprocessBased):
                 ]
 
                 self.output_q.put(output)
-            except:
+            except Exception:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()

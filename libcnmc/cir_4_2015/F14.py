@@ -102,7 +102,7 @@ class F14(MultiprocessBased):
                     o_estat,
                     o_any
                 ])
-            except:
+            except Exception:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()

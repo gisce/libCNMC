@@ -34,7 +34,7 @@ class TestFormF1(unittest.TestCase):
             year=2013,
             quiet=False
         )
-        ultim_dia_any = '%s-12-31' % f1.year
+        ultim_dia_any = '{}-12-31'.format(f1.year)
         search_glob = [
             ('state', 'not in', ('esborrany', 'validar')),
             ('data_alta', '<=', ultim_dia_any),

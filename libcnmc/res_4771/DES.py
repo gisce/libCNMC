@@ -34,7 +34,7 @@ class DES(MultiprocessBased):
                     item, fields_to_read)
 
                 output = [
-                    '%s' % despatx['name'],
+                    '{}'.format(despatx['name']),
                     despatx['cini'] or '',
                     despatx['denominacio'] or '',
                     despatx['any_ps'],
@@ -42,7 +42,7 @@ class DES(MultiprocessBased):
                 ]
 
                 self.output_q.put(output)
-            except:
+            except Exception:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
