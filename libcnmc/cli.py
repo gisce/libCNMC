@@ -1208,6 +1208,3 @@ def cir_3_2015_f3(**kwargs):
     proc.calc()
 
 cli = click.CommandCollection(sources=[cnmc, cnmc_4666, cnmc_4667, cnmc_4_2015])
-
-if __name__ == '__main__':
-    cli()
