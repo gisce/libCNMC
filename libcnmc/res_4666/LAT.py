@@ -16,7 +16,7 @@ from libcnmc.models import F1Res4131
 
 class LAT(MultiprocessBased):
     """
-    Class that generates the LAT(1) file of  4131
+    Class that generates the LAT(1) file of  4666
     """
     def __init__(self, **kwargs):
         """
@@ -243,7 +243,13 @@ class LAT(MultiprocessBased):
                         else:
                             estado = 1
                     else:
-                        estado = 2
+                        if tram['data_pm']:
+                            if tram['data_pm'][:4] != str(self.year):
+                                estado = '1'
+                            else:
+                                estado = '2'
+                        else:
+                            estado = '1'
 
                     output = [
                         'A{0}'.format(tram['name']),

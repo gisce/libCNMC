@@ -14,7 +14,9 @@ class F15(MultiprocessBased):
 
     def get_sequence(self):
         search_params = [
-            ('installacio', 'ilike', 'giscedata.at.suport,%')
+            ('installacio', 'ilike', 'giscedata.at.suport,%'),
+            ('inventari', '=', 'fiabilitat'),
+            ('cini', 'not ilike', 'i28_2%')
         ]
         return self.connection.GiscedataCellesCella.search(search_params)
 
@@ -82,6 +84,35 @@ class F15(MultiprocessBased):
                     tram_name = "A{0}".format(tram_name)
         return node, vertex, tram_name
 
+    def get_node_vertex(self, element_name):
+        o = self.connection
+        node = ''
+        vertex = None
+        bloc = None
+        if element_name:
+            # Search on the diferent models
+            models = [o.GiscegisBlocsInterruptorat,
+                      o.GiscegisBlocsFusiblesat,
+                      o.GiscegisBlocsSeccionadorat,
+                      o.GiscegisBlocsSeccionadorunifilar]
+            for model in models:
+                bloc_id = model.search([('codi', '=', element_name)])
+                if bloc_id:
+                    model_ok = model
+                    break
+            if bloc_id:
+                bloc = model_ok.read(
+                    bloc_id[0], ['node', 'vertex'])
+                v = o.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
+                if bloc.get('node', False):
+                    node = bloc['node'][1]
+                else:
+                    node = v['id']
+                if bloc.get('vertex', False):
+                    vertex = (round(v['x'], 3), round(v['y'], 3))
+
+        return node, vertex
+
     def obtenir_camps_linia(self, installacio):
         o = self.connection
         valor = installacio.split(',')
@@ -112,7 +143,7 @@ class F15(MultiprocessBased):
     def consumer(self):
         o = self.connection
         fields_to_read = [
-            'installacio', 'cini', 'propietari', 'name'
+            'installacio', 'cini', 'propietari', 'name', 'tram_id'
         ]
         while True:
             try:
@@ -124,7 +155,17 @@ class F15(MultiprocessBased):
                 )
                 dict_linia = self.obtenir_camps_linia(celles['installacio'])
                 o_fiabilitat = celles['name']
-                o_node, vertex, o_tram = self.get_node_vertex_tram(o_fiabilitat)
+
+                if not celles['tram_id']:
+                    o_node, vertex, o_tram = self.get_node_vertex_tram(
+                        o_fiabilitat)
+                else:
+                    o_tram = "A{0}".format(o.GiscedataAtTram.read(
+                        celles['tram_id'][0], ['name']
+                    )['name'])
+
+                    o_node, vertex = self.get_node_vertex(o_fiabilitat)
+
                 o_node = o_node.replace('*', '')
                 o_cini = celles['cini']
                 z = ''

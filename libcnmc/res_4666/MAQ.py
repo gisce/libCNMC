@@ -17,7 +17,7 @@ from libcnmc.models import F5Res4131
 
 class MAQ(MultiprocessBased):
     """
-    Class that generates the Maquinas/Transofrmadores(5) file of the 4131
+    Class that generates the Maquinas/Transofrmadores(5) file of the 4666
     """
     def __init__(self, **kwargs):
         """
@@ -211,7 +211,13 @@ class MAQ(MultiprocessBased):
                     else:
                         estado = '1'
                 else:
-                    estado = '2'
+                    if trafo['data_pm']:
+                        if trafo['data_pm'][:4] != str(self.year):
+                            estado = '1'
+                        else:
+                            estado = '2'
+                    else:
+                        estado = '1'
 
                 output = [
                     '{0}'.format(trafo['name']),

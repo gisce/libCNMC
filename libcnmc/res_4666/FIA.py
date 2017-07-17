@@ -14,7 +14,7 @@ from libcnmc.models import F7Res4131
 
 class FIA(MultiprocessBased):
     """
-    Class that generates the fiabilidad(7) file of the 4131
+    Class that generates the fiabilidad(7) file of the 4666
     """
     def __init__(self, **kwargs):
         """
@@ -154,7 +154,13 @@ class FIA(MultiprocessBased):
                     else:
                         estado = '1'
                 else:
-                    estado = '2'
+                    if cll['data_pm']:
+                        if cll['data_pm'][:4] != str(self.year):
+                            estado = '1'
+                        else:
+                            estado = '2'
+                    else:
+                        estado = '1'
 
                 output = [
                     '{0}'.format(cll['name']),

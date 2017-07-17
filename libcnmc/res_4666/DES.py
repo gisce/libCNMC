@@ -15,7 +15,7 @@ from libcnmc.models import F6Res4666, F6Res4131
 
 class DES(MultiprocessBased):
     """
-    Class that generates the Despachos(6) file of the 4131
+    Class that generates the Despachos(6) file of the 4666
     """
     def __init__(self, **kwargs):
         """
@@ -77,7 +77,13 @@ class DES(MultiprocessBased):
                     else:
                         estado = '1'
                 else:
-                    estado = '2'
+                    if despatx['data_pm']:
+                        if despatx['data_pm'][:4] != str(self.year):
+                            estado = '1'
+                        else:
+                            estado = '2'
+                    else:
+                        estado = '1'
                 output = [
                     '{0}'.format(despatx['name']),
                     despatx['cini'] or '',

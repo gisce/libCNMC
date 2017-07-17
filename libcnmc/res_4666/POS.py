@@ -18,7 +18,7 @@ QUIET = False
 
 class POS(MultiprocessBased):
     """
-    Class that generates the POS/Interruptores(4) of 4131 report
+    Class that generates the POS/Interruptores(4) of 4666 report
     """
     def __init__(self, **kwargs):
         """
@@ -38,7 +38,7 @@ class POS(MultiprocessBased):
         Method that generates a list of ids to pass to the consummer
         :return: List of ids
         """
-        search_params = [('interruptor', '=', '2')]
+        search_params = [('cini', 'ilike', 'i28_2%')]
         data_pm = '{0}-01-01'.format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
         search_params += [('propietari', '=', True),
@@ -185,7 +185,13 @@ class POS(MultiprocessBased):
                     else:
                         estado = 1
                 else:
-                    estado = 2
+                    if pos['data_pm']:
+                        if pos['data_pm'][:4] != str(self.year):
+                            estado = '1'
+                        else:
+                            estado = '2'
+                    else:
+                        estado = '1'
                 output = [
                     o_sub,
                     pos['cini'] or '',
@@ -210,7 +216,7 @@ class POS(MultiprocessBased):
 
 class POS_INT(MultiprocessBased):
     """
-    Class that generates the POS/Cel·les(4) of 4131 report
+    Class that generates the POS/Cel·les(4) of 4666 report
     """
     def __init__(self, **kwargs):
         """
@@ -230,7 +236,8 @@ class POS_INT(MultiprocessBased):
         Method that generates a list of ids to pass to the consummer
         :return: List of ids
         """
-        search_params = [('cini', 'like', 'I28')]
+        search_params = [('inventari', '=', 'fiabilitat'),
+                         ('cini', 'ilike', 'i28_2%')]
         data_pm = '{0}-01-01'.format(self.year + 1)
         search_params += ['|', ('data_pm', '=', False),
                           ('data_pm', '<', data_pm)]
@@ -272,7 +279,7 @@ class POS_INT(MultiprocessBased):
         o = self.connection
         res = ''
 
-        denom = o.GiscedataCts.read(ct_id, ['descripcio'])['descripcio']
+        denom = o.GiscedataCts.read(ct_id, ['name'])['name']
         if denom:
             res = denom
         return res
@@ -351,7 +358,14 @@ class POS_INT(MultiprocessBased):
                     else:
                         estado = 1
                 else:
-                    estado = 2
+                    if cel['data_pm']:
+                        if cel['data_pm'][:4] != str(self.year):
+                            estado = '1'
+                        else:
+                            estado = '2'
+                    else:
+                        estado = '1'
+
                 output = [
                     identificador,
                     cel["cini"] or "",

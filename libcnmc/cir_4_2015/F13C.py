@@ -17,7 +17,7 @@ class F13c(MultiprocessBased):
         self.base_object = 'CTS'
 
     def get_sequence(self):
-        search_params = [('interruptor', '=', '2')]
+        search_params = [('cini', 'ilike', 'i28%')]
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
         search_params += ['|', ('data_pm', '=', False),
@@ -72,8 +72,11 @@ class F13c(MultiprocessBased):
                 o_pos = sub['name']
                 o_cini = sub['cini']
                 o_prop = int(sub['propietari'])
-                o_data = datetime.strptime(sub['data_pm'], "%Y-%m-%d")
-                o_data = int(o_data.year)
+                if not sub['data_pm']:
+                    o_data = ""
+                else:
+                    o_data = datetime.strptime(sub['data_pm'], "%Y-%m-%d")
+                    o_data = int(o_data.year)
                 o_any = self.year
 
                 self.output_q.put([

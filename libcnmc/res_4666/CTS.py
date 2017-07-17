@@ -15,7 +15,7 @@ from libcnmc.models import F8Res4131
 
 class CTS(MultiprocessBased):
     """
-    Class that generates the CT file of the 4131
+    Class that generates the CT file of the 4666
     """
     def __init__(self, **kwargs):
         """
@@ -132,7 +132,13 @@ class CTS(MultiprocessBased):
                     else:
                         estado = '1'
                 else:
-                    estado = '2'
+                    if ct['data_pm']:
+                        if ct['data_pm'][:4] != str(self.year):
+                            estado = '1'
+                        else:
+                            estado = '2'
+                    else:
+                        estado = '1'
                 if ct['tipus_instalacio_cnmc_id']:
                     id_ti = ct['tipus_instalacio_cnmc_id'][0]
                     ti = O.GiscedataTipusInstallacio.read(
