@@ -519,7 +519,7 @@ def res_466_con(**kwargs):
     res_lat(CON, **kwargs)
 
 
-@cnmc.command()
+@cnmc_4666.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -547,7 +547,7 @@ def aud_4666_lat(**kwargs):
     res_lat(LAT, **kwargs)
 
 
-@cnmc.command()
+@cnmc_4666.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -575,7 +575,7 @@ def aud_4666_lbt(**kwargs):
     res_lat(LBT, **kwargs)
 
 
-@cnmc.command()
+@cnmc_4666.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -602,7 +602,7 @@ def aud_4666_cts(**kwargs):
     res_lat(CTS, **kwargs)
 
 
-@cnmc.command()
+@cnmc_4666.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -629,7 +629,7 @@ def aud_4666_pos(**kwargs):
     res_pos2(POS, POS_INT, **kwargs)
 
 
-@cnmc.command()
+@cnmc_4666.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
