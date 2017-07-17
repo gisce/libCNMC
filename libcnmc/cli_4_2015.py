@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import click
+import subprocess
+import os
 from libcnmc.utils import N_PROC
 from libcnmc.core.backend import OOOPFactory
 from libcnmc import cir_4_2015
@@ -685,10 +687,10 @@ def validate_files(**kwargs):
     from libcnmc import checker
     if kwargs['dir'] and kwargs['lang']:
         if os.path.exists(kwargs['dir']):
-            if "cli.pyc" in __file__:
-                path = str(__file__).replace("/cli.pyc", "")
+            if "cli_4_2015.pyc" in __file__:
+                path = str(__file__).replace("/cli_4_2015.pyc", "")
             else:
-                path = str(__file__).replace("/cli.py", "")
+                path = str(__file__).replace("/cli_4_2015.py", "")
             checker_file = '{}/checker.py'.format(path)
             print(subprocess.check_output(
                 ['python', checker_file, '--dir={}'.format(kwargs['dir']),
