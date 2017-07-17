@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import click
 import os
+import re
 import time
 
-_VERSION = 7.0
+_VERSION = 7.1
 
 _F1 = [
     'Node',
@@ -82,16 +83,21 @@ _F10 = [
 
 @click.command()
 @click.option('-d', '--dir', help='Ruta de la carpeta amb els formularis')
+@click.option('-l', '--lang', help='Idioma amb el qual es generaràn les '
+                                   'validacions (es_ES o ca_ES)')
 def node_check(**kwargs):
     if not kwargs['dir']:
         print "ERROR: falta especificar la ruta de la carpeta amb els" \
               " formularis."
+    elif not kwargs['lang']:
+        print "ERROR: falta especificar l'idioma (es_ES o ca_ES)"
     else:
         ruta = kwargs['dir']
+        lang = re.sub('[^A-Za-z0-9_]+', '', kwargs["lang"])
         if os.path.exists(ruta):
             forms = os.listdir(ruta)
             forms.sort()
-            buidar_resultats_anteriors(ruta)
+            buidar_resultats_anteriors(ruta, lang)
             f11 = None
             f10 = None
             f9 = None
@@ -109,135 +115,237 @@ def node_check(**kwargs):
                 for form in forms:
                     ruta_completa = ruta+'/'+form
                     if '_1_' in form and '~' not in form:
-                        print "Verificant nodes del formulari 1...\n"
+                        if lang == 'es_ES':
+                            print "Verificando nodos del formulario 1...\n"
+                        else:
+                            print "Verificant nodes del formulari 1...\n"
                         nodes = check(f10, ruta_completa, 'f1')
-                        mostrar_nodes(nodes, 'f1', ruta)
-                        print "Verificant CUPS del formulari 1...\n"
+                        mostrar_nodes(nodes, 'f1', ruta, lang)
+                        if lang == 'es_ES':
+                            print "Verificando CUPS del formulario 1...\n"
+                        else:
+                            print "Verificant CUPS del formulari 1...\n"
                         cups = check_cups(ruta_completa, 'f1')
-                        mostrar_cups(cups, 'f1', ruta)
-                        print "Verificant camps obligatoris del formulari " \
-                              "1...\n"
+                        mostrar_cups(cups, 'f1', ruta, lang)
+                        if lang == 'es_ES':
+                            print "Verificando campos obligatorios del " \
+                                  "formulario 1...\n"
+                        else:
+                            print "Verificant camps obligatoris del " \
+                                  "formulari 1...\n"
                         camps = check_obligatoris(ruta_completa, 'f1')
-                        mostrar_obligatoris(camps, 'f1', ruta)
+                        mostrar_obligatoris(camps, 'f1', ruta, lang)
                     elif ('_1bis_' in form or '_1BIS_' in form) \
                             and '~' not in form:
-                        print "Verificant CUPS del formulari 1bis...\n"
+                        if lang == 'es_ES':
+                            print "Verificando CUPS del formulario 1bis...\n"
+                        else:
+                            print "Verificant CUPS del formulari 1bis...\n"
                         cups = check_cups(ruta_completa, 'f1bis')
-                        mostrar_cups(cups, 'f1bis', ruta)
+                        mostrar_cups(cups, 'f1bis', ruta, lang)
                         cups = check_cups_f1bis(ruta_completa, f1)
-                        mostrar_cups_f1bis(cups, ruta)
-                        print "Verificant camps obligatoris del formulari " \
-                              "1bis...\n"
+                        mostrar_cups_f1bis(cups, ruta, lang)
+                        if lang == 'es_ES':
+                            print "Verificando campos obligatorios del " \
+                                  "formulario 1bis...\n"
+                        else:
+                            print "Verificant camps obligatoris del " \
+                                  "formulari 1bis...\n"
                         camps = check_obligatoris(ruta_completa, 'f1bis')
-                        mostrar_obligatoris(camps, 'f1bis', ruta)
+                        mostrar_obligatoris(camps, 'f1bis', ruta, lang)
                     elif '_2_' in form and '~' not in form:
-                        print "Verificant nodes del formulari 2...\n"
+                        if lang == 'es_ES':
+                            print "Verificando nodos del formulario 2...\n"
+                        else:
+                            print "Verificant nodes del formulari 2...\n"
                         nodes = check(f10, ruta_completa, 'f2')
-                        mostrar_nodes(nodes, 'f2', ruta)
-                        print "Verificant CUPS del formulari 2...\n"
+                        mostrar_nodes(nodes, 'f2', ruta, lang)
+                        if lang == 'es_ES':
+                            print "Verificando CUPS del formulario 2...\n"
+                        else:
+                            print "Verificant CUPS del formulari 2...\n"
                         cups = check_cups(ruta_completa, 'f2')
-                        mostrar_cups(cups, 'f2', ruta)
+                        mostrar_cups(cups, 'f2', ruta, lang)
                     elif ('_2a_' in form or '_2A_' in form) and '~' not in form:
-                        print "Verificant camps obligatoris del formulari" \
-                              "2a..."
+                        if lang == 'es_ES':
+                            print "Verificando campos obligatorios del " \
+                                  "formulario 2a...\n"
+                        else:
+                            print "Verificant camps obligatoris del " \
+                                  "formulari 2a..."
                         camps = check_obligatoris(ruta_completa, 'f2a')
-                        mostrar_obligatoris(camps, 'f2a', ruta)
+                        mostrar_obligatoris(camps, 'f2a', ruta, lang)
                     elif ('_2b_' in form or '_2B_' in form) and '~' not in form:
-                        print "Verificant camps obligatoris del formulari" \
-                              "2b..."
+                        if lang == 'es_ES':
+                            print "Verificando campos obligatorios del " \
+                                  "formulario 2b...\n"
+                        else:
+                            print "Verificant camps obligatoris del " \
+                                  "formulari 2b..."
                         camps = check_obligatoris(ruta_completa, 'f2b')
-                        mostrar_obligatoris(camps, 'f2b', ruta)
+                        mostrar_obligatoris(camps, 'f2b', ruta, lang)
                     elif '_3_' in form and '~' not in form:
-                        print "Verificant nodes del formulari 3...\n"
+                        if lang == 'es_ES':
+                            print "Verificando nodos del formulario 3...\n"
+                        else:
+                            print "Verificant nodes del formulari 3...\n"
                         nodes = check(f10, ruta_completa, 'f3')
-                        mostrar_nodes(nodes, 'f3', ruta)
+                        mostrar_nodes(nodes, 'f3', ruta, lang)
                     elif '_6_' in form and '~' not in form:
-                        print "Verificant nodes del formulari 6...\n"
+                        if lang == 'es_ES':
+                            print "Verificando nodos del formulario 6...\n"
+                        else:
+                            print "Verificant nodes del formulari 6...\n"
                         nodes = check(f10, ruta_completa, 'f6')
-                        mostrar_nodes(nodes, 'f6', ruta)
-                        print "Verificant CUPS del formulari 6...\n"
+                        mostrar_nodes(nodes, 'f6', ruta, lang)
+                        if lang == 'es_ES':
+                            print "Verificando CUPS del formulario 6...\n"
+                        else:
+                            print "Verificant CUPS del formulari 6...\n"
                         cups = check_cups(ruta_completa, 'f6')
-                        mostrar_cups(cups, 'f6', ruta)
+                        mostrar_cups(cups, 'f6', ruta, lang)
                     elif '_9_' in form and '~' not in form:
-                        print "Verificant trams dels formularis 9 i 10...\n"
+                        if lang == 'es_ES':
+                            print "Verificando tramos de los formularios" \
+                                  "9 y 10...\n"
+                        else:
+                            print "Verificant trams dels formularis 9 i 10...\n"
                         trams, topologia = check_trams_f9_f10(
                             f10, ruta_completa)
-                        mostrar_trams(trams, ruta, 'f9_f10', topologia)
-                        print "Verificant trams repetits del formulari " \
-                              "9...\n"
+                        mostrar_trams(trams, ruta, 'f9_f10', lang, topologia)
+                        if lang == 'es_ES':
+                            print "Verificando trams repetidos del " \
+                                  "formulario 9...\n"
+                        else:
+                            print "Verificant trams repetits del formulari " \
+                                "9...\n"
                         repetits = comprovar_repetits(ruta_completa, 'f9')
-                        mostrar_trams(repetits, ruta, 'f9r')
+                        mostrar_trams(repetits, ruta, 'f9r', lang)
                     elif '_10_' in form and '~' not in form:
-                        print "Verificant trams repetits del formulari 10...\n"
+                        if lang == 'es_ES':
+                            print "Verificando tramos repetidos del " \
+                                  "formulario 10...\n"
+                        else:
+                            print "Verificant trams repetits del formulari 10...\n"
                         repetits = comprovar_repetits(ruta_completa, 'f10')
-                        mostrar_trams(repetits, ruta, 'f10r')
-                        print "Verificant camps obligatoris del formulari " \
-                              "10...\n"
+                        mostrar_trams(repetits, ruta, 'f10r', lang)
+                        if lang == 'es_ES':
+                            print "Verificando campos obligatorios del " \
+                                  "formulario 10...\n"
+                        else:
+                            print "Verificant camps obligatoris del formulari " \
+                                  "10...\n"
                         camps = check_obligatoris(ruta_completa, 'f10')
-                        mostrar_obligatoris(camps, 'f10', ruta)
+                        mostrar_obligatoris(camps, 'f10', ruta, lang)
                     elif '_11_' in form and '~' not in form:
-                        print "Verificant nodes del formulari 11...\n"
+                        if lang == 'es_ES':
+                            print "Verificando nodos del formulario 11...\n"
+                        else:
+                            print "Verificant nodes del formulari 11...\n"
                         nodes = check(f10, ruta_completa, 'f11')
-                        mostrar_nodes(nodes, 'f11', ruta)
+                        mostrar_nodes(nodes, 'f11', ruta, lang)
                     elif '_12_' in form and '~' not in form:
-                        # print "Verificant nodes del formulari 12...\n"
-                        # nodes = check(f10, ruta_completa, 'f12')
-                        # mostrar_nodes(nodes, 'f12', ruta)
                         if f11:
-                            print "Verificant CTs del formulari 12bis...\n"
+                            if lang == 'es_ES':
+                                print "Verificando CTs del formulario 12...\n"
+                            else:
+                                print "Verificant CTs del formulari 12...\n"
                             cts = comprovar_cts(f11, ruta_completa, 'f12')
-                            mostrar_cts(ruta, cts, 'f12')
+                            mostrar_cts(ruta, cts, 'f12', lang)
                     elif ('_12bis_' in form or '_12BIS_' in form) \
                             and '~' not in form:
                         if f11:
-                            print "Verificant CTs del formulari 12bis...\n"
+                            if lang == 'es_ES':
+                                print "Verificando CTs del formulario 12bis...\n"
+                            else:
+                                print "Verificant CTs del formulari 12bis...\n"
                             cts = comprovar_cts(f11, ruta_completa, 'f12bis')
-                            mostrar_cts(ruta, cts, 'f12bis')
-                        print "Verificant codis de posició del formulari " \
-                              "12bis...\n"
+                            mostrar_cts(ruta, cts, 'f12bis', lang)
+                            if lang == 'es_ES':
+                                print "Verificando códigos de posición del " \
+                                      "formulario 12bis..\n"
+                            else:
+                                print "Verificant codis de posició del " \
+                                      "formulari 12bis...\n"
                         posicions = comprovar_repetits(ruta_completa, 'f12bis')
-                        mostrar_posicions(ruta, posicions)
+                        mostrar_posicions(ruta, posicions, lang)
                     elif ('_13bis_' in form or '_13BIS_' in form) \
                             and '~' not in form:
-                        print "Verificant nodes del formulari 13 bis...\n"
+                        if lang == 'es_ES':
+                            print "Verificando nodos del formulario 13bis...\n"
+                        else:
+                            print "Verificant nodes del formulari 13bis...\n"
                         nodes = check(f10, ruta_completa, 'f13bis')
-                        mostrar_nodes(nodes, 'f13bis', ruta)
+                        mostrar_nodes(nodes, 'f13bis', ruta, lang)
                     elif '_15_' in form and '~' not in form:
-                        print "Verificant nodes del formulari 15...\n"
+                        if lang == 'es_ES':
+                            print "Verificando nodos del formulario 15...\n"
+                        else:
+                            print "Verificant nodes del formulari 15...\n"
                         nodes = check(f10, ruta_completa, 'f15')
-                        mostrar_nodes(nodes, 'f15', ruta)
+                        mostrar_nodes(nodes, 'f15', ruta, lang)
                         if f9:
                             print "Verificant trams del formulari 15 amb els" \
                                   " del formulari 9...\n"
                             trams = check_trams_f15(f9, ruta_completa)
-                            mostrar_trams(trams, ruta, 'f15')
+                            mostrar_trams(trams, ruta, 'f15', lang)
                     elif '_16_' in form and '~' not in form:
-                        print "Verificant nodes del formulari 16...\n"
+                        if lang == 'es_ES':
+                            print "Verificando nodos del formulario 16...\n"
+                        else:
+                            print "Verificant nodes del formulari 16...\n"
                         nodes = check(f10, ruta_completa, 'f16')
-                        mostrar_nodes(nodes, 'f16', ruta)
+                        mostrar_nodes(nodes, 'f16', ruta, lang)
                     elif '_17_' in form and '~' not in form:
-                        print "Verificant nodes del formulari 17...\n"
+                        if lang == 'es_ES':
+                            print "Verificando nodos del formulario 17...\n"
+                        else:
+                            print "Verificant nodes del formulari 17...\n"
                         nodes = check(f10, ruta_completa, 'f17')
-                        mostrar_nodes(nodes, 'f17', ruta)
+                        mostrar_nodes(nodes, 'f17', ruta, lang)
                     elif '_20_' in form and '~' not in form:
-                        print "Verificant CUPS del formulari 20...\n"
+                        if lang == 'es_ES':
+                            print "Verificando CUPS del formulario 20...\n"
+                        else:
+                            print "Verificant CUPS del formulari 20...\n"
                         cups = check_cups(ruta_completa, 'f20')
-                        mostrar_cups(cups, 'f20', ruta)
-                print "\n\nVerificació completada."
+                        mostrar_cups(cups, 'f20', ruta, lang)
+                if lang == 'es_ES':
+                    print "\n\nVerificación completada."
+                else:
+                    print "\n\nVerificació completada."
             else:
-                print "ERROR: no s'ha trobat el formulari f10 a la" \
-                      "carpeta especificada."
+                if lang == 'es_ES':
+                    print "ERROR: no se ha encontrado el formulario f10 en la" \
+                          "carpeta especificada."
+                else:
+                    print "ERROR: no s'ha trobat el formulari f10 a la" \
+                          "carpeta especificada."
         else:
-            print "ERROR: No s'ha trobat la carpeta de formularis especificada."
+            if lang == 'es_ES':
+                print "ERROR: No se ha encontrado la carpeta de formularios " \
+                      "especificada."
+            else:
+                print "ERROR: No s'ha trobat la carpeta de formularis " \
+                      "especificada."
 
 
-def buidar_resultats_anteriors(ruta):
+def buidar_resultats_anteriors(ruta, lang):
     fitxer_sortida = ruta+'/resultats.txt'
     with open(fitxer_sortida, 'w') as f:
-        f.write('Resultats de la comprovació dels formularis CNMC 4/2015\n\n')
-        f.write('Versió: {0}\n\n'.format(_VERSION))
-        f.write('Data de comprovació: {0}\n\n'.format(
-            time.strftime("%d/%m/%Y")))
+        if lang == 'es_ES':
+            f.write(
+                'Resultados de la comprovación de los formularios '
+                'CNMC 4/2015\n\n')
+            f.write('Versión: {0}\n\n'.format(_VERSION))
+            f.write('Fecha de comprobación: {0}\n\n'.format(
+                time.strftime("%d/%m/%Y")))
+        else:
+            f.write('Resultats de la comprovació dels formularis '
+                    'CNMC 4/2015\n\n')
+            f.write('Versió: {0}\n\n'.format(_VERSION))
+            f.write('Data de comprovació: {0}\n\n'.format(
+                time.strftime("%d/%m/%Y")))
         f.write('#######################################################'
                 '\n\n\n\n')
 
@@ -292,47 +400,76 @@ def check_obligatoris(fitxer, context):
     return camps
 
 
-def mostrar_obligatoris(camps, form, ruta):
+def mostrar_obligatoris(camps, form, ruta, lang):
     fitxer_sortida = ruta+'/resultats.txt'
     with open(fitxer_sortida, 'a') as f:
         if camps:
-            f.write("Camps obligatoris del formulari {0} que falten:"
-                    "\n".format(form))
+            if lang == 'es_ES':
+                f.write("Camps obligatorios del formulario {0} "
+                        "que faltan:\n".format(form))
+            else:
+                f.write("Camps obligatoris del formulari {0} "
+                        "que falten:\n".format(form))
             i = 0
             for elem in camps:
                 if len(camps[elem]) > 0:
                     f.write("\n")
                     if form == 'f2a' or form == 'f2b':
-                        f.write("\tLínia: {0}\n\n".format(elem))
+                        if lang == 'es_ES':
+                            f.write("\tLínea: {0}\n\n".format(elem))
+                        else:
+                            f.write("\tLínia: {0}\n\n".format(elem))
                     elif form == 'f10':
                         if "Tram" in camps[elem]:
-                            f.write("\tLínia: {0}\n\n".format(elem))
+                            if lang == 'es_ES':
+                                f.write("\tLínea: {0}\n\n".format(elem))
+                            else:
+                                f.write("\tLínia: {0}\n\n".format(elem))
                         else:
-                            f.write("\tTram: {0}\n\n".format(elem))
+                            if lang == 'es_ES':
+                                f.write("\tTramo: {0}\n\n".format(elem))
+                            else:
+                                f.write("\tTram: {0}\n\n".format(elem))
                     else:
                         f.write("\tCUPS: {0}\n\n".format(elem))
                     i += 1
                     for c in camps[elem]:
                         f.write("\t\t{0}\n".format(c))
-            f.write("\nTotal de línies amb camps sense emplenar a {0}: "
-                    "{1}\n\n".format(form, i))
+            if lang == 'es_ES':
+                f.write("\nTotal de líneas con campos sin completar en"
+                        " {0}: {1}\n\n".format(form, i))
+            else:
+                f.write("\nTotal de línies amb camps sense emplenar a {0}: "
+                        "{1}\n\n".format(form, i))
         else:
-            f.write("Tots els camps obligatoris del fitxer {0} estàn complets."
-                    " OK!\n\n".format(form))
+            if lang == 'es_ES':
+                f.write("Todos los campos obligatorios del fichero {0} están"
+                        " completos. OK!\n\n".format(form))
+            else:
+                f.write("Tots els camps obligatoris del fitxer {0} estàn"
+                        " complets. OK!\n\n".format(form))
 
 
-def mostrar_cups_f1bis(cups, ruta):
+def mostrar_cups_f1bis(cups, ruta, lang):
     fitxer_sortida = ruta+'/resultats.txt'
     with open(fitxer_sortida, 'a') as f:
         if cups:
-            f.write("CUPS del formulari F1 Bis que no apareixen al formulari "
-                    "F1:\n\n")
+            if lang == 'es_ES':
+                f.write("CUPS del formulario F1 Bis que no aparecen en el"
+                        " formulario F1:\n\n")
+            else:
+                f.write("CUPS del formulari F1 Bis que no apareixen al"
+                        " formulari F1:\n\n")
             for elem in cups:
                 f.write("\t{0}\n".format(elem))
             f.write("\nTotal CUPS: {0}\n\n".format(len(cups)))
         else:
-            f.write("Els cups del formulari F1 Bis coincideixen amb els del"
-                    " formulari F1. OK!\n\n")
+            if lang == 'es_ES':
+                f.write("Los cups del formulario F1 Bis coinciden con los"
+                        " del formulario F1. OK!\n\n")
+            else:
+                f.write("Els cups del formulari F1 Bis coincideixen amb els"
+                        " del formulari F1. OK!\n\n")
 
 
 def check_cups_f1bis(fitxer, f1):
@@ -352,24 +489,38 @@ def check_cups_f1bis(fitxer, f1):
     return resultat
 
 
-def mostrar_cups(cups, form, ruta):
+def mostrar_cups(cups, form, ruta, lang):
     fitxer_sortida = ruta+'/resultats.txt'
     with open(fitxer_sortida, 'a') as f:
         if cups:
-            f.write("CUPS duplicats del formulari {0}:\n".format(form))
+            if lang == 'es_ES':
+                f.write("CUPS duplicados del formulario {0}:\n".format(form))
+            else:
+                f.write("CUPS duplicats del formulari {0}:\n".format(form))
             i = 0
             for elem in cups:
                 if len(cups[elem]) > 1:
                     f.write("\n")
-                    f.write("\tCodi: {0}\n\n".format(elem))
+                    if lang == 'es_ES':
+                        f.write("\tCódigo: {0}\n\n".format(elem))
+                    else:
+                        f.write("\tCodi: {0}\n\n".format(elem))
                     i += 1
                     for c in cups[elem]:
                         f.write("\t\t{0}\n".format(c))
-            f.write("\nTotal CUPS duplicats a {0}: {1}\n\n".format(
-                form, i))
+            if lang == 'es_ES':
+                f.write("\nTotal CUPS duplicados en {0}: {1}\n\n".format(
+                    form, i))
+            else:
+                f.write("\nTotal CUPS duplicats a {0}: {1}\n\n".format(
+                    form, i))
         else:
-            f.write("No hi ha CUPS duplicats al formulari {0}. "
-                    "OK!\n\n".format(form))
+            if lang == 'es_ES':
+                f.write("No hay CUPS duplicados en el formulario {0}. "
+                        "OK!\n\n".format(form))
+            else:
+                f.write("No hi ha CUPS duplicats al formulari {0}. "
+                        "OK!\n\n".format(form))
 
 
 def check_cups(fitxer, form):
@@ -397,32 +548,55 @@ def check_cups(fitxer, form):
     return cups_repetits
 
 
-def mostrar_posicions(ruta, posicions):
+def mostrar_posicions(ruta, posicions, lang):
     fitxer_sortida = ruta+'/resultats.txt'
     with open(fitxer_sortida, 'a') as f:
         if posicions:
-            f.write("Posicions duplicades del formulari F12 Bis:\n\n")
+            if lang == 'es_ES':
+                f.write("Posiciones duplicadas del formulario F12 Bis:\n\n")
+            else:
+                f.write("Posicions duplicades del formulari F12 Bis:\n\n")
             for posicio in posicions:
                 f.write("\t{0}\n".format(posicio))
-            f.write("\nTotal posicions duplicades F12 Bis: {0}\n\n".format(
-                len(posicions)))
+            if lang == 'es_ES':
+                f.write("\nTotal posiciones duplicadas F12 Bis: {0}\n\n".format(
+                    len(posicions)))
+            else:
+                f.write("\nTotal posicions duplicades F12 Bis: {0}\n\n".format(
+                    len(posicions)))
         else:
-            f.write("Els codis de posició del formulari F12 Bis no estan "
-                    "duplicats. OK!\n\n")
+            if lang == 'es_ES':
+                f.write("Los códigos de posición del formulario F12 Bis no están "
+                        "duplicados. OK!\n\n")
+            else:
+                f.write("Els codis de posició del formulari F12 Bis no estan "
+                        "duplicats. OK!\n\n")
 
 
-def mostrar_cts(ruta, cts, context):
+def mostrar_cts(ruta, cts, context, lang):
     fitxer_sortida = ruta+'/resultats.txt'
     with open(fitxer_sortida, 'a') as f:
         if cts:
-            f.write("CTs del formulari {0} que no apareixen al formulari "
-                    "11:\n\n".format(context))
+            if lang == 'es_ES':
+                f.write("CTs del formulario {0} que no aparecen en formulario "
+                        "11:\n\n".format(context))
+            else:
+                f.write("CTs del formulari {0} que no apareixen al formulari "
+                        "11:\n\n".format(context))
             for ct in cts:
-                f.write("\tEl CT {0} no apareix al formulari F11.\n".format(ct))
+                if lang == 'es_ES':
+                    f.write("\tEl CT {0} no aparece en el formulario "
+                            "F11.\n".format(ct))
+                else:
+                    f.write("\tEl CT {0} no apareix al formulari F11.\n".format(ct))
             f.write("\nTotal CTs {0}: {1}\n\n".format(context, len(cts)))
         else:
-            f.write("Els CTs del formulari {0} apareixen a l'f11. "
-                    "OK!\n\n".format(context))
+            if lang == 'es_ES':
+                f.write("Los CTS del formulario {0} aparecen en el f11. "
+                        "OK!\n\n".format(context))
+            else:
+                f.write("Els CTs del formulari {0} apareixen a l'f11. "
+                        "OK!\n\n".format(context))
 
 
 def comprovar_cts(ruta_f11, ruta_fitxer, context):
@@ -533,63 +707,134 @@ def check_trams_f9_f10(ruta_f10, ruta_f9):
     return trams, topologia
 
 
-def mostrar_trams(trams, ruta, context, topologia=None):
+def mostrar_trams(trams, ruta, context, lang, topologia=None):
     fitxer_sortida = ruta+'/resultats.txt'
     with open(fitxer_sortida, 'a') as f:
         repetit = ''
         if trams:
             if context == 'f9_f10':
-                f.write("Trams dels formularis F9 i F10:\n\n")
+                if lang == 'es_ES':
+                    f.write("Tramos de los formularios F9 y F10:\n\n")
+                else:
+                    f.write("Trams dels formularis F9 i F10:\n\n")
             elif context == 'f15':
-                f.write("Trams del formulari F15:\n\n")
+                if lang == 'es_ES':
+                    f.write("Tramos del formulario F15:\n\n")
+                else:
+                    f.write("Trams del formulari F15:\n\n")
             elif context == 'f9r':
                 repetit = 'F9'
-                f.write("Trams repetits del formulari F9:\n\n")
+                if lang == 'es_ES':
+                    f.write("Tramos repetidos del formulario F9:\n\n")
+                else:
+                    f.write("Trams repetits del formulari F9:\n\n")
             elif context == 'f10r':
                 repetit = 'F10'
-                f.write("Trams repetits del formulari F10:\n\n")
+                if lang == 'es_ES':
+                    f.write("Tramos repetidos del formulario F10:\n\n")
+                else:
+                    f.write("Trams repetits del formulari F10:\n\n")
             for tram in trams:
                 if 'r' not in context:
-                    f.write("\tEl tram {0} del formulari {1} no apareix al "
-                            "formulari {2}\n".format(tram[0], tram[2], tram[1]))
+                    if lang == 'es_ES':
+                        f.write("\tEl tramo {0} del formulario {1} no aparece "
+                                "en el formulario {2}\n".format(
+                            tram[0], tram[2], tram[1])
+                        )
+                    else:
+                        f.write("\tEl tram {0} del formulari {1} no apareix "
+                                "al formulari {2}\n".format(
+                            tram[0], tram[2], tram[1])
+                        )
                 else:
-                    f.write("\tEl tram {0} es repeteix al formulari "
-                            "{1}\n".format(tram, repetit))
-            f.write('\nTotal trams: {0}\n\n'.format(len(trams)))
+                    if lang == 'es_ES':
+                        f.write("\tEl tramo {0} se repite en el formulario "
+                                "{1}\n".format(tram, repetit))
+                    else:
+                        f.write("\tEl tram {0} es repeteix al formulari "
+                                "{1}\n".format(tram, repetit))
+            if lang == 'es_ES':
+                f.write('\nTotal tramos: {0}\n\n'.format(len(trams)))
+            else:
+                f.write('\nTotal trams: {0}\n\n'.format(len(trams)))
         else:
             if context == 'f9_f10':
-                f.write("Els trams dels formularis f9 i f10 coincideixen entre "
-                        "ells. OK!\n\n")
+                if lang == 'es_ES':
+                    f.write("Los tramos de los formularios f9 y f10 "
+                            "coinciden entre si. OK!\n\n")
+                else:
+                    f.write("Els trams dels formularis f9 i f10 "
+                            "coincideixen entre ells. OK!\n\n")
             elif context == 'f15':
-                f.write("Els trams del formulari f15 coincideixen amb els del "
-                        "formulari f9. OK!\n\n")
+                if lang == 'es_ES':
+                    f.write("Los tramos del formulario f15 coinciden con "
+                            "los del formulario f9. OK!\n\n")
+                else:
+                    f.write("Els trams del formulari f15 coincideixen "
+                            "amb els del formulari f9. OK!\n\n")
             elif context == 'f10r':
-                f.write("No es repeteix cap tram al formulari f10. OK!\n\n")
+                if lang == 'es_ES':
+                    f.write("No se repite ningún tramo en el formulario "
+                            "f10. OK!\n\n")
+                else:
+                    f.write("No es repeteix cap tram al formulari f10. OK!\n\n")
             elif context == 'f9r':
-                f.write("No es repeteix cap tram al formulari f9. OK!\n\n")
+                if lang == 'es_ES':
+                    f.write("No se repite ningún tramo en el "
+                            "formulario f9. OK!\n\n")
+                else:
+                    f.write("No es repeteix cap tram al formulari f9. OK!\n\n")
         if topologia:
-            f.write("Trams del formulari F9 fora de topologia:\n\n")
+            if lang == 'es_ES':
+                f.write("Tramos del formulario F9 fuera de topología:\n\n")
+            else:
+                f.write("Trams del formulari F9 fora de topologia:\n\n")
             for tram in topologia:
-                f.write("\tTram fora de topologia: {0}\n".format(tram))
-            f.write('\nTotal fora topologia: {0}\n\n'.format(len(topologia)))
+                if lang == 'es_ES':
+                    f.write("\tTramo fuera de topología: {0}\n".format(tram))
+                else:
+                    f.write("\tTram fora de topologia: {0}\n".format(tram))
+            if lang == 'es_ES':
+                f.write('\nTotal fuera topología: '
+                        '{0}\n\n'.format(len(topologia)))
+            else:
+                f.write('\nTotal fora topologia: '
+                        '{0}\n\n'.format(len(topologia)))
 
 
-def mostrar_nodes(nodes, form, ruta):
+def mostrar_nodes(nodes, form, ruta, lang):
     fitxer_sortida = ruta+'/resultats.txt'
     with open(fitxer_sortida, 'a') as f:
         if nodes:
-            f.write(
-                "Nodes del formulari {} que no apareixen al formulari "
-                "f10:\n\n".format(form))
+            if lang == 'es_ES':
+                f.write(
+                    "Nodos del formulario {} que no aparecen en el formulario "
+                    "f10:\n\n".format(form))
+            else:
+                f.write(
+                    "Nodes del formulari {} que no apareixen al formulari "
+                    "f10:\n\n".format(form))
             for elem in nodes:
                 if form == 'f1' or form == 'f2' or form == 'f6':
-                    f.write("\tNode: {0}, CUPS: {1}\n".format(elem[0], elem[1]))
+                    if lang == 'es_ES':
+                        f.write("\tNodo: {0}, "
+                                "CUPS: {1}\n".format(elem[0], elem[1]))
+                    else:
+                        f.write("\tNode: {0}, "
+                                "CUPS: {1}\n".format(elem[0], elem[1]))
                 else:
                     f.write("\t{0}\n".format(elem))
-            f.write("\nTotal nodes {0}: {1}\n\n".format(form, len(nodes)))
+            if lang == 'es_ES':
+                f.write("\nTotal nodos {0}: {1}\n\n".format(form, len(nodes)))
+            else:
+                f.write("\nTotal nodes {0}: {1}\n\n".format(form, len(nodes)))
         else:
-            f.write("Els nodes del formulari {0} coincideixen amb els del "
-                    "formulari f10. OK!\n\n".format(form))
+            if lang == 'es_ES':
+                f.write("Los nodos del formulario {0} coinciden con los del "
+                        "formulario f10. OK!\n\n".format(form))
+            else:
+                f.write("Els nodes del formulari {0} coincideixen amb els del "
+                        "formulari f10. OK!\n\n".format(form))
 
 
 def check(f10_path, file_path, form):

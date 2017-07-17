@@ -39,16 +39,16 @@ def cnmc():
 def update_cnmc_stats(**kwargs):
     """
     Click entry to update CNMC stats
-    
-    :param kwargs:  
-    :typekwargs: dict(str,str) 
+
+    :param kwargs:
+    :typekwargs: dict(str,str)
     :return: None
     :rtype: None
     """
 
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
     proc = UpdateCNMCStats(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
@@ -73,20 +73,20 @@ def update_cnmc_stats(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-@click.option('-f',  '--file-input', type=click.Path(exists=True))
+@click.option('-f', '--file-input', type=click.Path(exists=True))
 def update_cinis_comptador(**kwargs):
     """
     Click entry to update CINI of comptador
-    
-    :param kwargs: Parametrs to pass to the process 
-    :type kwargs: dict(str, str) 
-    :return: None 
-    :rtype: None 
+
+    :param kwargs: Parametrs to pass to the process
+    :type kwargs: dict(str, str)
+    :return: None
+    :rtype: None
     """
 
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
     proc = UpdateCINISComptador(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
@@ -118,16 +118,16 @@ def update_cinis_comptador(**kwargs):
 def cir_4_2014_f1(**kwargs):
     """
     Click entry to generate the circular F1 of 4/2014
-    
-    :param kwargs: Params to pass to the process  
+
+    :param kwargs: Params to pass to the process
     :type kwargs: dict(str, str)
     :return: None
     :rtype: None
     """
 
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
     proc = F1(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
@@ -161,16 +161,16 @@ def cir_4_2014_f1(**kwargs):
 def cir_4_2014_f1bis(**kwargs):
     """
     Click entry to generate F1bis of 4/2014
-    
-    :param kwargs: Params to pass to the process 
-    :type kwargs: dict(str, str) 
+
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str, str)
     :return: None
     :rtype: None
     """
 
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
     proc = F1bis(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
@@ -204,16 +204,16 @@ def cir_4_2014_f1bis(**kwargs):
 def cir_4_2014_f11(**kwargs):
     """
     Click entry to generate the F11 of 4/2014
-    
-    :param kwargs: Params to pass to the process 
-    :type kwargs: dict(str, str) 
-    :return: None 
+
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str, str)
+    :return: None
     :rtype: None
     """
 
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
     proc = F11(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
@@ -230,7 +230,7 @@ def cir_4_2014_f11(**kwargs):
 def csv_4667(obj, **kwargs):
     """
     Starts the proces to generate the 4667
-    
+
     :param obj: Object of the process to generate
     :param kwargs: kwargs to pass to the process
     :type kwargs: dict(str,str)
@@ -258,7 +258,7 @@ def csv_4667(obj, **kwargs):
 def res_lat(LAT, **kwargs):
     """
     Generates the CSV file for LAT process
-    
+
     :param LAT: process to generate
     :type LAT: MultiprocessBased
     :param kwargs: Parameters to generate the file, passed to the process
@@ -268,8 +268,8 @@ def res_lat(LAT, **kwargs):
     """
 
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
     proc = LAT(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
@@ -305,7 +305,7 @@ def res_lat(LAT, **kwargs):
 def res_4603_lat(**kwargs):
     """
     Click entry to generate the LAT file of the 4603
-    
+
     :param kwargs: Params to pass to the process
     :type kwargs: dict(str,str)
     :return: None
@@ -339,11 +339,11 @@ def res_4603_lat(**kwargs):
 def res_4771_lat(**kwargs):
     """
     Click entry to generate the LAT file of 4771
-    
-    :param kwargs: Params to pass to the process 
-    :type kwargs: dict(str,str) 
-    :return: None 
-    :rtype: None 
+
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str,str)
+    :return: None
+    :rtype: None
     """
 
     from libcnmc.res_4771 import LAT
@@ -353,8 +353,8 @@ def res_4771_lat(**kwargs):
 # CSV LBT
 def res_lbt(LBT, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
     proc = LBT(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
@@ -389,9 +389,9 @@ def res_lbt(LBT, **kwargs):
 def res_4603_lbt(**kwargs):
     """
     Click entry to generate the LBT file of the 4603
-    
-    :param kwargs: Params to pass to the process 
-    :type kwargs: dict(str,str) 
+
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str,str)
     :return: None
     :rtype: None
     """
@@ -423,11 +423,11 @@ def res_4603_lbt(**kwargs):
 def res_4771_lbt(**kwargs):
     """
     Click entry to generate the LBT of 4771
-    
-    :param kwargs:Params to pass to the process 
-    :type kwargs: dict(str,str) 
-    :return: None 
-    :rtype: None 
+
+    :param kwargs:Params to pass to the process
+    :type kwargs: dict(str,str)
+    :return: None
+    :rtype: None
     """
 
     from libcnmc.res_4771 import LBT
@@ -437,8 +437,8 @@ def res_4771_lbt(**kwargs):
 # CSV SUB
 def res_sub(SUB, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
     proc = SUB(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
@@ -472,11 +472,11 @@ def res_sub(SUB, **kwargs):
 def res_4603_sub(**kwargs):
     """
     Click entry to generate the SUB file of the 4603
-    
-    :param kwargs:Params to pass to the process 
-    :type kwargs: dict(str, str) 
+
+    :param kwargs:Params to pass to the process
+    :type kwargs: dict(str, str)
     :return: None
-    :rtype: None 
+    :rtype: None
     """
     from libcnmc.res_4603 import SUB
     res_sub(SUB, **kwargs)
@@ -502,12 +502,12 @@ def res_4603_sub(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4771_sub(**kwargs):
     """
-    Click entry to generate the SUB file of the 4771 
-    
-    :param kwargs: Params to pass to the process  
-    :type kwargs: dict(str,str) 
+    Click entry to generate the SUB file of the 4771
+
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str,str)
     :return: None
-    :rtype: None 
+    :rtype: None
     """
     from libcnmc.res_4771 import SUB
     res_sub(SUB, **kwargs)
@@ -516,8 +516,8 @@ def res_4771_sub(**kwargs):
 # CSV POS
 def res_pos(POS, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
     proc = POS(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
@@ -551,9 +551,9 @@ def res_pos(POS, **kwargs):
 def res_4603_pos(**kwargs):
     """
     Click entry to generate the POS file of 4603
-    
+
     :param kwargs: Params to pass to the process
-    :type kwargs: dict(str, str) 
+    :type kwargs: dict(str, str)
     :return: None
     :rtype: None
     """
@@ -583,11 +583,11 @@ def res_4603_pos(**kwargs):
 def res_4771_pos(**kwargs):
     """
     Click entry to generate the POS file of 4771
-    
+
     :param kwargs: Parameters to pas to the process
     :type kwargs: dict(str, str)
-    :return: None 
-    :rtype: None 
+    :return: None
+    :rtype: None
     """
     from libcnmc.res_4771 import POS
     res_pos(POS, **kwargs)
@@ -596,8 +596,8 @@ def res_4771_pos(**kwargs):
 # CSV MAQ
 def res_maq(MAQ, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
     proc = MAQ(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
@@ -632,10 +632,10 @@ def res_maq(MAQ, **kwargs):
 def res_4603_maq(**kwargs):
     """
     Click entry to generate the MAQ file of the 4603
-    
+
     :param kwargs: Params to pass to the process
-    :type kwargs: dict(str, str) 
-    :return:None 
+    :type kwargs: dict(str, str)
+    :return:None
     :rtype: None
     """
     from libcnmc.res_4603 import MAQ
@@ -663,22 +663,22 @@ def res_4603_maq(**kwargs):
 def res_4771_maq(**kwargs):
     """
     Click entry to generate the MAQ file of 4771
-    
+
     :param kwargs: Params to pass to the process
-    :type kwargs: dict(str,str) 
-    :return: None 
-    :rtype: None 
+    :type kwargs: dict(str,str)
+    :return: None
+    :rtype: None
     """
 
     from libcnmc.res_4771 import MAQ
     res_maq(MAQ, **kwargs)
 
 
-#CSV DES
+# CSV DES
 def res_des(DES, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
     proc = DES(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
@@ -713,9 +713,9 @@ def res_des(DES, **kwargs):
 def res_4603_des(**kwargs):
     """
     Click entry to generate the DES file of 4603
-    
-    :param kwargs: Params to pass to the process 
-    :type kwargs: dict(str,str) 
+
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str,str)
     :return: None
     :rtype: None
     """
@@ -745,11 +745,11 @@ def res_4603_des(**kwargs):
 def res_4771_des(**kwargs):
     """
     Click entry to generate the DES file of 4771
-    
+
     :param kwargs: Params to pass to the process
     :type kwargs: dict(str, str)
     :return: None
-    :rtype: None 
+    :rtype: None
     """
 
     from libcnmc.res_4771 import DES
@@ -759,8 +759,8 @@ def res_4771_des(**kwargs):
 # CSV FIA
 def res_fia(FIA, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
     proc = FIA(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
@@ -794,9 +794,9 @@ def res_fia(FIA, **kwargs):
 def res_4603_fia(**kwargs):
     """
     Click entry to generate the FIA file of 4603
-     
+
     :param kwargs: Params to pass to the process
-    :type kwargs: dict(str,str) 
+    :type kwargs: dict(str,str)
     :return: None
     :rtype: None
     """
@@ -826,10 +826,10 @@ def res_4603_fia(**kwargs):
 def res_4771_fia(**kwargs):
     """
     Click entry to generate the FIA file of 4771
-    
+
     :param kwargs: Parameters to pass to the process
-    :type kwargs: dict(str,str) 
-    :return: None 
+    :type kwargs: dict(str,str)
+    :return: None
     :rtype: None
     """
     from libcnmc.res_4771 import FIA
@@ -839,8 +839,8 @@ def res_4771_fia(**kwargs):
 # CSV CTS
 def res_cts(CTS, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
     proc = CTS(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
@@ -874,9 +874,9 @@ def res_cts(CTS, **kwargs):
 def res_4603_cts(**kwargs):
     """
     Click entry to generate the CTs file of 4603
-    
-    :param kwargs: Parameters to pass to the process 
-    :type kwargs: dict(str,str) 
+
+    :param kwargs: Parameters to pass to the process
+    :type kwargs: dict(str,str)
     :return: None
     :rtype: None
     """
@@ -905,9 +905,9 @@ def res_4603_cts(**kwargs):
 def res_4771_cts(**kwargs):
     """
     Click entry to generate the CT file of 4771
-    
+
     :param kwargs: Parameters to pass to the process
-    :type kwargs: dict(str, str) 
+    :type kwargs: dict(str, str)
     :return: None
     :rtype: None
     """
@@ -937,12 +937,12 @@ def res_4771_cts(**kwargs):
               type=click.Path(exists=True))
 def res_4603_inv(**kwargs):
     """
-    Click entry to generate the INV file of the 4603 
-    
-    :param kwargs: Params to pass to the process 
+    Click entry to generate the INV file of the 4603
+
+    :param kwargs: Params to pass to the process
     :type kwargs: dict(str,str)
-    :return: None 
-    :rtype: None 
+    :return: None
+    :rtype: None
     """
 
     proc = INV(
@@ -981,8 +981,8 @@ def res_4603_inv(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_cinimaq(**kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
     proc = CINIMAQ(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
@@ -1016,8 +1016,8 @@ def res_4603_cinimaq(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4603_cinipos(**kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
     proc = CINIPOS(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
@@ -1044,11 +1044,11 @@ def res_4603_cinipos(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-@click.option('-f',  '--file-input', type=click.Path(exists=True))
+@click.option('-f', '--file-input', type=click.Path(exists=True))
 def create_celles(**kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
     proc = CreateCelles(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
@@ -1072,19 +1072,19 @@ def create_celles(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-@click.option('-f',  '--file-input', type=click.Path(exists=True))
+@click.option('-f', '--file-input', type=click.Path(exists=True))
 def update_cinis_trafo(**kwargs):
     """
     Click entry to update cinis of trafos
-    
-    :param kwargs: Params to pass to the process 
-    :type kwargs:  
-    :return: None 
+
+    :param kwargs: Params to pass to the process
+    :type kwargs:
+    :return: None
     :rtype: None
     """
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
     proc = UpdateCINISTrafo(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
@@ -1108,19 +1108,19 @@ def update_cinis_trafo(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-@click.option('-f',  '--file-input', type=click.Path(exists=True))
+@click.option('-f', '--file-input', type=click.Path(exists=True))
 def update_cinis_trams(**kwargs):
     """
     Click entry to update the CINI of trams
-    
+
     :param kwargs: Params to pass to the process
-    :type kwargs: dict(str,str) 
-    :return: 
-    :rtype: 
+    :type kwargs: dict(str,str)
+    :return:
+    :rtype:
     """
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
     proc = UpdateCINISTrams(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
@@ -1144,20 +1144,20 @@ def update_cinis_trams(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-@click.option('-f',  '--file-input', type=click.Path(exists=True))
+@click.option('-f', '--file-input', type=click.Path(exists=True))
 def update_cinis_cts(**kwargs):
     """
     Click entry to update CINI of CT
-    
-    :param kwargs: Params to pass to the process 
-    :type kwargs: dict(str,str) 
+
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str,str)
     :return: None
     :rtype: None
     """
 
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-             pwd=kwargs['password'], port=kwargs['port'],
-             uri=kwargs['server'])
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
     proc = UpdateCINISCts(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
@@ -1187,9 +1187,9 @@ def update_cinis_cts(**kwargs):
 def cir_3_2015_f3(**kwargs):
     """
     Click entry to generate the F3 of the 3/2015
-    
-    :param kwargs: Params to pass to the process 
-    :type kwargs: dict(str,str) 
+
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str,str)
     :return: None
     :rtype: None
     """
@@ -1207,8 +1207,4 @@ def cir_3_2015_f3(**kwargs):
     )
     proc.calc()
 
-
 cli = click.CommandCollection(sources=[cnmc, cnmc_4666, cnmc_4667, cnmc_4_2015])
-
-if __name__ == '__main__':
-    cli()

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import click
+import subprocess
+import os
 from libcnmc.utils import N_PROC
 from libcnmc.core.backend import OOOPFactory
 from libcnmc import cir_4_2015
@@ -675,3 +677,22 @@ def cir_4_2015_f16(**kwargs):
         year=kwargs['year']
     )
     proc.calc()
+
+
+@cnmc_4_2015.command()
+@click.option('-d', '--dir', help='Ruta de la carpeta amb els formularis')
+@click.option('-l', '--lang', help='Idioma amb el qual es generaràn les '
+                                   'validacions (es_ES o ca_ES)')
+def validate_files(**kwargs):
+    from libcnmc import checker
+    if kwargs['dir'] and kwargs['lang']:
+        if os.path.exists(kwargs['dir']):
+            if "cli_4_2015.pyc" in __file__:
+                path = str(__file__).replace("/cli_4_2015.pyc", "")
+            else:
+                path = str(__file__).replace("/cli_4_2015.py", "")
+            checker_file = '{}/checker.py'.format(path)
+            print(subprocess.check_output(
+                ['python', checker_file, '--dir={}'.format(kwargs['dir']),
+                 '--lang={}'.format(kwargs['lang'])]
+            ))
