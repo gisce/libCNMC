@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 import click
-import os
-import subprocess
 from datetime import datetime
 
 from libcnmc.utils import N_PROC
