@@ -45,7 +45,9 @@ class F1(MultiprocessBased):
                     dades_ct = self.connection.GiscedataCts.read(
                         ct_ids[0], ['zona_id'])
                     if dades_ct['zona_id']:
-                        zona_desc = dades_ct['zona_id'][1].upper().replace(' ', '')
+                        zona_desc = dades_ct['zona_id'][1].upper().replace(
+                            ' ', ''
+                        )
                         if zona_desc in CODIS_ZONA:
                             zona_qualitat = CODIS_ZONA[zona_desc]
                             self.cts[codi_ct] = zona_qualitat
@@ -100,9 +102,8 @@ class F1(MultiprocessBased):
                 fields_to_read = [
                     'name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
                     'cne_anual_reactiva', 'cnmc_potencia_facturada', 'et',
-                    'polisses'
+                    'polisses', 'potencia_conveni'
                 ]
-
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 if not cups or not cups.get('name'):
                     self.input_q.task_done()
@@ -163,7 +164,7 @@ class F1(MultiprocessBased):
                 o_equip = 'MEC'
                 o_cod_tfa = ''
                 o_estat_contracte = 0
-                #energies consumides
+                # energies consumides
                 o_anual_activa = format_f(
                     cups['cne_anual_activa'] or 0.0, decimals=3)
                 o_anual_reactiva = format_f(
@@ -187,7 +188,9 @@ class F1(MultiprocessBased):
                         if cnae_id in self.cnaes:
                             o_cnae = self.cnaes[cnae_id]
                         else:
-                            o_cnae = O.GiscemiscCnae.read(cnae_id, ['name'])['name']
+                            o_cnae = O.GiscemiscCnae.read(
+                                cnae_id, ['name']
+                            )['name']
                             self.cnaes[cnae_id] = o_cnae
                     # Mirem si té l'actualització dels butlletins
                     if polissa.get('butlletins', []):
@@ -216,6 +219,7 @@ class F1(MultiprocessBased):
                 else:
                     # Si no trobem polissa activa, considerem
                     # "Contrato no activo (CNA)"
+
                     o_equip = 'CNA'
                     o_estat_contracte = 1
 
@@ -223,30 +227,59 @@ class F1(MultiprocessBased):
                         ('id', 'in', cups['polisses']),
                         ('data_inici', '<=', ultim_dia_any)
                     ]
-                    modcons = O.GiscedataPolissaModcontractual.search(
-                        search_modcon, 0, 1, 'data_inici desc'
-                        , {'active_test': False})
+                    modcons = None
+                    if len(cups['polisses']):
+                        modcons = O.GiscedataPolissaModcontractual.search(
+                            search_modcon, 0, 1, 'data_inici desc'
+                            , {'active_test': False})
                     if modcons:
                         modcon_id = modcons[0]
 
-                        fields_to_read_modcon   = ['cnae', 'tarifa', 'tensio']
+                        fields_to_read_modcon = [
+                            'cnae',
+                            'tarifa',
+                            'tensio',
+                            'potencia'
+                        ]
 
                         modcon = O.GiscedataPolissaModcontractual.read(
                             modcon_id, fields_to_read_modcon)
 
                         if modcon['tarifa']:
-                            o_cod_tfa = self.get_codi_tarifa(modcon['tarifa'][1])
+                            o_cod_tfa = self.get_codi_tarifa(
+                                modcon['tarifa'][1]
+                            )
                         if modcon['cnae']:
                             cnae_id = modcon['cnae'][0]
                             if cnae_id in self.cnaes:
                                 o_cnae = self.cnaes[cnae_id]
                             else:
-                                o_cnae = O.GiscemiscCnae.read(cnae_id, ['name'])['name']
+                                o_cnae = O.GiscemiscCnae.read(
+                                    cnae_id, ['name']
+                                )['name']
                                 self.cnaes[cnae_id] = o_cnae
                         if modcon['tensio']:
                             o_tensio = format_f(
                                 float(modcon['tensio']) / 1000.0, decimals=3)
+                        if modcon['potencia']:
+                            o_potencia = format_f(
+                                float(modcon['potencia']), decimals=3)
+                    else:
+                        # No existeix modificació contractual per el CUPS
+                        o_potencia = cups['potencia_conveni']
+                        search_params = [
+                            ('escomesa', '=', cups['id_escomesa'][0])
+                        ]
+                        id_esc_gis = O.GiscegisEscomesesTraceability.search(
+                            search_params
+                        )
 
+                        if id_esc_gis:
+                            tensio_gis = O.GiscegisEscomesesTraceability.read(
+                                id_esc_gis, ['tensio']
+                            )[0]['tensio']
+                            o_tensio = format_f(
+                                float(tensio_gis) / 1000.0, decimals=3)
 
                 o_any_incorporacio = self.year
                 res_srid = ['', '']
