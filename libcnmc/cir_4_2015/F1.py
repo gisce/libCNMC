@@ -280,6 +280,20 @@ class F1(MultiprocessBased):
                             )[0]['tensio']
                             o_tensio = format_f(
                                 float(tensio_gis) / 1000.0, decimals=3)
+                        from ast import literal_eval
+                        search_params = [
+                            ('name', '=', 'libcnmc_4_2015_default_f1')
+                        ]
+                        id_config = O.ResConfig.search(
+                            search_params
+                        )
+                        if id_config:
+                            config = O.ResConfig.read(id_config[0], [])
+                            default_values = literal_eval(config['value'])
+                            if defalut_values.get('o_cod_tfa'):
+                                o_cod_tfa = default_values.get('o_cod_tfa')
+                            if default_values.get('o_cnae'):
+                                o_cnae = default_values.get('o_cnae')
 
                 o_any_incorporacio = self.year
                 res_srid = ['', '']
