@@ -112,30 +112,56 @@ class F15(MultiprocessBased):
         return node, vertex
 
     def obtenir_camps_linia(self, installacio):
+
         o = self.connection
         valor = installacio.split(',')
+        model = valor[0]
         id_tram = int(valor[1])
-        tram = o.GiscedataAtSuport.read(id_tram, ['linia'])
-        linia_id = tram['linia']
-        fields_to_read = [
-            'municipi', 'provincia', 'tensio'
-        ]
-        linia = o.GiscedataAtLinia.read(int(linia_id[0]), fields_to_read)
-        municipi = ''
-        provincia = ''
-        id_municipi = linia['municipi'][0]
-        id_provincia = linia['provincia'][0]
-        tensio = format_f(float(linia['tensio']) / 1000.0, decimals=3)
-        if id_municipi and id_provincia:
+
+        if model == "giscedata.at.suport":
+            tram = o.GiscedataAtSuport.read(id_tram, ['linia'])
+            linia_id = tram['linia']
+            fields_to_read = [
+                'municipi', 'provincia', 'tensio'
+            ]
+            linia = o.GiscedataAtLinia.read(int(linia_id[0]), fields_to_read)
+            municipi = ''
+            provincia = ''
+            id_municipi = linia['municipi'][0]
+            id_provincia = linia['provincia'][0]
+            tensio = format_f(float(linia['tensio']) / 1000.0, decimals=3)
+
+            if id_municipi and id_provincia:
+                provincia = o.ResCountryState.read(id_provincia, ['code'])['code']
+                municipi_dict = o.ResMunicipi.read(id_municipi, ['ine', 'dc'])
+                municipi = '{0}{1}'.format(municipi_dict['ine'][-3:],
+                                           municipi_dict['dc'])
+
+            res = {
+                'municipi': municipi,
+                'provincia': provincia,
+                'tensio': tensio
+            }
+
+        else:
+            ct_data = o.GiscedataCts.read(id_tram, ['id_municipi',
+                                                    'tensio_p'])
+            municipi_id = ct_data['id_municipi'][0]
+            tensio = format_f(float(ct_data['tensio_p']) / 1000.0, decimals=3)
+            municipi_data = o.ResMunicipi.read(municipi_id, ['state',
+                                                             'ine',
+                                                             'dc'])
+            id_provincia = municipi_data['state'][0]
+            municipi = '{0}{1}'.format(municipi_data['ine'][-3:],
+                                       municipi_data['dc'])
             provincia = o.ResCountryState.read(id_provincia, ['code'])['code']
-            municipi_dict = o.ResMunicipi.read(id_municipi, ['ine', 'dc'])
-            municipi = '{0}{1}'.format(municipi_dict['ine'][-3:],
-                                     municipi_dict['dc'])
-        res = {
-            'municipi': municipi,
-            'provincia': provincia,
-            'tensio': tensio
-        }
+
+            res = {
+                'municipi': municipi,
+                'provincia': provincia,
+                'tensio': tensio
+            }
+
         return res
 
     def consumer(self):
