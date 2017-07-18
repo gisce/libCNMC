@@ -290,7 +290,7 @@ class F1(MultiprocessBased):
                         if id_config:
                             config = O.ResConfig.read(id_config[0], [])
                             default_values = literal_eval(config['value'])
-                            if defalut_values.get('o_cod_tfa'):
+                            if default_values.get('o_cod_tfa'):
                                 o_cod_tfa = default_values.get('o_cod_tfa')
                             if default_values.get('o_cnae'):
                                 o_cnae = default_values.get('o_cnae')
