@@ -18,26 +18,6 @@ class F15(MultiprocessBased):
         ]
         return self.connection.GiscedataCellesCella.search(search_params)
 
-    def get_node_vertex(self, suport):
-        o = self.connection
-        node = ''
-        vertex = None
-        if suport:
-            bloc = o.GiscegisBlocsSuportsAt.search(
-                [('numsuport', '=', suport)]
-            )
-            if bloc:
-                bloc = o.GiscegisBlocsSuportsAt.read(
-                    bloc[0], ['node', 'vertex'])
-                v = o.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
-                if bloc.get('node', False):
-                    node = bloc['node'][1]
-                else:
-                    node = v['id']
-                if bloc.get('vertex', False):
-                    vertex = (round(v['x'], 3), round(v['y'], 3))
-        return node, vertex
-
     def get_node_vertex_tram(self, element_name):
         o = self.connection
         node = ''
