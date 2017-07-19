@@ -160,15 +160,22 @@ class F15(MultiprocessBased):
                 dict_linia = self.obtenir_camps_linia(celles['installacio'])
                 o_fiabilitat = celles['name']
 
-                if not celles['tram_id']:
-                    o_node, vertex, o_tram = self.get_node_vertex_tram(
-                        o_fiabilitat)
-                else:
-                    o_tram = "A{0}".format(o.GiscedataAtTram.read(
-                        celles['tram_id'][0], ['name']
-                    )['name'])
+                valor = celles['installacio'].split(',')
+                model = valor[0]
 
-                    o_node, vertex = self.get_node_vertex(o_fiabilitat)
+                if model == "giscedata.cts":
+                    vertex = False
+                    o_tram = ""
+                    o_node = ""
+                else:
+                    if not celles['tram_id']:
+                        o_node, vertex, o_tram = self.get_node_vertex_tram(
+                            o_fiabilitat)
+                    else:
+                        o_tram = "A{0}".format(o.GiscedataAtTram.read(
+                            celles['tram_id'][0], ['name']
+                        )['name'])
+                        o_node, vertex = self.get_node_vertex(o_fiabilitat)
 
                 o_node = o_node.replace('*', '')
                 o_cini = celles['cini']
