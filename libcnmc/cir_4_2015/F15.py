@@ -154,6 +154,7 @@ class F15(MultiprocessBased):
                 # generar linies
                 item = self.input_q.get()
                 self.progress_q.put(item)
+
                 celles = o.GiscedataCellesCella.read(
                     item, fields_to_read
                 )
@@ -162,11 +163,15 @@ class F15(MultiprocessBased):
 
                 valor = celles['installacio'].split(',')
                 model = valor[0]
+                element_id = int(valor[1])
 
                 if model == "giscedata.cts":
+                    ct_x_y = o.GiscedataCts.read(element_id, ['x', 'y'])
                     vertex = False
                     o_tram = ""
                     o_node = ""
+                    x = format_f(ct_x_y['x'], decimals=3)
+                    y = format_f(ct_x_y['y'], decimals=3)
                 else:
                     if not celles['tram_id']:
                         o_node, vertex, o_tram = self.get_node_vertex_tram(
@@ -190,13 +195,15 @@ class F15(MultiprocessBased):
                 if vertex:
                     res_srid = convert_srid(
                         self.codi_r1, get_srid(o), vertex)
+                    x = format_f(res_srid[0], decimals=3)
+                    y = format_f(res_srid[1], decimals=3)
                 self.output_q.put([
                     o_node,
                     o_fiabilitat,
                     o_tram,
                     o_cini,
-                    format_f(res_srid[0], decimals=3),
-                    format_f(res_srid[1], decimals=3),
+                    x,
+                    y,
                     z,
                     o_municipi,
                     o_provincia,
