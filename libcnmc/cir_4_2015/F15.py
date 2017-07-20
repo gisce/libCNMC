@@ -166,12 +166,13 @@ class F15(MultiprocessBased):
                 element_id = int(valor[1])
 
                 if model == "giscedata.cts":
-                    ct_x_y = o.GiscedataCts.read(element_id, ['x', 'y'])
+                    ct_x_y = o.GiscedataCts.read(element_id, ["x", "y"])
                     vertex = False
                     o_tram = ""
                     o_node = ""
-                    x = format_f(ct_x_y['x'], decimals=3)
-                    y = format_f(ct_x_y['y'], decimals=3)
+                    p25830 = convert_srid(self.codi_r1, get_srid(o), ct_x_y)
+                    x = format_f(p25830["x"], decimals=3)
+                    y = format_f(p25830["y"], decimals=3)
                 else:
                     if not celles['tram_id']:
                         o_node, vertex, o_tram = self.get_node_vertex_tram(
