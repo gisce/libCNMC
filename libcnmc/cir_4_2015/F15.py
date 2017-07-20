@@ -170,9 +170,10 @@ class F15(MultiprocessBased):
                     vertex = False
                     o_tram = ""
                     o_node = ""
-                    p25830 = convert_srid(self.codi_r1, get_srid(o), ct_x_y)
-                    x = format_f(p25830["x"], decimals=3)
-                    y = format_f(p25830["y"], decimals=3)
+                    point = (ct_x_y["x"], ct_x_y["y"])
+                    p25830 = convert_srid(self.codi_r1, get_srid(o), point)
+                    x = format_f(p25830[0], decimals=3)
+                    y = format_f(p25830[1], decimals=3)
                 else:
                     if not celles['tram_id']:
                         o_node, vertex, o_tram = self.get_node_vertex_tram(
