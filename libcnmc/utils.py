@@ -179,17 +179,28 @@ def format_f(num, decimals=2):
 
 
 def convert_srid(codi, srid_source, point):
-        assert srid_source in ['25829', '25830', '25831']
-        if codi == '056':
+    """
+    Converts the projection of the point from srid_source to 25830
+
+    :param codi: Company code
+    :type codi: str
+    :param srid_source: Source SRID
+    :param point: Point to convert
+    :type point: tuple
+    :return: Converted point
+    :rtype: tuple
+    """
+    assert srid_source in ['25829', '25830', '25831']
+    if codi == '056':
+        return point
+    else:
+        if srid_source == '25830':
             return point
         else:
-            if srid_source == '25830':
-                return point
-            else:
-                source = Proj(init='epsg:{0}'.format(srid_source))
-                dest = Proj(init='epsg:25830')
-                result_point = transform(source, dest, point[0], point[1])
-                return result_point
+            source = Proj(init='epsg:{0}'.format(srid_source))
+            dest = Proj(init='epsg:25830')
+            result_point = transform(source, dest, point[0], point[1])
+            return result_point
 
 
 def get_srid(connection):
