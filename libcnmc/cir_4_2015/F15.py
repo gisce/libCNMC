@@ -91,6 +91,31 @@ class F15(MultiprocessBased):
 
         return node, vertex
 
+    def get_node_ct(self, element_id):
+        o = self.connection
+        node = ''
+        search_params = [
+            ('ct', '=', element_id)
+        ]
+
+        if element_id:
+            bloc_id = o.GiscegisBlocsCtat.search(search_params)
+            node = o.GiscegisBlocsCtat.read(bloc_id, ['node'])
+            if node:
+                node = node[0]
+                if node:
+                    node = node['node']
+                    if node:
+                        node = node[0]
+                    else:
+                        node = ''
+                else:
+                    node = ''
+            else:
+                node = ''
+
+        return str(node)
+
     def obtenir_camps_linia(self, installacio):
 
         o = self.connection
@@ -169,7 +194,7 @@ class F15(MultiprocessBased):
                     ct_x_y = o.GiscedataCts.read(element_id, ["x", "y"])
                     vertex = False
                     o_tram = ""
-                    o_node = ""
+                    o_node = self.get_node_ct(element_id)
                     point = (ct_x_y["x"], ct_x_y["y"])
                     p25830 = convert_srid(self.codi_r1, get_srid(o), point)
                     x = format_f(p25830[0], decimals=3)
