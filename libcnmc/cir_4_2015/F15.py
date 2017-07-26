@@ -100,13 +100,16 @@ class F15(MultiprocessBased):
 
         if element_id:
             bloc_id = o.GiscegisBlocsCtat.search(search_params)
-            node = o.GiscegisBlocsCtat.read(bloc_id, ['node'])
-            if node:
-                node = node[0]
-                if node:
-                    node = node['node']
-                    if node:
-                        node = node[0]
+            node_id = o.GiscegisBlocsCtat.read(bloc_id, ['node'])
+            if node_id:
+                node_id = node_id[0]
+                if node_id:
+                    node_id = node_id['node']
+                    if node_id:
+                        node_id = node_id[0]
+                        node = o.GiscegisNodes.read(node_id, ['name'])
+                        if node:
+                            node = node['name']
                     else:
                         node = ''
                 else:
