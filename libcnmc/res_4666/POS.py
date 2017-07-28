@@ -312,14 +312,12 @@ class POS_INT(MultiprocessBased):
 
                 denominacion = ""
                 codigo_ccaa = ""
-                if cel["subestacio_id"]:
-                    sub_id = int(cel["installacio"].split(",")[1])
-                    codigo_ccaa = self.get_comunitat(sub_id)
+                if cel["subestacio_id"] or cel["installacio"]:
+                    ident = int(cel["installacio"].split(",")[1])
+                    codigo_ccaa = self.get_comunitat(ident)
 
                 if cel["installacio"]:
-                    ct_id = int(cel["installacio"].split(',')[1])
-                    codigo_ccaa = self.get_comunitat(ct_id)
-                    denominacion = self.get_denominacion(ct_id) + "-CT"
+                    denominacion = self.get_denominacion(ident) + "-CT"
 
                 codigo_ccuu = ""
                 if cel["tipus_instalacio_cnmc_id"]:
