@@ -175,7 +175,7 @@ class F15(MultiprocessBased):
     def consumer(self):
         o = self.connection
         fields_to_read = [
-            'installacio', 'cini', 'propietari', 'name', 'tram_id'
+            'installacio', 'cini', 'propietari', 'name', 'tram_id', 'tensio'
         ]
         while True:
             try:
@@ -217,7 +217,11 @@ class F15(MultiprocessBased):
                 z = ''
                 o_municipi = dict_linia.get('municipi')
                 o_provincia = dict_linia.get('provincia')
-                o_tensio = dict_linia.get('tensio')
+                if celles['tensio']:
+                    o_tensio = format_f(int(celles['tensio'][1])/1000.0,
+                                        decimals=3)
+                else:
+                    o_tensio = dict_linia.get('tensio')
                 o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
                 o_prop = int(celles['propietari'])
                 o_any = self.year
