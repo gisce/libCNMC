@@ -77,8 +77,8 @@ class DES(MultiprocessBased):
                     else:
                         estado = '1'
                 else:
-                    if despatx['data_pm']:
-                        if despatx['data_pm'][:4] != str(self.year):
+                    if despatx['data_apm']:
+                        if despatx['data_apm'][:4] != str(self.year):
                             estado = '1'
                         else:
                             estado = '2'
