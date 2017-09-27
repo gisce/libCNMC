@@ -63,7 +63,7 @@ class LAT(MultiprocessBased):
             'propietari', 'tensio_max_disseny', 'name', 'origen', 'final',
             'perc_financament', 'circuits', 'longitud_cad', 'cable',
             'tipus_instalacio_cnmc_id', 'data_baixa', self.compare_field,
-            'baixa', 'data_baixa'
+            'baixa', 'data_baixa', 'conductors'
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
@@ -250,7 +250,10 @@ class LAT(MultiprocessBased):
                                 estado = '2'
                         else:
                             estado = '1'
-
+                    if tram['conductors']:
+                        conductors = tram['conductors']
+                    else:
+                        conductors = 1
                     output = [
                         'A{0}'.format(tram['name']),
                         tram.get('cini', '') or '',
@@ -263,7 +266,7 @@ class LAT(MultiprocessBased):
                         data_pm,
                         fecha_baja or '',
                         tram.get('circuits', 1) or 1,
-                        1,
+                        conductors,
                         format_f(tensio, 3),
                         format_f(longitud, 3),
                         format_f(cable.get('intensitat_admisible', 0) or 0, 3),
