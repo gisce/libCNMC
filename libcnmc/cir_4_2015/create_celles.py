@@ -7,12 +7,13 @@ from libcnmc.res_4603.create_celles import CreateCelles
 class CreateCelles4_2015(CreateCelles):
     def __init__(self, **kwargs):
         super(CreateCelles4_2015, self).__init__(**kwargs)
-        self.header += ['cnmc_tipo_instalacion', 'data_pm']
+        self.header += ['cnmc_tipo_instalacion', 'data_pm', 'circuit']
         self.fields_read_ct += ['data_pm']
         self.fields_read_at_tram += ['data_pm']
 
     def build_vals(self, values):
         vals = super(CreateCelles4_2015, self).build_vals(values)
+        o = self.connection
         ct_name = False
         suport_name = False
         for val in zip(self.header, values):
@@ -39,5 +40,10 @@ class CreateCelles4_2015(CreateCelles):
                 else:
                     date = parse(val[1])
                     vals[val[0]] = date.strftime('%Y-%m-%d')
+            elif val[0] == 'circuit':
+                search_param = [('name', '=', val[1])]
+                value = o.GiscedataCtsSubestacionsPosicio.search(
+                    search_param, 0, 0, False, {'active_test': False})[0]
+                vals[val[0]] = value
         return vals
 
