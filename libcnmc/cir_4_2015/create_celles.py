@@ -44,6 +44,6 @@ class CreateCelles4_2015(CreateCelles):
                 search_param = [('name', '=', val[1])]
                 value = o.GiscedataCtsSubestacionsPosicio.search(
                     search_param, 0, 0, False, {'active_test': False})[0]
-                vals[val[0]] = value
+                vals['posicio_id'] = value
         return vals
 
