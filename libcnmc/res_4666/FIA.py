@@ -72,7 +72,7 @@ class FIA(MultiprocessBased):
 
                 cll = O.GiscedataCellesCella.read(item, fields_to_read)
 
-                #Comprovar si es tipus fiabilitat
+                # Comprovar si es tipus fiabilitat
                 if cll['tipus_element']:
 
                     cllt = O.GiscedataCellesTipusElement.read(
@@ -163,7 +163,7 @@ class FIA(MultiprocessBased):
                         estado = '1'
 
                 output = [
-                    '{0}'.format(cll['name']),
+                    "{0}{1}".format(cll["name"], cll["id"]),
                     cll['cini'] or '',
                     element_act,
                     codigo_ccuu or '',
