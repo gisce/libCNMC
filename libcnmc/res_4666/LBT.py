@@ -61,7 +61,7 @@ class LBT(MultiprocessBased):
 
     def consumer(self):
         """
-        Method that generates the csb file
+        Method that generates the csv file
         :return: List of arrays
         """
         O = self.connection
