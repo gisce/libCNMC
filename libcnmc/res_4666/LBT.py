@@ -46,7 +46,6 @@ class LBT(MultiprocessBased):
         if not self.embarrats:
             search_params += [('cable.tipus.codi', '!=', 'E')]
         search_params += [('propietari', '=', True),
-                          '|', ('data_pm', '=', False),
                                ('data_pm', '<', data_pm),
                           '|', ('data_baixa', '>', data_baixa),
                                ('data_baixa', '=', False),
