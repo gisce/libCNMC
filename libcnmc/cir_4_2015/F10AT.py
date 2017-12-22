@@ -19,6 +19,10 @@ class F10AT(MultiprocessBased):
             self.layer = self.connection.ResConfig.read(
                 id_res_like, ['value'])[0]['value']
 
+        ids_red = self.connection.GiscegisBlocsTransformadorsReductors.search([])
+        data_nodes = self.connection.GiscegisBlocsTransformadorsReductors.read(ids_red, ["node"])
+        self.nodes_red = [nod["node"][1] for nod in data_nodes]
+
     def get_sequence(self):
         search_params = [('name', '!=', '1')]
         lines_id = self.connection.GiscedataAtLinia.search(search_params)
@@ -26,7 +30,6 @@ class F10AT(MultiprocessBased):
         fict_line_id = self.connection.GiscedataAtLinia.search(
             search_params, 0, 0, False, {'active_test': False})
         return lines_id + fict_line_id
-
 
     def get_provincia(self, id_prov):
         o = self.connection
@@ -91,7 +94,7 @@ class F10AT(MultiprocessBased):
                         continue
                     if o_tipus == 'E':
                         o_tipus = 'S'
-                    #Agafem la tensió
+                    # Agafem la tensió
                     o_nivell_tensio = (
                         (at['tensio_max_disseny'] or linia['tensio']))
                     o_nivell_tensio = format_f(
@@ -108,10 +111,18 @@ class F10AT(MultiprocessBased):
                     else:
                         edge = o.GiscegisEdge.read(res[0], ['start_node',
                                                             'end_node'])
+
                     o_node_inicial = tallar_text(edge['start_node'][1], 20)
                     o_node_inicial = o_node_inicial.replace('*', '')
+                    if o_node_inicial in self.nodes_red:
+                        o_node_inicial = "{}-{}".format(o_node_inicial, o_nivell_tensio)
+                        print("node_inicial:{}".format(o_node_inicial))
+
                     o_node_final = tallar_text(edge['end_node'][1], 20)
                     o_node_final = o_node_final.replace('*', '')
+                    if o_node_final in self.nodes_red:
+                        o_node_final = "{}-{}".format(o_node_final, o_nivell_tensio)
+                        print("node_final:{}".format(o_node_final))
                     o_cini = at['cini']
                     o_provincia = ''
                     if linia['provincia']:
