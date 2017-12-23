@@ -22,6 +22,11 @@ class F10AT(MultiprocessBased):
         ids_red = self.connection.GiscegisBlocsTransformadorsReductors.search([])
         data_nodes = self.connection.GiscegisBlocsTransformadorsReductors.read(ids_red, ["node"])
         self.nodes_red = [nod["node"][1] for nod in data_nodes]
+        tensio_ids = self.connection.GiscedataTensionsTensio.search([("tipus","=","AT")])
+        tensio_data = self.connection.GiscedataTensionsTensio.read(tensio_ids)
+        self.tensions_map = dict.fromkeys(tensio_ids,0)
+        for tensio in tensio_data:
+            self.tensions_map[tensio["id"]] = tensio["tensio"]
 
     def get_sequence(self):
         search_params = [('name', '!=', '1')]
@@ -43,7 +48,7 @@ class F10AT(MultiprocessBased):
         o = self.connection
         fields_to_read = [
             'name', 'cini', 'circuits', 'longitud_cad', 'linia', 'origen',
-            'final', 'coeficient', 'cable', 'tensio_max_disseny'
+            'final', 'coeficient', 'cable', 'tensio_max_disseny','tensio_max_disseny_id'
         ]
         data_pm_limit = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
@@ -95,8 +100,12 @@ class F10AT(MultiprocessBased):
                     if o_tipus == 'E':
                         o_tipus = 'S'
                     # Agafem la tensió
-                    o_nivell_tensio = (
-                        (at['tensio_max_disseny'] or linia['tensio']))
+                    if 'tensio_max_disseny_id' in at:
+                        o_nivell_tensio = self.tensions_map[at['tensio_max_disseny_id']]
+                    elif 'tensio_max_disseny' in at:
+                        o_nivell_tensio = at['tensio_max_disseny']
+                    else:
+                        o_nivell_tensio = linia["tensio"]
                     o_nivell_tensio = format_f(
                         float(o_nivell_tensio) / 1000.0, 3)
                     o_tram = 'A%s' % at['name']
