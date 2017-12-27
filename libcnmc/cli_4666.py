@@ -385,7 +385,7 @@ def res_4666_maq(**kwargs):
     """
 
     from libcnmc.res_4666 import MAQ
-    kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
+    kwargs["compare_field"] = "4666_entregada_{}".format(kwargs["year"])
     res_lat(MAQ, **kwargs)
 
 
@@ -420,7 +420,7 @@ def res_4666_des(**kwargs):
     """
 
     from libcnmc.res_4666 import DES
-    kwargs["compare_field"] = "4131_entregada_{}".format(kwargs["year"])
+    kwargs["compare_field"] = "4666_entregada_{}".format(kwargs["year"])
     res_lat(DES, **kwargs)
 
 
