@@ -125,13 +125,11 @@ class F10AT(MultiprocessBased):
                     o_node_inicial = o_node_inicial.replace('*', '')
                     if o_node_inicial in self.nodes_red:
                         o_node_inicial = "{}-{}".format(o_node_inicial, o_nivell_tensio)
-                        print("node_inicial:{}".format(o_node_inicial))
 
                     o_node_final = tallar_text(edge['end_node'][1], 20)
                     o_node_final = o_node_final.replace('*', '')
                     if o_node_final in self.nodes_red:
                         o_node_final = "{}-{}".format(o_node_final, o_nivell_tensio)
-                        print("node_final:{}".format(o_node_final))
                     o_cini = at['cini']
                     o_provincia = ''
                     if linia['provincia']:
