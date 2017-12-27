@@ -21,7 +21,7 @@ class F10AT(MultiprocessBased):
 
         ids_red = self.connection.GiscegisBlocsTransformadorsReductors.search([])
         data_nodes = self.connection.GiscegisBlocsTransformadorsReductors.read(ids_red, ["node"])
-        self.nodes_red = [nod["node"][1] for nod in data_nodes]
+        self.nodes_red = [nod["node"][1] for nod in data_nodes if nod["node"]]
 
     def get_sequence(self):
         search_params = [('name', '!=', '1')]
