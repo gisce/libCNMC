@@ -100,7 +100,7 @@ class F10AT(MultiprocessBased):
                     if o_tipus == 'E':
                         o_tipus = 'S'
                     # Agafem la tensió
-                    if 'tensio_max_disseny_id' in at:
+                    if at.get('tensio_max_disseny_id',False):
                         o_nivell_tensio = self.tensions_map[at['tensio_max_disseny_id']]
                     elif 'tensio_max_disseny' in at:
                         o_nivell_tensio = at['tensio_max_disseny']
