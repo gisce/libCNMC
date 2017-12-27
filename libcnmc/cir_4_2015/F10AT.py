@@ -24,9 +24,9 @@ class F10AT(MultiprocessBased):
         self.nodes_red = [nod["node"][1] for nod in data_nodes]
         tensio_ids = self.connection.GiscedataTensionsTensio.search([("tipus","=","AT")])
         tensio_data = self.connection.GiscedataTensionsTensio.read(tensio_ids)
-        self.tensions_map = dict.fromkeys(map(str,tensio_ids),0)
+        self.tensions_map = dict.fromkeys(tensio_ids, 0)
         for tensio in tensio_data:
-            self.tensions_map[str(tensio["id"])] = tensio["tensio"]
+            self.tensions_map[tensio["id"]] = tensio["tensio"]
 
     def get_sequence(self):
         search_params = [('name', '!=', '1')]
