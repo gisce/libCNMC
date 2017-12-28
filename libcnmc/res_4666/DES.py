@@ -10,7 +10,7 @@ import traceback
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import format_f
-from libcnmc.models import F6Res4666, F6Res4131
+from libcnmc.models import F6Res4666
 
 
 class DES(MultiprocessBased):
@@ -61,8 +61,8 @@ class DES(MultiprocessBased):
                 fecha_baja = ''
 
                 if despatx[self.compare_field]:
-                    data_4131 = despatx[self.compare_field]
-                    entregada = F6Res4666(**data_4131)
+                    data_entregada = despatx[self.compare_field]
+                    entregada = F6Res4666(**data_entregada)
                     actual = F6Res4666(
                         despatx['name'],
                         despatx['cini'],

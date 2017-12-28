@@ -11,12 +11,12 @@ import math
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import format_f, tallar_text
-from libcnmc.models import F1Res4131
+from libcnmc.models import F1Res4666
 
 
 class LAT(MultiprocessBased):
     """
-    Class that generates the LAT(1) file of  4131
+    Class that generates the LAT(1) file of  4666
     """
     def __init__(self, **kwargs):
         """
@@ -211,8 +211,8 @@ class LAT(MultiprocessBased):
                         fecha_baja = ''
 
                     if tram[self.compare_field]:
-                        data_4131 = tram[self.compare_field]
-                        entregada = F1Res4131(**data_4131)
+                        data_entregada = tram[self.compare_field]
+                        entregada = F1Res4666(**data_entregada)
                         if tram['tipus_instalacio_cnmc_id']:
                             id_ti = tram['tipus_instalacio_cnmc_id'][0]
                             ti = O.GiscedataTipusInstallacio.read(
@@ -220,7 +220,7 @@ class LAT(MultiprocessBased):
                                 ['name'])['name']
                         else:
                             ti = ''
-                        actual = F1Res4131(
+                        actual = F1Res4666(
                             'A{0}'.format(tram['name']),
                             tram['cini'],
                             tram['origen'],

@@ -9,7 +9,7 @@ from datetime import datetime
 import traceback
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.models import F7Res4131
+from libcnmc.models import F7Res4666
 
 
 class FIA(MultiprocessBased):
@@ -138,8 +138,8 @@ class FIA(MultiprocessBased):
 
                 if cll[self.compare_filed] and str(self.year + 1) not in str(data_pm):
                     last_data = cll[self.compare_filed]
-                    entregada = F7Res4131(**last_data)
-                    actual = F7Res4131(
+                    entregada = F7Res4666(**last_data)
+                    actual = F7Res4666(
                         cll['name'],
                         cll['cini'],
                         element_act,
