@@ -10,7 +10,7 @@ import traceback
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import format_f, get_id_municipi_from_company
-from libcnmc.models import F8Res4131
+from libcnmc.models import F8Res4666
 
 
 class CTS(MultiprocessBased):
@@ -53,16 +53,62 @@ class CTS(MultiprocessBased):
         return self.connection.GiscedataCts.search(
             search_params, 0, 0, False, {'active_test': False})
 
+    def calculate_cini(self,  ct):
+        """
+        Method that calculates the CINI of the CT
+
+        :param ct: ct object
+        :return: cini
+        :rtype: str
+        """
+        O = self.connection
+        from cini.models import CentroTransformador, Transformador
+
+        centro = CentroTransformador()
+
+        centro.tension_p = 25
+        centro.tension_s = 0.40
+        centro.tension = int(ct["tensio_p"]) / 1000.0
+        centro.reparto = True
+
+        if ct["id_subtipus"]:
+            subtipus = O.GiscedataCtsSubtipus.read(ct["id_subtipus"][0], ["categoria_cne"])
+            tipus = O.GiscedataCneCtTipus.read(subtipus["categoria_cne"][0], ["codi"])
+            centro.tipo = tipus["codi"]
+
+        transformadors = ct["transformadors"] or []
+        trafo_fields = ["id_estat", "potencia_nominal"]
+        estat_fields = ["cnmc_inventari", "codi"]
+
+
+
+        for trafo_id in transformadors:
+            trafo = O.GiscedataTransformadorTrafo.read(trafo_id, trafo_fields)
+
+            if trafo["id_estat"]:
+                estat = O.GiscedataTransformadorEstat.read(trafo["id_estat"][0], estat_fields)
+                if estat["cnmc_inventari"]:
+                    if estat["codi"] == 1:
+                        centro.reparto = False
+                    transformador = Transformador()
+                    transformador.potencia = trafo["potencia_nominal"]
+                    centro.transformadores.append(transformador)
+        return centro.cini
+
     def consumer(self):
         """
         Method that generates the csb file
         :return: List of arrays
         """
+
         O = self.connection
         fields_to_read = [
             'name', 'cini', 'data_pm', 'tipus_instalacio_cnmc_id',
             'id_municipi', 'perc_financament', 'descripcio', 'data_baixa',
             self.compare_field
+        ]
+        cini_fields = [
+            "tensio_p", "id_subtipus", "transformadors", "historic_trafos"
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         data_baixa_limit = '{0}-01-01'.format(self.year)
@@ -72,7 +118,7 @@ class CTS(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-                ct = O.GiscedataCts.read(item, fields_to_read)
+                ct = O.GiscedataCts.read(item, fields_to_read + cini_fields)
 
                 comunitat_codi = ''
                 data_pm = ''
@@ -109,16 +155,16 @@ class CTS(MultiprocessBased):
 
                 if ct[self.compare_field]:
                     last_data = ct[self.compare_field]
-                    entregada = F8Res4131(**last_data)
+                    entregada = F8Res4666(**last_data)
 
-                    id_ti = ct['tipus_instalacio_cnmc_id'][0]
+                    #id_ti = ct['tipus_instalacio_cnmc_id'][0]
                     ti = O.GiscedataTipusInstallacio.read(
                         id_ti,
                         ['name'])['name']
-
-                    actual = F8Res4131(
+                    cini = self.calculate_cini(ct)
+                    actual = F8Res4666(
                         ct['name'],
-                        ct['cini'],
+                        cini,
                         ct['descripcio'],
                         ti,
                         comunitat_codi,
