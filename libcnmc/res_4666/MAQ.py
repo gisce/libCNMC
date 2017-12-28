@@ -12,7 +12,7 @@ from operator import itemgetter
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import get_id_municipi_from_company, format_f
-from libcnmc.models import F5Res4131
+from libcnmc.models import F5Res4666
 
 
 class MAQ(MultiprocessBased):
@@ -191,8 +191,8 @@ class MAQ(MultiprocessBased):
 
                 if trafo[self.compare_field]:
                     last_data = trafo[self.compare_field]
-                    entregada = F5Res4131(**last_data)
-                    actual = F5Res4131(
+                    entregada = F5Res4666(**last_data)
+                    actual = F5Res4666(
                         trafo['name'],
                         trafo['cini'],
                         denominacio,
