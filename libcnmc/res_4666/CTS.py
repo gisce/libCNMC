@@ -76,24 +76,33 @@ class CTS(MultiprocessBased):
             tipus = O.GiscedataCneCtTipus.read(subtipus["categoria_cne"][0], ["codi"])
             centro.tipo = tipus["codi"]
 
-        transformadors = ct["transformadors"] or []
         trafo_fields = ["id_estat", "potencia_nominal"]
-        estat_fields = ["cnmc_inventari", "codi"]
 
+        historic_fields = [
+            "data_entrada", "data_sortida", "transformador_id", "origen"
+        ]
+        historic = O.GiscedataTransformadorHistoric.read(ct["historic_trafos"],historic_fields)
 
+        trafo_canviat = False
 
-        for trafo_id in transformadors:
-            trafo = O.GiscedataTransformadorTrafo.read(trafo_id, trafo_fields)
+        historic = sorted(historic, key=lambda k: k['data_sortida'])[::-1]
 
-            if trafo["id_estat"]:
-                estat = O.GiscedataTransformadorEstat.read(trafo["id_estat"][0], estat_fields)
-                if estat["cnmc_inventari"]:
-                    if estat["codi"] == 1:
-                        centro.reparto = False
-                    transformador = Transformador()
-                    transformador.potencia = trafo["potencia_nominal"]
-                    centro.transformadores.append(transformador)
-        return centro.cini
+        for index in range(len(historic)):
+            hist_trafo = historic[index]
+            if hist_trafo["data_entrada"] == hist_trafo["data_sortida"]:
+                if hist_trafo["data_entrada"] > '{0}-01-01 00:00:00'.format(self.year):
+                    trafo_canviat = True
+                    last_trafo = historic[index + 1]["transformador_id"][0]
+                    break
+
+        if trafo_canviat:
+            trafo = O.GiscedataTransformadorTrafo.read(last_trafo, trafo_fields)
+            transformador = Transformador()
+            transformador.potencia = trafo["potencia_nominal"]
+            centro.transformadores.append(transformador)
+            return centro.cini
+        else:
+            return ct["cini"]
 
     def consumer(self):
         """
@@ -157,7 +166,7 @@ class CTS(MultiprocessBased):
                     last_data = ct[self.compare_field]
                     entregada = F8Res4666(**last_data)
 
-                    #id_ti = ct['tipus_instalacio_cnmc_id'][0]
+                    id_ti = ct['tipus_instalacio_cnmc_id'][0]
                     ti = O.GiscedataTipusInstallacio.read(
                         id_ti,
                         ['name'])['name']
