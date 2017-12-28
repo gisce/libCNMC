@@ -11,7 +11,7 @@ import sys
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import get_id_municipi_from_company, format_f
-from libcnmc.models import F3Res4131
+from libcnmc.models import F3Res4666
 
 QUIET = False
 
@@ -126,8 +126,8 @@ class SUB(MultiprocessBased):
 
                 if sub[self.compare_field]:
                     last_data = sub[self.compare_field]
-                    entregada = F3Res4131(**last_data)
-                    actual = F3Res4131(
+                    entregada = F3Res4666(**last_data)
+                    actual = F3Res4666(
                         sub['name'],
                         sub['cini'],
                         sub['descripcio'],
