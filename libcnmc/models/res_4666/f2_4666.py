@@ -7,7 +7,7 @@ from libcnmc.models.fields import String, Integer, Decimal
 
 class F2Res4666(CNMCModel):
     """
-        Class for second file of resolution 4131(BT)
+        Class for second file of resolution 4666(BT)
     """
 
     schema = OrderedDict([

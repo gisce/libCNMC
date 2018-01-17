@@ -8,7 +8,7 @@ from libcnmc.models.fields import String, Integer, Decimal
 
 class F4Res4666(CNMCModel):
     """
-        Class for forth file of resolution 4131(Posiciones)
+        Class for forth file of resolution 4666(Posiciones)
     """
     schema = OrderedDict([
         ('identificador', String()),
