@@ -8,7 +8,7 @@ from libcnmc.models.fields import String, Integer
 
 class F6Res4666(CNMCModel):
     """
-        Class for sixth file of resolution 4131(Despatxos)
+        Class for sixth file of resolution 4666(Despatxos)
     """
 
     schema = OrderedDict([
