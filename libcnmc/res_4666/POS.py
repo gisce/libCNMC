@@ -339,9 +339,9 @@ class POS_INT(MultiprocessBased):
                         data_pm = data_pm.strftime("%d/%m/%Y")
 
                 if cel[self.compare_field]:
-                    last_data= cel[self.compare_field]
-                    entregada = F4Res4131(**last_data)
-                    actual = F4Res4771(
+                    last_data = cel[self.compare_field]
+                    entregada = F4Res4666(**last_data)
+                    actual = F4Res4666(
                         identificador,
                         cel['cini'],
                         denominacion,
