@@ -9,7 +9,7 @@ from datetime import datetime
 import traceback
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.models import F7Res4131
+from libcnmc.models import F7Res4666
 
 
 class FIA(MultiprocessBased):
@@ -61,6 +61,7 @@ class FIA(MultiprocessBased):
         fields_to_read = [
             'name', 'cini', 'tipus_element', 'tipus_instalacio_cnmc_id',
             'installacio', 'data_pm', 'data_baixa', 'tram_id',
+            "4666_identificador",
             self.compare_filed
         ]
         data_pm_limit= '{0}-01-01' .format(self.year + 1)
@@ -72,7 +73,7 @@ class FIA(MultiprocessBased):
 
                 cll = O.GiscedataCellesCella.read(item, fields_to_read)
 
-                #Comprovar si es tipus fiabilitat
+                # Comprovar si es tipus fiabilitat
                 if cll['tipus_element']:
 
                     cllt = O.GiscedataCellesTipusElement.read(
@@ -138,8 +139,8 @@ class FIA(MultiprocessBased):
 
                 if cll[self.compare_filed] and str(self.year + 1) not in str(data_pm):
                     last_data = cll[self.compare_filed]
-                    entregada = F7Res4131(**last_data)
-                    actual = F7Res4131(
+                    entregada = F7Res4666(**last_data)
+                    actual = F7Res4666(
                         cll['name'],
                         cll['cini'],
                         element_act,
@@ -163,7 +164,7 @@ class FIA(MultiprocessBased):
                         estado = '1'
 
                 output = [
-                    '{0}'.format(cll['name']),
+                    cll["4666_identificador"],
                     cll['cini'] or '',
                     element_act,
                     codigo_ccuu or '',
