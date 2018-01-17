@@ -19,6 +19,10 @@ class F10AT(MultiprocessBased):
             self.layer = self.connection.ResConfig.read(
                 id_res_like, ['value'])[0]['value']
 
+        ids_red = self.connection.GiscegisBlocsTransformadorsReductors.search([])
+        data_nodes = self.connection.GiscegisBlocsTransformadorsReductors.read(ids_red, ["node"])
+        self.nodes_red = [nod["node"][1] for nod in data_nodes if nod["node"]]
+
     def get_sequence(self):
         search_params = [('name', '!=', '1')]
         lines_id = self.connection.GiscedataAtLinia.search(search_params)
@@ -26,7 +30,6 @@ class F10AT(MultiprocessBased):
         fict_line_id = self.connection.GiscedataAtLinia.search(
             search_params, 0, 0, False, {'active_test': False})
         return lines_id + fict_line_id
-
 
     def get_provincia(self, id_prov):
         o = self.connection
@@ -40,7 +43,7 @@ class F10AT(MultiprocessBased):
         o = self.connection
         fields_to_read = [
             'name', 'cini', 'circuits', 'longitud_cad', 'linia', 'origen',
-            'final', 'coeficient', 'cable', 'tensio_max_disseny'
+            'final', 'coeficient', 'cable', 'tensio_max_disseny','tensio_max_disseny_id'
         ]
         data_pm_limit = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
@@ -91,9 +94,13 @@ class F10AT(MultiprocessBased):
                         continue
                     if o_tipus == 'E':
                         o_tipus = 'S'
-                    #Agafem la tensió
-                    o_nivell_tensio = (
-                        (at['tensio_max_disseny'] or linia['tensio']))
+                    # Agafem la tensió
+                    if at.get('tensio_max_disseny_id', False):
+                        o_nivell_tensio = at['tensio_max_disseny_id'][1]
+                    elif 'tensio_max_disseny' in at:
+                        o_nivell_tensio = at['tensio_max_disseny']
+                    else:
+                        o_nivell_tensio = linia["tensio"]
                     o_nivell_tensio = format_f(
                         float(o_nivell_tensio) / 1000.0, 3)
                     o_tram = 'A%s' % at['name']
@@ -108,10 +115,16 @@ class F10AT(MultiprocessBased):
                     else:
                         edge = o.GiscegisEdge.read(res[0], ['start_node',
                                                             'end_node'])
+
                     o_node_inicial = tallar_text(edge['start_node'][1], 20)
                     o_node_inicial = o_node_inicial.replace('*', '')
+                    if o_node_inicial in self.nodes_red:
+                        o_node_inicial = "{}-{}".format(o_node_inicial, o_nivell_tensio)
+
                     o_node_final = tallar_text(edge['end_node'][1], 20)
                     o_node_final = o_node_final.replace('*', '')
+                    if o_node_final in self.nodes_red:
+                        o_node_final = "{}-{}".format(o_node_final, o_nivell_tensio)
                     o_cini = at['cini']
                     o_provincia = ''
                     if linia['provincia']:
