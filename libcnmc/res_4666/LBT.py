@@ -132,7 +132,6 @@ class LBT(MultiprocessBased):
                 except Exception:
                     tensio = 0.0
 
-                propietari = linia['propietari'] and '1' or '0'
 
                 if linia['tipus_instalacio_cnmc_id']:
                     id_ti = linia.get('tipus_instalacio_cnmc_id')[0]
@@ -195,7 +194,6 @@ class LBT(MultiprocessBased):
                         format_f(intensitat),
                         format_f(float(cable['seccio']),2),
                         format_f(capacitat),
-                        propietari,
                         0
                     )
                     if actual == entregada:
