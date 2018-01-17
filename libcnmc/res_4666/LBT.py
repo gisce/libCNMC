@@ -12,7 +12,7 @@ import sys
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import format_f, tallar_text
-from libcnmc.models import F2Res4131
+from libcnmc.models import F2Res4666
 
 QUIET = False
 
@@ -61,7 +61,7 @@ class LBT(MultiprocessBased):
 
     def consumer(self):
         """
-        Method that generates the csb file
+        Method that generates the csv file
         :return: List of arrays
         """
         O = self.connection
@@ -176,8 +176,8 @@ class LBT(MultiprocessBased):
 
                 if linia[self.compare_field]:
                     last_data = linia[self.compare_field]
-                    entregada = F2Res4131(**last_data)
-                    actual = F2Res4131(
+                    entregada = F2Res4666(**last_data)
+                    actual = F2Res4666(
                         'B{0}'.format(linia['name']),
                         linia['cini'],
                         origen or '',

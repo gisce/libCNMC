@@ -10,7 +10,7 @@ import traceback
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import format_f, get_id_municipi_from_company
-from libcnmc.models import F8Res4131
+from libcnmc.models import F8Res4666
 
 
 class CTS(MultiprocessBased):
@@ -109,14 +109,14 @@ class CTS(MultiprocessBased):
 
                 if ct[self.compare_field]:
                     last_data = ct[self.compare_field]
-                    entregada = F8Res4131(**last_data)
+                    entregada = F8Res4666(**last_data)
 
                     id_ti = ct['tipus_instalacio_cnmc_id'][0]
                     ti = O.GiscedataTipusInstallacio.read(
                         id_ti,
                         ['name'])['name']
 
-                    actual = F8Res4131(
+                    actual = F8Res4666(
                         ct['name'],
                         ct['cini'],
                         ct['descripcio'],

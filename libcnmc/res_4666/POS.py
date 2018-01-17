@@ -11,7 +11,7 @@ import sys
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import get_id_municipi_from_company, format_f
-from libcnmc.models import F4Res4131
+from libcnmc.models import F4Res4666
 
 QUIET = False
 
@@ -167,8 +167,8 @@ class POS(MultiprocessBased):
                     fecha_baja = ''
                 if pos[self.compare_field]:
                     last_data = pos[self.compare_field]
-                    entregada = F4Res4131(**last_data)
-                    actual = F4Res4131(
+                    entregada = F4Res4666(**last_data)
+                    actual = F4Res4666(
                         o_sub,
                         pos['cini'],
                         denominacio,

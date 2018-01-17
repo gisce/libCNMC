@@ -11,14 +11,14 @@ import sys
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import get_id_municipi_from_company, format_f
-from libcnmc.models import F4Res4131
+from libcnmc.models import F4Res4666
 
 QUIET = False
 
 
 class POS(MultiprocessBased):
     """
-    Class that generates the POS/Interruptores(4) of 4131 report
+    Class that generates the POS/Interruptores(4) of 4666 report
     """
     def __init__(self, **kwargs):
         """
@@ -176,8 +176,8 @@ class POS(MultiprocessBased):
                     fecha_baja = ''
                 if pos[self.compare_field]:
                     last_data = pos[self.compare_field]
-                    entregada = F4Res4131(**last_data)
-                    actual = F4Res4131(
+                    entregada = F4Res4666(**last_data)
+                    actual = F4Res4666(
                         o_sub,
                         pos['cini'],
                         denominacio,
@@ -222,7 +222,7 @@ class POS(MultiprocessBased):
 
 class POS_INT(MultiprocessBased):
     """
-    Class that generates the POS/Cel·les(4) of 4131 report
+    Class that generates the POS/Cel·les(4) of 4666 report
     """
     def __init__(self, **kwargs):
         """
@@ -347,8 +347,8 @@ class POS_INT(MultiprocessBased):
 
                 if cel[self.compare_field]:
                     last_data= cel[self.compare_field]
-                    entregada = F4Res4131(**last_data)
-                    actual = F4Res4771(
+                    entregada = F4Res4666(**last_data)
+                    actual = F4Res4666(
                         identificador,
                         cel['cini'],
                         denominacion,
