@@ -270,6 +270,7 @@ class LAT(MultiprocessBased):
                         conductors,
                         format_f(tensio, 3),
                         format_f(longitud, 3),
+                        format_f(cable.get('intensitat_admisible', 0) or 0),
                         format_f(cable.get('seccio', 0) or 0, 3),
                         capacitat,
                         estado
