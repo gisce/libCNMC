@@ -234,9 +234,9 @@ class LAT(MultiprocessBased):
                             1,
                             tensio,
                             format_f(longitud, 3),
+                            format_f(cable.get('intensitat_admisible', 0) or 0),
                             format_f(float(cable.get('seccio', 0)), 2),
                             str(capacitat),
-                            propietari,
                             0
                         )
                         if actual == entregada:
@@ -270,6 +270,7 @@ class LAT(MultiprocessBased):
                         conductors,
                         format_f(tensio, 3),
                         format_f(longitud, 3),
+                        format_f(cable.get('intensitat_admisible', 0) or 0),
                         format_f(cable.get('seccio', 0) or 0, 3),
                         capacitat,
                         estado
