@@ -60,7 +60,7 @@ class LAT(MultiprocessBased):
         O = self.connection
         fields_to_read = [
             'baixa', 'data_pm', 'data_industria', 'coeficient', 'cini',
-            'propietari', 'tensio_max_disseny', 'name', 'origen', 'final',
+            'propietari', 'tensio_max_disseny_id', 'name', 'origen', 'final',
             'perc_financament', 'circuits', 'longitud_cad', 'cable',
             'tipus_instalacio_cnmc_id', 'data_baixa', self.compare_field,
             'baixa', 'data_baixa', 'conductors'
@@ -141,8 +141,9 @@ class LAT(MultiprocessBased):
                         codi_ccuu = ''
 
                     # Agafem la tensió
-                    if 'tensio_max_disseny' in tram:
-                        tensio = tram['tensio_max_disseny'] / 1000.0
+                    if 'tensio_max_disseny_id' in tram:
+                        tensio_aplicar = self.connection.GiscedataTensionsTensio.read(tram['tensio_max_disseny_id'],["tensio"])
+                        tensio = tensio_aplicar / 1000.0
                     elif 'tensio' in linia:
                         tensio = linia['tensio'] / 1000.0
                     else:
