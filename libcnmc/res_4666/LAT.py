@@ -49,7 +49,10 @@ class LAT(MultiprocessBased):
         id_lat_emb = []
         if self.embarrats:
             id_lat_emb = obj_lat.search(
-                [('name', '=', '1')], 0, 0, False, {'active_test': False})
+                [
+                    ('name', '=', '1'),
+                    ('longitud_cad', '<', '100')
+                ], 0, 0, False, {'active_test': False})
         return ids + id_lat_emb
 
     def consumer(self):
