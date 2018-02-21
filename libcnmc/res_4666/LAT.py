@@ -43,13 +43,18 @@ class LAT(MultiprocessBased):
         Method that generates a list of ids to pass to the consummer
         :return: List of ids
         """
-        search_params = [('propietari', '=', True)]
+        search_params = [
+            ('propietari', '=', True),
+            ('name', '!=', 1)
+        ]
         obj_lat = self.connection.GiscedataAtLinia
         ids = obj_lat.search(search_params, 0, 0, False, {'active_test': False})
         id_lat_emb = []
         if self.embarrats:
             id_lat_emb = obj_lat.search(
-                [('name', '=', '1')], 0, 0, False, {'active_test': False})
+                [
+                    ('name', '=', '1'),
+                ], 0, 0, False, {'active_test': False})
         return ids + id_lat_emb
 
     def consumer(self):
@@ -89,6 +94,8 @@ class LAT(MultiprocessBased):
                 linia = O.GiscedataAtLinia.read(
                     item, ['trams', 'tensio', 'municipi', 'propietari']
                 )
+
+
                 propietari = linia['propietari'] and '1' or '0'
                 search_params = [('linia', '=', linia['id'])]
                 search_params += static_search_params
@@ -101,11 +108,14 @@ class LAT(MultiprocessBased):
                     id_desconegut = O.GiscedataAtCables.search(
                         [('name', '=', 'DESCONOCIDO')])[0]
                 for tram in O.GiscedataAtTram.read(ids, fields_to_read):
+                    if self.embarrats and tram["longitud_cad"] >= 100:
+                        continue
                     # Comprovar el tipus del cable
                     if 'cable' in tram:
                         cable = O.GiscedataAtCables.read(
                             tram['cable'][0], ['tipus'])
                         if not self.embarrats and cable['tipus']:
+
                             tipus = O.GiscedataAtTipuscable.read(
                                 cable['tipus'][0], ['codi']
                             )
