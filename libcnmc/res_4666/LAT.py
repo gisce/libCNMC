@@ -95,8 +95,6 @@ class LAT(MultiprocessBased):
                     item, ['trams', 'tensio', 'municipi', 'propietari']
                 )
 
-
-                propietari = linia['propietari'] and '1' or '0'
                 search_params = [('linia', '=', linia['id'])]
                 search_params += static_search_params
                 ids = O.GiscedataAtTram.search(
