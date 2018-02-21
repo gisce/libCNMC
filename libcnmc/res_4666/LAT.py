@@ -151,7 +151,7 @@ class LAT(MultiprocessBased):
                         codi_ccuu = ''
 
                     # Agafem la tensió
-                    if 'tensio_max_disseny_id' in tram:
+                    if 'tensio_max_disseny_id' in tram and tram['tensio_max_disseny_id']:
                         id_tensio = int(tram['tensio_max_disseny_id'])
                         tensio_aplicar = self.connection.GiscedataTensionsTensio.read(id_tensio, ["tensio"])["tensio"]
                         tensio = tensio_aplicar / 1000.0
