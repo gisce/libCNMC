@@ -110,17 +110,16 @@ class LAT(MultiprocessBased):
                 for tram in O.GiscedataAtTram.read(ids, fields_to_read):
                     if tram["baixa"] and tram["data_baixa"] == False:
                         continue
-                    if self.embarrats and tram["longitud_cad"] >= 100:
-                        continue
                     # Comprovar el tipus del cable
                     if 'cable' in tram:
                         cable = O.GiscedataAtCables.read(
                             tram['cable'][0], ['tipus'])
+                        tipus = O.GiscedataAtTipuscable.read(
+                            cable['tipus'][0], ['codi']
+                        )
+                        if self.embarrats and tram["longitud_cad"] >= 100 and tipus["codi"] == "E":
+                            continue
                         if not self.embarrats and cable['tipus']:
-
-                            tipus = O.GiscedataAtTipuscable.read(
-                                cable['tipus'][0], ['codi']
-                            )
                             # Si el tram tram es embarrat no l'afegim
                             if tipus['codi'] == 'E':
                                 continue
