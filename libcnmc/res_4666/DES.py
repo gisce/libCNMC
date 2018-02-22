@@ -62,6 +62,8 @@ class DES(MultiprocessBased):
 
                 if despatx[self.compare_field]:
                     data_entregada = despatx[self.compare_field]
+                    if data_entregada["valor_inversion"]:
+                        data_entregada["valor_inversion"] = str(float(data_entregada["valor_inversion"].replace(",", ".")))
                     entregada = F6Res4666(**data_entregada)
                     actual = F6Res4666(
                         despatx['name'],
