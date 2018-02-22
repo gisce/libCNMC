@@ -3,7 +3,7 @@ from libcnmc.models.cnmcmodel import CNMCModel
 
 from collections import OrderedDict
 
-from libcnmc.models.fields import String, Integer
+from libcnmc.models.fields import String, Integer, Decimal
 
 
 class F6Res4666(CNMCModel):
@@ -17,7 +17,7 @@ class F6Res4666(CNMCModel):
         ('denominacion', String()),
         ('fecha_aps', String()),
         ('fecha_baja', String()),
-        ('valor_inversion', Integer()),
+        ('valor_inversion', Decimal(3)),
         ('estado', Integer())
     ])
 
