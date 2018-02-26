@@ -85,6 +85,12 @@ class F1(MultiprocessBased):
         return tipus
 
     def consumer(self):
+        """
+        Consumer function to generate F1
+
+        :return: None
+        """
+
         o_codi_r1 = 'R1-%s' % self.codi_r1[-3:]
         O = self.connection
         ultim_dia_any = '%s-12-31' % self.year
