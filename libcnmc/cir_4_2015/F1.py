@@ -26,6 +26,12 @@ class F1(MultiprocessBased):
         return CODIS_TARIFA.get(codi_tarifa, '')
 
     def get_sequence(self):
+        """
+        Generates the list of cups to generate the F1
+
+        :return: List of CUPS
+        :rtype: list[int]
+        """
         data_ini = '%s-01-01' % (self.year + 1)
         search_params = [('active', '=', True),
                          '|',
