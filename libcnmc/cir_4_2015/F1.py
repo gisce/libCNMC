@@ -137,8 +137,6 @@ class F1(MultiprocessBased):
                     o_codi_ine = ine[1]
                     o_codi_prov = ine[0]
 
-                o_utmx = ''
-                o_utmy = ''
                 o_utmz = ''
                 o_nom_node = ''
                 o_tensio = ''
@@ -160,8 +158,6 @@ class F1(MultiprocessBased):
                             vertex = O.GiscegisVertex.read(
                                 bloc_escomesa['vertex'][0], ['x', 'y']
                             )
-                            o_utmx = round(vertex['x'], 3)
-                            o_utmy = round(vertex['y'], 3)
                             if bloc_escomesa['node']:
                                 node = O.GiscegisNodes.read(
                                     [bloc_escomesa['node'][0]], ['name'])
