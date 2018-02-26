@@ -8,6 +8,7 @@ from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP
 from libcnmc.utils import get_ine, get_comptador, format_f, get_srid,\
     convert_srid
 from libcnmc.core import MultiprocessBased
+from ast import literal_eval
 
 
 class F1(MultiprocessBased):
@@ -267,20 +268,22 @@ class F1(MultiprocessBased):
                     else:
                         # No existeix modificació contractual per el CUPS
                         o_potencia = cups['potencia_conveni']
-                        search_params = [
-                            ('escomesa', '=', cups['id_escomesa'][0])
-                        ]
-                        id_esc_gis = O.GiscegisEscomesesTraceability.search(
-                            search_params
-                        )
+                        if cups.get('id_escomesa', False):
+                            search_params = [
+                                ('escomesa', '=', cups['id_escomesa'][0])
+                            ]
+                            id_esc_gis = O.GiscegisEscomesesTraceability.search(
+                                search_params
+                            )
 
-                        if id_esc_gis:
-                            tensio_gis = O.GiscegisEscomesesTraceability.read(
-                                id_esc_gis, ['tensio']
-                            )[0]['tensio']
-                            o_tensio = format_f(
-                                float(tensio_gis) / 1000.0, decimals=3)
-                        from ast import literal_eval
+                            if id_esc_gis:
+                                tensio_gis = O.GiscegisEscomesesTraceability.read(
+                                    id_esc_gis, ['tensio']
+                                )[0]['tensio']
+                                o_tensio = format_f(
+                                    float(tensio_gis) / 1000.0, decimals=3)
+                        else:
+                            o_tensio = ''
                         search_params = [
                             ('name', '=', 'libcnmc_4_2015_default_f1')
                         ]
@@ -299,7 +302,7 @@ class F1(MultiprocessBased):
                 res_srid = ['', '']
                 if vertex:
                     res_srid = convert_srid(
-                        self.codi_r1, get_srid(O), [vertex['x'], vertex['y']])
+                        self.codi_r1, get_srid(O), (vertex['x'], vertex['y']))
 
                 self.output_q.put([
                     o_nom_node,
