@@ -134,10 +134,11 @@ class F1(MultiprocessBased):
                 if 'et' in cups:
                     o_zona = self.get_zona_qualitat(cups['et'])
                 if cups['id_municipi']:
-                    o_codi_ine = self.municipi_ine_dc[cups["id_municipi"]][0][:2]
+                    id_municipi = cups["id_municipi"][0]
+                    o_codi_ine = self.municipi_ine_dc[id_municipi][0][:2]
                     o_codi_prov = "{}{}".format(
                         o_codi_ine,
-                        self.municipi_ine_dc[cups["id_municipi"]][1])
+                        self.municipi_ine_dc[id_municipi][1])
                 o_utmz = ''
                 o_nom_node = ''
                 o_tensio = ''
