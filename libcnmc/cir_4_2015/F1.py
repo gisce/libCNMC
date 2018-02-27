@@ -25,6 +25,8 @@ class F1(MultiprocessBased):
         ids = self.connection.ResMunicipi.search([('dc', '!=', False)])
         for municipi in self.connection.ResMunicipi.read(ids, ['ine', 'dc']):
             self.municipi_ine_dc[municipi['id']] = (municipi["ine"], municipi['dc'])
+        self.default_o_cod_tfa = None
+        self.self.default_o_cnae = None
         search_params = [
             ('name', '=', 'libcnmc_4_2015_default_f1')
         ]
