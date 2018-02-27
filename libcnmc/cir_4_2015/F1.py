@@ -25,6 +25,19 @@ class F1(MultiprocessBased):
         ids = self.connection.ResMunicipi.search([('dc', '!=', False)])
         for municipi in self.connection.ResMunicipi.read(ids, ['ine', 'dc']):
             self.municipi_ine_dc[municipi['id']] = (municipi["ine"], municipi['dc'])
+        search_params = [
+            ('name', '=', 'libcnmc_4_2015_default_f1')
+        ]
+        id_config = self.connection.ResConfig.search(
+            search_params
+        )
+        if id_config:
+            config = self.connection.ResConfig.read(id_config[0], [])
+            default_values = literal_eval(config['value'])
+            if default_values.get('o_cod_tfa'):
+                self.default_o_cod_tfa = default_values.get('o_cod_tfa')
+            if default_values.get('o_cnae'):
+                self.default_o_cnae = default_values.get('o_cnae')
 
     def get_codi_tarifa(self, codi_tarifa):
         return CODIS_TARIFA.get(codi_tarifa, '')
@@ -294,19 +307,10 @@ class F1(MultiprocessBased):
                                     float(tensio_gis) / 1000.0, decimals=3)
                         else:
                             o_tensio = ''
-                        search_params = [
-                            ('name', '=', 'libcnmc_4_2015_default_f1')
-                        ]
-                        id_config = O.ResConfig.search(
-                            search_params
-                        )
-                        if id_config:
-                            config = O.ResConfig.read(id_config[0], [])
-                            default_values = literal_eval(config['value'])
-                            if default_values.get('o_cod_tfa'):
-                                o_cod_tfa = default_values.get('o_cod_tfa')
-                            if default_values.get('o_cnae'):
-                                o_cnae = default_values.get('o_cnae')
+                        if self.default_o_cnae:
+                            o_cnae = self.default_o_cnae
+                        if self.default_o_cod_tfa:
+                            o_cod_tfa = self.default_o_cod_tfa
 
                 o_any_incorporacio = self.year
                 res_srid = ['', '']
