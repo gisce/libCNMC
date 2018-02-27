@@ -21,6 +21,10 @@ class F1(MultiprocessBased):
         self.cnaes = manager.dict()
         self.base_object = 'CUPS'
         self.report_name = 'F1 - CUPS'
+        self.municipi_ine_dc = {}  # type:dict[str,(str,str)]
+        ids = self.connection.ResMunicipi.search([('dc', '!=', False)])
+        for municipi in self.connection.ResMunicipi.read(ids, ['ine', 'dc']):
+            self.municipi_ine_dc[municipi['id']] = (municipi["ine"], municipi['dc'])
 
     def get_codi_tarifa(self, codi_tarifa):
         return CODIS_TARIFA.get(codi_tarifa, '')
@@ -130,13 +134,10 @@ class F1(MultiprocessBased):
                 if 'et' in cups:
                     o_zona = self.get_zona_qualitat(cups['et'])
                 if cups['id_municipi']:
-                    municipi = O.ResMunicipi.read(
-                        cups['id_municipi'][0], ['ine']
-                    )
-                    ine = get_ine(self.connection, municipi['ine'])
-                    o_codi_ine = ine[1]
-                    o_codi_prov = ine[0]
-
+                    o_codi_ine = self.municipi_ine_dc[cups["id_municipi"]][0][:2]
+                    o_codi_prov = "{}{}".format(
+                        o_codi_ine,
+                        self.municipi_ine_dc[cups["id_municipi"]][1])
                 o_utmz = ''
                 o_nom_node = ''
                 o_tensio = ''
