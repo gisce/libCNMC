@@ -41,7 +41,7 @@ def update_cnmc_stats(**kwargs):
     Click entry to update CNMC stats
 
     :param kwargs:
-    :typekwargs: dict(str,str)
+    :type kwargs: dict(str,str)
     :return: None
     :rtype: None
     """
