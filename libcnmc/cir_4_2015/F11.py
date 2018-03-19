@@ -78,6 +78,14 @@ class F11(MultiprocessBased):
         return tipus
 
     def get_saturacio(self, ct_id):
+        """
+        Returns the saturacio of the CT
+
+        :param ct_id: CT identifier
+        :type ct_id: int
+        :return: Saturacio of the CT
+        :rtype: float
+        """
         o = self.connection
         saturacio = ''
         if 'giscedata.transformadors.saturacio' in o.models:
