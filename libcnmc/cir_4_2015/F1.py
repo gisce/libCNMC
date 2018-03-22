@@ -21,6 +21,19 @@ class F1(MultiprocessBased):
         self.cnaes = manager.dict()
         self.base_object = 'CUPS'
         self.report_name = 'F1 - CUPS'
+        mod_all_year = self.connection.GiscedataPolissaModcontractual.search([
+            ("data_inici", "<=", "{}-01-01".format(self.year)),
+            ("data_final", ">=", "{}-12-31".format(self.year))
+        ])
+        mods_ini = self.connection.GiscedataPolissaModcontractual.search(
+            [("data_inici", ">=", "{}-01-01".format(self.year)),
+            ("data_inici", "<=", "{}-12-31".format(self.year))]
+        )
+        mods_fi = self.connection.GiscedataPolissaModcontractual.search(
+            [("data_final", ">=", "{}-01-01".format(self.year)),
+            ("data_final", "<=", "{}-12-31".format(self.year))]
+        )
+        self.modcons_in_year = set(mods_fi + mods_ini + mod_all_year)
 
     def get_codi_tarifa(self, codi_tarifa):
         return CODIS_TARIFA.get(codi_tarifa, '')
@@ -120,6 +133,8 @@ class F1(MultiprocessBased):
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 if not cups or not cups.get('name'):
                     self.input_q.task_done()
+                    continue
+                if not set(cups["polisses"]).intersection(self.modcons_in_year):
                     continue
                 o_name = cups['name'][:22]
                 o_codi_ine = ''
