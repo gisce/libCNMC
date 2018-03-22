@@ -23,15 +23,18 @@ class F1(MultiprocessBased):
         self.report_name = 'F1 - CUPS'
         mod_all_year = self.connection.GiscedataPolissaModcontractual.search([
             ("data_inici", "<=", "{}-01-01".format(self.year)),
-            ("data_final", ">=", "{}-12-31".format(self.year))
-        ])
+            ("data_final", ">=", "{}-12-31".format(self.year))],
+            0, 0, False
+        )
         mods_ini = self.connection.GiscedataPolissaModcontractual.search(
             [("data_inici", ">=", "{}-01-01".format(self.year)),
-            ("data_inici", "<=", "{}-12-31".format(self.year))]
+            ("data_inici", "<=", "{}-12-31".format(self.year))],
+            0, 0, False
         )
         mods_fi = self.connection.GiscedataPolissaModcontractual.search(
             [("data_final", ">=", "{}-01-01".format(self.year)),
-            ("data_final", "<=", "{}-12-31".format(self.year))]
+            ("data_final", "<=", "{}-12-31".format(self.year))],
+            0,0,False
         )
         self.modcons_in_year = set(mods_fi + mods_ini + mod_all_year)
 
