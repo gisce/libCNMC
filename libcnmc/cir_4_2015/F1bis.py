@@ -13,8 +13,25 @@ class F1bis(MultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.report_name = 'F1bis - CUPS'
         self.base_object = 'CUPS'
+        self.ultim_dia_any = '{}-12-31'.format(self.year)
+        mods_ini = self.connection.GiscedataPolissaModcontractual.search(
+            ("data_inici", ">=", "{}-01-01".format(self.year)),
+            ("data_inici", "<=", "{}-12-31".format(self.year)),
+        )
+        mods_fi = self.connection.GiscedataPolissaModcontractual.search(
+            ("data_final", ">=", "{}-01-01".format(self.year)),
+            ("data_final", "<=", "{}-12-31".format(self.year)),
+        )
+        self.modcons_in_year = set(mods_fi + mods_ini)
 
     def get_sequence(self):
+        """
+        Searches all the CUPS that where create after 01/01/actual year
+
+        :return: List of id of CUPS
+        :rtype: list of int
+        """
+
         data_ini = '%s-01-01' % (self.year + 1)
         search_params = [('active', '=', True),
                          '|',
@@ -55,15 +72,15 @@ class F1bis(MultiprocessBased):
 
     def get_polissa(self, cups_id):
         polissa_obj = self.connection.GiscedataPolissa
-        ultim_dia_any = '%s-12-31' % self.year
-        context = {'date': ultim_dia_any, 'active_test': False}
+        context = {
+            'date': self.ultim_dia_any,
+            'active_test': False
+        }
         polissa_id = polissa_obj.search([
             ('cups', '=', cups_id),
             ('state', 'not in', ('esborrany', 'validar')),
-            ('data_alta', '<=', ultim_dia_any),
+            ('data_alta', '<=', self.ultim_dia_any),
             # '|',
-            # ('data_baixa', '>=', ultim_dia_any),
-            # ('data_baixa', '=', False)
         ], 0, 1, 'data_alta desc', context)
         return polissa_id
 
@@ -104,10 +121,13 @@ class F1bis(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
                 fields_to_read = [
-                    'name', 'polissa_polissa', 'cnmc_numero_lectures'
+                    'name', 'polissa_polissa', 'cnmc_numero_lectures',
+                    "polisses"
                 ]
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 o_cups = cups['name'][:22]
+                if not set(o_cups["polisses"]).intersection(self.modcons_in_year):
+                    continue
                 polissa_id = self.get_polissa(cups['id'])
                 if polissa_id:
                     polissa_id = polissa_id[0]
