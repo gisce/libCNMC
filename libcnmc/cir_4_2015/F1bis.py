@@ -14,15 +14,19 @@ class F1bis(MultiprocessBased):
         self.report_name = 'F1bis - CUPS'
         self.base_object = 'CUPS'
         self.ultim_dia_any = '{}-12-31'.format(self.year)
+        mod_all_year = self.connection.GiscedataPolissaModcontractual.search([
+            ("data_inici", "<=", "{}-01-01".format(self.year)),
+            ("data_final", ">=", "{}-12-31".format(self.year))
+        ])
         mods_ini = self.connection.GiscedataPolissaModcontractual.search(
-            ("data_inici", ">=", "{}-01-01".format(self.year)),
-            ("data_inici", "<=", "{}-12-31".format(self.year)),
+            [("data_inici", ">=", "{}-01-01".format(self.year)),
+            ("data_inici", "<=", "{}-12-31".format(self.year))]
         )
         mods_fi = self.connection.GiscedataPolissaModcontractual.search(
-            ("data_final", ">=", "{}-01-01".format(self.year)),
-            ("data_final", "<=", "{}-12-31".format(self.year)),
+            [("data_final", ">=", "{}-01-01".format(self.year)),
+            ("data_final", "<=", "{}-12-31".format(self.year))]
         )
-        self.modcons_in_year = set(mods_fi + mods_ini)
+        self.modcons_in_year = set(mods_fi + mods_ini + mod_all_year)
 
     def get_sequence(self):
         """
@@ -126,7 +130,7 @@ class F1bis(MultiprocessBased):
                 ]
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 o_cups = cups['name'][:22]
-                if not set(o_cups["polisses"]).intersection(self.modcons_in_year):
+                if not set(cups["polisses"]).intersection(self.modcons_in_year):
                     continue
                 polissa_id = self.get_polissa(cups['id'])
                 if polissa_id:
