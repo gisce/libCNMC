@@ -30,6 +30,25 @@ class F1(MultiprocessBased):
         self.cnaes = manager.dict()
         self.base_object = 'CUPS'
         self.report_name = 'F1 - CUPS'
+        self.municipi_ine_dc = {}  # type:dict[str,(str,str)]
+        ids = self.connection.ResMunicipi.search([('dc', '!=', False)])
+        for municipi in self.connection.ResMunicipi.read(ids, ['ine', 'dc']):
+            self.municipi_ine_dc[municipi['id']] = (municipi["ine"], municipi['dc'])
+        self.default_o_cod_tfa = None
+        self.default_o_cnae = None
+        search_params = [
+            ('name', '=', 'libcnmc_4_2015_default_f1')
+        ]
+        id_config = self.connection.ResConfig.search(
+            search_params
+        )
+        if id_config:
+            config = self.connection.ResConfig.read(id_config[0], [])
+            default_values = literal_eval(config['value'])
+            if default_values.get('o_cod_tfa'):
+                self.default_o_cod_tfa = default_values.get('o_cod_tfa')
+            if default_values.get('o_cnae'):
+                self.default_o_cnae = default_values.get('o_cnae')
 
     def get_codi_tarifa(self, codi_tarifa):
         """
@@ -147,13 +166,11 @@ class F1(MultiprocessBased):
                 if 'et' in cups:
                     o_zona = self.get_zona_qualitat(cups['et'])
                 if cups['id_municipi']:
-                    municipi = O.ResMunicipi.read(
-                        cups['id_municipi'][0], ['ine']
-                    )
-                    ine = get_ine(self.connection, municipi['ine'])
-                    o_codi_ine = ine[1]
-                    o_codi_prov = ine[0]
-
+                    id_municipi = cups["id_municipi"][0]
+                    o_codi_ine = self.municipi_ine_dc[id_municipi][0][:2]
+                    o_codi_prov = "{}{}".format(
+                        o_codi_ine,
+                        self.municipi_ine_dc[id_municipi][1])
                 o_utmz = ''
                 o_nom_node = ''
                 o_tensio = ''
@@ -309,19 +326,10 @@ class F1(MultiprocessBased):
                                     float(tensio_gis) / 1000.0, decimals=3)
                         else:
                             o_tensio = ''
-                        search_params = [
-                            ('name', '=', 'libcnmc_4_2015_default_f1')
-                        ]
-                        id_config = O.ResConfig.search(
-                            search_params
-                        )
-                        if id_config:
-                            config = O.ResConfig.read(id_config[0], [])
-                            default_values = literal_eval(config['value'])
-                            if default_values.get('o_cod_tfa'):
-                                o_cod_tfa = default_values.get('o_cod_tfa')
-                            if default_values.get('o_cnae'):
-                                o_cnae = default_values.get('o_cnae')
+                        if self.default_o_cnae:
+                            o_cnae = self.default_o_cnae
+                        if self.default_o_cod_tfa:
+                            o_cod_tfa = self.default_o_cod_tfa
 
                 o_any_incorporacio = self.year
                 res_srid = ['', '']
