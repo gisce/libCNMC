@@ -13,6 +13,15 @@ from ast import literal_eval
 
 class F1(MultiprocessBased):
     def __init__(self, **kwargs):
+        """
+        F1 class constructor
+
+        :param codi_r1: R1 code of the company
+        :type codi_r1: str
+        :param year: Year of the resolution
+        :type year: int
+        """
+
         super(F1, self).__init__(**kwargs)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.year = kwargs.pop('year', datetime.now().year - 1)
@@ -28,7 +37,7 @@ class F1(MultiprocessBased):
 
         :param codi_tarifa: ERP codi tarifa
         :return: The codi tarifa for the F1
-        :rtype: str 
+        :rtype: str
         """
 
         return CODIS_TARIFA.get(codi_tarifa, '')
