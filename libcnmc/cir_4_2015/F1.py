@@ -46,8 +46,7 @@ class F1(MultiprocessBased):
             0,0,False,{"active_test": False}
         )
         self.modcons_in_year = set(mods_fi + mods_ini + mod_all_year)
-	
-	        self.municipi_ine_dc = {}  # type:dict[str,(str,str)]
+        self.municipi_ine_dc = {}  # type:dict[str,(str,str)]
         ids = self.connection.ResMunicipi.search([('dc', '!=', False)])
         for municipi in self.connection.ResMunicipi.read(ids, ['ine', 'dc']):
             self.municipi_ine_dc[municipi['id']] = (municipi["ine"], municipi['dc'])
