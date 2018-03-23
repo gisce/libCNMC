@@ -13,6 +13,15 @@ from ast import literal_eval
 
 class F1(MultiprocessBased):
     def __init__(self, **kwargs):
+        """
+        F1 class constructor
+
+        :param codi_r1: R1 code of the company
+        :type codi_r1: str
+        :param year: Year of the resolution
+        :type year: int
+        """
+
         super(F1, self).__init__(**kwargs)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.year = kwargs.pop('year', datetime.now().year - 1)
@@ -37,8 +46,36 @@ class F1(MultiprocessBased):
             0,0,False,{"active_test": False}
         )
         self.modcons_in_year = set(mods_fi + mods_ini + mod_all_year)
+	
+	        self.municipi_ine_dc = {}  # type:dict[str,(str,str)]
+        ids = self.connection.ResMunicipi.search([('dc', '!=', False)])
+        for municipi in self.connection.ResMunicipi.read(ids, ['ine', 'dc']):
+            self.municipi_ine_dc[municipi['id']] = (municipi["ine"], municipi['dc'])
+        self.default_o_cod_tfa = None
+        self.default_o_cnae = None
+        search_params = [
+            ('name', '=', 'libcnmc_4_2015_default_f1')
+        ]
+        id_config = self.connection.ResConfig.search(
+            search_params
+        )
+        if id_config:
+            config = self.connection.ResConfig.read(id_config[0], [])
+            default_values = literal_eval(config['value'])
+            if default_values.get('o_cod_tfa'):
+                self.default_o_cod_tfa = default_values.get('o_cod_tfa')
+            if default_values.get('o_cnae'):
+                self.default_o_cnae = default_values.get('o_cnae')
 
     def get_codi_tarifa(self, codi_tarifa):
+        """
+        Returns the codi tarifa of the polissa
+
+        :param codi_tarifa: ERP codi tarifa
+        :return: The codi tarifa for the F1
+        :rtype: str
+        """
+
         return CODIS_TARIFA.get(codi_tarifa, '')
 
     def get_sequence(self):
@@ -148,13 +185,11 @@ class F1(MultiprocessBased):
                 if 'et' in cups:
                     o_zona = self.get_zona_qualitat(cups['et'])
                 if cups['id_municipi']:
-                    municipi = O.ResMunicipi.read(
-                        cups['id_municipi'][0], ['ine']
-                    )
-                    ine = get_ine(self.connection, municipi['ine'])
-                    o_codi_ine = ine[1]
-                    o_codi_prov = ine[0]
-
+                    id_municipi = cups["id_municipi"][0]
+                    o_codi_ine = self.municipi_ine_dc[id_municipi][0][:2]
+                    o_codi_prov = "{}{}".format(
+                        o_codi_ine,
+                        self.municipi_ine_dc[id_municipi][1])
                 o_utmz = ''
                 o_nom_node = ''
                 o_tensio = ''
@@ -310,19 +345,10 @@ class F1(MultiprocessBased):
                                     float(tensio_gis) / 1000.0, decimals=3)
                         else:
                             o_tensio = ''
-                        search_params = [
-                            ('name', '=', 'libcnmc_4_2015_default_f1')
-                        ]
-                        id_config = O.ResConfig.search(
-                            search_params
-                        )
-                        if id_config:
-                            config = O.ResConfig.read(id_config[0], [])
-                            default_values = literal_eval(config['value'])
-                            if default_values.get('o_cod_tfa'):
-                                o_cod_tfa = default_values.get('o_cod_tfa')
-                            if default_values.get('o_cnae'):
-                                o_cnae = default_values.get('o_cnae')
+                        if self.default_o_cnae:
+                            o_cnae = self.default_o_cnae
+                        if self.default_o_cod_tfa:
+                            o_cod_tfa = self.default_o_cod_tfa
 
                 o_any_incorporacio = self.year
                 res_srid = ['', '']
