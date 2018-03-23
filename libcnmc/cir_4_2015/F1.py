@@ -23,6 +23,14 @@ class F1(MultiprocessBased):
         self.report_name = 'F1 - CUPS'
 
     def get_codi_tarifa(self, codi_tarifa):
+        """
+        Returns the codi tarifa of the polissa
+
+        :param codi_tarifa: ERP codi tarifa
+        :return: The codi tarifa for the F1
+        :rtype: str 
+        """
+
         return CODIS_TARIFA.get(codi_tarifa, '')
 
     def get_sequence(self):
