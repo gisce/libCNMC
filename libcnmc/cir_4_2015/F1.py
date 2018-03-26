@@ -239,6 +239,8 @@ class F1(MultiprocessBased):
                     polissa = O.GiscedataPolissa.read(
                         polissa_id[0], fields_to_read, context_glob
                     )
+                    if 'RE' in polissa['tarifa'][1]:
+                        continue
                     if polissa['tensio']:
                         o_tensio = format_f(
                             float(polissa['tensio']) / 1000.0, decimals=3)
