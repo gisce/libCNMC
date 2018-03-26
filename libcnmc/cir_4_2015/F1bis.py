@@ -136,6 +136,9 @@ class F1bis(MultiprocessBased):
                 if not set(cups["polisses"]).intersection(self.modcons_in_year):
                     continue
                 polissa_id = self.get_polissa(cups['id'])
+                polissa = O.GiscedataPolissa.read(polissa_id[0], ['tarifa'])
+                if 'RE' in polissa['tarifa'][1]:
+                    continue
                 if polissa_id:
                     polissa_id = polissa_id[0]
                     o_comptador_cini = self.get_comptador_cini(polissa_id)
