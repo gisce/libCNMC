@@ -11,6 +11,22 @@ class F20(MultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1')
         self.report_name = 'F20 - CTS'
         self.base_object = 'CTS'
+        mod_all_year = self.connection.GiscedataPolissaModcontractual.search([
+                ("data_inici", "<=", "{}-01-01".format(self.year)),
+                ("data_final", ">=", "{}-12-31".format(self.year))],
+                0, 0, False, {"active_test": False}
+                                )
+        mods_ini = self.connection.GiscedataPolissaModcontractual.search(
+                [("data_inici", ">=", "{}-01-01".format(self.year)),
+                 ("data_inici", "<=", "{}-12-31".format(self.year))],
+                0, 0, False, {"active_test": False}
+        )
+        mods_fi = self.connection.GiscedataPolissaModcontractual.search(
+                [("data_final", ">=", "{}-01-01".format(self.year)),
+                 ("data_final", "<=", "{}-12-31".format(self.year))],
+                0, 0, False, {"active_test": False}
+        )
+        self.modcons_in_year = set(mods_fi + mods_ini + mod_all_year)
 
     def get_sequence(self):
         data_ini = '%s-01-01' % (self.year + 1)
@@ -35,7 +51,7 @@ class F20(MultiprocessBased):
     def consumer(self):
         o = self.connection
         fields_to_read = [
-            'name', 'et'
+            'name', 'et', 'polisses'
         ]
         while True:
             try:
@@ -45,6 +61,8 @@ class F20(MultiprocessBased):
                 cups = o.GiscedataCupsPs.read(
                     item, fields_to_read
                 )
+                if not set(cups['polisses']).intersection(self.modcons_in_year):
+                    continue
                 o_codi_r1 = "R1-"+self.codi_r1
                 o_cups = cups['name']
                 o_cini = self.get_cini(cups['et'])
