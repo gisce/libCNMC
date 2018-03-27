@@ -51,7 +51,7 @@ class F20(MultiprocessBased):
     def consumer(self):
         o = self.connection
         fields_to_read = [
-            'name', 'et', 'polisses'
+            'name', 'et', 'polisses', 'id'
         ]
         while True:
             try:
@@ -61,6 +61,14 @@ class F20(MultiprocessBased):
                 cups = o.GiscedataCupsPs.read(
                     item, fields_to_read
                 )
+                search_params = [('cups', '=', cups['id'])]
+                polissa_id = o.GiscedataPolissa.search(
+                    search_params, 0, 1, 'data_alta desc')
+                if polissa_id:
+                    polissa = o.GiscedataPolissa.read(
+                        polissa_id[0], ['tarifa'])
+                    if 'RE' in polissa['tarifa'][1]:
+                        continue
                 if not set(cups['polisses']).intersection(self.modcons_in_year):
                     continue
                 o_codi_r1 = "R1-"+self.codi_r1
