@@ -164,7 +164,7 @@ class FIA(MultiprocessBased):
                         estado = '1'
 
                 output = [
-                    cll["4666_identificador"],
+                    cll.get("4666_identificador",cll["id"]),
                     cll['cini'] or '',
                     element_act,
                     codigo_ccuu or '',
