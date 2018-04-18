@@ -4,7 +4,8 @@ from multiprocessing import Manager
 import re
 import traceback
 
-from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP
+from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP, \
+    TARIFAS_AT, TARIFAS_BT
 from libcnmc.utils import get_ine, get_comptador, format_f, get_srid,\
     convert_srid
 from libcnmc.core import MultiprocessBased
@@ -58,6 +59,9 @@ class F1(MultiprocessBased):
         id_config = self.connection.ResConfig.search(
             search_params
         )
+
+        self.generate_derechos = True
+
         if id_config:
             config = self.connection.ResConfig.read(id_config[0], [])
             default_values = literal_eval(config['value'])
@@ -77,6 +81,55 @@ class F1(MultiprocessBased):
 
         return CODIS_TARIFA.get(codi_tarifa, '')
 
+    def get_derechos(self, tarifas, years):
+        """
+        Returns a list of CUPS with derechos
+
+        :param tarifas: Lis of tarifas of the polissas that are in the CUPS
+        :param years: Number of years to search back
+        :return: List of ids of the
+        """
+
+        O = self.connection
+
+        polisses_baixa_id = O.GiscedataPolissa.search(
+            [
+                ("data_baixa", "<=", "{}-12-31".format(self.year - 1)),
+                ("data_baixa", ">", "{}-01-01".format(self.year - years)),
+                ("tarifa", "in", tarifas)
+            ],
+            0, 0, False, {'active_test': False}
+        )
+
+        cups_polisses_baixa = [x["cups"][0] for x in O.GiscedataPolissa.read(
+            polisses_baixa_id, ["cups"]
+        )]
+
+        cups_derechos = O.GiscedataCupsPs.search(
+            [
+                ("id", "in", cups_polisses_baixa),
+                ("polissa_polissa", "=", False)
+            ]
+        )
+
+        polissa_eliminar_id = O.GiscedataPolissaModcontractual.search(
+            [
+                ("cups", "in", cups_derechos),
+                '|', ("data_inici", ">", "{}-01-01".format(self.year)),
+                ("data_final", ">", "{}-01-01".format(self.year))
+            ],
+            0, 0, False, {'active_test': False}
+        )
+
+        cups_eliminar_id = [x["cups"][0] for x in
+                            O.GiscedataPolissaModcontractual.read(
+                                polissa_eliminar_id, ["cups"]
+                            )]
+
+        cups_derechos = list(set(cups_derechos) - set(cups_eliminar_id))
+
+        return cups_derechos
+
     def get_sequence(self):
         """
         Generates the list of cups to generate the F1
@@ -89,8 +142,17 @@ class F1(MultiprocessBased):
                          '|',
                          ('create_date', '<', data_ini),
                          ('create_date', '=', False)]
-        return self.connection.GiscedataCupsPs.search(
+
+        ret_cups = self.connection.GiscedataCupsPs.search(
             search_params, 0, 0, False, {'active_test': False})
+
+        if self.generate_derechos:
+            cups_derechos_bt = self.get_derechos(TARIFAS_BT, 2)
+            cups_derechos_at = self.get_derechos(TARIFAS_AT, 4)
+            return set(cups_derechos_bt +cups_derechos_at)
+        else:
+            return ret_cups
+
 
     def get_zona_qualitat(self, codi_ct):
         zona_qualitat = ''
