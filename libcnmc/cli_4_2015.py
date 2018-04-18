@@ -74,6 +74,7 @@ def cir_4_2015_f10at(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('--derechos', default=False, type=click.BOOL)
 def cir_4_2015_f1(**kwargs):
     """
     Click entry to generate the F1 of 4/2015
@@ -93,7 +94,8 @@ def cir_4_2015_f1(**kwargs):
         connection=O,
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
-        year=kwargs['year']
+        year=kwargs['year'],
+        derechos=kwargs["derechos"]
     )
     proc.calc()
 
@@ -159,6 +161,7 @@ def cir_4_2015_f11(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('--derechos', default=False, type=click.BOOL)
 def cir_4_2015_f1bis(**kwargs):
     """
     Click entry to gneerate the F1BIS of 4/2015
@@ -179,7 +182,8 @@ def cir_4_2015_f1bis(**kwargs):
         connection=O,
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
-        year=kwargs['year']
+        year=kwargs['year'],
+        derechos=kwargs['derechos']
     )
     proc.calc()
 
@@ -535,6 +539,7 @@ def cir_4_2015_f10bt(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('--derechos', default=False, type=click.BOOL)
 def cir_4_2015_f20(**kwargs):
     """
     Click entry to generate the F20 file of 4/2015
@@ -554,7 +559,8 @@ def cir_4_2015_f20(**kwargs):
         connection=O,
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
-        year=kwargs['year']
+        year=kwargs['year'],
+        derechos=kwargs['derechos']
     )
     proc.calc()
 
