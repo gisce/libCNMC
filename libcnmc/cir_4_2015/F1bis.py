@@ -239,6 +239,12 @@ class F1bis(MultiprocessBased):
             return '0'
 
     def consumer(self):
+        """
+        Consumer function that executes for each item of the return
+        of get_sequence
+
+        :return: None
+        """
         O = self.connection
         while True:
             try:
