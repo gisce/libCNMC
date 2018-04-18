@@ -2,7 +2,7 @@
 from datetime import datetime
 import traceback
 
-from libcnmc.utils import get_comptador, format_f
+from libcnmc.utils import get_comptador, format_f, TARIFAS_AT, TARIFAS_BT
 from libcnmc.core import MultiprocessBased
 
 
@@ -27,27 +27,28 @@ class F1bis(MultiprocessBased):
         mods_fi = self.connection.GiscedataPolissaModcontractual.search(
             [("data_final", ">=", "{}-01-01".format(self.year)),
             ("data_final", "<=", "{}-12-31".format(self.year))],
-            0,0,False,{"active_test": False}
+            0, 0, False, {"active_test": False}
         )
+
         self.generate_derechos = True
         self.modcons_in_year = set(mods_fi + mods_ini + mod_all_year)
 
-    def get_derechos_bt(self):
+    def get_derechos(self, tarifas, years):
         """
-        Returns the CUPS ids with derecho BT
+        Returns a list of CUPS with derechos
 
-        :return: List of CUPS ids
+        :param tarifas: Lis of tarifas of the polissas that are in the CUPS
+        :param years: Number of years to search back
+        :return: List of ids of the
         """
+
         O = self.connection
-
-        bt_tarifas = ['2.0A', '2.0DHA', '2.1A', '2.1DHA', '2.0DHS',
-                      '2.1DHS', '3.0A']
 
         polisses_baixa_id = O.GiscedataPolissa.search(
             [
-                ("data_baixa", "<=", "2016-12-31"),
-                ("data_baixa", ">", "2015-01-01"),
-                ("tarifa", "in", bt_tarifas)
+                ("data_baixa", "<=", "{}-12-31".format(self.year - 1)),
+                ("data_baixa", ">", "{}-01-01".format(self.year - years)),
+                ("tarifa", "in", tarifas)
             ],
             0, 0, False, {'active_test': False}
         )
@@ -56,7 +57,7 @@ class F1bis(MultiprocessBased):
             polisses_baixa_id, ["cups"]
         )]
 
-        cups_derechos_bt = O.GiscedataCupsPs.search(
+        cups_derechos = O.GiscedataCupsPs.search(
             [
                 ("id", "in", cups_polisses_baixa),
                 ("polissa_polissa", "=", False)
@@ -65,58 +66,9 @@ class F1bis(MultiprocessBased):
 
         polissa_eliminar_id = O.GiscedataPolissaModcontractual.search(
             [
-                ("cups", "in", cups_derechos_bt),
-                '|', ("data_inici", ">", "2017-01-01"),
-                ("data_final", ">", "2017-01-01")
-            ],
-            0, 0, False, {'active_test': False}
-        )
-
-        cups_eliminar_id = [x["cups"][0] for x in O.GiscedataPolissaModcontractual.read(
-            polissa_eliminar_id, ["cups"]
-        )]
-
-        cups_derechos_bt = list(set(cups_derechos_bt) - set(cups_eliminar_id))
-
-        return cups_derechos_bt
-
-    def get_derechos_at(self):
-        """
-        Returns the CUPS ids with derechos AT
-
-        :return: List of CUPS ids
-        """
-
-        at_tarifas = ['3.1A', '3.1A LB', '6.1', '6.1A',
-                      '6.1B', '6.2', '6.2A', '6.2B']
-
-        O = self.connection
-
-        polisses_baixa_id = O.GiscedataPolissa.search(
-            [
-                ("data_baixa", "<=", "2016-12-31"),
-                ("data_baixa", ">", "2015-01-01"),
-                ("tarifa", "in", at_tarifas)
-            ],
-            0, 0, False, {'active_test': False}
-        )
-
-        cups_polisses_baixa = [x["cups"][0] for x in O.GiscedataPolissa.read(
-            polisses_baixa_id, ["cups"]
-        )]
-
-        cups_derechos_at = O.GiscedataCupsPs.search(
-            [
-                ("id", "in", cups_polisses_baixa),
-                ("polissa_polissa", "=", False)
-            ]
-        )
-
-        polissa_eliminar_id = O.GiscedataPolissaModcontractual.search(
-            [
-                ("cups", "in", cups_derechos_at),
-                '|', ("data_inici", ">", "2017-01-01"),
-                ("data_final", ">", "2017-01-01")
+                ("cups", "in", cups_derechos),
+                '|', ("data_inici", ">", "{}-01-01".format(self.year)),
+                ("data_final", ">", "{}-01-01".format(self.year))
             ],
             0, 0, False, {'active_test': False}
         )
@@ -126,9 +78,9 @@ class F1bis(MultiprocessBased):
                                 polissa_eliminar_id, ["cups"]
                             )]
 
-        cups_derechos_at = list(set(cups_derechos_at) - set(cups_eliminar_id))
+        cups_derechos = list(set(cups_derechos) - set(cups_eliminar_id))
 
-        return cups_derechos_at
+        return cups_derechos
 
     def get_sequence(self):
         """
@@ -144,8 +96,8 @@ class F1bis(MultiprocessBased):
                          ('create_date', '<', data_ini),
                          ('create_date', '=', False)]
 
-        cups_derechos_bt = self.get_derechos_bt()
-        cups_derechos_at = self.get_derechos_at()
+        cups_derechos_bt = self.get_derechos(TARIFAS_BT, 2)
+        cups_derechos_at = self.get_derechos(TARIFAS_AT, 4)
 
         tmp_ret_cups = self.connection.GiscedataCupsPs.search(
             search_params, 0, 0, False, {'active_test': False})
