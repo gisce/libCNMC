@@ -31,8 +31,6 @@ class F1bis(MultiprocessBased):
         )
         self.generate_derechos = True
         self.modcons_in_year = set(mods_fi + mods_ini + mod_all_year)
-        self.cups_derechos_bt = []
-        self.cups_derechos_at = []
 
     def get_derechos_bt(self):
         """
@@ -146,8 +144,8 @@ class F1bis(MultiprocessBased):
                          ('create_date', '<', data_ini),
                          ('create_date', '=', False)]
 
-        self.cups_derechos_bt = self.get_derechos_bt()
-        self.cups_derechos_at = self.get_derechos_at()
+        cups_derechos_bt = self.get_derechos_bt()
+        cups_derechos_at = self.get_derechos_at()
 
         tmp_ret_cups = self.connection.GiscedataCupsPs.search(
             search_params, 0, 0, False, {'active_test': False})
@@ -160,7 +158,7 @@ class F1bis(MultiprocessBased):
                 ret_cups.append(cups["id"])
 
         if self.generate_derechos:
-            return ret_cups + self.cups_derechos_at + self.cups_derechos_bt
+            return ret_cups + cups_derechos_at + cups_derechos_bt
         else:
             return ret_cups
 
