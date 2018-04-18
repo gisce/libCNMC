@@ -30,7 +30,8 @@ class F1bis(MultiprocessBased):
             0, 0, False, {"active_test": False}
         )
 
-        self.generate_derechos = True
+        self.generate_derechos = kwargs.pop("derechos", False)
+        
         self.modcons_in_year = set(mods_fi + mods_ini + mod_all_year)
 
     def get_derechos(self, tarifas, years):

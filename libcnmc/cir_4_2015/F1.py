@@ -60,7 +60,7 @@ class F1(MultiprocessBased):
             search_params
         )
 
-        self.generate_derechos = True
+        self.generate_derechos = kwargs.pop("derechos", False)
 
         if id_config:
             config = self.connection.ResConfig.read(id_config[0], [])
