@@ -88,8 +88,15 @@ class F20(MultiprocessBased):
                          '|',
                          ('create_date', '<', data_ini),
                          ('create_date', '=', False)]
-        ret_cups = self.connection.GiscedataCupsPs.search(
+
+        ret_cups_tmp = self.connection.GiscedataCupsPs.search(
             search_params, 0, 0, False, {'active_test': False})
+
+        ret_cups = []
+
+        for cups in ret_cups_tmp:
+            if set(cups['polisses']).intersection(self.modcons_in_year):
+                ret_cups.append(cups)
 
         if self.generate_derechos:
             cups_derechos_bt = self.get_derechos(TARIFAS_BT, 2)
@@ -109,6 +116,12 @@ class F20(MultiprocessBased):
         return valor
 
     def consumer(self):
+        """
+        Consumer function that executes for each value returned by get_sequence
+
+        :return: None
+        """
+
         o = self.connection
         fields_to_read = [
             'name', 'et', 'polisses', 'id'
@@ -128,8 +141,7 @@ class F20(MultiprocessBased):
                         polissa_id[0], ['tarifa'])
                     if 'RE' in polissa['tarifa'][1]:
                         continue
-                if not set(cups['polisses']).intersection(self.modcons_in_year):
-                    continue
+
                 o_codi_r1 = "R1-"+self.codi_r1
                 o_cups = cups['name']
                 o_cini = self.get_cini(cups['et'])
