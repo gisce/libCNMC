@@ -111,7 +111,7 @@ class F1bis(MultiprocessBased):
                 ret_cups.append(cups["id"])
 
         if self.generate_derechos:
-            return cups_derechos_at + cups_derechos_bt
+            return ret_cups + cups_derechos_at + cups_derechos_bt
         else:
             return ret_cups
 
