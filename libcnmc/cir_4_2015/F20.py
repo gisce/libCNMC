@@ -89,14 +89,17 @@ class F20(MultiprocessBased):
                          ('create_date', '<', data_ini),
                          ('create_date', '=', False)]
 
-        ret_cups_tmp = self.connection.GiscedataCupsPs.search(
+        ret_cups_ids = self.connection.GiscedataCupsPs.search(
             search_params, 0, 0, False, {'active_test': False})
 
+        ret_cups_tmp = self.connection.GiscedataCupsPs.read(
+            ret_cups_ids, ["polisses"]
+        )
         ret_cups = []
 
         for cups in ret_cups_tmp:
             if set(cups['polisses']).intersection(self.modcons_in_year):
-                ret_cups.append(cups)
+                ret_cups.append(cups["id"])
 
         if self.generate_derechos:
             cups_derechos_bt = self.get_derechos(TARIFAS_BT, 2)
