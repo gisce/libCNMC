@@ -143,8 +143,16 @@ class F1(MultiprocessBased):
                          ('create_date', '<', data_ini),
                          ('create_date', '=', False)]
 
-        ret_cups = self.connection.GiscedataCupsPs.search(
+        ret_cups_tmp = self.connection.GiscedataCupsPs.search(
             search_params, 0, 0, False, {'active_test': False})
+
+        ret_cups_data = self.connection.GiscedataCupsPs.read(
+            ret_cups_tmp, ["polisses"])
+
+        ret_cups = []
+        for cups in ret_cups_data:
+            if set(cups["polisses"]).intersection(self.modcons_in_year):
+                ret_cups.append(cups["id"])
 
         if self.generate_derechos:
             cups_derechos_bt = self.get_derechos(TARIFAS_BT, 2)
@@ -234,8 +242,6 @@ class F1(MultiprocessBased):
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 if not cups or not cups.get('name'):
                     self.input_q.task_done()
-                    continue
-                if not set(cups["polisses"]).intersection(self.modcons_in_year):
                     continue
                 o_name = cups['name'][:22]
                 o_codi_ine = ''
