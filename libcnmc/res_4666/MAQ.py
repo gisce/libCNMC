@@ -203,7 +203,7 @@ class MAQ(MultiprocessBased):
                         format_f(financiacio),
                         data_pm,
                         fecha_baja,
-                        format_f(capacitat, 2),
+                        format_f(capacitat, 3),
                         0
                     )
                     if entregada == actual:
