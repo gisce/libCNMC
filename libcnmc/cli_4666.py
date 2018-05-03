@@ -198,9 +198,11 @@ def res_4666_mod(**kwargs):
 @click.option('--embarrats/--no-embarrats', default=False,
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('-e', '--extended', default=False,
+              help="Generar el fitxer extes")
 def res_4666_lat(**kwargs):
     """
-    Click entry to generate LAT file of 4666
+    Click entry to generate LAT(F1) file of 4666
 
     :param kwargs: Parameters to generate the LAT file
     :type kwargs: dict

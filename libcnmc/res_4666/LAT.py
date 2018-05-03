@@ -25,6 +25,7 @@ class LAT(MultiprocessBased):
         :return: CT
         """
         super(LAT, self).__init__(**kwargs)
+        self.extended = kwargs.get("extended", False)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'Línies AT'
@@ -276,7 +277,9 @@ class LAT(MultiprocessBased):
                         codi_ccuu or '',
                         comunitat,
                         comunitat,
-                        format_f(round(100 - int(tram.get('perc_financament', 0) or 0)), 2),
+                        format_f(round(
+                            100 - int(tram.get('perc_financament', 0) or 0)),
+                                 2),
                         data_pm,
                         fecha_baja or '',
                         tram.get('circuits', 1) or 1,
@@ -288,6 +291,15 @@ class LAT(MultiprocessBased):
                         capacitat,
                         estado
                     ]
+                    if self.extended:
+                        # S'ha especificat que es vol la versio extesa
+                        municipi = O.ResMunicipi.read(
+                            linia['municipi'][0], ['state']
+                        )
+                        provincia = O.ResCountryState.read(
+                            municipi['state'][0], ['name']
+                        )
+                        output.append(provincia.get('name', ""))
 
                     self.output_q.put(output)
 
