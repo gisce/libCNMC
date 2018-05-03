@@ -126,6 +126,12 @@ class F9(MultiprocessBased):
         return data
 
     def conv_text(self, data):
+        """
+        Converts the projection of a data
+
+        :param data: list of elemnets to convert
+        :return: Elements with the projection converted
+        """
         o = self.connection
         t = ''
         for line in data:
