@@ -32,6 +32,7 @@ class POS(MultiprocessBased):
         self.base_object = 'Línies POS'
         self.report_name = 'CNMC INVENTARI POS'
         self.compare_field = kwargs["compare_field"]
+        self.extended = kwargs.get("extended", False)
 
     def get_sequence(self):
         """
@@ -204,6 +205,38 @@ class POS(MultiprocessBased):
                     fecha_baja,
                     estado
                 ]
+
+                if self.extended:
+                    if (pos['subestacio_id']):
+                        se = O.GiscedataCtsSubestacions.read(
+                            pos['subestacio_id'][0],
+                            ['id_provincia', 'id_municipi',' zona_id']
+                        )
+                        if se['id_municipi']:
+                            municipi = O.ResMunicipi.read(
+                                se['id_municipi'][0], ['name']
+                            )
+                            output.append(municipi.get('name', ""))
+                        else:
+                            output.append("")
+
+                        if se['id_provincia']:
+                            provincia = O.ResCountryState.read(
+                                se['id_provincia'][0], ['name']
+                            )
+                            output.append(provincia.get('name', ""))
+                        else:
+                            output.append("")
+
+                        if se['zona_id']:
+                            zona = O.GiscedataCtsZona.read(
+                                se['zona_id'][0], ['name']
+                            )
+                            output.append(zona.get('name', ""))
+                        else:
+                            output.append("")
+                    else:
+                        output.append(["", "", ""])
 
                 self.output_q.put(output)
             except Exception:
