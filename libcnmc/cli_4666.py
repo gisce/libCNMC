@@ -98,7 +98,8 @@ def res_lat(LAT, **kwargs):
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
         embarrats=kwargs['embarrats'],
-        compare_field=kwargs["compare_field"]
+        compare_field=kwargs["compare_field"],
+        extended=kwargs.get('extended', False)
     )
     proc.calc()
 
