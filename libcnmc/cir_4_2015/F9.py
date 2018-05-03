@@ -36,16 +36,18 @@ class F9(MultiprocessBased):
         o = self.connection
         data_pm_limit = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
-        static_search_params = ['|', ('data_pm', '=', False),
-                                ('data_pm', '<', data_pm_limit),
-                                '|', ('data_baixa', '>', data_baixa),
-                                ('data_baixa', '=', False),
+        static_search_params = [
+            '|',
+            ('data_pm', '=', False),('data_pm', '<', data_pm_limit),
+            '|',
+            ('data_baixa', '>', data_baixa),('data_baixa', '=', False),
                                 ]
         # Revisem que si està de baixa ha de tenir la data informada.
-        static_search_params += ['|',
-                                 '&', ('active', '=', False),
-                                 ('data_baixa', '!=', False),
-                                 ('active', '=', True)]
+        static_search_params += [
+            '|',
+            '&', ('active', '=', False), ('data_baixa', '!=', False),
+            ('active', '=', True)
+        ]
         # AT
         trams = []
         ids_linia_at = o.GiscedataAtLinia.search([])
