@@ -293,13 +293,19 @@ class LAT(MultiprocessBased):
                     ]
                     if self.extended:
                         # S'ha especificat que es vol la versio extesa
-                        municipi = O.ResMunicipi.read(
-                            linia['municipi'][0], ['state']
-                        )
-                        provincia = O.ResCountryState.read(
-                            municipi['state'][0], ['name']
-                        )
-                        output.append(provincia.get('name', ""))
+                        if linia['municipi']:
+                            municipi = O.ResMunicipi.read(
+                                linia['municipi'][0], ['state']
+                            )
+                            if municipi['state']:
+                                provincia = O.ResCountryState.read(
+                                    municipi['state'][0], ['name']
+                                )
+                                output.append(provincia.get('name', ""))
+                            else:
+                                output.append("")
+                        else:
+                            output.append("")
 
                     self.output_q.put(output)
 
