@@ -26,6 +26,13 @@ class F9(MultiprocessBased):
             self.layer = o.ResConfig.read(id_res_like, ['value'])[0]['value']
 
     def get_sequence(self):
+        """
+        Generates the sequence of ids to be passed to the consummer function
+
+        :return: ids to process
+        :rtype: list[int]
+        """
+
         o = self.connection
         data_pm_limit = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
