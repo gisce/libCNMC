@@ -42,7 +42,8 @@ def res_pos2(proc1, proc2, **kwargs):
         codi_r1=kwargs["codi_r1"],
         year=kwargs["year"],
         embarrats=kwargs["embarrats"],
-        compare_field=kwargs["compare_field"]
+        compare_field=kwargs["compare_field"],
+        extended=kwargs.get('extended', False)
     )
     proc.calc()
 
@@ -55,7 +56,8 @@ def res_pos2(proc1, proc2, **kwargs):
         codi_r1=kwargs["codi_r1"],
         year=kwargs["year"],
         embarrats=kwargs["embarrats"],
-        compare_field=kwargs["compare_field"]
+        compare_field=kwargs["compare_field"],
+        extended=kwargs.get('extended', False)
     )
     proc_2.calc()
 
@@ -342,9 +344,11 @@ def res_4666_sub(**kwargs):
 @click.option('--embarrats/--no-embarrats', default=False,
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('-e', '--extended', default=False,
+              help="Generar el fitxer extes")
 def res_4666_pos(**kwargs):
     """
-    Click entry to generate the POS file of 4666
+    Click entry to generate the POS(F4) file of 4666
 
     :param kwargs: Params to pas to the process
     :type kwargs: dict(str, str) 
