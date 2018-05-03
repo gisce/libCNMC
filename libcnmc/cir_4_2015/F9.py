@@ -82,6 +82,17 @@ class F9(MultiprocessBased):
         return ids
 
     def get_geom(self, id_tram, net):
+        """
+        Returns the geometry of the first point of the tram
+
+        :param id_tram: Identifier of the tram
+        :type id_tram: int
+        :param net: type of network (AT,BT)
+        :type net: str
+        :return: X, Y
+        :rtype: tuple[float,float]
+        """
+
         o = self.connection
         like_layer = self.layer
         model_edge = o.GiscegisEdge
