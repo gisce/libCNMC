@@ -129,11 +129,14 @@ class F9(MultiprocessBased):
         o = self.connection
         t = ''
         for line in data:
-            res_srid = convert_srid(self.codi_r1, get_srid(o),
-                                    [line['x'], line['y']])
+            res_srid = convert_srid(
+                self.codi_r1,
+                get_srid(o),
+                [line['x'], line['y']]
+            )
             t += '{0};{1};{2}\n'.format(
-                format_f(res_srid[0], decimals=6),
-                format_f(res_srid[1], decimals=6),
+                format_f(res_srid[0], decimals=3),
+                format_f(res_srid[1], decimals=3),
                 '')
         return t[:-1]
 
