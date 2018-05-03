@@ -154,6 +154,12 @@ class F9(MultiprocessBased):
         return t[:-1]
 
     def consumer(self):
+        """
+        Function that generates each line of the file
+
+        :return: None
+        :rtype: None
+        """
         o = self.connection
         while True:
             try:
