@@ -14,7 +14,7 @@ class F15(MultiprocessBased):
 
     def get_sequence(self):
         search_nortrolls = [
-                ("cini", "!=like", "%03")
+                ("cini", "=like", "%03")
         ]
         ids_nortrolls = self.connection.GiscedataCellesCella.search(search_nortrolls)
         search_params = [
