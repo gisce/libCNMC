@@ -238,9 +238,11 @@ def res_4666_lat(**kwargs):
 @click.option('--embarrats/--no-embarrats', default=False,
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('--extended/--no-extended', default=False,
+              help="Generar el fitxer extes")
 def res_4666_lbt(**kwargs):
     """
-    Click entry to generate the LBT of 4666
+    Click entry to generate the LBT(F2) of 4666
 
     :param kwargs: Params to pas to the process
     :type kwargs: dict(str, str) 
