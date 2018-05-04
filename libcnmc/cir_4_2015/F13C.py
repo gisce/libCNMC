@@ -17,7 +17,10 @@ class F13c(MultiprocessBased):
         self.base_object = 'CTS'
 
     def get_sequence(self):
-        search_params = [('cini', 'ilike', 'i28%')]
+
+        search_params = [
+            ("interruptor", "=", 2)
+        ]
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
         search_params += ['|', ('data_pm', '=', False),
