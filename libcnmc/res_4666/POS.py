@@ -214,19 +214,19 @@ class POS(MultiprocessBased):
                             ['id_provincia', 'id_municipi', ' zona_id']
                         )
 
-                        if 'id_municipi' in se:
-                            municipi = O.ResMunicipi.read(
-                                se['id_municipi'][0], ['name']
-                            )
-                            output.append(municipi.get('name', ""))
-                        else:
-                            output.append("")
-
                         if 'id_provincia' in se:
                             provincia = O.ResCountryState.read(
                                 se['id_provincia'][0], ['name']
                             )
                             output.append(provincia.get('name', ""))
+                        else:
+                            output.append("")
+
+                        if 'id_municipi' in se:
+                            municipi = O.ResMunicipi.read(
+                                se['id_municipi'][0], ['name']
+                            )
+                            output.append(municipi.get('name', ""))
                         else:
                             output.append("")
                     else:
