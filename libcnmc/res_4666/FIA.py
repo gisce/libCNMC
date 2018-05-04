@@ -28,6 +28,7 @@ class FIA(MultiprocessBased):
         self.base_object = 'Línies FIA'
         self.report_name = 'CNMC INVENTARI FIA'
         self.compare_filed = kwargs["compare_field"]
+        self.extended = kwargs.get("extended", False)
 
     def get_sequence(self):
         """
@@ -105,20 +106,67 @@ class FIA(MultiprocessBased):
                     element_act = 'A{0}'.format(O.GiscedataAtTram.read(tram_id, ['name'])['name'])
 
                 if cllinst[0] == 'giscedata.cts':
-                    ct_vals = O.GiscedataCts.read(int(cllinst[1]),
-                                                  ['id_municipi', 'name'])
+                    ct_vals = O.GiscedataCts.read(
+                        int(cllinst[1]),
+                        ['id_municipi', 'id_provincia', 'zona_id', 'name']
+                    )
                     if ct_vals['id_municipi']:
                         id_municipi = ct_vals['id_municipi'][0]
                     if not cll['tram_id']:
                         element_act = ct_vals['name']
+                    if self.extended:
+                        if 'id_municipi' in ct_vals:
+                            municipi = O.ResMunicipi.read(
+                                ct_vals['id_municipi'][0], ['name']
+                            )
+                            municipi = municipi.get('name', "")
+                        else:
+                            municipi = ""
 
+                        if 'id_provincia' in ct_vals:
+                            provincia = O.ResCountryState.read(
+                                ct_vals['id_provincia'][0], ['name']
+                            )
+                            provincia = provincia.get('name', "")
+                        else:
+                            provincia = ""
+
+                        if 'zona_id' in ct_vals:
+                            zona = O.GiscedataCtsZona.read(
+                                ct_vals['zona_id'][0], ['name']
+                            )
+                            zona = zona.get('name', "")
+                        else:
+                            zona = ""
+
+                        to_append = [provincia, municipi, zona]
                 elif cllinst[0] == 'giscedata.at.suport':
                     linia_vals = O.GiscedataAtSuport.read(int(cllinst[1]),
                                                           ['linia'])
                     linia_id = int(linia_vals['linia'][0])
-                    lat_vals = O.GiscedataAtLinia.read(linia_id, ['municipi'])
+                    lat_vals = O.GiscedataAtLinia.read(
+                        linia_id, ['municipi', 'provincia'])
                     if lat_vals['municipi']:
                         id_municipi = lat_vals['municipi'][0]
+
+                    if self.extended:
+                        if 'municipi' in lat_vals:
+                            municipi = O.ResMunicipi.read(
+                                lat_vals['municipi'][0], ['name']
+                            )
+                            municipi = municipi.get('name', "")
+                        else:
+                            municipi = ""
+
+                        if 'provincia' in lat_vals:
+                            provincia = O.ResCountryState.read(
+                                lat_vals['provincia'][0], ['name']
+                            )
+                            provincia = provincia.get('name', "")
+                        else:
+                            provincia = ""
+
+                        to_append = [provincia, municipi]
 
                 if id_municipi:
                     ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi(
@@ -173,6 +221,10 @@ class FIA(MultiprocessBased):
                     fecha_baja,
                     estado
                 ]
+
+                if self.extended:
+                    output = output + to_append
+
                 self.output_q.put(output)
             except Exception:
                 traceback.print_exc()
