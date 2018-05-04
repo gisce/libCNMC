@@ -193,6 +193,7 @@ class POS(MultiprocessBased):
                             estado = '2'
                     else:
                         estado = '1'
+
                 output = [
                     o_sub,
                     pos['cini'] or '',
@@ -210,8 +211,9 @@ class POS(MultiprocessBased):
                     if 'subestacio_id' in pos:
                         se = O.GiscedataCtsSubestacions.read(
                             pos['subestacio_id'][0],
-                            ['id_provincia', 'id_municipi',' zona_id']
+                            ['id_provincia', 'id_municipi', ' zona_id']
                         )
+
                         if 'id_municipi' in se:
                             municipi = O.ResMunicipi.read(
                                 se['id_municipi'][0], ['name']
@@ -398,12 +400,26 @@ class POS_INT(MultiprocessBased):
                     else:
                         estado = '1'
 
+                output = [
+                    identificador,
+                    cel["cini"] or "",
+                    denominacion,
+                    codigo_ccuu,
+                    codigo_ccaa,
+                    format_f(tensio, 3),
+                    format_f(round(100 - int(cel['perc_financament'])), 2),
+                    data_pm or '',
+                    data_baixa,
+                    estado
+                ]
+
                 if self.extended:
                     if 'subestacio_id' in cel:
                         se = O.GiscedataCtsSubestacions.read(
                             cel['subestacio_id'][0],
                             ['id_provincia', 'id_municipi', ' zona_id']
                         )
+
                         if 'id_municipi' in se:
                             municipi = O.ResMunicipi.read(
                                 se['id_municipi'][0], ['name']
@@ -430,18 +446,6 @@ class POS_INT(MultiprocessBased):
                     else:
                         output.append(["", "", ""])
 
-                output = [
-                    identificador,
-                    cel["cini"] or "",
-                    denominacion,
-                    codigo_ccuu,
-                    codigo_ccaa,
-                    format_f(tensio, 3),
-                    format_f(round(100 - int(cel['perc_financament'])), 2),
-                    data_pm or '',
-                    data_baixa,
-                    estado
-                ]
                 self.output_q.put(output)
             except Exception:
                 traceback.print_exc()
