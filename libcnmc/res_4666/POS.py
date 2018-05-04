@@ -229,16 +229,8 @@ class POS(MultiprocessBased):
                             output.append(provincia.get('name', ""))
                         else:
                             output.append("")
-
-                        if 'zona_id' in se:
-                            zona = O.GiscedataCtsZona.read(
-                                se['zona_id'][0], ['name']
-                            )
-                            output.append(zona.get('name', ""))
-                        else:
-                            output.append("")
                     else:
-                        output.append(["", "", ""])
+                        output.append(["", ""])
 
                 self.output_q.put(output)
             except Exception:
@@ -436,15 +428,8 @@ class POS_INT(MultiprocessBased):
                         else:
                             output.append("")
 
-                        if 'zona_id' in se:
-                            zona = O.GiscedataCtsZona.read(
-                                se['zona_id'][0], ['name']
-                            )
-                            output.append(zona.get('name', ""))
-                        else:
-                            output.append("")
                     else:
-                        output.append(["", "", ""])
+                        output.append(["", ""])
 
                 self.output_q.put(output)
             except Exception:
