@@ -26,23 +26,30 @@ class F9(MultiprocessBased):
             self.layer = o.ResConfig.read(id_res_like, ['value'])[0]['value']
 
     def get_sequence(self):
+        """
+        Generates the sequence of ids to be passed to the consummer function
+
+        :return: ids to process
+        :rtype: list[int]
+        """
+
         o = self.connection
         data_pm_limit = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
-        static_search_params = ['|', ('data_pm', '=', False),
-                                ('data_pm', '<', data_pm_limit),
-                                '|', ('data_baixa', '>', data_baixa),
-                                ('data_baixa', '=', False),
+        static_search_params = [
+            '|',
+            ('data_pm', '=', False),('data_pm', '<', data_pm_limit),
+            '|',
+            ('data_baixa', '>', data_baixa),('data_baixa', '=', False),
                                 ]
         # Revisem que si està de baixa ha de tenir la data informada.
-        static_search_params += ['|',
-                                 '&', ('active', '=', False),
-                                 ('data_baixa', '!=', False),
-                                 ('active', '=', True)]
+        static_search_params += [
+            '|',
+            '&', ('active', '=', False), ('data_baixa', '!=', False),
+            ('active', '=', True)
+        ]
         # AT
-        ids_at = 0
         trams = []
-        ids_bt = 0
         ids_linia_at = o.GiscedataAtLinia.search([])
         fict_line_id = o.GiscedataAtLinia.search(
             [('name', '=', '1')], 0, 0, False, {'active_test': False})
@@ -82,6 +89,17 @@ class F9(MultiprocessBased):
         return ids
 
     def get_geom(self, id_tram, net):
+        """
+        Returns the geometry of the first point of the tram
+
+        :param id_tram: Identifier of the tram
+        :type id_tram: int
+        :param net: type of network (AT,BT)
+        :type net: str
+        :return: X, Y
+        :rtype: tuple[float,float]
+        """
+
         o = self.connection
         like_layer = self.layer
         model_edge = o.GiscegisEdge
@@ -106,23 +124,42 @@ class F9(MultiprocessBased):
             return []
         vertexs = model_polyline.read(edges[0]['polyline'][0])
         for punt in model_vertex.read(vertexs['vertex_ids']):
-            data.append({'x': punt['x'],
-                         'y': punt['y']})
+            data.append(
+                {
+                    'x': format_f(punt['x'], 3),
+                    'y': format_f(punt['y'], 3)
+                }
+            )
         return data
 
     def conv_text(self, data):
+        """
+        Converts the projection of a data
+
+        :param data: list of elemnets to convert
+        :return: Elements with the projection converted
+        """
         o = self.connection
         t = ''
         for line in data:
-            res_srid = convert_srid(self.codi_r1, get_srid(o),
-                                    [line['x'], line['y']])
+            res_srid = convert_srid(
+                self.codi_r1,
+                get_srid(o),
+                [line['x'], line['y']]
+            )
             t += '{0};{1};{2}\n'.format(
-                format_f(res_srid[0], decimals=6),
-                format_f(res_srid[1], decimals=6),
+                format_f(res_srid[0], decimals=3),
+                format_f(res_srid[1], decimals=3),
                 '')
         return t[:-1]
 
     def consumer(self):
+        """
+        Function that generates each line of the file
+
+        :return: None
+        :rtype: None
+        """
         o = self.connection
         while True:
             try:

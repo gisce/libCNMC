@@ -200,7 +200,7 @@ def convert_srid(codi, srid_source, point):
     :type codi: str
     :param srid_source: Source SRID
     :param point: Point to convert
-    :type point: tuple
+    :type point: list
     :return: Converted point
     :rtype: tuple
     """
