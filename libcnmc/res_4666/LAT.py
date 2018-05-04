@@ -304,7 +304,7 @@ class LAT(MultiprocessBased):
 
                         if 'municipi' in linia:
                             municipi = O.ResMunicipi.read(
-                                linia['municipi'][0], ['state']
+                                linia['municipi'][0], ['name']
                             )
                             output.append(municipi.get('name', ""))
                         else:
