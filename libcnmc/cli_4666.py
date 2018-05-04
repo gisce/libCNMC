@@ -451,6 +451,8 @@ def res_4666_des(**kwargs):
 @click.option('--embarrats/--no-embarrats', default=False,
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('--extended/--no-extended', default=False,
+              help="Generar el fitxer extes")
 def res_4666_fia(**kwargs):
     """
     Click entry to generate the FIA(F7) file of 4666
