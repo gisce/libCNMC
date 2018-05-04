@@ -293,11 +293,11 @@ class LAT(MultiprocessBased):
                     ]
                     if self.extended:
                         # S'ha especificat que es vol la versio extesa
-                        if linia['municipi']:
+                        if 'municipi' in linia:
                             municipi = O.ResMunicipi.read(
                                 linia['municipi'][0], ['state']
                             )
-                            if municipi['state']:
+                            if 'state' in municipi:
                                 provincia = O.ResCountryState.read(
                                     municipi['state'][0], ['name']
                                 )

@@ -207,12 +207,12 @@ class POS(MultiprocessBased):
                 ]
 
                 if self.extended:
-                    if (pos['subestacio_id']):
+                    if 'subestacio_id' in pos:
                         se = O.GiscedataCtsSubestacions.read(
                             pos['subestacio_id'][0],
                             ['id_provincia', 'id_municipi',' zona_id']
                         )
-                        if se['id_municipi']:
+                        if 'id_municipi' in se:
                             municipi = O.ResMunicipi.read(
                                 se['id_municipi'][0], ['name']
                             )
@@ -220,7 +220,7 @@ class POS(MultiprocessBased):
                         else:
                             output.append("")
 
-                        if se['id_provincia']:
+                        if 'id_provincia' in se:
                             provincia = O.ResCountryState.read(
                                 se['id_provincia'][0], ['name']
                             )
@@ -228,7 +228,7 @@ class POS(MultiprocessBased):
                         else:
                             output.append("")
 
-                        if se['zona_id']:
+                        if 'zona_id' in se:
                             zona = O.GiscedataCtsZona.read(
                                 se['zona_id'][0], ['name']
                             )
@@ -399,12 +399,12 @@ class POS_INT(MultiprocessBased):
                         estado = '1'
 
                 if self.extended:
-                    if (cel['subestacio_id']):
+                    if 'subestacio_id' in cel:
                         se = O.GiscedataCtsSubestacions.read(
                             cel['subestacio_id'][0],
                             ['id_provincia', 'id_municipi', ' zona_id']
                         )
-                        if se['id_municipi']:
+                        if 'id_municipi' in se:
                             municipi = O.ResMunicipi.read(
                                 se['id_municipi'][0], ['name']
                             )
@@ -412,7 +412,7 @@ class POS_INT(MultiprocessBased):
                         else:
                             output.append("")
 
-                        if se['id_provincia']:
+                        if 'id_provincia' in se:
                             provincia = O.ResCountryState.read(
                                 se['id_provincia'][0], ['name']
                             )
@@ -420,7 +420,7 @@ class POS_INT(MultiprocessBased):
                         else:
                             output.append("")
 
-                        if se['zona_id']:
+                        if 'zona_id' in se:
                             zona = O.GiscedataCtsZona.read(
                                 se['zona_id'][0], ['name']
                             )
