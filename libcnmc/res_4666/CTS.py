@@ -29,6 +29,7 @@ class CTS(MultiprocessBased):
         self.base_object = 'Línies CTS'
         self.report_name = 'CNMC INVENTARI CTS'
         self.compare_field = kwargs["compare_field"]
+        self.extended = kwargs.get("extended", False)
 
     def get_sequence(self):
         """
@@ -62,7 +63,7 @@ class CTS(MultiprocessBased):
         fields_to_read = [
             'name', 'cini', 'data_pm', 'tipus_instalacio_cnmc_id',
             'id_municipi', 'perc_financament', 'descripcio', 'data_baixa',
-            self.compare_field
+            self.compare_field, 'id_provincia', 'zona_id'
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         data_baixa_limit = '{0}-01-01'.format(self.year)
@@ -158,6 +159,31 @@ class CTS(MultiprocessBased):
                     fecha_baja,
                     estado
                 ]
+                if self.extended:
+
+                    if 'id_provincia' in ct:
+                        provincia = O.ResCountryState.read(
+                            ct['id_provincia'][0], ['name']
+                        )
+                        output.append(provincia.get('name', ""))
+                    else:
+                        output.append("")
+
+                    if 'id_municipi' in ct:
+                        municipi = O.ResMunicipi.read(
+                            ct['id_municipi'][0], ['name']
+                        )
+                        output.append(municipi.get('name', ""))
+                    else:
+                        output.append("")
+
+                    if 'zona_id' in ct:
+                        zona = O.GiscedataCtsZona.read(
+                            ct['zona_id'][0], ['name']
+                        )
+                        output.append(zona.get('name', ""))
+                    else:
+                        output.append("")
 
                 self.output_q.put(output)
             except Exception:
