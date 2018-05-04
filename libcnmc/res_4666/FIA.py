@@ -115,13 +115,6 @@ class FIA(MultiprocessBased):
                     if not cll['tram_id']:
                         element_act = ct_vals['name']
                     if self.extended:
-                        if 'id_municipi' in ct_vals:
-                            municipi = O.ResMunicipi.read(
-                                ct_vals['id_municipi'][0], ['name']
-                            )
-                            municipi = municipi.get('name', "")
-                        else:
-                            municipi = ""
 
                         if 'id_provincia' in ct_vals:
                             provincia = O.ResCountryState.read(
@@ -130,6 +123,14 @@ class FIA(MultiprocessBased):
                             provincia = provincia.get('name', "")
                         else:
                             provincia = ""
+
+                        if 'id_municipi' in ct_vals:
+                            municipi = O.ResMunicipi.read(
+                                ct_vals['id_municipi'][0], ['name']
+                            )
+                            municipi = municipi.get('name', "")
+                        else:
+                            municipi = ""
 
                         if 'zona_id' in ct_vals:
                             zona = O.GiscedataCtsZona.read(
@@ -150,13 +151,6 @@ class FIA(MultiprocessBased):
                         id_municipi = lat_vals['municipi'][0]
 
                     if self.extended:
-                        if 'municipi' in lat_vals:
-                            municipi = O.ResMunicipi.read(
-                                lat_vals['municipi'][0], ['name']
-                            )
-                            municipi = municipi.get('name', "")
-                        else:
-                            municipi = ""
 
                         if 'provincia' in lat_vals:
                             provincia = O.ResCountryState.read(
@@ -165,6 +159,14 @@ class FIA(MultiprocessBased):
                             provincia = provincia.get('name', "")
                         else:
                             provincia = ""
+
+                        if 'municipi' in lat_vals:
+                            municipi = O.ResMunicipi.read(
+                                lat_vals['municipi'][0], ['name']
+                            )
+                            municipi = municipi.get('name', "")
+                        else:
+                            municipi = ""
 
                         to_append = [provincia, municipi]
 

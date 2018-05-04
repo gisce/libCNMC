@@ -93,7 +93,8 @@ class LAT(MultiprocessBased):
                 self.progress_q.put(item)
 
                 linia = O.GiscedataAtLinia.read(
-                    item, ['trams', 'tensio', 'municipi', 'propietari']
+                    item,
+                    ['trams', 'tensio', 'municipi', 'propietari', 'provincia']
                 )
 
 
@@ -293,17 +294,19 @@ class LAT(MultiprocessBased):
                     ]
                     if self.extended:
                         # S'ha especificat que es vol la versio extesa
+                        if 'provincia' in linia:
+                            provincia = O.ResCountryState.read(
+                                linia['provincia'][0], ['name']
+                            )
+                            output.append(provincia.get('name', ""))
+                        else:
+                            output.append("")
+
                         if 'municipi' in linia:
                             municipi = O.ResMunicipi.read(
                                 linia['municipi'][0], ['state']
                             )
-                            if 'state' in municipi:
-                                provincia = O.ResCountryState.read(
-                                    municipi['state'][0], ['name']
-                                )
-                                output.append(provincia.get('name', ""))
-                            else:
-                                output.append("")
+                            output.append(municipi.get('name', ""))
                         else:
                             output.append("")
 
