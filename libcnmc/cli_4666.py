@@ -200,7 +200,7 @@ def res_4666_mod(**kwargs):
 @click.option('--embarrats/--no-embarrats', default=False,
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-@click.option('-e', '--extended', default=False,
+@click.option('--extended/--no-extended', default=False,
               help="Generar el fitxer extes")
 def res_4666_lat(**kwargs):
     """
@@ -344,7 +344,7 @@ def res_4666_sub(**kwargs):
 @click.option('--embarrats/--no-embarrats', default=False,
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-@click.option('-e', '--extended', default=False,
+@click.option('--extended/--no-extended', default=False,
               help="Generar el fitxer extes")
 def res_4666_pos(**kwargs):
     """
@@ -453,7 +453,7 @@ def res_4666_des(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_4666_fia(**kwargs):
     """
-    Click entry to generate the FIA file of 4666
+    Click entry to generate the FIA(F7) file of 4666
 
     :param kwargs: Params to pas to the process
     :type kwargs: dict(str, str) 
