@@ -185,8 +185,8 @@ class F1(MultiprocessBased):
                     o_zona = self.get_zona_qualitat(cups['et'])
                 if cups['id_municipi']:
                     id_municipi = cups["id_municipi"][0]
-                    o_codi_ine = self.municipi_ine_dc[id_municipi][0][:2]
-                    o_codi_prov = "{}{}".format(
+                    o_codi_ine_prov = self.municipi_ine_dc[id_municipi][0][:2]
+                    o_codi_ine_mun = "{}{}".format(
                         o_codi_ine,
                         self.municipi_ine_dc[id_municipi][1])
                 o_utmz = ''
@@ -368,8 +368,8 @@ class F1(MultiprocessBased):
                     o_zona,
                     o_name,
                     o_codi_r1,
-                    o_codi_ine,
-                    o_codi_prov,
+                    o_codi_ine_mun,
+                    o_codi_ine_prov,
                     o_connexio,
                     o_tensio,
                     o_estat_contracte,
