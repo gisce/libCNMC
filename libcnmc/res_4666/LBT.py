@@ -34,6 +34,7 @@ class LBT(MultiprocessBased):
         self.report_name = "CNMC INVENTARI BT"
         self.embarrats = kwargs.pop("embarrats", False)
         self.compare_field = kwargs["compare_field"]
+        self.extended = kwargs.get("extended", False)
 
     def get_sequence(self):
         """
@@ -228,6 +229,37 @@ class LBT(MultiprocessBased):
                     format_f(capacitat, 3),
                     estado
                 ]
+
+                if self.extended:
+
+                    if 'municipi' in linia:
+                        if linia['municipi']:
+                            municipi = O.ResMunicipi.read(
+                                linia['municipi'][0], ['name']
+                            )
+                            output.append(municipi.get('name', ""))
+                        else:
+                            output.append("")
+                    else:
+                        output.append("")
+
+                    if 'ct' in linia:
+                        if linia['ct']:
+                            ct = O.GiscedataCts.read(linia['ct'][0], ['zona_id'])
+                            if 'zona_id' in ct:
+                                if ct['zona_id']:
+                                    zona = O.GiscedataCtsZona.read(
+                                        ct['zona_id'][0], ['name']
+                                    )
+                                    output.append(zona.get('name', ""))
+                                else:
+                                    output.append("")
+                            else:
+                                output.append("")
+                        else:
+                            output.append("")
+                    else:
+                        output.append("")
 
                 self.output_q.put(output)
             except Exception:
