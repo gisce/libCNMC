@@ -14,7 +14,7 @@ class F15(MultiprocessBased):
 
     def get_sequence(self):
         search_params = [
-            ("inventari", "!=", "l2 + p"),
+            ("inventari", "=", "fiabilitat"),
             ("installacio", "like", "giscedata.at.suport")
         ]
         return self.connection.GiscedataCellesCella.search(search_params)
