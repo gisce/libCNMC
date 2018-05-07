@@ -244,8 +244,7 @@ class F1(MultiprocessBased):
                     if polissa['tensio']:
                         o_tensio = format_f(
                             float(polissa['tensio']) / 1000.0, decimals=3)
-                    o_potencia = format_f(
-                        polissa['potencia'], decimals=3)
+                    o_potencia = polissa['potencia']
                     if polissa['cnae']:
                         cnae_id = polissa['cnae'][0]
                         if cnae_id in self.cnaes:
@@ -260,8 +259,7 @@ class F1(MultiprocessBased):
                         butlleti = O.GiscedataButlleti.read(
                             polissa['butlletins'][-1], ['pot_max_admisible']
                         )
-                        o_pot_ads = format_f(
-                            butlleti['pot_max_admisible'], decimals=3)
+                        o_pot_ads = butlleti['pot_max_admisible']
                     comptador_actiu = get_comptador(
                         self.connection, polissa['id'], self.year)
                     if comptador_actiu:
