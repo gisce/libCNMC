@@ -147,7 +147,10 @@ class F11(MultiprocessBased):
                 else:
                     o_tipo = ''
                 o_potencia = float(self.get_potencia_trafos(item))
-                cups = O.GiscedataCupsPs.search([('et', '=', ct['name'])])
+                cups = O.GiscedataCupsPs.search([
+                    ('et', '=', ct['name']),
+                    ('polissa_polissa.tarifa.name', 'not in', ["RE", "RE12"])
+                ])
                 o_energia = sum(
                     x['cne_anual_activa']
                     for x in O.GiscedataCupsPs.read(
