@@ -9,8 +9,8 @@ class F15(MultiprocessBased):
         super(F15, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
-        self.report_name = 'F15 - CTS'
-        self.base_object = 'CTS'
+        self.report_name = 'F15 - Celles'
+        self.base_object = 'celles'
 
     def get_sequence(self):
         search_params = [
