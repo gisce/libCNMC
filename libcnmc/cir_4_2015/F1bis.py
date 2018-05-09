@@ -103,20 +103,35 @@ class F1bis(MultiprocessBased):
             return '0'
 
     def get_baixa_cups(self, cups_id):
+        """
+        Checks if the CUPS has been inactive during the year
+
+        :param cups_id: CUPS id
+        :type cups_id: int
+        :return: 0 or 1
+        :rtype: str
+        """
         O = self.connection
-        intervals = O.GiscedataCupsPs.get_modcontractual_intervals
-        start = '%s-01-01' % self.year
-        end = '%s-12-31' % self.year
-        modcons = intervals(cups_id, start, end, {'ffields': ['titular']})
-        dates = sorted([tuple(x['dates']) for x in modcons.values()])
-        days = 1
+        ultim_dia_any = '%s-12-31' % self.year
+        primer_dia_any = '%s-01-01' % self.year
+        search_modcon = [
+            ('cups', '=', cups_id),
+            ('data_inici', '<=', ultim_dia_any),
+            ('data_final', '>', primer_dia_any)
+        ]
+        modcons_ids = O.GiscedataPolissaModcontractual.search(
+            search_modcon, 0, 0, False
+            , {'active_test': False})
+        modcons = O.GiscedataPolissaModcontractual.read(modcons_ids)
+        dates = sorted([tuple([x['data_inici'], x["data_final"]]) for x in modcons])
+        days = 0
         for idx, interval in enumerate(dates):
             if idx + 1 == len(dates):
                 break
             end = datetime.strptime(interval[-1], '%Y-%m-%d')
             start = datetime.strptime(dates[idx + 1][0], '%Y-%m-%d')
             days = max((start - end).days, days)
-        if days > 1:
+        if days > 0:
             return '1'
         else:
             return '0'
