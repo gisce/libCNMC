@@ -101,13 +101,14 @@ class F1bis(MultiprocessBased):
             return '1'
         else:
             return '0'
-        
+
     def get_baixa_cups(self, cups_id):
         """
 
         :param cups_id:
         :return:
         """
+        O = self.connection
         search_params = [('cups', '=', cups_id)]
         polissa_id = O.GiscedataPolissa.search(
             search_params, 0, 1, 'data_alta desc')
