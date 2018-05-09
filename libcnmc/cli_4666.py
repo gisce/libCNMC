@@ -42,7 +42,8 @@ def res_pos2(proc1, proc2, **kwargs):
         codi_r1=kwargs["codi_r1"],
         year=kwargs["year"],
         embarrats=kwargs["embarrats"],
-        compare_field=kwargs["compare_field"]
+        compare_field=kwargs["compare_field"],
+        extended=kwargs.get('extended', False)
     )
     proc.calc()
 
@@ -55,7 +56,8 @@ def res_pos2(proc1, proc2, **kwargs):
         codi_r1=kwargs["codi_r1"],
         year=kwargs["year"],
         embarrats=kwargs["embarrats"],
-        compare_field=kwargs["compare_field"]
+        compare_field=kwargs["compare_field"],
+        extended=kwargs.get('extended', False)
     )
     proc_2.calc()
 
@@ -98,7 +100,8 @@ def res_lat(LAT, **kwargs):
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
         embarrats=kwargs['embarrats'],
-        compare_field=kwargs["compare_field"]
+        compare_field=kwargs["compare_field"],
+        extended=kwargs.get('extended', False)
     )
     proc.calc()
 
@@ -197,9 +200,11 @@ def res_4666_mod(**kwargs):
 @click.option('--embarrats/--no-embarrats', default=False,
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('--extended/--no-extended', default=False,
+              help="Generar el fitxer extes")
 def res_4666_lat(**kwargs):
     """
-    Click entry to generate LAT file of 4666
+    Click entry to generate LAT(F1) file of 4666
 
     :param kwargs: Parameters to generate the LAT file
     :type kwargs: dict
@@ -233,9 +238,11 @@ def res_4666_lat(**kwargs):
 @click.option('--embarrats/--no-embarrats', default=False,
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('--extended/--no-extended', default=False,
+              help="Generar el fitxer extes")
 def res_4666_lbt(**kwargs):
     """
-    Click entry to generate the LBT of 4666
+    Click entry to generate the LBT(F2) of 4666
 
     :param kwargs: Params to pas to the process
     :type kwargs: dict(str, str) 
@@ -269,9 +276,11 @@ def res_4666_lbt(**kwargs):
 @click.option('--embarrats/--no-embarrats', default=False,
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('--extended/--no-extended', default=False,
+              help="Generar el fitxer extes")
 def res_4666_cts(**kwargs):
     """
-    Click entry to generate the CTs of 4666
+    Click entry to generate the CTs(F8) of 4666
 
     :param kwargs: Params to pas to the process
     :type kwargs: dict(str, str) 
@@ -339,9 +348,11 @@ def res_4666_sub(**kwargs):
 @click.option('--embarrats/--no-embarrats', default=False,
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('--extended/--no-extended', default=False,
+              help="Generar el fitxer extes")
 def res_4666_pos(**kwargs):
     """
-    Click entry to generate the POS file of 4666
+    Click entry to generate the POS(F4) file of 4666
 
     :param kwargs: Params to pas to the process
     :type kwargs: dict(str, str) 
@@ -444,9 +455,11 @@ def res_4666_des(**kwargs):
 @click.option('--embarrats/--no-embarrats', default=False,
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('--extended/--no-extended', default=False,
+              help="Generar el fitxer extes")
 def res_4666_fia(**kwargs):
     """
-    Click entry to generate the FIA file of 4666
+    Click entry to generate the FIA(F7) file of 4666
 
     :param kwargs: Params to pas to the process
     :type kwargs: dict(str, str) 
