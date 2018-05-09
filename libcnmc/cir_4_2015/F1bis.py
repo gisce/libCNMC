@@ -101,25 +101,21 @@ class F1bis(MultiprocessBased):
             return '1'
         else:
             return '0'
-
+        
     def get_baixa_cups(self, cups_id):
-        O = self.connection
-        intervals = O.GiscedataCupsPs.get_modcontractual_intervals
-        start = '%s-01-01' % self.year
-        end = '%s-12-31' % self.year
-        modcons = intervals(cups_id, start, end, {'ffields': ['titular']})
-        dates = sorted([tuple(x['dates']) for x in modcons.values()])
-        days = 1
-        for idx, interval in enumerate(dates):
-            if idx + 1 == len(dates):
-                break
-            end = datetime.strptime(interval[-1], '%Y-%m-%d')
-            start = datetime.strptime(dates[idx + 1][0], '%Y-%m-%d')
-            days = max((start - end).days, days)
-        if days > 1:
+        """
+
+        :param cups_id:
+        :return:
+        """
+        search_params = [('cups', '=', cups_id)]
+        polissa_id = O.GiscedataPolissa.search(
+            search_params, 0, 1, 'data_alta desc')
+        if polissa_id:
             return '1'
         else:
             return '0'
+
 
     def consumer(self):
         O = self.connection
