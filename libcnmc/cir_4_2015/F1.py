@@ -46,10 +46,6 @@ class F1(MultiprocessBased):
             0,0,False,{"active_test": False}
         )
         self.modcons_in_year = set(mods_fi + mods_ini + mod_all_year)
-        self.municipi_ine_dc = {}  # type:dict[str,(str,str)]
-        ids = self.connection.ResMunicipi.search([('dc', '!=', False)])
-        for municipi in self.connection.ResMunicipi.read(ids, ['ine', 'dc']):
-            self.municipi_ine_dc[municipi['id']] = (municipi["ine"], municipi['dc'])
         self.default_o_cod_tfa = None
         self.default_o_cnae = None
         search_params = [
@@ -65,6 +61,11 @@ class F1(MultiprocessBased):
                 self.default_o_cod_tfa = default_values.get('o_cod_tfa')
             if default_values.get('o_cnae'):
                 self.default_o_cnae = default_values.get('o_cnae')
+
+    def get_ine(self, municipi_id):
+        O = self.connection
+        muni = O.ResMunicipi.read(municipi_id, ['ine'])
+        return get_ine(O, muni['ine'])
 
     def get_codi_tarifa(self, codi_tarifa):
         """
@@ -176,19 +177,16 @@ class F1(MultiprocessBased):
                 if not set(cups["polisses"]).intersection(self.modcons_in_year):
                     continue
                 o_name = cups['name'][:22]
-                o_codi_ine = ''
-                o_codi_prov = ''
+                o_codi_ine_mun = ''
+                o_codi_ine_prov = ''
                 o_zona = ''
                 o_potencia_facturada = format_f(
                     cups['cnmc_potencia_facturada'], 3) or ''
                 if 'et' in cups:
                     o_zona = self.get_zona_qualitat(cups['et'])
                 if cups['id_municipi']:
-                    id_municipi = cups["id_municipi"][0]
-                    o_codi_ine_prov = self.municipi_ine_dc[id_municipi][0][:2]
-                    o_codi_ine_mun = "{}{}".format(
-                        o_codi_ine,
-                        self.municipi_ine_dc[id_municipi][1])
+                    id_mun = cups["id_municipi"][0]
+                    o_codi_ine_prov, o_codi_ine_mun = self.get_ine(id_mun)
                 o_utmz = ''
                 o_nom_node = ''
                 o_tensio = ''
