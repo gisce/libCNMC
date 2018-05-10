@@ -151,9 +151,9 @@ def get_id_expedient(connection, expedients_id):
 def get_id_municipi_from_company(connection, get_name=False):
     O = connection
     id_municipi = False
-    #Si no hi ha ct agafem la comunitat del rescompany
+    # Si no hi ha ct agafem la comunitat del rescompany
     company_partner = O.ResCompany.read(1, ['partner_id'])
-    #funció per trobar la ccaa desde el municipi
+    # funció per trobar la ccaa desde el municipi
     if company_partner:
         partner_address = O.ResPartner.read(
             company_partner['partner_id'][0], ['address'])
