@@ -127,8 +127,7 @@ def get_ine(connection, ine):
 
 
 def get_comptador(connection, polissa_id, year):
-        O = connection
-        comp_obj = O.GiscedataLecturesComptador
+        comp_obj = connection.GiscedataLecturesComptador
         comp_id = comp_obj.search([
             ('polissa', '=', polissa_id),
             ('data_alta', '<', '{}-01-01'.format(year + 1))
