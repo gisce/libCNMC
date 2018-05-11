@@ -63,6 +63,13 @@ class F1(MultiprocessBased):
                 self.default_o_cnae = default_values.get('o_cnae')
 
     def get_ine(self, municipi_id):
+        """
+        Returns the INE code of the given municipi
+        :param municipi_id: Id of the municipi
+        :type municipi_id: int
+        :return: INE code
+        :rtype:str
+        """
         O = self.connection
         muni = O.ResMunicipi.read(municipi_id, ['ine'])
         return get_ine(O, muni['ine'])
@@ -94,6 +101,13 @@ class F1(MultiprocessBased):
             search_params, 0, 0, False, {'active_test': False})
 
     def get_zona_qualitat(self, codi_ct):
+        """
+        Returns the quality zone of a given ct
+        :param codi_ct: Codi CT
+        :type codi_ct: str
+        :return: Quality zone
+        :rtype: str
+        """
         zona_qualitat = ''
         if codi_ct:
             if codi_ct in self.cts:
@@ -114,6 +128,14 @@ class F1(MultiprocessBased):
         return zona_qualitat
 
     def get_tipus_connexio(self, id_escomesa):
+        """
+        Gets the tipus of conexio of an escomesa
+
+        :param id_escomesa: Id of the escomesa
+        :type id_escomesa: int
+        :return: A or S depending on if the linia is aerial o underground
+        :rtype: str
+        """
         O = self.connection
         bloc = O.GiscegisBlocsEscomeses.search(
             [('escomesa', '=', id_escomesa)]
