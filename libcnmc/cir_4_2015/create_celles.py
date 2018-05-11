@@ -25,7 +25,7 @@ class CreateCelles4_2015(CreateCelles):
                 elif 'suport' in model:
                     suport_name = name
                 else:
-                    raise
+                    raise Exception("No element")
             elif val[0] == 'data_pm':
                 vals['bloquejar_pm'] = True
                 if val[1] == 'auto':
