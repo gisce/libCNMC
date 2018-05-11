@@ -53,7 +53,7 @@ def get_norm_tension(connection, tension):
             connection.GiscedataTensionsTensio.search([]),
             tension_fields_to_read)
         TENS_NORM.extend([(t['l_inferior'], t['l_superior'], t['tensio'])
-                        for t in tension_vals])
+                          for t in tension_vals])
     if not tension:
         return tension
 
@@ -127,8 +127,7 @@ def get_ine(connection, ine):
 
 
 def get_comptador(connection, polissa_id, year):
-        O = connection
-        comp_obj = O.GiscedataLecturesComptador
+        comp_obj = connection.GiscedataLecturesComptador
         comp_id = comp_obj.search([
             ('polissa', '=', polissa_id),
             ('data_alta', '<', '{}-01-01'.format(year + 1))
