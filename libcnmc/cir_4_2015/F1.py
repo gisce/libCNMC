@@ -190,7 +190,7 @@ class F1(MultiprocessBased):
                 fields_to_read = [
                     'name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
                     'cne_anual_reactiva', 'cnmc_potencia_facturada', 'et',
-                    'polisses', 'potencia_conveni'
+                    'polisses', 'potencia_conveni','potencia_adscrita'
                 ]
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 if not cups or not cups.get('name'):
@@ -241,7 +241,7 @@ class F1(MultiprocessBased):
 
                 o_potencia = ''
                 o_cnae = ''
-                o_pot_ads = ''
+                o_pot_ads = cups['potencia_adscrita']
                 o_equip = 'MEC'
                 o_cod_tfa = ''
                 o_estat_contracte = 0
@@ -274,7 +274,6 @@ class F1(MultiprocessBased):
                                 cnae_id, ['name']
                             )['name']
                             self.cnaes[cnae_id] = o_cnae
-                    # Mirem si té l'actualització dels butlletins
                     if polissa.get('butlletins', []):
                         butlleti = O.GiscedataButlleti.read(
                             polissa['butlletins'][-1], ['pot_max_admisible']
@@ -393,7 +392,7 @@ class F1(MultiprocessBased):
                     o_estat_contracte,
                     format_f(o_potencia or '0,000', decimals=3),
                     format_f(o_potencia_facturada, decimals=3),
-                    format_f(o_pot_ads or o_potencia or '0,000', decimals=3),
+                    format_f(o_pot_ads or '0,000', decimals=3),
                     format_f(o_anual_activa, decimals=3),
                     format_f(o_anual_reactiva, decimals=3),
                     o_any_incorporacio
