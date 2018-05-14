@@ -1,0 +1,8 @@
+progressbar
+click
+libcomxml
+chardet
+pyproj
+osconf
+cerberus>=1.0
+python-dateutil
