@@ -5,17 +5,18 @@
 import sys
 from setuptools import setup, find_packages
 
-
 PACKAGES_DATA = {}
 
+with open('requirements.txt', 'r') as f:
+    INSTALL_REQUIRES = f.readlines()
 
-INSTALL_REQUIRES = [
-    'progressbar', 'click', 'libcomxml',
-    'chardet', 'pyproj', 'osconf', 'cerberus>=1.0'
-]
+with open('requirements-dev.txt', 'r') as f:
+    TESTS_REQUIRE = f.readlines()
+
 DEPENDENCY_LINKS = [
     'https://github.com/gisce/ooop/archive/xmlrpc_transaction.zip'
 ]
+
 if sys.version_info[1] < 6:
     INSTALL_REQUIRES += ['multiprocessing']
 
@@ -29,6 +30,7 @@ setup(name='libcnmc',
       long_description='''Long description''',
       provides=['libcnmc'],
       install_requires=INSTALL_REQUIRES,
+      tests_require=TESTS_REQUIRE,
       packages=find_packages(exclude=['tests']),
       dependency_links=DEPENDENCY_LINKS,
       package_data=PACKAGES_DATA,
@@ -41,4 +43,3 @@ setup(name='libcnmc',
               'cnmc_checker = libcnmc.checker:node_check'
           ]
       })
-
