@@ -6,4 +6,3 @@ pyproj
 osconf
 cerberus>=1.0
 python-dateutil
-https://github.com/gisce/ooop/archive/xmlrpc_transaction.zip
