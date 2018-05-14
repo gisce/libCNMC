@@ -241,7 +241,7 @@ class F1(MultiprocessBased):
 
                 o_potencia = ''
                 o_cnae = ''
-                o_pot_ads = cups['potencia_adscrita']
+                o_pot_ads = cups.get('potencia_adscrita', '0,000')
                 o_equip = 'MEC'
                 o_cod_tfa = ''
                 o_estat_contracte = 0
@@ -274,11 +274,6 @@ class F1(MultiprocessBased):
                                 cnae_id, ['name']
                             )['name']
                             self.cnaes[cnae_id] = o_cnae
-                    if polissa.get('butlletins', []):
-                        butlleti = O.GiscedataButlleti.read(
-                            polissa['butlletins'][-1], ['pot_max_admisible']
-                        )
-                        o_pot_ads = butlleti['pot_max_admisible']
                     comptador_actiu = get_comptador(
                         self.connection, polissa['id'], self.year)
                     if comptador_actiu:
@@ -392,7 +387,7 @@ class F1(MultiprocessBased):
                     o_estat_contracte,
                     format_f(o_potencia or '0,000', decimals=3),
                     format_f(o_potencia_facturada, decimals=3),
-                    format_f(o_pot_ads or '0,000', decimals=3),
+                    format_f(o_pot_ads, decimals=3),
                     format_f(o_anual_activa, decimals=3),
                     format_f(o_anual_reactiva, decimals=3),
                     o_any_incorporacio
