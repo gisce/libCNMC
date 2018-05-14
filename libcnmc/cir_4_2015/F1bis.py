@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
+from datetime import datetime, timedelta
 import traceback
 
 from libcnmc.utils import get_comptador, format_f
@@ -109,14 +109,48 @@ class F1bis(MultiprocessBased):
         :return:
         """
         O = self.connection
-        search_params = [('cups', '=', cups_id)]
-        polissa_id = O.GiscedataPolissa.search(
-            search_params, 0, 1, 'data_alta desc')
-        if polissa_id:
-            return '1'
-        else:
-            return '0'
+        polissa_obj = O.GiscedataPolissa
 
+        data_inici = '%s-01-01' % self.year
+        data_fi = '%s-12-31' % self.year
+
+        # Busquem pòlisses que s'han donat de baixa durant l'any
+        search_params = [
+            ('cups', '=', cups_id),
+            ('data_baixa', '>=', data_inici),
+            ('data_baixa', '<', data_fi)
+        ]
+        polisses_baixa_ids = polissa_obj.search(
+            search_params, 0, False, False, {'active_test': False})
+
+        # Agafem les dates de baixa de les pòlisses
+        data_format = '%Y-%m-%d'
+        dates_baixa = [
+            polissa['data_baixa'] for polissa
+            in polissa_obj.read(polisses_baixa_ids, ['data_baixa'])
+        ]
+
+        # Sumem un dia a cada data de baixa
+        dates_alta = [
+            (
+                datetime.strptime(data_baixa, data_format) + timedelta(days=1)
+            ).strftime(data_format)
+            for data_baixa in dates_baixa
+        ]
+
+        # Busquem pòlisses on la data d'alta estigui en les dates d'alta
+        polisses_alta_ids = polissa_obj.search(
+            [('cups', '=', cups_id), ('data_alta', 'in', dates_alta)],
+            0, False, False, {'active_test': False}
+        )
+
+        # Si hi ha el mateix número de pòlisses que s'han donat de baixa durant
+        # l'any i pòlisses que s'han donat d'alta al dia següent llavors '0',
+        # altrament '1'
+        if len(polisses_baixa_ids) == len(polisses_alta_ids):
+            return '0'
+        else:
+            return '1'
 
     def consumer(self):
         O = self.connection

@@ -190,7 +190,7 @@ class F1(MultiprocessBased):
                 fields_to_read = [
                     'name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
                     'cne_anual_reactiva', 'cnmc_potencia_facturada', 'et',
-                    'polisses', 'potencia_conveni','potencia_adscrita'
+                    'polisses', 'potencia_conveni', 'potencia_adscrita'
                 ]
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 if not cups or not cups.get('name'):
@@ -241,7 +241,7 @@ class F1(MultiprocessBased):
 
                 o_potencia = ''
                 o_cnae = ''
-                o_pot_ads = cups.get('potencia_adscrita', '0,000')
+                o_pot_ads = cups['potencia_adscrita'] or '0,000'
                 o_equip = 'MEC'
                 o_cod_tfa = ''
                 o_estat_contracte = 0
