@@ -114,7 +114,10 @@ class F1(MultiprocessBased):
                 return self.cts[codi_ct]
             else:
                 ct_ids = self.connection.GiscedataCts.search(
-                    [('name', '=', codi_ct)])
+                    [('name', '=', codi_ct)],
+                    0, 0, False, {"active_test": False}
+                )
+
                 if ct_ids:
                     dades_ct = self.connection.GiscedataCts.read(
                         ct_ids[0], ['zona_id'])
