@@ -205,9 +205,9 @@ def cir_4_2015_f12(**kwargs):
     """
     Click entry to generate the F12 of the 4/2015
 
-    :param kwargs: Params to pass to the proces  
-    :type kwargs: dict(str, str) 
-    :return: None 
+    :param kwargs: Params to pass to the proces
+    :type kwargs: dict(str, str)
+    :return: None
     :rtype: None
     """
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
@@ -241,14 +241,16 @@ def cir_4_2015_f12(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('--fiabilitat/--no-fiabilitat', default=False,
+              help="Only include fiabilitat elements")
 def cir_4_2015_f12bis(**kwargs):
     """
     Click entry to generate the F12 BIS of the 4/2015
 
-    :param kwargs: Params to pass to the process 
-    :type kwargs: dict(str, str) 
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str, str)
     :return: None
-    :rtype: None 
+    :rtype: None
     """
 
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
@@ -260,7 +262,8 @@ def cir_4_2015_f12bis(**kwargs):
         output=kwargs['output'],
         connection=O,
         num_proc=kwargs['num_proc'],
-        year=kwargs['year']
+        year=kwargs['year'],
+        fiabilitat=kwargs["fiabilitat"]
     )
     proc.calc()
 

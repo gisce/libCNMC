@@ -8,14 +8,22 @@ class F12bis(MultiprocessBased):
     def __init__(self, **kwargs):
         super(F12bis, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.report_name = 'F12 Bis - CTS'
-        self.base_object = 'CTS'
+        self.report_name = 'F12 Bis - Cel·les'
+        self.base_object = 'Cel·les'
+        self.fiabilitat = kwargs.get("fiabilitat")
 
     def get_sequence(self):
+        """
+        Generates a list of elements of celles to be passed to the consumer
+
+        :return: None
+        """
+
         search_params = [
-            ("inventari", "=", "fiabilitat"),
             ("installacio", "like", "giscedata.cts")
         ]
+        if self.fiabilitat:
+            search_params.append(("inventari", "=", "fiabilitat"))
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
         search_params += ['|', ('data_pm', '=', False),
