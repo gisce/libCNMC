@@ -196,6 +196,12 @@ class F15(MultiprocessBased):
         return res
 
     def consumer(self):
+        """
+        Function that generates each line of the file
+
+        :return: None
+        """
+
         o = self.connection
         fields_to_read = [
             'installacio', 'cini', 'propietari', 'name', 'tram_id', 'tensio'
