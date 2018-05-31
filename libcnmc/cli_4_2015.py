@@ -465,7 +465,8 @@ def cir_4_2015_f15(**kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
                     pwd=kwargs['password'], port=kwargs['port'],
                     uri=kwargs['server'])
-    proc = cir_4_2015.F15(
+
+    proc = cir_4_2015.F15Cel(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
         output=kwargs['output'],

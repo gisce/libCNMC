@@ -4,7 +4,8 @@ import traceback
 from libcnmc.utils import format_f, convert_srid, get_srid
 from libcnmc.core import MultiprocessBased
 
-class F15(MultiprocessBased):
+
+class F15Cel(MultiprocessBased):
     """
     Class to generate the F15 (Celdas)
     """
@@ -19,7 +20,7 @@ class F15(MultiprocessBased):
         :type codi_r1:str
         """
 
-        super(F15, self).__init__(**kwargs)
+        super(F15Cel, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.report_name = 'F15 - Celles'
