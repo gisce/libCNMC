@@ -62,7 +62,7 @@ class F15Pos(MultiprocessBased):
             )
 
             sub = self.connection.GiscedataCtsSubestacions.read(
-                pos["id_id_subestacio"], fields_sub_read
+                pos["id_subestacio"], fields_sub_read
             )
 
             point = [sub["x"], sub["y"]]
