@@ -1,18 +1,129 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import traceback
-from libcnmc.utils import format_f, convert_srid, get_srid
+from libcnmc.utils import format_f, convert_srid, get_srid, fetch_cts_node
+from libcnmc.utils import fetch_tensions_norm, fetch_mun_ine, fetch_prov_ine
 from libcnmc.core import MultiprocessBased
 
-class F15(MultiprocessBased):
+
+class F15Pos(MultiprocessBased):
+    """
+    Class to generate the F15 (Posiciones)
+    """
+
     def __init__(self, **kwargs):
-        super(F15, self).__init__(**kwargs)
+        """
+        Class constructor
+        :param year: Generation year
+        :param codi_r1: R1 code of the company
+        """
+
+        super(F15Pos, self).__init__(**kwargs)
+        self.year = kwargs.pop('year', datetime.now().year - 1)
+        self.codi_r1 = kwargs.pop('codi_r1')
+        self.cod_dis = 'R1-{}'.format(self.codi_r1[-3:])
+        self.tensions = fetch_tensions_norm(self.connection)
+        self.cts = {}
+        self.srid = str(self.connection.GiscegisBaseGeom.get_srid())
+        self.provincias = fetch_prov_ine(self.connection)
+        self.municipios = fetch_mun_ine(self.connection)
+        self.cts_node = fetch_cts_node(self.connection)
+
+    def get_sequence(self):
+        """
+        Generates the sequence of ids to pass to the consume function
+
+        :return: List of ids to generate the
+        :rtype: list(int)
+        """
+
+        pos_model = self.connection.GiscedataCtsSubestacionsPosicio
+        search_params = [("interruptor", "=", "3")]
+        ids = pos_model.search(search_params)
+
+        return ids
+
+    def consumer(self):
+        """
+        Consumer function that generates each line of the file
+
+        :return: None
+        """
+
+        while True:
+            try:
+                item = self.input_q.get()
+                fields_read = [
+                    "name", "tensio", "cini", "propietari", "x", "y",
+                    "subestacio_id"
+                ]
+                fields_sub_read = [
+                    "x", "y", "ct_id","id_municipi","id_provincia"
+                ]
+                pos = self.connection.GiscedataCtsSubestacionsPosicio.read(
+                    item, fields_read
+                )
+
+                sub = self.connection.GiscedataCtsSubestacions.read(
+                    pos["subestacio_id"][0], fields_sub_read
+                )
+
+                point = [sub["x"], sub["y"]]
+                point_25830 = convert_srid(self.codi_r1, self.srid, point)
+
+                self.output_q.put(
+                    [
+                        self.cts_node[sub["ct_id"][0]],  # Nudo
+                        pos.get("name", ""),  # Elemento de fiabilidad
+                        "",  # Tramo
+                        pos.get("cini", ""),  # CINI
+                        format_f(point_25830[0], decimals=3),
+                        format_f(point_25830[1], decimals=3),
+                        0,
+                        self.municipios[sub["id_municipi"][0]],  # Codigo INE de municipio
+                        self.provincias[sub["id_provincia"][0]],  # Codigo de provincia INE
+                        self.tensions.get(pos["tensio"], 0),  # Nivel de tension
+                        self.cod_dis,  # Codigo de la compañia distribuidora
+                        pos.get("propietari", ""),  # Propiedad
+                        self.year  # Año de inforacion
+                     ])
+            except Exception:
+                traceback.print_exc()
+                if self.raven:
+                    self.raven.captureException()
+            finally:
+                self.input_q.task_done()
+
+
+class F15Cel(MultiprocessBased):
+    """
+    Class to generate the F15 (Celdas)
+    """
+
+    def __init__(self, **kwargs):
+        """
+        Class constructor
+
+        :param year: Year to generate
+        :type year: int
+        :param codi_r1:
+        :type codi_r1:str
+        """
+
+        super(F15Cel, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.report_name = 'F15 - Celles'
         self.base_object = 'celles'
+        self.cod_dis = 'R1-{}'.format(self.codi_r1[-3:])
 
     def get_sequence(self):
+        """
+        Generates the sequence of ids to pass to the consume function
+
+        :return: List of ids to generate the
+        :rtype: list(int)
+        """
         search_params = [
             ("inventari", "=", "fiabilitat"),
             ("installacio", "like", "giscedata.at.suport"),
@@ -122,6 +233,13 @@ class F15(MultiprocessBased):
         return str(node)
 
     def obtenir_camps_linia(self, installacio):
+        """
+        Gets the data of the line where the cel·la is placed
+
+        :param installacio: Cel·la placement
+        :return: Municipi, provincia, tensio of the line
+        :rtype: dict
+        """
 
         o = self.connection
         valor = installacio.split(',')
@@ -175,25 +293,29 @@ class F15(MultiprocessBased):
         return res
 
     def consumer(self):
+        """
+        Function that generates each line of the file
+
+        :return: None
+        """
+
         o = self.connection
         fields_to_read = [
             'installacio', 'cini', 'propietari', 'name', 'tram_id', 'tensio'
         ]
         while True:
             try:
-                # generar linies
                 item = self.input_q.get()
                 self.progress_q.put(item)
-
                 celles = o.GiscedataCellesCella.read(
                     item, fields_to_read
                 )
-                dict_linia = self.obtenir_camps_linia(celles['installacio'])
                 o_fiabilitat = celles['name']
+                o_cini = celles['cini']
+                o_prop = int(celles['propietari'])
 
-                valor = celles['installacio'].split(',')
-                model = valor[0]
-                element_id = int(valor[1])
+                dict_linia = self.obtenir_camps_linia(celles['installacio'])
+                model, element_id = celles['installacio'].split(',')
 
                 if model == "giscedata.cts":
                     ct_x_y = o.GiscedataCts.read(element_id, ["x", "y"])
@@ -215,7 +337,6 @@ class F15(MultiprocessBased):
                         o_node, vertex = self.get_node_vertex(o_fiabilitat)
 
                 o_node = o_node.replace('*', '')
-                o_cini = celles['cini']
                 z = ''
                 o_municipi = dict_linia.get('municipi')
                 o_provincia = dict_linia.get('provincia')
@@ -224,8 +345,7 @@ class F15(MultiprocessBased):
                                         decimals=3)
                 else:
                     o_tensio = dict_linia.get('tensio')
-                o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
-                o_prop = int(celles['propietari'])
+
                 o_any = self.year
                 res_srid = ['', '']
                 if vertex:
@@ -244,7 +364,7 @@ class F15(MultiprocessBased):
                     o_municipi,
                     o_provincia,
                     o_tensio,
-                    o_cod_dis,
+                    self.cod_dis,
                     o_prop,
                     o_any
                 ])

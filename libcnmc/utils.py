@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 import os
 import multiprocessing
+import tempfile
+
 from pyproj import Proj
 from pyproj import transform
 
-
 N_PROC = int(os.getenv('N_PROC', multiprocessing.cpu_count() + 1))
+
+from libcnmc.core.backend import OOOPFactory
 
 
 CODIS_TARIFA = {
@@ -37,6 +40,74 @@ TENS_NORM = []
 
 INES = {}
 
+
+def fetch_cts_node(connection):
+    """
+    Gets the nodes of the CTs
+
+    :param connection: OpenERP connection
+    :return: Ct id, node name
+    :rtype: dict
+    """
+
+    ids_blk = connection.GiscegisBlocsCtat.search([])
+    read_fields = ["ct", "node"]
+    data_blk = connection.GiscegisBlocsCtat.read(ids_blk, read_fields)
+    result_dict = dict.fromkeys(ids_blk)
+    for linia in data_blk:
+        result_dict[linia["ct"][0]] = linia["node"][1]
+    return result_dict
+
+
+def fetch_prov_ine(connection):
+    """
+    Fetch the INE code of the provincias
+
+    :param connection: OpenERP connection
+    :return: provnice id, INE code
+    :rtype: dict
+    """
+
+    ids_prov = connection.ResCountryState.search([])
+    data_prov = connection.ResCountryState.read(ids_prov, ['code'])
+    dict_prov = dict.fromkeys(ids_prov)
+    for prov in data_prov:
+        dict_prov[prov["id"]] = prov["code"]
+    return dict_prov
+
+
+def fetch_mun_ine(connection):
+    """
+    Fetch teh INE code of the municipio
+
+    :param connection:
+    :return:
+    :rtype: dict
+    """
+
+    ids_mun = connection.ResMunicipi.search([])
+
+    data_mun = connection.ResMunicipi.read(ids_mun, ['ine', 'dc'])
+    ret_vals = dict.fromkeys(ids_mun)
+    for mun in data_mun:
+        ret_vals[mun["id"]] = '{0}{1}'.format(mun['ine'][-3:], mun['dc'])
+    return ret_vals
+
+
+def fetch_tensions_norm(connection):
+    """
+    Gets all the tensions
+
+    :param connection:
+    :return: Id and tensio
+    :rtype: dict
+    """
+    t_ids = connection.GiscedataTensionsTensio.search([])
+    t_data = connection.GiscedataTensionsTensio.read(t_ids, ["tensio"])
+    d_out = dict.fromkeys(t_ids)
+    for line in t_data:
+        d_out[line["id"]] = format_f(float(line["tensio"]) / 1000.0, decimals=3)
+    return d_out
 
 def get_norm_tension(connection, tension):
     """
@@ -229,3 +300,46 @@ def get_srid(connection):
                     [('name', '=', 'giscegis_srid')])
     giscegis_srid = connection.ResConfig.read(giscegis_srid_id)[0]['value']
     return giscegis_srid
+
+
+def merge_procs(procs, **kwargs):
+    """
+    Generates multiple procs and merges the results
+
+    :param procs: Procs to generate
+    :type procs: list[MultiprocessBased]
+    :param database: OpenERP Database
+    :type database: str
+    :param user: OpenERP user
+    :type user: str
+    :param password: OpenERP password
+    :type pasword: str
+    :param port: OpenERP port
+    :param server: OpenERP server to connet
+    :type server: str
+    :return: Result of the procs
+    :rtype: str
+    """
+
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
+
+    data_out = ""
+    original_out_url = kwargs["output"]
+    for proc_fnc in procs:
+        temp_fd = tempfile.NamedTemporaryFile()
+        tmp_url = temp_fd.name
+        temp_fd.close()
+
+        proc_kwargs = kwargs
+        proc_kwargs["connection"] = O
+        proc_kwargs["output"] = tmp_url
+        proc = proc_fnc(**proc_kwargs)
+        proc.calc()
+
+        with open(tmp_url, 'r') as fd:
+            data_out += fd.read()
+
+    with open(original_out_url, "w") as fd_out:
+        fd_out.write(data_out)
