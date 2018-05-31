@@ -28,7 +28,6 @@ class F15Pos(MultiprocessBased):
         self.provincias = fetch_prov_ine(self.connection)
         self.municipios = fetch_mun_ine(self.connection)
 
-
     def get_sequence(self):
         """
         Generates the sequence of ids to pass to the consume function
@@ -38,7 +37,7 @@ class F15Pos(MultiprocessBased):
         """
 
         pos_model = self.connection.GiscedataCtsSubestacioPosicio
-        search_params = []
+        search_params = [("interruptor", "=", "3")]
         ids = pos_model.search(search_params)
 
         return ids
