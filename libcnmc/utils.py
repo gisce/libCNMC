@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 import os
 import multiprocessing
+import tempfile
+
 from pyproj import Proj
 from pyproj import transform
 
-
 N_PROC = int(os.getenv('N_PROC', multiprocessing.cpu_count() + 1))
+
+from libcnmc.core.backend import OOOPFactory
 
 
 CODIS_TARIFA = {
@@ -229,3 +232,52 @@ def get_srid(connection):
                     [('name', '=', 'giscegis_srid')])
     giscegis_srid = connection.ResConfig.read(giscegis_srid_id)[0]['value']
     return giscegis_srid
+
+def merge_procs(procs, **kwargs):
+    """
+    Generates multiple procs and merges the results
+
+    :param procs: Procs to generate
+    :param database: OpenERP Database
+    :type database: str
+    :param user: OpenERP user
+    :type user: str
+    :param password: OpenERP password
+    :type pasword: str
+    :param port: OpenERP port
+    :param server: OpenERP server to connet
+    :type server: str
+    :return: Result of the procs
+    :rtype: str
+    """
+
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
+
+    final_out = ""
+
+    for proc_fnc in procs:
+        temp_fd = tempfile.NamedTemporaryFile()
+        tmp_url = temp_fd.name
+        temp_fd.close()
+
+        proc = proc_fnc(
+            quiet=kwargs["quiet"],
+            interactive=kwargs["interactive"],
+            output=tmp_url,
+            connection=O,
+            num_proc=kwargs["num_proc"],
+            codi_r1=kwargs["codi_r1"],
+            year=kwargs["year"],
+            embarrats=kwargs["embarrats"],
+            compare_field=kwargs["compare_field"],
+            extended=kwargs.get('extended', False)
+        )
+        proc.calc()
+
+        with open(tmp_url, 'r') as fd:
+            final_out += fd.read()
+
+    with open(kwargs["output"], "w") as fd_out:
+        fd_out.write(final_out)

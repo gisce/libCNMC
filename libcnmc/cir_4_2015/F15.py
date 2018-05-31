@@ -5,6 +5,25 @@ from libcnmc.utils import format_f, convert_srid, get_srid
 from libcnmc.core import MultiprocessBased
 
 
+
+
+class F15Pos(MultiprocessBased):
+    """
+    Class to generate the F15 (Posiciones)
+    """
+
+    def __init__(self, **kwargs):
+        super(F15Pos, self).__init__(**kwargs)
+
+    def get_sequence(self):
+        """
+        Generates the sequence of ids to pass to the consume function
+
+        :return: List of ids to generate the
+        :rtype: list(int)
+        """
+
+
 class F15Cel(MultiprocessBased):
     """
     Class to generate the F15 (Celdas)
