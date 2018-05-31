@@ -80,8 +80,8 @@ class F15Pos(MultiprocessBased):
                         format_f(point_25830[0], decimals=3),
                         format_f(point_25830[1], decimals=3),
                         0,
-                        self.municipios[sub["id_municipi"]],  # Codigo INE de municipio
-                        self.provincias[sub["id_provincia"]],  # Codigo de provincia INE
+                        self.municipios[sub["id_municipi"][0]],  # Codigo INE de municipio
+                        self.provincias[sub["id_provincia"][0]],  # Codigo de provincia INE
                         self.tensions.get(pos["tensio"], 0),  # Nivel de tension
                         self.cod_dis,  # Codigo de la compañia distribuidora
                         pos.get("propietari", ""),  # Propiedad
