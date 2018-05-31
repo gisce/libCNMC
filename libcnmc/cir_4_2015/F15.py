@@ -24,6 +24,7 @@ class F15(MultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1')
         self.report_name = 'F15 - Celles'
         self.base_object = 'celles'
+        self.cod_dis = 'R1-{}'.format(self.codi_r1[-3:])
 
     def get_sequence(self):
         """
@@ -244,7 +245,6 @@ class F15(MultiprocessBased):
                                         decimals=3)
                 else:
                     o_tensio = dict_linia.get('tensio')
-                o_cod_dis = 'R1-{}'.format(self.codi_r1[-3:])
                 o_prop = int(celles['propietari'])
                 o_any = self.year
                 res_srid = ['', '']
@@ -264,7 +264,7 @@ class F15(MultiprocessBased):
                     o_municipi,
                     o_provincia,
                     o_tensio,
-                    o_cod_dis,
+                    self.cod_dis,
                     o_prop,
                     o_any
                 ])
