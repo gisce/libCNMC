@@ -69,7 +69,7 @@ def fetch_prov_ine(connection):
     """
 
     ids_prov = connection.ResCountryState.search([])
-    data_prov = connection.ResCountryState.read(ids_prov, ['code'])['code']
+    data_prov = connection.ResCountryState.read(ids_prov, ['code'])
     dict_prov = dict.fromkeys(ids_prov)
     for prov in data_prov:
         dict_prov[prov["id"]] = prov["code"]
