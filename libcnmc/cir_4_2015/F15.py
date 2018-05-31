@@ -57,7 +57,7 @@ class F15Pos(MultiprocessBased):
                     "name", "tensio", "cini", "propietari", "id_municipi",
                     "id_provincia", "x", "y", "subestacio_id"
                 ]
-                fields_sub_read = ["x", "y", "ct"]
+                fields_sub_read = ["x", "y", "ct_id"]
                 pos = self.connection.GiscedataCtsSubestacionsPosicio.read(
                     item, fields_read
                 )
@@ -71,7 +71,7 @@ class F15Pos(MultiprocessBased):
 
                 self.output_q.put(
                     [
-                        self.cts_node[sub["ct"]["id"]],  # Nudo
+                        self.cts_node[sub["ct_id"][0]],  # Nudo
                         pos.get("name", ""),  # Elemento de fiabilidad
                         "",  # Tramo
                         pos.get("cini", ""),  # CINI
