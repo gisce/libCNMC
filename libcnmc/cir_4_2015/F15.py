@@ -143,6 +143,13 @@ class F15(MultiprocessBased):
         return str(node)
 
     def obtenir_camps_linia(self, installacio):
+        """
+        Gets the data of the line where the cel·la is placed
+
+        :param installacio: Cel·la placement
+        :return: Municipi, provincia, tensio of the line
+        :rtype: dict
+        """
 
         o = self.connection
         valor = installacio.split(',')
@@ -214,9 +221,11 @@ class F15(MultiprocessBased):
                 celles = o.GiscedataCellesCella.read(
                     item, fields_to_read
                 )
-                dict_linia = self.obtenir_camps_linia(celles['installacio'])
                 o_fiabilitat = celles['name']
+                o_cini = celles['cini']
+                o_prop = int(celles['propietari'])
 
+                dict_linia = self.obtenir_camps_linia(celles['installacio'])
                 model, element_id = celles['installacio'].split(',')
 
                 if model == "giscedata.cts":
@@ -239,7 +248,6 @@ class F15(MultiprocessBased):
                         o_node, vertex = self.get_node_vertex(o_fiabilitat)
 
                 o_node = o_node.replace('*', '')
-                o_cini = celles['cini']
                 z = ''
                 o_municipi = dict_linia.get('municipi')
                 o_provincia = dict_linia.get('provincia')
@@ -248,7 +256,7 @@ class F15(MultiprocessBased):
                                         decimals=3)
                 else:
                     o_tensio = dict_linia.get('tensio')
-                o_prop = int(celles['propietari'])
+
                 o_any = self.year
                 res_srid = ['', '']
                 if vertex:
