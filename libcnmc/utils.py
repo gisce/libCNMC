@@ -233,11 +233,13 @@ def get_srid(connection):
     giscegis_srid = connection.ResConfig.read(giscegis_srid_id)[0]['value']
     return giscegis_srid
 
+
 def merge_procs(procs, **kwargs):
     """
     Generates multiple procs and merges the results
 
     :param procs: Procs to generate
+    :type procs: list[MultiprocessBased]
     :param database: OpenERP Database
     :type database: str
     :param user: OpenERP user
