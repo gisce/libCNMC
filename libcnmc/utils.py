@@ -102,7 +102,7 @@ def fetch_tensions_norm(connection):
     :return: Id and tensio
     :rtype: dict
     """
-    t_ids = connection.GiscedataTensionsTensio.search()
+    t_ids = connection.GiscedataTensionsTensio.search([])
     t_data = connection.GiscedataTensionsTensio.read(t_ids, ["tensio"])
     d_out = dict.fromkeys(t_ids)
     for line in t_data:
