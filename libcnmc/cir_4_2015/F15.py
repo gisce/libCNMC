@@ -202,7 +202,6 @@ class F15(MultiprocessBased):
         ]
         while True:
             try:
-                # generar linies
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
