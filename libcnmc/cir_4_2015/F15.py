@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import traceback
-from libcnmc.utils import format_f, convert_srid, get_srid
+from libcnmc.utils import format_f, convert_srid, get_srid, fetch_cts_node
 from libcnmc.utils import fetch_tensions_norm, fetch_mun_ine, fetch_prov_ine
 from libcnmc.core import MultiprocessBased
 
@@ -27,6 +27,7 @@ class F15Pos(MultiprocessBased):
         self.srid = self.connection.GiscegisBaseGeom.get_srid()
         self.provincias = fetch_prov_ine(self.connection)
         self.municipios = fetch_mun_ine(self.connection)
+        self.cts_node = fetch_cts_node(self.connection)
 
     def get_sequence(self):
         """
@@ -53,7 +54,7 @@ class F15Pos(MultiprocessBased):
             item = self.input_q.get()
             fields_read = [
                 "name", "tensio", "cini", "propietari", "id_municipi",
-                "id_provincia", "x", "y"
+                "id_provincia", "x", "y", "id_subestacio.ct"
             ]
             pos = self.connection.GiscedataCtsSubestacionsPosicio.read(
                 item, fields_read
@@ -63,7 +64,7 @@ class F15Pos(MultiprocessBased):
 
             self.output_q.put(
                 [
-                    o_node,  # Nudo
+                    self.cts_node[pos["id_subestacio.ct"]],  # Nudo
                     pos.get("name", ""),  # Elemento de fiabilidad
                     "",  # Tramo
                     pos.get("cini", ""),  # CINI
