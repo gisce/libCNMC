@@ -244,7 +244,7 @@ class F15(MultiprocessBased):
                                         decimals=3)
                 else:
                     o_tensio = dict_linia.get('tensio')
-                o_cod_dis = 'R1-%s' % self.codi_r1[-3:]
+                o_cod_dis = 'R1-{}'.format(self.codi_r1[-3:])
                 o_prop = int(celles['propietari'])
                 o_any = self.year
                 res_srid = ['', '']
