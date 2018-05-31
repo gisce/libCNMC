@@ -107,7 +107,7 @@ def fetch_tensions_norm(connection):
     d_out = dict.fromkeys(t_ids)
     for line in t_data:
         d_out[line["id"]] = format_f(float(line["tensio"]) / 1000.0, decimals=3)
-
+    return d_out
 
 def get_norm_tension(connection, tension):
     """
