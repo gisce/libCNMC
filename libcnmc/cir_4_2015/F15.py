@@ -5,8 +5,6 @@ from libcnmc.utils import format_f, convert_srid, get_srid
 from libcnmc.core import MultiprocessBased
 
 
-
-
 class F15Pos(MultiprocessBased):
     """
     Class to generate the F15 (Posiciones)
@@ -14,6 +12,7 @@ class F15Pos(MultiprocessBased):
 
     def __init__(self, **kwargs):
         super(F15Pos, self).__init__(**kwargs)
+        self.year = kwargs.pop('year', datetime.now().year - 1)
 
     def get_sequence(self):
         """
@@ -22,6 +21,13 @@ class F15Pos(MultiprocessBased):
         :return: List of ids to generate the
         :rtype: list(int)
         """
+        return [1,2]
+
+    def consumer(self):
+        while True:
+            item = self.input_q.get()
+            self.output_q.put(['AAAA','A'])
+            self.input_q.task_done()
 
 
 class F15Cel(MultiprocessBased):
@@ -237,7 +243,6 @@ class F15Cel(MultiprocessBased):
             try:
                 item = self.input_q.get()
                 self.progress_q.put(item)
-
                 celles = o.GiscedataCellesCella.read(
                     item, fields_to_read
                 )

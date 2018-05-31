@@ -255,29 +255,21 @@ def merge_procs(procs, **kwargs):
                     pwd=kwargs['password'], port=kwargs['port'],
                     uri=kwargs['server'])
 
-    final_out = ""
-
+    data_out = ""
+    original_out_url = kwargs["output"]
     for proc_fnc in procs:
         temp_fd = tempfile.NamedTemporaryFile()
         tmp_url = temp_fd.name
         temp_fd.close()
 
-        proc = proc_fnc(
-            quiet=kwargs["quiet"],
-            interactive=kwargs["interactive"],
-            output=tmp_url,
-            connection=O,
-            num_proc=kwargs["num_proc"],
-            codi_r1=kwargs["codi_r1"],
-            year=kwargs["year"],
-            embarrats=kwargs["embarrats"],
-            compare_field=kwargs["compare_field"],
-            extended=kwargs.get('extended', False)
-        )
+        proc_kwargs = kwargs
+        proc_kwargs["connection"] = O
+        proc_kwargs["output"] = tmp_url
+        proc = proc_fnc(**proc_kwargs)
         proc.calc()
 
         with open(tmp_url, 'r') as fd:
-            final_out += fd.read()
+            data_out += fd.read()
 
-    with open(kwargs["output"], "w") as fd_out:
-        fd_out.write(final_out)
+    with open(original_out_url, "w") as fd_out:
+        fd_out.write(data_out)
