@@ -54,7 +54,7 @@ class F15Pos(MultiprocessBased):
             item = self.input_q.get()
             fields_read = [
                 "name", "tensio", "cini", "propietari", "id_municipi",
-                "id_provincia", "x", "y", "id_subestacio"
+                "id_provincia", "x", "y", "subestacio_id"
             ]
             fields_sub_read = ["x", "y", "ct"]
             pos = self.connection.GiscedataCtsSubestacionsPosicio.read(
@@ -62,7 +62,7 @@ class F15Pos(MultiprocessBased):
             )
 
             sub = self.connection.GiscedataCtsSubestacions.read(
-                pos["id_subestacio"], fields_sub_read
+                pos["subestacio_id"][0], fields_sub_read
             )
 
             point = [sub["x"], sub["y"]]
