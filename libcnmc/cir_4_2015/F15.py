@@ -54,17 +54,23 @@ class F15Pos(MultiprocessBased):
             item = self.input_q.get()
             fields_read = [
                 "name", "tensio", "cini", "propietari", "id_municipi",
-                "id_provincia", "x", "y", "id_subestacio.ct"
+                "id_provincia", "x", "y", "id_subestacio"
             ]
+            fields_sub_read = ["x", "y", "ct"]
             pos = self.connection.GiscedataCtsSubestacionsPosicio.read(
                 item, fields_read
             )
-            point = [pos["x"], pos["y"]]
+
+            sub = self.connection.GiscedataCtsSubestacions.read(
+                pos["id_id_subestacio"], fields_sub_read
+            )
+
+            point = [sub["x"], sub["y"]]
             point_25830 = convert_srid(self.codi_r1, self.srid, point)
 
             self.output_q.put(
                 [
-                    self.cts_node[pos["id_subestacio.ct"]],  # Nudo
+                    self.cts_node[sub["ct"]["id"]],  # Nudo
                     pos.get("name", ""),  # Elemento de fiabilidad
                     "",  # Tramo
                     pos.get("cini", ""),  # CINI
