@@ -2,6 +2,7 @@
 from datetime import datetime
 import traceback
 from libcnmc.utils import format_f, convert_srid, get_srid
+from libcnmc.utils import fetch_tensions_norm, fetch_mun_ine, fetch_prov_ine
 from libcnmc.core import MultiprocessBased
 
 
@@ -11,8 +12,22 @@ class F15Pos(MultiprocessBased):
     """
 
     def __init__(self, **kwargs):
+        """
+        Class constructor
+        :param year: Generation year
+        :param codi_r1: R1 code of the company
+        """
+
         super(F15Pos, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
+        self.codi_r1 = kwargs.pop('codi_r1')
+        self.cod_dis = 'R1-{}'.format(self.codi_r1[-3:])
+        self.tensions = fetch_tensions_norm(self.connection)
+        self.cts = {}
+        self.srid = self.connection.GiscegisBaseGeom.get_srid()
+        self.provincias = fetch_prov_ine(self.connection)
+        self.municipios = fetch_mun_ine(self.connection)
+
 
     def get_sequence(self):
         """
@@ -21,12 +36,48 @@ class F15Pos(MultiprocessBased):
         :return: List of ids to generate the
         :rtype: list(int)
         """
-        return [1,2]
+
+        pos_model = self.connection.GiscedataCtsSubestacioPosicio
+        search_params = []
+        ids = pos_model.search(search_params)
+
+        return ids
 
     def consumer(self):
+        """
+        Consumer function that generates each line of the file
+
+        :return: None
+        """
+
         while True:
             item = self.input_q.get()
-            self.output_q.put(['AAAA','A'])
+            fields_read = [
+                "name", "tensio", "cini", "propietari", "id_municipi",
+                "id_provincia", "x", "y"
+            ]
+            pos = self.connection.GiscedataCtsSubestacionsPosicio.read(
+                item, fields_read
+            )
+            point = [pos["x"], pos["y"]]
+            point_25830 = convert_srid(self.codi_r1, self.srid, point)
+
+            self.output_q.put(
+                [
+                    o_node,  # Nudo
+                    pos.get("name", ""),  # Elemento de fiabilidad
+                    "",  # Tramo
+                    pos.get("cini", ""),  # CINI
+                    format_f(point_25830[0], decimals=3),
+                    format_f(point_25830[1], decimals=3),
+                    0,
+                    self.municipios[pos["id_municipi"]],  # Codigo INE de municipio
+                    self.provincias[pos["id_provincia"]],  # Codigo de provincia INE
+                    self.tensions.get(pos["tensio"], 0),  # Nivel de tension
+                    self.cod_dis,  # Codigo de la compañia distribuidora
+                    pos.get("propietari", ""),  # Propiedad
+                    self.year  # Año de inforacion
+                 ])
             self.input_q.task_done()
 
 
@@ -59,7 +110,6 @@ class F15Cel(MultiprocessBased):
         :return: List of ids to generate the
         :rtype: list(int)
         """
-
         search_params = [
             ("inventari", "=", "fiabilitat"),
             ("installacio", "like", "giscedata.at.suport"),
