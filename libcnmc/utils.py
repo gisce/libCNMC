@@ -41,6 +41,59 @@ TENS_NORM = []
 INES = {}
 
 
+def fetch_cts_node(connection):
+    """
+    Gets the nodes of the CTs
+
+    :param connection: OpenERP connection
+    :return: Ct id, node name
+    :rtype: dict
+    """
+
+    ids_blk = connection.GiscegisBlocsCtat.search([])
+    read_fields = ["ct", "node"]
+    data_blk = connection.GiscegisBlocsCtat.read(ids_blk, read_fields)
+    result_dict = dict.fromkeys(ids_blk)
+    for linia in data_blk:
+        result_dict[linia["ct"][0]] = linia["node"][1]
+    return result_dict
+
+
+def fetch_prov_ine(connection):
+    """
+    Fetch the INE code of the provincias
+
+    :param connection: OpenERP connection
+    :return: provnice id, INE code
+    :rtype: dict
+    """
+
+    ids_prov = connection.ResCountryState.search([])
+    data_prov = connection.ResCountryState.read(ids_prov, ['code'])['code']
+    dict_prov = dict.fromkeys(ids_prov)
+    for prov in data_prov:
+        dict_prov[prov["id"]] = prov["code"]
+    return dict_prov
+
+
+def fetch_mun_ine(connection):
+    """
+    Fetch teh INE code of the municipio
+
+    :param connection:
+    :return:
+    :rtype: dict
+    """
+
+    ids_mun = connection.ResMunicipi.search([])
+
+    data_mun = connection.ResMunicipi.read(ids_mun, ['ine', 'dc'])
+    ret_vals = dict.fromkeys(ids_mun)
+    for mun in data_mun:
+        ret_vals[mun["id"]] = '{0}{1}'.format(mun['ine'][-3:], mun['dc'])
+    return ret_vals
+
+
 def fetch_tensions_norm(connection):
     """
     Gets all the tensions
