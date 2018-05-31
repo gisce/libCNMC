@@ -102,8 +102,8 @@ def fetch_tensions_norm(connection):
     :return: Id and tensio
     :rtype: dict
     """
-    t_ids = connection.GiscedataTensionsTensio().search()
-    t_data = connection.GiscedataTensionsTensio().read(t_ids, ["tensio"])
+    t_ids = connection.GiscedataTensionsTensio.search()
+    t_data = connection.GiscedataTensionsTensio.read(t_ids, ["tensio"])
     d_out = dict.fromkeys(t_ids)
     for line in t_data:
         d_out[line["id"]] = format_f(float(line["tensio"]) / 1000.0, decimals=3)
