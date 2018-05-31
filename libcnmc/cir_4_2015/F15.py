@@ -54,10 +54,12 @@ class F15Pos(MultiprocessBased):
             try:
                 item = self.input_q.get()
                 fields_read = [
-                    "name", "tensio", "cini", "propietari", "id_municipi",
-                    "id_provincia", "x", "y", "subestacio_id"
+                    "name", "tensio", "cini", "propietari", "x", "y",
+                    "subestacio_id"
                 ]
-                fields_sub_read = ["x", "y", "ct_id"]
+                fields_sub_read = [
+                    "x", "y", "ct_id","id_municipi","id_provincia"
+                ]
                 pos = self.connection.GiscedataCtsSubestacionsPosicio.read(
                     item, fields_read
                 )
@@ -78,8 +80,8 @@ class F15Pos(MultiprocessBased):
                         format_f(point_25830[0], decimals=3),
                         format_f(point_25830[1], decimals=3),
                         0,
-                        self.municipios[pos["id_municipi"]],  # Codigo INE de municipio
-                        self.provincias[pos["id_provincia"]],  # Codigo de provincia INE
+                        self.municipios[sub["id_municipi"]],  # Codigo INE de municipio
+                        self.provincias[sub["id_provincia"]],  # Codigo de provincia INE
                         self.tensions.get(pos["tensio"], 0),  # Nivel de tension
                         self.cod_dis,  # Codigo de la compañia distribuidora
                         pos.get("propietari", ""),  # Propiedad
