@@ -211,9 +211,7 @@ class F15(MultiprocessBased):
                 dict_linia = self.obtenir_camps_linia(celles['installacio'])
                 o_fiabilitat = celles['name']
 
-                valor = celles['installacio'].split(',')
-                model = valor[0]
-                element_id = int(valor[1])
+                model, element_id = celles['installacio'].split(',')
 
                 if model == "giscedata.cts":
                     ct_x_y = o.GiscedataCts.read(element_id, ["x", "y"])
