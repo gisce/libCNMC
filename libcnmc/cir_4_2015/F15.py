@@ -36,7 +36,7 @@ class F15Pos(MultiprocessBased):
         :rtype: list(int)
         """
 
-        pos_model = self.connection.GiscedataCtsSubestacioPosicio
+        pos_model = self.connection.GiscedataCtsSubestacionsPosicio
         search_params = [("interruptor", "=", "3")]
         ids = pos_model.search(search_params)
 
