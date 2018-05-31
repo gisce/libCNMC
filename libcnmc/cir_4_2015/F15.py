@@ -5,7 +5,20 @@ from libcnmc.utils import format_f, convert_srid, get_srid
 from libcnmc.core import MultiprocessBased
 
 class F15(MultiprocessBased):
+    """
+    Class to generate the F15 (Celdas)
+    """
+
     def __init__(self, **kwargs):
+        """
+        Class constructor
+
+        :param year: Year to generate
+        :type year: int
+        :param codi_r1:
+        :type codi_r1:str
+        """
+
         super(F15, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
@@ -13,6 +26,13 @@ class F15(MultiprocessBased):
         self.base_object = 'celles'
 
     def get_sequence(self):
+        """
+        Generates the sequence of ids to pass to the consume function
+
+        :return: List of ids to generate the
+        :rtype: list(int)
+        """
+
         search_params = [
             ("inventari", "=", "fiabilitat"),
             ("installacio", "like", "giscedata.at.suport"),
