@@ -84,7 +84,7 @@ class F15Pos(MultiprocessBased):
                         self.provincias[sub["id_provincia"][0]],  # Codigo de provincia INE
                         format_f(int(self.tensions.get(pos["tensio"], 0)) / 1000.0, decimals=3),  # Nivel de tension
                         self.cod_dis,  # Codigo de la compañia distribuidora
-                        pos.get("propietari", ""),  # Propiedad
+                        int(pos.get("propietari", 1)),  # Propiedad
                         self.year  # Año de inforacion
                      ])
             except Exception:
