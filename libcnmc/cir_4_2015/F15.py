@@ -82,7 +82,7 @@ class F15Pos(MultiprocessBased):
                         0,
                         self.municipios[sub["id_municipi"][0]],  # Codigo INE de municipio
                         self.provincias[sub["id_provincia"][0]],  # Codigo de provincia INE
-                        format_f(int(self.tensions.get(pos["tensio"][0], 0)) / 1000.0, decimals=3),  # Nivel de tension
+                        int(self.tensions.get(pos["tensio"][0], 0)),  # Nivel de tension
                         self.cod_dis,  # Codigo de la compañia distribuidora
                         int(pos.get("propietari", 1)),  # Propiedad
                         self.year  # Año de inforacion
