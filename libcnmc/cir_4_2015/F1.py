@@ -244,7 +244,7 @@ class F1(MultiprocessBased):
 
                 o_potencia = ''
                 o_cnae = ''
-                o_pot_ads = cups['potencia_adscrita'] or '0,000'
+                o_pot_ads = cups.get('potencia_adscrita', '0,000') or '0,000'
                 o_equip = 'MEC'
                 o_cod_tfa = ''
                 o_estat_contracte = 0
