@@ -190,11 +190,11 @@ def get_ine(connection, ine):
     # Accedim directament per la clau així si peta rebrem un sentry.
     if ine not in INES:
         state = ''
-        ine = ''
+        ret_ine = ''
     else:
         state = ine[:2]
-        ine = ine[2:] + INES[ine]
-    return state, ine
+        ret_ine = ine[2:] + INES[ine]
+    return state, ret_ine
 
 
 def get_comptador(connection, polissa_id, year):
