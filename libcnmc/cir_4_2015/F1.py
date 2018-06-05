@@ -67,8 +67,8 @@ class F1(MultiprocessBased):
         Returns the INE code of the given municipi
         :param municipi_id: Id of the municipi
         :type municipi_id: int
-        :return: INE code
-        :rtype:str
+        :return: state, ine municipi
+        :rtype:tuple
         """
         O = self.connection
         muni = O.ResMunicipi.read(municipi_id, ['ine'])
