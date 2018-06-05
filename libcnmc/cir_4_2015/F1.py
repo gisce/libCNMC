@@ -212,7 +212,6 @@ class F1(MultiprocessBased):
                 if cups['id_municipi']:
                     id_mun = cups["id_municipi"][0]
                     o_codi_ine_prov, o_codi_ine_mun = self.get_ine(id_mun)
-                o_utmz = ''
                 o_nom_node = ''
                 o_tensio = ''
                 o_connexio = ''
@@ -373,27 +372,27 @@ class F1(MultiprocessBased):
                         self.codi_r1, get_srid(O), (vertex['x'], vertex['y']))
 
                 self.output_q.put([
-                    o_nom_node,
-                    format_f(res_srid[0], decimals=3),
-                    format_f(res_srid[1], decimals=3),
-                    o_utmz,
-                    o_cnae,
-                    o_equip,
-                    o_cod_tfa,
-                    o_zona,
-                    o_name,
-                    o_codi_r1,
-                    o_codi_ine_mun,
-                    o_codi_ine_prov,
-                    o_connexio,
-                    o_tensio,
-                    o_estat_contracte,
-                    format_f(o_potencia or '0,000', decimals=3),
-                    format_f(o_potencia_facturada, decimals=3),
-                    format_f(o_pot_ads, decimals=3),
-                    format_f(o_anual_activa, decimals=3),
-                    format_f(o_anual_reactiva, decimals=3),
-                    o_any_incorporacio
+                    o_nom_node,     # Nudo
+                    format_f(res_srid[0], decimals=3),  # X
+                    format_f(res_srid[1], decimals=3),  # Y
+                    '',                 # Z
+                    o_cnae,             # CNAE
+                    o_equip,            # Equipo de medida
+                    o_cod_tfa,          # Codigo de tarifa
+                    o_zona,             # Zona de calidad
+                    o_name,             # CUPS
+                    o_codi_r1,          # Codigo de la distribuidora
+                    o_codi_ine_mun,     # Municipio
+                    o_codi_ine_prov,    # Provincia
+                    o_connexio,         # Conexion
+                    o_tensio,           # Tension de alimentacion
+                    o_estat_contracte,  # Estado de contrato
+                    format_f(o_potencia or '0,000', decimals=3),    # Potencia contratada
+                    format_f(o_potencia_facturada, decimals=3),     # Potencia facturada
+                    format_f(o_pot_ads, decimals=3),        # Potencia adscrita a la instalacion
+                    format_f(o_anual_activa, decimals=3),   # Energia activa anual consumida
+                    format_f(o_anual_reactiva, decimals=3), # Energia reactiva anual consumida
+                    o_any_incorporacio  # Año informacion
                 ])
             except Exception:
                 traceback.print_exc()
