@@ -180,7 +180,7 @@ def get_ine(connection, ine):
     
     :param connection: OpenERP connection
     :param ine:
-    :return:
+    :return: State, ine municipi
     :rtype: tuple
     """
     if not INES:
