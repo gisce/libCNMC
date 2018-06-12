@@ -48,9 +48,7 @@ class F9(MultiprocessBased):
                                  ('active', '=', True)
                                  ]
         # AT
-        ids_at = 0
         trams = []
-        ids_bt = 0
         ids_linia_at = o.GiscedataAtLinia.search([])
         fict_line_id = o.GiscedataAtLinia.search(
             [('name', '=', '1')], 0, 0, False, {'active_test': False})
