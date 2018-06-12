@@ -36,20 +36,21 @@ class F9(MultiprocessBased):
         o = self.connection
         data_pm_limit = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
-        static_search_params = [
-            '|',
-            ('data_pm', '=', False),('data_pm', '<', data_pm_limit),
-            '|',
-            ('data_baixa', '>', data_baixa),('data_baixa', '=', False),
+        static_search_params = ['|', ('data_pm', '=', False),
+                                ('data_pm', '<', data_pm_limit),
+                                '|', ('data_baixa', '>', data_baixa),
+                                ('data_baixa', '=', False),
                                 ]
         # Revisem que si està de baixa ha de tenir la data informada.
-        static_search_params += [
-            '|',
-            '&', ('active', '=', False), ('data_baixa', '!=', False),
-            ('active', '=', True)
-        ]
+        static_search_params += ['|',
+                                 '&', ('active', '=', False),
+                                 ('data_baixa', '!=', False),
+                                 ('active', '=', True)
+                                 ]
         # AT
+        ids_at = 0
         trams = []
+        ids_bt = 0
         ids_linia_at = o.GiscedataAtLinia.search([])
         fict_line_id = o.GiscedataAtLinia.search(
             [('name', '=', '1')], 0, 0, False, {'active_test': False})
@@ -124,12 +125,8 @@ class F9(MultiprocessBased):
             return []
         vertexs = model_polyline.read(edges[0]['polyline'][0])
         for punt in model_vertex.read(vertexs['vertex_ids']):
-            data.append(
-                {
-                    'x': format_f(punt['x'], 3),
-                    'y': format_f(punt['y'], 3)
-                }
-            )
+            data.append({'x': punt['x'],
+                         'y': punt['y']})
         return data
 
     def conv_text(self, data):
@@ -148,8 +145,8 @@ class F9(MultiprocessBased):
                 [line['x'], line['y']]
             )
             t += '{0};{1};{2}\n'.format(
-                format_f(res_srid[0], decimals=3),
-                format_f(res_srid[1], decimals=3),
+                format_f(res_srid[0], decimals=6),
+                format_f(res_srid[1], decimals=6),
                 '')
         return t[:-1]
 
