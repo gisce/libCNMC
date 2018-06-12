@@ -98,8 +98,6 @@ class F10AT(MultiprocessBased):
                     if at.get('tensio_max_disseny_id', False):
                         nivell_tensio_id = at['tensio_max_disseny_id'][0]
                         o_nivell_tensio = o.GiscedataTensionsTensio.read(nivell_tensio_id, ["tensio"])["tensio"]
-                    elif 'tensio_max_disseny' in at:
-                        o_nivell_tensio = at['tensio_max_disseny']
                     else:
                         o_nivell_tensio = linia["tensio"]
                     o_nivell_tensio = format_f(
