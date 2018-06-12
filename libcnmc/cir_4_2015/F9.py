@@ -125,8 +125,8 @@ class F9(MultiprocessBased):
             return []
         vertexs = model_polyline.read(edges[0]['polyline'][0])
         for punt in model_vertex.read(vertexs['vertex_ids']):
-            data.append({'x': format_f(punt['x'], 3),
-                         'y': format_f(punt['y'], 3)})
+            data.append({'x': punt['x'],
+                         'y': punt['y']})
         return data
 
     def conv_text(self, data):
