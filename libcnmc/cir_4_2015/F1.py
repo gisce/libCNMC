@@ -178,7 +178,7 @@ class F1(MultiprocessBased):
             try:
                 item = self.input_q.get()
                 self.progress_q.put(item)
-                fields_to_read = ['id_escomesa']
+                fields_to_read = ['id_escomesa', 'name']
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
 
                 o_nom_node = ''
@@ -210,8 +210,12 @@ class F1(MultiprocessBased):
                 if vertex:
                     res_srid = convert_srid(
                         self.codi_r1, get_srid(O), (vertex['x'], vertex['y']))
-
+                if 'name' in cups:
+                    o_nom_escomesa = cups['name']
+                else:
+                    o_nom_escomesa = "NoDisponible"
                 self.output_q.put([
+                    o_nom_escomesa, # Codi CUPS
                     o_nom_node,     # Nudo
                     format_f(res_srid[0], decimals=3),  # X
                     format_f(res_srid[1], decimals=3),  # Y
