@@ -93,10 +93,7 @@ class F1(MultiprocessBased):
         :rtype: list[int]
         """
         data_ini = '%s-01-01' % (self.year + 1)
-        search_params = [('active', '=', True),
-                         '|',
-                         ('create_date', '<', data_ini),
-                         ('create_date', '=', False)]
+        search_params = []
         return self.connection.GiscedataCupsPs.search(
             search_params, 0, 0, False, {'active_test': False})
 
@@ -375,24 +372,7 @@ class F1(MultiprocessBased):
                     o_nom_node,     # Nudo
                     format_f(res_srid[0], decimals=3),  # X
                     format_f(res_srid[1], decimals=3),  # Y
-                    '',                 # Z
-                    o_cnae,             # CNAE
-                    o_equip,            # Equipo de medida
-                    o_cod_tfa,          # Codigo de tarifa
-                    o_zona,             # Zona de calidad
-                    o_name,             # CUPS
-                    o_codi_r1,          # Codigo de la distribuidora
-                    o_codi_ine_mun,     # Municipio
-                    o_codi_ine_prov,    # Provincia
                     o_connexio,         # Conexion
-                    o_tensio,           # Tension de alimentacion
-                    o_estat_contracte,  # Estado de contrato
-                    format_f(o_potencia or '0,000', decimals=3),    # Potencia contratada
-                    format_f(o_potencia_facturada, decimals=3),     # Potencia facturada
-                    format_f(o_pot_ads, decimals=3),        # Potencia adscrita a la instalacion
-                    format_f(o_anual_activa, decimals=3),   # Energia activa anual consumida
-                    format_f(o_anual_reactiva, decimals=3), # Energia reactiva anual consumida
-                    o_any_incorporacio  # Año informacion
                 ])
             except Exception:
                 traceback.print_exc()
