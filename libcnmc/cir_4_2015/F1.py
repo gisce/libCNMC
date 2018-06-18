@@ -174,43 +174,14 @@ class F1(MultiprocessBased):
 
         o_codi_r1 = 'R1-%s' % self.codi_r1[-3:]
         O = self.connection
-        ultim_dia_any = '%s-12-31' % self.year
-        search_glob = [
-            ('state', 'not in', ('esborrany', 'validar')),
-            ('data_alta', '<=', ultim_dia_any),
-            '|',
-            ('data_baixa', '>=', ultim_dia_any),
-            ('data_baixa', '=', False)
-        ]
-        context_glob = {'date': ultim_dia_any, 'active_test': False}
         while True:
             try:
                 item = self.input_q.get()
                 self.progress_q.put(item)
-                fields_to_read = [
-                    'name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
-                    'cne_anual_reactiva', 'cnmc_potencia_facturada', 'et',
-                    'polisses', 'potencia_conveni', 'potencia_adscrita'
-                ]
+                fields_to_read = ['id_escomesa']
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
-                if not cups or not cups.get('name'):
-                    self.input_q.task_done()
-                    continue
-                if not set(cups["polisses"]).intersection(self.modcons_in_year):
-                    continue
-                o_name = cups['name'][:22]
-                o_codi_ine_mun = ''
-                o_codi_ine_prov = ''
-                o_zona = ''
-                o_potencia_facturada = format_f(
-                    cups['cnmc_potencia_facturada'], 3) or ''
-                if 'et' in cups:
-                    o_zona = self.get_zona_qualitat(cups['et'])
-                if cups['id_municipi']:
-                    id_mun = cups["id_municipi"][0]
-                    o_codi_ine_prov, o_codi_ine_mun = self.get_ine(id_mun)
+
                 o_nom_node = ''
-                o_tensio = ''
                 o_connexio = ''
                 vertex = False
                 if cups and cups['id_escomesa']:
@@ -234,135 +205,7 @@ class F1(MultiprocessBased):
                                     [bloc_escomesa['node'][0]], ['name'])
                                 o_nom_node = node[0]['name']
                 o_nom_node = o_nom_node.replace('*', '')
-                search_params = [('cups', '=', cups['id'])] + search_glob
-                polissa_id = O.GiscedataPolissa.search(
-                    search_params, 0, 1, 'data_alta desc', context_glob)
 
-                o_potencia = ''
-                o_cnae = ''
-                o_pot_ads = cups.get('potencia_adscrita', '0,000') or '0,000'
-                o_equip = 'MEC'
-                o_cod_tfa = ''
-                o_estat_contracte = 0
-                # energies consumides
-                o_anual_activa = format_f(
-                    cups['cne_anual_activa'] or 0.0, decimals=3)
-                o_anual_reactiva = format_f(
-                    cups['cne_anual_reactiva'] or 0.0, decimals=3)
-
-                if polissa_id:
-                    fields_to_read = [
-                        'potencia', 'cnae', 'tarifa', 'butlletins', 'tensio'
-                    ]
-
-                    polissa = O.GiscedataPolissa.read(
-                        polissa_id[0], fields_to_read, context_glob
-                    )
-                    if 'RE' in polissa['tarifa'][1]:
-                        continue
-                    if polissa['tensio']:
-                        o_tensio = format_f(
-                            float(polissa['tensio']) / 1000.0, decimals=3)
-                    o_potencia = polissa['potencia']
-                    if polissa['cnae']:
-                        cnae_id = polissa['cnae'][0]
-                        if cnae_id in self.cnaes:
-                            o_cnae = self.cnaes[cnae_id]
-                        else:
-                            o_cnae = O.GiscemiscCnae.read(
-                                cnae_id, ['name']
-                            )['name']
-                            self.cnaes[cnae_id] = o_cnae
-                    comptador_actiu = get_comptador(
-                        self.connection, polissa['id'], self.year)
-                    if comptador_actiu:
-                        comptador_actiu = comptador_actiu[0]
-                        comptador = O.GiscedataLecturesComptador.read(
-                            comptador_actiu, ['cini', 'tg']
-                        )
-                        if not comptador['cini']:
-                            comptador['cini'] = ''
-                        if comptador.get('tg', False):
-                            o_equip = 'SMT'
-                        elif re.findall(CINI_TG_REGEXP, comptador['cini']):
-                            o_equip = 'SMT'
-                        else:
-                            o_equip = 'MEC'
-                    if polissa['tarifa']:
-                        o_cod_tfa = self.get_codi_tarifa(polissa['tarifa'][1])
-                else:
-                    # Si no trobem polissa activa, considerem
-                    # "Contrato no activo (CNA)"
-
-                    o_equip = 'CNA'
-                    o_estat_contracte = 1
-
-                    search_modcon = [
-                        ('id', 'in', cups['polisses']),
-                        ('data_inici', '<=', ultim_dia_any)
-                    ]
-                    modcons = None
-                    if len(cups['polisses']):
-                        modcons = O.GiscedataPolissaModcontractual.search(
-                            search_modcon, 0, 1, 'data_inici desc'
-                            , {'active_test': False})
-                    if modcons:
-                        modcon_id = modcons[0]
-
-                        fields_to_read_modcon = [
-                            'cnae',
-                            'tarifa',
-                            'tensio',
-                            'potencia'
-                        ]
-
-                        modcon = O.GiscedataPolissaModcontractual.read(
-                            modcon_id, fields_to_read_modcon)
-
-                        if modcon['tarifa']:
-                            o_cod_tfa = self.get_codi_tarifa(
-                                modcon['tarifa'][1]
-                            )
-                        if modcon['cnae']:
-                            cnae_id = modcon['cnae'][0]
-                            if cnae_id in self.cnaes:
-                                o_cnae = self.cnaes[cnae_id]
-                            else:
-                                o_cnae = O.GiscemiscCnae.read(
-                                    cnae_id, ['name']
-                                )['name']
-                                self.cnaes[cnae_id] = o_cnae
-                        if modcon['tensio']:
-                            o_tensio = format_f(
-                                float(modcon['tensio']) / 1000.0, decimals=3)
-                        if modcon['potencia']:
-                            o_potencia = format_f(
-                                float(modcon['potencia']), decimals=3)
-                    else:
-                        # No existeix modificació contractual per el CUPS
-                        o_potencia = cups['potencia_conveni']
-                        if cups.get('id_escomesa', False):
-                            search_params = [
-                                ('escomesa', '=', cups['id_escomesa'][0])
-                            ]
-                            id_esc_gis = O.GiscegisEscomesesTraceability.search(
-                                search_params
-                            )
-
-                            if id_esc_gis:
-                                tensio_gis = O.GiscegisEscomesesTraceability.read(
-                                    id_esc_gis, ['tensio']
-                                )[0]['tensio']
-                                o_tensio = format_f(
-                                    float(tensio_gis) / 1000.0, decimals=3)
-                        else:
-                            o_tensio = ''
-                        if self.default_o_cnae:
-                            o_cnae = self.default_o_cnae
-                        if self.default_o_cod_tfa:
-                            o_cod_tfa = self.default_o_cod_tfa
-
-                o_any_incorporacio = self.year
                 res_srid = ['', '']
                 if vertex:
                     res_srid = convert_srid(
