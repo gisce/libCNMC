@@ -343,7 +343,7 @@ class F15Cel(MultiprocessBased):
                     tensio = o.GiscedataTensionsTensio.read(
                         celles['tensio'][0], ['tensio']
                     )
-                    o_tensio = format_f(int(tensio)/1000.0, decimals=3)
+                    o_tensio = format_f(int(tensio['tensio'])/1000.0, decimals=3)
                 else:
                     o_tensio = dict_linia.get('tensio')
 
