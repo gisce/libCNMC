@@ -19,10 +19,16 @@ class F12bis(MultiprocessBased):
 
         :return: None
         """
+        id_fus_at = self.connection.GiscedataCellesTipusElement.search(
+            [("name", "like", "Fusible Alta Tensió")],
+            0, 0, False, {'active_test': False}
+        )[0]
 
         search_params = [
-            ("installacio", "like", "giscedata.cts")
+            ("installacio", "like", "giscedata.cts"),
+            ("tipus_element", "!=", id_fus_at)
         ]
+
         if self.fiabilitat and self.doslmesp:
             search_params.append(("inventari", "in", ('fiabilitat', 'l2+p')))
         elif self.fiabilitat:
