@@ -36,7 +36,6 @@ class F15Pos(MultiprocessBased):
         :return: List of ids to generate the
         :rtype: list(int)
         """
-
         pos_model = self.connection.GiscedataCtsSubestacionsPosicio
         search_params = [("interruptor", "=", "3")]
         ids = pos_model.search(search_params)
@@ -341,8 +340,10 @@ class F15Cel(MultiprocessBased):
                 o_municipi = dict_linia.get('municipi')
                 o_provincia = dict_linia.get('provincia')
                 if celles['tensio']:
-                    o_tensio = format_f(int(celles['tensio'][1])/1000.0,
-                                        decimals=3)
+                    tensio = o.GiscedataTensionsTensio.read(
+                        celles['tensio'][0], ['tensio']
+                    )
+                    o_tensio = format_f(int(tensio['tensio'])/1000.0, decimals=3)
                 else:
                     o_tensio = dict_linia.get('tensio')
 

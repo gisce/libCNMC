@@ -11,6 +11,7 @@ class F12bis(MultiprocessBased):
         self.report_name = 'F12 Bis - Cel·les'
         self.base_object = 'Cel·les'
         self.fiabilitat = kwargs.get("fiabilitat")
+        self.doslmesp = kwargs.get("doslmesp")
 
     def get_sequence(self):
         """
@@ -28,8 +29,17 @@ class F12bis(MultiprocessBased):
             ("tipus_element", "!=", id_fus_at)
         ]
 
-        if self.fiabilitat:
+        if self.fiabilitat and self.doslmesp:
+            search_params.append(("inventari", "in", ('fiabilitat', 'l2+p')))
+        elif self.fiabilitat:
             search_params.append(("inventari", "=", "fiabilitat"))
+        elif self.doslmesp:
+            search_params.append(("inventari", "=", 'l2+p'))
+        else:
+            search_params.append(
+                ("inventari", "not in", ('fiabilitat', 'l2+p'))
+            )
+
         data_pm = '{}-01-01'.format(self.year + 1)
         data_baixa = '{}-12-31'.format(self.year)
         search_params += ['|', ('data_pm', '=', False),
