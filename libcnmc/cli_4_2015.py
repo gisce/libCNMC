@@ -244,6 +244,8 @@ def cir_4_2015_f12(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('--fiabilitat/--no-fiabilitat', default=False,
               help="Only include fiabilitat elements")
+@click.option('--doslmesp/--no-doselemesp', default=False,
+              help="Incloure elements 2l+p")
 def cir_4_2015_f12bis(**kwargs):
     """
     Click entry to generate the F12 BIS of the 4/2015
@@ -264,7 +266,8 @@ def cir_4_2015_f12bis(**kwargs):
         connection=O,
         num_proc=kwargs['num_proc'],
         year=kwargs['year'],
-        fiabilitat=kwargs["fiabilitat"]
+        fiabilitat=kwargs["fiabilitat"],
+        doslmesp=kwargs["doslmesp"]
     )
     proc.calc()
 
