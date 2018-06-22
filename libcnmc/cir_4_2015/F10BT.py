@@ -56,7 +56,7 @@ class F10BT(MultiprocessBased):
                 elif codi == 'D':
                     res = 'D'
                 elif codi == 'E':
-                    res = 'S'
+                    res = 'D'
         return res
 
     def get_provincia(self, id_mun):
