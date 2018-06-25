@@ -124,7 +124,6 @@ class F15Cel(MultiprocessBased):
         :rtype: list(int)
         """
         search_params = [
-            ("inventari", "=", "fiabilitat"),
             ("installacio", "like", "giscedata.at.suport"),
             ("tipus_element.codi_cnmc", "!=", "T")
         ]
