@@ -314,7 +314,9 @@ class F15Cel(MultiprocessBased):
 
                 dict_linia = self.obtenir_camps_linia(celles['installacio'])
                 model, element_id = celles['installacio'].split(',')
-
+                x = ''
+                y = ''
+                z = ''
                 if model == "giscedata.cts":
                     ct_x_y = o.GiscedataCts.read(element_id, ["x", "y"])
                     vertex = False
@@ -335,7 +337,6 @@ class F15Cel(MultiprocessBased):
                         o_node, vertex = self.get_node_vertex(o_fiabilitat)
 
                 o_node = o_node.replace('*', '')
-                z = ''
                 o_municipi = dict_linia.get('municipi')
                 o_provincia = dict_linia.get('provincia')
                 if celles['tensio']:
