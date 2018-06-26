@@ -373,7 +373,7 @@ def cir_4_2015_f13bis(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-@click.option('--full-gen/--only-auto', default=True,
+@click.option('--all-int/--only-int-auto', default=True,
               help="Incloure Pos. amb Int.Auto i Pos. sense Int. o només"
                    "Pos. amb Int.Auto")
 def cir_4_2015_f13c(**kwargs):
@@ -396,7 +396,7 @@ def cir_4_2015_f13c(**kwargs):
         connection=O,
         num_proc=kwargs['num_proc'],
         year=kwargs['year'],
-        mode=kwargs['mode']
+        mode=kwargs['all_int']
     )
     proc.calc()
 
