@@ -21,11 +21,11 @@ class F13c(MultiprocessBased):
 
         if self.mode:
             search_params = [
-                ("interruptor", "in", (2, 3))
+                ("interruptor", "in", ('2', '3'))
             ]
         else:
             search_params = [
-                ("interruptor", "=", 2)
+                ("interruptor", "=", '2')
             ]
 
         data_pm = '%s-01-01' % (self.year + 1)
