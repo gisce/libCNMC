@@ -242,9 +242,9 @@ def cir_4_2015_f12(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-@click.option('--fiabilitat/--no-fiabilitat', default=False,
+@click.option('--fiabilitat/--no-fiabilitat', default=True,
               help="Only include fiabilitat elements")
-@click.option('--doslmesp/--no-doselemesp', default=False,
+@click.option('--doslmesp/--no-doselemesp', default=True,
               help="Incloure elements 2l+p")
 def cir_4_2015_f12bis(**kwargs):
     """
