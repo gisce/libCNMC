@@ -15,12 +15,19 @@ class F13c(MultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.report_name = 'F13 C - CTS'
         self.base_object = 'CTS'
+        self.mode = kwargs.get('mode', True)
 
     def get_sequence(self):
 
-        search_params = [
-            ("interruptor", "=", 2)
-        ]
+        if self.mode:
+            search_params = [
+                ("interruptor", "in", (2, 3))
+            ]
+        else:
+            search_params = [
+                ("interruptor", "=", 2)
+            ]
+
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
         search_params += ['|', ('data_pm', '=', False),
