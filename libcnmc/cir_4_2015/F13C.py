@@ -15,11 +15,11 @@ class F13c(MultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.report_name = 'F13 C - CTS'
         self.base_object = 'CTS'
-        self.mode = kwargs.get('all_int', True)
+        self.all_int = kwargs.get('all_int', True)
 
     def get_sequence(self):
 
-        if self.mode:
+        if self.all_int:
             search_params = [
                 ("interruptor", "in", ('2', '3'))
             ]

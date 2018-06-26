@@ -396,7 +396,7 @@ def cir_4_2015_f13c(**kwargs):
         connection=O,
         num_proc=kwargs['num_proc'],
         year=kwargs['year'],
-        mode=kwargs['all_int']
+        all_int=kwargs['all_int']
     )
     proc.calc()
 
