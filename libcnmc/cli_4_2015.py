@@ -373,6 +373,9 @@ def cir_4_2015_f13bis(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('--all-int/--only-int-auto', default=True,
+              help="Incloure Pos. amb Int.Auto i Pos. sense Int. o només"
+                   "Pos. amb Int.Auto")
 def cir_4_2015_f13c(**kwargs):
     """
     Click entry to generate the F13C of 4/2015
@@ -392,7 +395,8 @@ def cir_4_2015_f13c(**kwargs):
         output=kwargs['output'],
         connection=O,
         num_proc=kwargs['num_proc'],
-        year=kwargs['year']
+        year=kwargs['year'],
+        all_int=kwargs['all_int']
     )
     proc.calc()
 
