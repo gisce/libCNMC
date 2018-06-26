@@ -24,7 +24,7 @@ class F15Pos(MultiprocessBased):
         self.cod_dis = 'R1-{}'.format(self.codi_r1[-3:])
         self.tensions = fetch_tensions_norm(self.connection)
         self.cts = {}
-        self.srid = str(self.connection.GiscegisBaseGeom.get_srid())
+        self.srid = str(get_srid(self.connection))
         self.provincias = fetch_prov_ine(self.connection)
         self.municipios = fetch_mun_ine(self.connection)
         self.cts_node = fetch_cts_node(self.connection)
