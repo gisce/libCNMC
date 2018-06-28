@@ -39,12 +39,12 @@ class F16(MultiprocessBased):
         """
 
         O = self.connection
-        ident = O.GiscegisElementsBT.search([('codi', '=', cond_name)])
+        ident = O.GiscegisElementsbt.search([('codi', '=', cond_name)])
         if not ident:
-            ident = O.GiscegisElementsAT.search([('codi', '=', cond_name)])
-            data = O.GiscegisElementsAT.read(ident, ["node", "vertex"])
+            ident = O.GiscegisElementsat.search([('codi', '=', cond_name)])
+            data = O.GiscegisElementsat.read(ident, ["node", "vertex"])
         else:
-            data = O.GiscegisElementsBT.read(ident, ["node", "vertex"])
+            data = O.GiscegisElementsbt.read(ident, ["node", "vertex"])
         node = data["node"][1]
         x, y = data["vertex"][1].split(",")
         vertex = (round(x, 3), round(y, 3))
