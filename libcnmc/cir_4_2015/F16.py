@@ -29,19 +29,25 @@ class F16(MultiprocessBased):
         return self.connection.GiscedataCondensadors.search(
             search_params, 0, 0, False, {'active_test': False})
 
-    def get_node_vertex(self, ct_id):
+    def get_node_vertex(self, cond_name):
+        """
+        Returns the node and vertex of the condensador
+        :param cond_name:
+        :type cond_name: str
+        :return: node,vertex
+        :rtype: (str, str)
+        """
+
         O = self.connection
-        bloc = O.GiscegisBlocsCtat.search([('ct', '=', ct_id)])
-        node = ''
-        vertex = None
-        if bloc:
-            bloc = O.GiscegisBlocsCtat.read(bloc[0], ['node', 'vertex'])
-            if not bloc['node']:
-                return '', ''
-            node = bloc['node'][1]
-            if bloc['vertex']:
-                v = O.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
-                vertex = (round(v['x'], 3), round(v['y'], 3))
+        ident = O.GiscegisElementsBT.search([('codi', '=', cond_name)])
+        if not ident:
+            ident = O.GiscegisElementsAT.search([('codi', '=', cond_name)])
+            data = O.GiscegisElementsAT.read(ident, ["node", "vertex"])
+        else:
+            data = O.GiscegisElementsBT.read(ident, ["node", "vertex"])
+        node = data["node"][1]
+        x, y = data["vertex"][1].split(",")
+        vertex = (round(x, 3), round(y, 3))
         return node, vertex
 
     def get_ine(self, municipi_id):
