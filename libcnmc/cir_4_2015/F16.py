@@ -42,12 +42,12 @@ class F16(MultiprocessBased):
         ident = O.GiscegisElementsbt.search([('codi', '=', cond_name)])
         if not ident:
             ident = O.GiscegisElementsat.search([('codi', '=', cond_name)])
-            data = O.GiscegisElementsat.read(ident, ["node", "vertex"])
+            data = O.GiscegisElementsat.read(ident[0], ["node", "vertex"])
         else:
-            data = O.GiscegisElementsbt.read(ident, ["node", "vertex"])
+            data = O.GiscegisElementsbt.read(ident[0], ["node", "vertex"])
         node = data["node"][1]
         x, y = data["vertex"][1].split(",")
-        vertex = (round(x, 3), round(y, 3))
+        vertex = (round(float(x), 3), round(float(y), 3))
         return node, vertex
 
     def get_ine(self, municipi_id):
