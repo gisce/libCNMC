@@ -29,19 +29,25 @@ class F16(MultiprocessBased):
         return self.connection.GiscedataCondensadors.search(
             search_params, 0, 0, False, {'active_test': False})
 
-    def get_node_vertex(self, ct_id):
+    def get_node_vertex(self, cond_name):
+        """
+        Returns the node and vertex of the condensador
+        :param cond_name:
+        :type cond_name: str
+        :return: node,vertex
+        :rtype: (str, str)
+        """
+
         O = self.connection
-        bloc = O.GiscegisBlocsCtat.search([('ct', '=', ct_id)])
-        node = ''
-        vertex = None
-        if bloc:
-            bloc = O.GiscegisBlocsCtat.read(bloc[0], ['node', 'vertex'])
-            if not bloc['node']:
-                return '', ''
-            node = bloc['node'][1]
-            if bloc['vertex']:
-                v = O.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
-                vertex = (round(v['x'], 3), round(v['y'], 3))
+        ident = O.GiscegisElementsbt.search([('codi', '=', cond_name)])
+        if not ident:
+            ident = O.GiscegisElementsat.search([('codi', '=', cond_name)])
+            data = O.GiscegisElementsat.read(ident[0], ["node", "vertex"])
+        else:
+            data = O.GiscegisElementsbt.read(ident[0], ["node", "vertex"])
+        node = data["node"][1]
+        x, y = data["vertex"][1].split(",")
+        vertex = (round(float(x), 3), round(float(y), 3))
         return node, vertex
 
     def get_ine(self, municipi_id):
@@ -70,7 +76,7 @@ class F16(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
                 cond = O.GiscedataCondensadors.read(item, fields_to_read)
-                o_node, vertex = self.get_node_vertex(cond['ct_id'][0])
+                o_node, vertex = self.get_node_vertex(cond['name'])
                 o_node = o_node.replace('*', '')
                 o_cond = cond['name']
                 o_cini = cond['cini'] or ''
