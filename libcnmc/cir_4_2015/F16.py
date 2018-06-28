@@ -76,7 +76,7 @@ class F16(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
                 cond = O.GiscedataCondensadors.read(item, fields_to_read)
-                o_node, vertex = self.get_node_vertex(cond['ct_id'][0])
+                o_node, vertex = self.get_node_vertex(cond['name'])
                 o_node = o_node.replace('*', '')
                 o_cond = cond['name']
                 o_cini = cond['cini'] or ''
