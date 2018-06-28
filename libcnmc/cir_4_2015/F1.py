@@ -261,6 +261,9 @@ class F1(MultiprocessBased):
                     polissa = O.GiscedataPolissa.read(
                         polissa_id[0], fields_to_read, context_glob
                     )
+                    polissa_act = O.GiscedataPolissa.read(
+                        polissa_id[0], fields_to_read
+                    )
                     if 'RE' in polissa['tarifa'][1]:
                         continue
                     if polissa['tensio']:
@@ -276,6 +279,18 @@ class F1(MultiprocessBased):
                                 cnae_id, ['name']
                             )['name']
                             self.cnaes[cnae_id] = o_cnae
+                    else:
+                        try:
+                            cnae_id = polissa_act['cnae'][0]
+                            if cnae_id in self.cnaes:
+                                o_cnae = self.cnaes[cnae_id]
+                            else:
+                                o_cnae = O.GiscemiscCnae.read(
+                                    cnae_id, ['name']
+                                )['name']
+                                self.cnaes[cnae_id] = o_cnae
+                        except:
+                            pass
                     comptador_actiu = get_comptador(
                         self.connection, polissa['id'], self.year)
                     if comptador_actiu:
