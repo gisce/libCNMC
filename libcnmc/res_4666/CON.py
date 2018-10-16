@@ -73,7 +73,7 @@ class CON(MultiprocessBased):
             search_params, 0, 0, False, {'active_test': False})
 
         ids_condensadors = ids_condensadors + forced_ids["include"]
-        ids_condensadors = list(set(ids_condensadors) - set(forced_ids["include"]))
+        ids_condensadors = list(set(ids_condensadors) - set(forced_ids["exclude"]))
 
         return list(set(ids_condensadors))
 
