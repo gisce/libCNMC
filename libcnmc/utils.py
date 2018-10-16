@@ -62,7 +62,7 @@ def get_forced_elements(connection, model):
 
     return {
         "include": include_ids,
-        "exclue": exclude_ids
+        "exclude": exclude_ids
     }
 
 def fetch_cts_node(connection):
