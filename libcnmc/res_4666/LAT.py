@@ -10,7 +10,7 @@ import traceback
 import math
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import format_f, tallar_text
+from libcnmc.utils import format_f, tallar_text, get_forced_elements
 from libcnmc.models import F1Res4666
 
 
@@ -56,7 +56,14 @@ class LAT(MultiprocessBased):
                 [
                     ('name', '=', '1'),
                 ], 0, 0, False, {'active_test': False})
-        return ids + id_lat_emb
+        final_ids = ids + id_lat_emb
+
+        forced_ids = get_forced_elements(self.connection, "giscedata.at.linia")
+
+        final_ids = final_ids + forced_ids["include"]
+        final_ids = list(set(final_ids) - set(forced_ids["exclude"]))
+
+        return list(set(final_ids))
 
     def consumer(self):
         """
