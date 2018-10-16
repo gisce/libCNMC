@@ -58,11 +58,6 @@ class LAT(MultiprocessBased):
                 ], 0, 0, False, {'active_test': False})
         final_ids = ids + id_lat_emb
 
-        forced_ids = get_forced_elements(self.connection, "giscedata.at.linia")
-
-        final_ids = final_ids + forced_ids["include"]
-        final_ids = list(set(final_ids) - set(forced_ids["exclude"]))
-
         return list(set(final_ids))
 
     def consumer(self):
@@ -94,6 +89,17 @@ class LAT(MultiprocessBased):
             '&', ('active', '=', False), ('data_baixa', '!=', False),
             ('active', '=', True)
         ]
+
+        forced_ids = get_forced_elements(self.connection, "giscedata.at.tram")
+
+        data_tram = O.GiscedataAtTram.read(forced_ids["include"], ["linia"])
+        linia_tram_include = {}
+        for dt in data_tram:
+            if dt["id"] in linia_tram_include:
+                linia_tram_include[dt["linia"]] = [dt["id"]]
+            else:
+                linia_tram_include[dt["linia"]].append([dt["id"]])
+
         while True:
             try:
                 item = self.input_q.get()
@@ -104,12 +110,14 @@ class LAT(MultiprocessBased):
                     ['trams', 'tensio', 'municipi', 'propietari', 'provincia']
                 )
 
-
                 propietari = linia['propietari'] and '1' or '0'
                 search_params = [('linia', '=', linia['id'])]
                 search_params += static_search_params
                 ids = O.GiscedataAtTram.search(
                     search_params, 0, 0, False, {'active_test': False})
+                ids = list(set(ids) + linia_tram_include[item])
+                ids = list(set(ids) - forced_ids["exclude"])
+
                 id_desconegut = O.GiscedataAtCables.search(
                     [('name', '=', 'DESCONEGUT')])
 
