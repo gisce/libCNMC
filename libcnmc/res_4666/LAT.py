@@ -33,6 +33,9 @@ class LAT(MultiprocessBased):
         self.layer = 'LBT\_%'
         self.embarrats = kwargs.pop('embarrats', False)
         self.compare_field = kwargs["compare_field"]
+        self.linia_tram_include = {}
+        self.forced_ids = {}
+
         id_res_like = self.connection.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')])
         if id_res_like:
@@ -42,8 +45,11 @@ class LAT(MultiprocessBased):
     def get_sequence(self):
         """
         Method that generates a list of ids to pass to the consummer
+
         :return: List of ids
+        :rtype: list(int)
         """
+
         search_params = [
             ('propietari', '=', True),
             ('name', '!=', 1)
@@ -57,6 +63,19 @@ class LAT(MultiprocessBased):
                     ('name', '=', '1'),
                 ], 0, 0, False, {'active_test': False})
         final_ids = ids + id_lat_emb
+
+        self.forced_ids = get_forced_elements(self.connection, "giscedata.at.tram")
+        data_tram = self.connection.GiscedataAtTram.read(
+            self.forced_ids["include"],
+            ["linia"]
+        )
+
+        for dt in data_tram:
+            print(dt)
+            if dt["linia"][0] not in self.linia_tram_include:
+                self.linia_tram_include[dt["linia"][0]] = [dt["id"]]
+            else:
+                self.linia_tram_include[dt["linia"][0]].append([dt["id"]])
 
         return list(set(final_ids))
 
@@ -90,16 +109,6 @@ class LAT(MultiprocessBased):
             ('active', '=', True)
         ]
 
-        forced_ids = get_forced_elements(self.connection, "giscedata.at.tram")
-
-        data_tram = O.GiscedataAtTram.read(forced_ids["include"], ["linia"])
-        linia_tram_include = {}
-        for dt in data_tram:
-            if dt["id"] in linia_tram_include:
-                linia_tram_include[dt["linia"]] = [dt["id"]]
-            else:
-                linia_tram_include[dt["linia"]].append([dt["id"]])
-
         while True:
             try:
                 item = self.input_q.get()
@@ -115,8 +124,9 @@ class LAT(MultiprocessBased):
                 search_params += static_search_params
                 ids = O.GiscedataAtTram.search(
                     search_params, 0, 0, False, {'active_test': False})
-                ids = list(set(ids) + linia_tram_include[item])
-                ids = list(set(ids) - forced_ids["exclude"])
+
+                ids = list(set(ids + self.linia_tram_include[item]))
+                ids = list(set(ids) - set(self.forced_ids["exclude"]))
 
                 id_desconegut = O.GiscedataAtCables.search(
                     [('name', '=', 'DESCONEGUT')])
