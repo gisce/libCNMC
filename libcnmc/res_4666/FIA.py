@@ -35,6 +35,7 @@ class FIA(MultiprocessBased):
         """
         Method that generates a list of ids to pass to the consummer
         :return: List of ids
+        :rtype: list(int)
         """
         search_params = [('inventari', '=', 'fiabilitat')]
         data_pm = '{0}-01-01' .format(self.year + 1)
