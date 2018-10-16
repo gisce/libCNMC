@@ -75,7 +75,7 @@ class FIA(MultiprocessBased):
             "4666_identificador",
             self.compare_filed
         ]
-        data_pm_limit= '{0}-01-01' .format(self.year + 1)
+        data_pm_limit = '{0}-01-01' .format(self.year + 1)
         data_baixa_limit = '{0}-01-01'.format(self.year)
         while True:
             try:
