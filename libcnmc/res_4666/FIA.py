@@ -10,6 +10,7 @@ import traceback
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.models import F7Res4666
+from libcnmc.utils import get_forced_elements
 
 
 class FIA(MultiprocessBased):
@@ -50,8 +51,17 @@ class FIA(MultiprocessBased):
                                ('data_baixa', '!=', False),
                           ('active', '=', True)]
         search_params += [("cini", "not like", "I28")]
-        return self.connection.GiscedataCellesCella.search(
+        ids = self.connection.GiscedataCellesCella.search(
             search_params, 0, 0, False, {'active_test': False})
+
+        forced_ids = get_forced_elements(
+            self.connection,
+            "giscedata.celles.cella"
+        )
+
+        ids = ids + forced_ids["include"]
+        ids = list(set(ids) - set(forced_ids["exclude"]))
+        return list(set(ids))
 
     def consumer(self):
         """
