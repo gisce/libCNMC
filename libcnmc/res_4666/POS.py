@@ -280,15 +280,29 @@ class POS_INT(MultiprocessBased):
     def get_sequence(self):
         """
         Method that generates a list of ids to pass to the consummer
+
         :return: List of ids
+        :rtype: list(int)
         """
+
         search_params = [('inventari', '=', 'fiabilitat'),
                          ('cini', 'ilike', 'i28_2%')]
         data_pm = '{0}-01-01'.format(self.year + 1)
         search_params += ['|', ('data_pm', '=', False),
                           ('data_pm', '<', data_pm)]
-        return self.connection.GiscedataCellesCella.search(
+
+        ids = self.connection.GiscedataCellesCella.search(
             search_params, 0, 0, False, {'active_test': False})
+
+        forced_ids = get_forced_elements(
+            self.connection,
+            "giscedata.celles.cella"
+        )
+
+        ids = ids + forced_ids["include"]
+        ids = list(set(ids) - set(forced_ids["exclude"]))
+
+        return ids
 
     def get_comunitat(self, id_ct):
         """
