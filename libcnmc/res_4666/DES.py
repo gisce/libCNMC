@@ -9,7 +9,7 @@ from datetime import datetime
 import traceback
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import format_f
+from libcnmc.utils import format_f, get_forced_elements
 from libcnmc.models import F6Res4666
 
 
@@ -37,7 +37,15 @@ class DES(MultiprocessBased):
         """
         data_limit = '01-01-{}'.format(self.year+1)
         search_params = [('data_apm', '<=', data_limit)]
-        return self.connection.GiscedataDespatx.search(search_params)
+
+        ids = self.connection.GiscedataDespatx.search(search_params)
+
+        forced_ids = get_forced_elements(self.connection, "giscedata.despatx")
+
+        ids = ids + forced_ids["include"]
+        ids = list(set(ids) - set(forced_ids["exclude"]))
+
+        return list(set(ids))
 
     def consumer(self):
         """
