@@ -182,7 +182,10 @@ class LAT(MultiprocessBased):
 
                     # Agafem la tensió
                     if 'tensio_max_disseny_id' in tram and tram['tensio_max_disseny_id']:
-                        id_tensio = int(tram['tensio_max_disseny_id'][0])
+                        if isinstance(tram['tensio_max_disseny_id'], list):
+                            id_tensio = int(tram['tensio_max_disseny_id'][0])
+                        else:
+                            id_tensio = int(tram['tensio_max_disseny_id'])
                         tensio_aplicar = self.connection.GiscedataTensionsTensio.read(id_tensio, ["tensio"])["tensio"]
                         tensio = tensio_aplicar / 1000.0
                     elif 'tensio' in linia:
