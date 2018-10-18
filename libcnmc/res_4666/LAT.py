@@ -125,7 +125,9 @@ class LAT(MultiprocessBased):
                 ids = O.GiscedataAtTram.search(
                     search_params, 0, 0, False, {'active_test': False})
 
-                ids = list(set(ids + self.linia_tram_include[item]))
+                if item in self.linia_tram_include:
+                    ids = list(set(ids + self.linia_tram_include[item]))
+
                 ids = list(set(ids) - set(self.forced_ids["exclude"]))
 
                 id_desconegut = O.GiscedataAtCables.search(
