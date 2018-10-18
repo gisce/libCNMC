@@ -137,7 +137,7 @@ class LAT(MultiprocessBased):
                     id_desconegut = O.GiscedataAtCables.search(
                         [('name', '=', 'DESCONOCIDO')])[0]
                 for tram in O.GiscedataAtTram.read(ids, fields_to_read):
-                    if tram["baixa"] and tram["data_baixa"] == False:
+                    if tram["baixa"] and tram["data_baixa"] is False:
                         continue
                     # Comprovar el tipus del cable
                     if 'cable' in tram:
