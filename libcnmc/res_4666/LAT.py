@@ -10,7 +10,7 @@ import traceback
 import math
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import format_f, tallar_text
+from libcnmc.utils import format_f, tallar_text, get_forced_elements
 from libcnmc.models import F1Res4666
 
 
@@ -33,6 +33,9 @@ class LAT(MultiprocessBased):
         self.layer = 'LBT\_%'
         self.embarrats = kwargs.pop('embarrats', False)
         self.compare_field = kwargs["compare_field"]
+        self.linia_tram_include = {}
+        self.forced_ids = {}
+
         id_res_like = self.connection.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')])
         if id_res_like:
@@ -42,8 +45,11 @@ class LAT(MultiprocessBased):
     def get_sequence(self):
         """
         Method that generates a list of ids to pass to the consummer
+
         :return: List of ids
+        :rtype: list(int)
         """
+
         search_params = [
             ('propietari', '=', True),
             ('name', '!=', 1)
@@ -56,7 +62,22 @@ class LAT(MultiprocessBased):
                 [
                     ('name', '=', '1'),
                 ], 0, 0, False, {'active_test': False})
-        return ids + id_lat_emb
+        final_ids = ids + id_lat_emb
+
+        self.forced_ids = get_forced_elements(self.connection, "giscedata.at.tram")
+        data_tram = self.connection.GiscedataAtTram.read(
+            self.forced_ids["include"],
+            ["linia"]
+        )
+
+        for dt in data_tram:
+            print(dt)
+            if dt["linia"][0] not in self.linia_tram_include:
+                self.linia_tram_include[dt["linia"][0]] = [dt["id"]]
+            else:
+                self.linia_tram_include[dt["linia"][0]].append([dt["id"]])
+
+        return list(set(final_ids))
 
     def consumer(self):
         """
@@ -87,6 +108,7 @@ class LAT(MultiprocessBased):
             '&', ('active', '=', False), ('data_baixa', '!=', False),
             ('active', '=', True)
         ]
+
         while True:
             try:
                 item = self.input_q.get()
@@ -97,12 +119,17 @@ class LAT(MultiprocessBased):
                     ['trams', 'tensio', 'municipi', 'propietari', 'provincia']
                 )
 
-
                 propietari = linia['propietari'] and '1' or '0'
                 search_params = [('linia', '=', linia['id'])]
                 search_params += static_search_params
                 ids = O.GiscedataAtTram.search(
                     search_params, 0, 0, False, {'active_test': False})
+
+                if item in self.linia_tram_include:
+                    ids = list(set(ids + self.linia_tram_include[item]))
+
+                ids = list(set(ids) - set(self.forced_ids["exclude"]))
+
                 id_desconegut = O.GiscedataAtCables.search(
                     [('name', '=', 'DESCONEGUT')])
 
@@ -110,7 +137,7 @@ class LAT(MultiprocessBased):
                     id_desconegut = O.GiscedataAtCables.search(
                         [('name', '=', 'DESCONOCIDO')])[0]
                 for tram in O.GiscedataAtTram.read(ids, fields_to_read):
-                    if tram["baixa"] and tram["data_baixa"] == False:
+                    if tram["baixa"] and tram["data_baixa"] is False:
                         continue
                     # Comprovar el tipus del cable
                     if 'cable' in tram:
@@ -155,7 +182,10 @@ class LAT(MultiprocessBased):
 
                     # Agafem la tensió
                     if 'tensio_max_disseny_id' in tram and tram['tensio_max_disseny_id']:
-                        id_tensio = int(tram['tensio_max_disseny_id'][0])
+                        if isinstance(tram['tensio_max_disseny_id'], list):
+                            id_tensio = int(tram['tensio_max_disseny_id'][0])
+                        else:
+                            id_tensio = int(tram['tensio_max_disseny_id'])
                         tensio_aplicar = self.connection.GiscedataTensionsTensio.read(id_tensio, ["tensio"])["tensio"]
                         tensio = tensio_aplicar / 1000.0
                     elif 'tensio' in linia:

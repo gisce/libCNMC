@@ -11,7 +11,7 @@ import traceback
 from operator import itemgetter
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import format_f
+from libcnmc.utils import format_f, get_forced_elements
 
 
 class CON(MultiprocessBased):
@@ -46,7 +46,9 @@ class CON(MultiprocessBased):
     def get_sequence(self):
         """
         Method that generates a list of ids to pass to the consummer
-        :return: List of ids
+
+        :return: List of ids to pass to the consumer
+        :rtype: list[int]
         """
         data_pm = '{0}-01-01'.format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
@@ -62,9 +64,18 @@ class CON(MultiprocessBased):
                           ('data_baixa', '!=', False),
                           ('active', '=', True)]
 
+        forced_ids = get_forced_elements(
+            self.connection,
+            "giscedata.condensadors"
+        )
+
         ids_condensadors = self.connection.GiscedataCondensadors.search(
             search_params, 0, 0, False, {'active_test': False})
-        return ids_condensadors
+
+        ids_condensadors = ids_condensadors + forced_ids["include"]
+        ids_condensadors = list(set(ids_condensadors) - set(forced_ids["exclude"]))
+
+        return list(set(ids_condensadors))
 
     def get_norm_tension(self, tension):
         """

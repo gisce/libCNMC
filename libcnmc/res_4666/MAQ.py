@@ -11,7 +11,8 @@ import traceback
 from operator import itemgetter
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import get_id_municipi_from_company, format_f
+from libcnmc.utils import \
+    (get_id_municipi_from_company, format_f, get_forced_elements)
 from libcnmc.models import F5Res4666
 
 
@@ -48,8 +49,11 @@ class MAQ(MultiprocessBased):
     def get_sequence(self):
         """
         Method that generates a list of ids to pass to the consummer
+
         :return: List of ids
+        :rtype: list(int)
         """
+
         data_pm = '{0}-01-01'.format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
         search_params = [
@@ -77,7 +81,18 @@ class MAQ(MultiprocessBased):
 
         ids_transformadors = self.connection.GiscedataTransformadorTrafo.search(
             search_params_transformadors, 0, 0, False, {'active_test': False})
-        return list(set(ids_reductor + ids_transformadors))
+
+        ids = list(set(ids_reductor + ids_transformadors))
+
+        forced_ids = get_forced_elements(
+            self.connection,
+            "giscedata.transformador.trafo"
+        )
+
+        ids = ids + forced_ids["include"]
+        ids = list(set(ids) - set(forced_ids["exclude"]))
+
+        return list(set(ids))
 
     def get_norm_tension(self, tension):
         """

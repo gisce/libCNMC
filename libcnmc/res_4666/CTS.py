@@ -9,7 +9,8 @@ from datetime import datetime
 import traceback
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import format_f, get_id_municipi_from_company
+from libcnmc.utils import \
+    (format_f, get_id_municipi_from_company, get_forced_elements)
 from libcnmc.models import F8Res4666
 
 
@@ -35,6 +36,7 @@ class CTS(MultiprocessBased):
         """
         Method that generates a list of ids to pass to the consummer
         :return: List of ids
+        :rtype: list[int]
         """
 
         search_params = [('id_installacio.name', '!=', 'SE')]
@@ -51,8 +53,17 @@ class CTS(MultiprocessBased):
                           '&', ('active', '=', False),
                                ('data_baixa', '!=', False),
                           ('active', '=', True)]
-        return self.connection.GiscedataCts.search(
-            search_params, 0, 0, False, {'active_test': False})
+
+        forced_ids = get_forced_elements(self.connection, "giscedata.cts")
+
+        ids = self.connection.GiscedataCts.search(
+            search_params, 0, 0, False, {'active_test': False}
+        )
+
+        ids = ids + forced_ids["include"]
+        ids = list(set(ids) - set(forced_ids["exclude"]))
+
+        return list(set(ids))
 
     def consumer(self):
         """

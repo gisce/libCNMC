@@ -11,7 +11,7 @@ import math
 import sys
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import format_f, tallar_text
+from libcnmc.utils import format_f, tallar_text, get_forced_elements
 from libcnmc.models import F2Res4666
 
 QUIET = False
@@ -40,6 +40,7 @@ class LBT(MultiprocessBased):
         """
         Method that generates a list of ids to pass to the consummer
         :return: List of ids
+        :rtype: list(int)
         """
         data_pm = '{0}-01-01'.format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
@@ -56,8 +57,18 @@ class LBT(MultiprocessBased):
                           '&', ('active', '=', False),
                                ('data_baixa', '!=', False),
                           ('active', '=', True)]
-        return self.connection.GiscedataBtElement.search(
+        ids = self.connection.GiscedataBtElement.search(
             search_params, 0, 0, False, {'active_test': False})
+
+        forced_ids = get_forced_elements(
+            self.connection,
+            "giscedata.bt.element"
+        )
+
+        ids = ids + forced_ids["include"]
+        ids = list(set(ids) - set(forced_ids["exclude"]))
+
+        return list(set(ids))
 
     def consumer(self):
         """

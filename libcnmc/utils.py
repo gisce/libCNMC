@@ -41,6 +41,30 @@ TENS_NORM = []
 INES = {}
 
 
+def get_forced_elements(connection, model):
+    """
+    Returns the force include and force exclude ids of elements
+    :param connection:
+    :param model:
+
+    :return:Included and excluded elements
+    :rtype: dict(str,list)
+    """
+    c = connection
+
+    mod_obj = getattr(c, c.normalize_model_name(model))
+
+    include_search_params = [("criteri_regulatori", "=", "incloure")]
+    include_ids = mod_obj.search(include_search_params)
+
+    include_search_params = [("criteri_regulatori", "=", "excloure")]
+    exclude_ids = mod_obj.search(include_search_params)
+
+    return {
+        "include": include_ids,
+        "exclude": exclude_ids
+    }
+
 def fetch_cts_node(connection):
     """
     Gets the nodes of the CTs

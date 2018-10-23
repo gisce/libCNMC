@@ -10,6 +10,7 @@ import traceback
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.models import F7Res4666
+from libcnmc.utils import get_forced_elements
 
 
 class FIA(MultiprocessBased):
@@ -34,6 +35,7 @@ class FIA(MultiprocessBased):
         """
         Method that generates a list of ids to pass to the consummer
         :return: List of ids
+        :rtype: list(int)
         """
         search_params = [('inventari', '=', 'fiabilitat')]
         data_pm = '{0}-01-01' .format(self.year + 1)
@@ -50,8 +52,17 @@ class FIA(MultiprocessBased):
                                ('data_baixa', '!=', False),
                           ('active', '=', True)]
         search_params += [("cini", "not like", "I28")]
-        return self.connection.GiscedataCellesCella.search(
+        ids = self.connection.GiscedataCellesCella.search(
             search_params, 0, 0, False, {'active_test': False})
+
+        forced_ids = get_forced_elements(
+            self.connection,
+            "giscedata.celles.cella"
+        )
+
+        ids = ids + forced_ids["include"]
+        ids = list(set(ids) - set(forced_ids["exclude"]))
+        return list(set(ids))
 
     def consumer(self):
         """
@@ -65,7 +76,7 @@ class FIA(MultiprocessBased):
             "4666_identificador",
             self.compare_filed
         ]
-        data_pm_limit= '{0}-01-01' .format(self.year + 1)
+        data_pm_limit = '{0}-01-01' .format(self.year + 1)
         data_baixa_limit = '{0}-01-01'.format(self.year)
         while True:
             try:

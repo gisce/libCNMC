@@ -4,13 +4,15 @@
 """
 INVENTARI DE CNMC Posicions
 """
+
 from __future__ import absolute_import
 from datetime import datetime
 import traceback
 import sys
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import get_id_municipi_from_company, format_f
+from libcnmc.utils import \
+    (get_id_municipi_from_company, format_f, get_forced_elements)
 from libcnmc.models import F4Res4666
 
 QUIET = False
@@ -23,9 +25,11 @@ class POS(MultiprocessBased):
     def __init__(self, **kwargs):
         """
         Class constructor
+
         :param kwargs: year(generation year), codi_r1 R1 code
         :return: CT
         """
+
         super(POS, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
@@ -37,8 +41,11 @@ class POS(MultiprocessBased):
     def get_sequence(self):
         """
         Method that generates a list of ids to pass to the consummer
+
         :return: List of ids
+        :rtype: list(int)
         """
+
         search_params = [('cini', 'ilike', 'i28_2%')]
         data_pm = '{0}-01-01'.format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
@@ -53,8 +60,19 @@ class POS(MultiprocessBased):
                           '&', ('active', '=', False),
                                ('data_baixa', '!=', False),
                           ('active', '=', True)]
-        return self.connection.GiscedataCtsSubestacionsPosicio.search(
+
+        ids = self.connection.GiscedataCtsSubestacionsPosicio.search(
             search_params, 0, 0, False, {'active_test': False})
+
+        forced_ids = get_forced_elements(
+            self.connection,
+            "giscedata.cts.subestacions.posicio"
+        )
+
+        ids = ids + forced_ids["include"]
+        ids = list(set(ids) - set(forced_ids["exclude"]))
+
+        return ids
 
     def get_description(self, pos_id):
         """
@@ -262,15 +280,29 @@ class POS_INT(MultiprocessBased):
     def get_sequence(self):
         """
         Method that generates a list of ids to pass to the consummer
+
         :return: List of ids
+        :rtype: list(int)
         """
+
         search_params = [('inventari', '=', 'fiabilitat'),
                          ('cini', 'ilike', 'i28_2%')]
         data_pm = '{0}-01-01'.format(self.year + 1)
         search_params += ['|', ('data_pm', '=', False),
                           ('data_pm', '<', data_pm)]
-        return self.connection.GiscedataCellesCella.search(
+
+        ids = self.connection.GiscedataCellesCella.search(
             search_params, 0, 0, False, {'active_test': False})
+
+        forced_ids = get_forced_elements(
+            self.connection,
+            "giscedata.celles.cella"
+        )
+
+        ids = ids + forced_ids["include"]
+        ids = list(set(ids) - set(forced_ids["exclude"]))
+
+        return ids
 
     def get_comunitat(self, id_ct):
         """
