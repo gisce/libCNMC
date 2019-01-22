@@ -1,5 +1,5 @@
 progressbar
-click
+click<7.0
 libcomxml
 chardet
 pyproj
