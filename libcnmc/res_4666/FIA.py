@@ -153,9 +153,7 @@ class FIA(MultiprocessBased):
 
                         to_append = [provincia, municipi, zona]
                 elif cllinst[0] == 'giscedata.at.suport':
-                    linia_vals = O.GiscedataAtSuport.read(int(cllinst[1]),
-                                                          ['linia'])
-                    linia_id = int(linia_vals['linia'][0])
+                    linia_id = O.GiscedataAtTram.read(tram_id, ['linia'])['linia'][0]
                     lat_vals = O.GiscedataAtLinia.read(
                         linia_id, ['municipi', 'provincia'])
                     if lat_vals['municipi']:
