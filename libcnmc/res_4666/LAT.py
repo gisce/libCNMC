@@ -182,7 +182,7 @@ class LAT(MultiprocessBased):
 
                     # Agafem la tensió
                     if 'tensio_max_disseny_id' in tram and tram['tensio_max_disseny_id']:
-                        if isinstance(tram['tensio_max_disseny_id'], list):
+                        if isinstance(tram['tensio_max_disseny_id'], (list, tuple)):
                             id_tensio = int(tram['tensio_max_disseny_id'][0])
                         else:
                             id_tensio = int(tram['tensio_max_disseny_id'])
