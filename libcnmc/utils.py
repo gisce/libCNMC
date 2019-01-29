@@ -51,9 +51,11 @@ def get_forced_elements(connection, model):
     :rtype: dict(str,list)
     """
     c = connection
-
-    mod_obj = getattr(c, c.normalize_model_name(model))
-
+    try:
+        mod_obj = getattr(c, c.normalize_model_name(model))
+    except Exception:
+        mod_obj = c.model(model)
+        
     include_search_params = [("criteri_regulatori", "=", "incloure")]
     include_ids = mod_obj.search(include_search_params)
 
