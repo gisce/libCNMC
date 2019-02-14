@@ -187,6 +187,8 @@ class LBT(MultiprocessBased):
                 if linia[self.compare_field]:
                     last_data = linia[self.compare_field]
                     entregada = F2Res4666(**last_data)
+                    origen = last_data["origen"]
+                    final = last_data["destino"]
                     actual = F2Res4666(
                         'B{0}'.format(linia['name']),
                         linia['cini'],
@@ -219,7 +221,8 @@ class LBT(MultiprocessBased):
                             estado = '2'
                     else:
                         estado = '1'
-
+                origen = last_data["origen"]
+                final = last_data["destino"]
                 output = [
                     'B{}'.format(linia['name']),
                     linia['cini'] or '',
