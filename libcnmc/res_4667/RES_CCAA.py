@@ -68,7 +68,17 @@ class RESCCAA(MultiprocessBased):
             self.inv_bt[year] = dict.fromkeys(self.ccaas, 0.0)
             self.num_proy[year] = dict.fromkeys(self.ccaas, 0.0)
 
-        for line in model_ccaa.read(ids_resums_ccaa, []):
+        fields_read = [
+            "anio_periodo",
+            "codigo_ccaa",
+            "vol_total_inv_prv_ccaa",
+            "ayudas_prv_ccaa",
+            "financiacion_prv_ccaa",
+            "vpi_retribuible_prv_ccaa",
+            "vol_total_inv_bt_prv_ccaa",
+            "num_proyectos_ccaa"
+        ]
+        for line in model_ccaa.read(ids_resums_ccaa, fields_read):
             year = line["anio_periodo"]
             ccaa = line["codigo_ccaa"][0]
 
