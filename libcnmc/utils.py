@@ -40,6 +40,13 @@ TENS_NORM = []
 
 INES = {}
 
+TARIFAS_AT = [
+    '3.1A', '3.1A LB', '6.1', '6.1A', '6.1B', '6.2', '6.2A', '6.2B'
+]
+
+TARIFAS_BT = [
+    '2.0A', '2.0DHA', '2.1A', '2.1DHA', '2.0DHS', '2.1DHS', '3.0A'
+]
 
 def get_forced_elements(connection, model):
     """

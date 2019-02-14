@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 import traceback
 
-from libcnmc.utils import get_comptador, format_f
+from libcnmc.utils import get_comptador, format_f, TARIFAS_AT, TARIFAS_BT
 from libcnmc.core import MultiprocessBased
 
 
@@ -27,9 +27,61 @@ class F1bis(MultiprocessBased):
         mods_fi = self.connection.GiscedataPolissaModcontractual.search(
             [("data_final", ">=", "{}-01-01".format(self.year)),
             ("data_final", "<=", "{}-12-31".format(self.year))],
-            0,0,False,{"active_test": False}
+            0, 0, False, {"active_test": False}
         )
+
+        self.generate_derechos = kwargs.pop("derechos", False)
+
         self.modcons_in_year = set(mods_fi + mods_ini + mod_all_year)
+
+    def get_derechos(self, tarifas, years):
+        """
+        Returns a list of CUPS with derechos
+
+        :param tarifas: Lis of tarifas of the polissas that are in the CUPS
+        :param years: Number of years to search back
+        :return: List of ids of the
+        """
+
+        O = self.connection
+
+        polisses_baixa_id = O.GiscedataPolissa.search(
+            [
+                ("data_baixa", "<=", "{}-12-31".format(self.year - 1)),
+                ("data_baixa", ">", "{}-01-01".format(self.year - years)),
+                ("tarifa", "in", tarifas)
+            ],
+            0, 0, False, {'active_test': False}
+        )
+
+        cups_polisses_baixa = [x["cups"][0] for x in O.GiscedataPolissa.read(
+            polisses_baixa_id, ["cups"]
+        )]
+
+        cups_derechos = O.GiscedataCupsPs.search(
+            [
+                ("id", "in", cups_polisses_baixa),
+                ("polissa_polissa", "=", False)
+            ]
+        )
+
+        polissa_eliminar_id = O.GiscedataPolissaModcontractual.search(
+            [
+                ("cups", "in", cups_derechos),
+                '|', ("data_inici", ">", "{}-01-01".format(self.year)),
+                ("data_final", ">", "{}-01-01".format(self.year))
+            ],
+            0, 0, False, {'active_test': False}
+        )
+
+        cups_eliminar_id = [x["cups"][0] for x in
+                            O.GiscedataPolissaModcontractual.read(
+                                polissa_eliminar_id, ["cups"]
+                            )]
+
+        cups_derechos = list(set(cups_derechos) - set(cups_eliminar_id))
+
+        return cups_derechos
 
     def get_sequence(self):
         """
@@ -38,14 +90,30 @@ class F1bis(MultiprocessBased):
         :return: List of id of CUPS
         :rtype: list of int
         """
-
+        o = self.connection
         data_ini = '%s-01-01' % (self.year + 1)
         search_params = [('active', '=', True),
                          '|',
                          ('create_date', '<', data_ini),
                          ('create_date', '=', False)]
-        return self.connection.GiscedataCupsPs.search(
+
+        cups_derechos_bt = self.get_derechos(TARIFAS_BT, 2)
+        cups_derechos_at = self.get_derechos(TARIFAS_AT, 4)
+
+        tmp_ret_cups = self.connection.GiscedataCupsPs.search(
             search_params, 0, 0, False, {'active_test': False})
+        ret_cups = []
+
+        fields_to_check = ["polisses"]
+
+        for cups in o.GiscedataCupsPs.read(tmp_ret_cups, fields_to_check):
+            if set(cups["polisses"]).intersection(self.modcons_in_year):
+                ret_cups.append(cups["id"])
+
+        if self.generate_derechos:
+            return ret_cups + cups_derechos_at + cups_derechos_bt
+        else:
+            return ret_cups
 
     def get_comptador(self, polissa_id):
         o = self.connection
@@ -153,6 +221,12 @@ class F1bis(MultiprocessBased):
             return '1'
 
     def consumer(self):
+        """
+        Consumer function that executes for each item of the return
+        of get_sequence
+
+        :return: None
+        """
         O = self.connection
         while True:
             try:
@@ -160,12 +234,9 @@ class F1bis(MultiprocessBased):
                 self.progress_q.put(item)
                 fields_to_read = [
                     'name', 'polissa_polissa', 'cnmc_numero_lectures',
-                    "polisses"
                 ]
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 o_cups = cups['name'][:22]
-                if not set(cups["polisses"]).intersection(self.modcons_in_year):
-                    continue
                 polissa_id = self.get_polissa(cups['id'])
                 polissa = O.GiscedataPolissa.read(polissa_id[0], ['tarifa'])
                 if 'RE' in polissa['tarifa'][1]:
