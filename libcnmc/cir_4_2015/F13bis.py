@@ -67,14 +67,14 @@ class F13bis(MultiprocessBased):
                 insert = True
                 if insert:
                     self.output_q.put([
-                        o_subestacio,
-                        o_parc,
-                        o_node,
-                        o_cini,
-                        o_tipus,
-                        o_tensio,
-                        o_prop,
-                        o_any
+                        o_subestacio,   # SUBESTACION
+                        o_parc,         # PARQUE
+                        o_node,         # NUDO
+                        o_cini,         # CINI
+                        o_tipus,        # TIPO PARQUE
+                        o_tensio,       # TENSION DEL PARQUE
+                        o_prop,         # PROPIEDAD
+                        o_any           # AÑO INFORMACION
                     ])
             except Exception as e:
                 traceback.print_exc()

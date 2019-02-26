@@ -97,19 +97,19 @@ class F16(MultiprocessBased):
                     res_srid = convert_srid(
                         self.codi_r1, get_srid(O), vertex)
                 self.output_q.put([
-                    o_node,
-                    o_cond,
-                    o_cini,
-                    format_f(res_srid[0], decimals=3),
-                    format_f(res_srid[1], decimals=3),
-                    z,
-                    o_ine_muni,
-                    o_ine_prov,
-                    o_tensio,
-                    format_f(o_potencia, decimals=3),
-                    o_codi_r1,
-                    o_propietari,
-                    o_any
+                    o_node,                             # NUDO
+                    o_cond,                             # CONDENSADOR
+                    o_cini,                             # CINI
+                    format_f(res_srid[0], decimals=3),  # X
+                    format_f(res_srid[1], decimals=3),  # Y
+                    z,                                  # Z
+                    o_ine_muni,                         # MUNICIPIO
+                    o_ine_prov,                         # PROVINCIA
+                    o_tensio,                           # NIVEL TENSION
+                    format_f(o_potencia, decimals=3),   # POTENCIA INSTALADA
+                    o_codi_r1,                          # CODIGO DISTRIBUIDORA
+                    o_propietari,                       # PROPIETARIO
+                    o_any                               # AÑO INFORMACION
                 ])
             except Exception:
                 traceback.print_exc()

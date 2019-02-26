@@ -87,20 +87,20 @@ class F14(MultiprocessBased):
                 o_any = self.year
 
                 self.output_q.put([
-                    o_subestacio,
-                    o_maquina,
-                    o_cini,
-                    o_costat_alta,
-                    o_costat_baixa,
-                    o_pot_maquina,
-                    o_pot_activa,
-                    o_pot_reactiva,
-                    o_energia_anual,
-                    o_perdues,
-                    o_perdues_nominal,
-                    o_propietat,
-                    o_estat,
-                    o_any
+                    o_subestacio,           # SUBESTACION
+                    o_maquina,              # MAQUINA
+                    o_cini,                 # CINI
+                    o_costat_alta,          # PARQUE ALTA
+                    o_costat_baixa,         # PARQUE BAJA
+                    o_pot_maquina,          # POTENCIA MAQUINA
+                    o_pot_activa,           # POTENCIA ACTIVA
+                    o_pot_reactiva,         # POTENCIA REACTIVA
+                    o_energia_anual,        # ENERGIA ANUAL CIRCULADA
+                    o_perdues,              # PERDIDAS DE VACIO
+                    o_perdues_nominal,      # PERDIDAS POTENCIA NOMINAL
+                    o_propietat,            # PROPIEDAD
+                    o_estat,                # ESTADO
+                    o_any                   # AÑO INFORMACION
                 ])
             except Exception:
                 traceback.print_exc()

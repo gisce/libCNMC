@@ -90,13 +90,13 @@ class F13c(MultiprocessBased):
                 o_any = self.year
 
                 self.output_q.put([
-                    o_subestacio,
-                    o_parc,
-                    o_pos,
-                    o_cini,
-                    o_prop,
-                    o_data,
-                    o_any
+                    o_subestacio,   # SUBESTACION
+                    o_parc,         # PARQUE
+                    o_pos,          # POSICION
+                    o_cini,         # CINI
+                    o_prop,         # PROPIEDAD
+                    o_data,         # FECHA PUESTA EN SERVICIO
+                    o_any           # AÑO INFORMACION
                 ])
             except Exception:
                 traceback.print_exc()

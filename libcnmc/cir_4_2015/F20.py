@@ -156,10 +156,10 @@ class F20(MultiprocessBased):
                     o_cini = 'False'
                 o_codi_ct = cups['et']
                 self.output_q.put([
-                    o_codi_r1,
-                    o_cups,
-                    o_cini,
-                    o_codi_ct
+                    o_codi_r1,      # CODIGO DISTRIBUIDOR
+                    o_cups,         # CUPS
+                    o_cini,         # CINI
+                    o_codi_ct       # CODIGO SUBESTACION
                 ])
             except Exception:
                 traceback.print_exc()
