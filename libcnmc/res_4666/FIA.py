@@ -223,14 +223,14 @@ class FIA(MultiprocessBased):
                         estado = '1'
 
                 output = [
-                    cll.get("4666_identificador",cll["name"]),
-                    cll['cini'] or '',
-                    element_act,
-                    codigo_ccuu or '',
-                    ccaa or '',
-                    data_pm,
-                    fecha_baja,
-                    estado
+                    cll.get("4666_identificador",cll["name"]),  # IDENTIFICADOR
+                    cll['cini'] or '',                          # CINI
+                    element_act,                                # ELEMENTO ACT
+                    codigo_ccuu or '',                          # CODIGO CCUU
+                    ccaa or '',                                 # CODIGO CCAA
+                    data_pm,                                    # FECHA APS
+                    fecha_baja,                                 # FECHA BAJA
+                    estado                                      # ESTADO
                 ]
 
                 if self.extended:

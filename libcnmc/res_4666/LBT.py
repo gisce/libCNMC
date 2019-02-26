@@ -224,24 +224,24 @@ class LBT(MultiprocessBased):
                 origen = last_data["origen"]
                 final = last_data["destino"]
                 output = [
-                    'B{}'.format(linia['name']),
-                    linia['cini'] or '',
-                    origen or '',
-                    final or '',
-                    codi_ccuu or '',
-                    comunitat,
-                    comunitat,
-                    format_f(100.0 - linia['perc_financament'], 2),
-                    data_pm or '',
-                    fecha_baja,
-                    1,
-                    1,
-                    format_f(tensio, 3),
-                    format_f(longitud, 3),
-                    format_f(intensitat, 3),
-                    format_f(cable['seccio'], 3),
-                    format_f(capacitat, 3),
-                    estado
+                    'B{}'.format(linia['name']),    # IDENTIFICADOR
+                    linia['cini'] or '',            # CINI
+                    origen or '',                   # ORIGEN
+                    final or '',                    # DESTINO
+                    codi_ccuu or '',                # CODIGO_CCUU
+                    comunitat,                      # CODIGO_CCAA
+                    comunitat,                      # CODIGO_CCAA_2
+                    format_f(100.0 - linia['perc_financament'], 2), # FINCANCIADO
+                    data_pm or '',                  # FECHA_APS
+                    fecha_baja,                     # FECHA_BAJA
+                    1,                              # NUMERO CIRCUITOS
+                    1,                              # NUMERO CONDUCTORES
+                    format_f(tensio, 3),            # NIVEL_TENSION
+                    format_f(longitud, 3),          # LONGITUD
+                    format_f(intensitat, 3),        # INTENSITAT MAXIMA
+                    format_f(cable['seccio'], 3),   # SECCION
+                    format_f(capacitat, 3),         # CAPACIDAD
+                    estado                          # ESTADO
                 ]
 
                 if self.extended:

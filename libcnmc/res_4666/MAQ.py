@@ -235,18 +235,18 @@ class MAQ(MultiprocessBased):
                         estado = '1'
 
                 output = [
-                    '{0}'.format(trafo['name']),
-                    trafo['cini'] or '',
-                    denominacio or '',
-                    codigo_ccuu,
-                    comunitat or '',
-                    format_f(tensio_primari, 3),
-                    format_f(tensio_secundari, 3),
-                    format_f(financiacio, 2),
-                    data_pm,
-                    fecha_baja,
-                    format_f(capacitat, 3),
-                    estado
+                    '{0}'.format(trafo['name']),        # IDENTIFICADOR
+                    trafo['cini'] or '',                # CINI
+                    denominacio or '',                  # DENOMINACION
+                    codigo_ccuu,                        # CODIGO_CCUU
+                    comunitat or '',                    # CODIGO_CCAA
+                    format_f(tensio_primari, 3),        # TENSION PRIMARIO
+                    format_f(tensio_secundari, 3),      # TENSION SECUNDARIO
+                    format_f(financiacio, 2),           # FINANCIADO
+                    data_pm,                            # FECHA APS
+                    fecha_baja,                         # FECHA BAJA
+                    format_f(capacitat, 3),             # CAPACIDAD
+                    estado                              # ESTADO
                 ]
 
                 self.output_q.put(output)
