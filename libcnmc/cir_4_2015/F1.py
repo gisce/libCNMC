@@ -31,6 +31,7 @@ class F1(MultiprocessBased):
         self.cnaes = manager.dict()
         self.base_object = 'CUPS'
         self.report_name = 'F1 - CUPS'
+        self.reducir_cups = kwargs.get("reducir_cups", False)
         mod_all_year = self.connection.GiscedataPolissaModcontractual.search([
             ("data_inici", "<=", "{}-01-01".format(self.year)),
             ("data_final", ">=", "{}-12-31".format(self.year))],
@@ -269,7 +270,10 @@ class F1(MultiprocessBased):
                 if not cups or not cups.get('name'):
                     self.input_q.task_done()
                     continue
-                o_name = cups['name'][:22]
+                if self.reducir_cups:
+                    o_name = cups['name'][:20]
+                else:
+                    o_name = cups['name'][:22]
                 o_codi_ine_mun = ''
                 o_codi_ine_prov = ''
                 o_zona = ''

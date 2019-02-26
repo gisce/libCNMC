@@ -10,6 +10,7 @@ class F1bis(MultiprocessBased):
     def __init__(self, **kwargs):
         super(F1bis, self).__init__(**kwargs)
         self.codi_r1 = kwargs.pop('codi_r1')
+        self.reducir_cups = kwargs.get("reducir_cups", False)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.report_name = 'F1bis - CUPS'
         self.base_object = 'CUPS'
@@ -236,7 +237,10 @@ class F1bis(MultiprocessBased):
                     'name', 'polissa_polissa', 'cnmc_numero_lectures',
                 ]
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
-                o_cups = cups['name'][:22]
+                if self.reducir_cups:
+                    o_cups = cups['name'][:20]
+                else:
+                    o_cups = cups['name'][:22]
                 polissa_id = self.get_polissa(cups['id'])
                 polissa = O.GiscedataPolissa.read(polissa_id[0], ['tarifa'])
                 if 'RE' in polissa['tarifa'][1]:
