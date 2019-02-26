@@ -95,17 +95,17 @@ class F13(MultiprocessBased):
                     res_srid = convert_srid(
                         self.codi_r1, get_srid(o), vertex)
                 self.output_q.put([
-                    o_subestacio,
-                    o_cini,
-                    o_denominacio,
-                    format_f(res_srid[0], decimals=3),
-                    format_f(res_srid[1], decimals=3),
-                    z,
-                    o_municipi,
-                    o_provincia,
-                    o_codi_r1,
-                    o_prop,
-                    o_any
+                    o_subestacio,                       # SUBESTACION
+                    o_cini,                             # CINI
+                    o_denominacio,                      # DENOMINACION
+                    format_f(res_srid[0], decimals=3),  # X
+                    format_f(res_srid[1], decimals=3),  # Y
+                    z,                                  # Z
+                    o_municipi,                         # MUNICIPIO
+                    o_provincia,                        # PROVINCIA
+                    o_codi_r1,                          # CODIGO DISTRIBUIDORA
+                    o_prop,                             # PROPIEDAD
+                    o_any                               # AÑO INFORMACION
                 ])
             except Exception:
                 traceback.print_exc()
