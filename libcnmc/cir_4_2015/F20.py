@@ -147,7 +147,10 @@ class F20(MultiprocessBased):
                         continue
 
                 o_codi_r1 = "R1-"+self.codi_r1
-                o_cups = cups['name']
+                if self.reducir_cups:
+                    o_cups = cups['name'][:20]
+                else:
+                    o_cups = cups['name']
                 o_cini = self.get_cini(cups['et'])
                 if not o_cini:
                     o_cini = 'False'
