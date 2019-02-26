@@ -166,8 +166,6 @@ class F11(MultiprocessBased):
                 o_propietari = int(ct['propietari'])
                 o_num_max_maquines = ct['numero_maxim_maquines']
                 o_incorporacio = self.year
-                x = ''
-                y = ''
                 z = ''
                 res_srid = ['', '']
                 if vertex:
