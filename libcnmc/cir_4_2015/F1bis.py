@@ -259,13 +259,13 @@ class F1bis(MultiprocessBased):
                 o_year = self.year
 
                 self.output_q.put([
-                    o_cups,
-                    o_comptador_cini,
-                    o_comptador_data,
-                    o_num_lectures,
-                    o_titular,
-                    o_baixa,
-                    o_year
+                    o_cups,             # CUPS
+                    o_comptador_cini,   # CINI
+                    o_comptador_data,   # INSTALACION
+                    o_num_lectures,     # NUMERO LECTURAS
+                    o_titular,          # CAMBIO TITULARIDAD
+                    o_baixa,            # BAJA SUMINISTRO
+                    o_year              # AÑO INFORMACION
                 ])
             except Exception:
                 traceback.print_exc()
