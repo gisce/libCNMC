@@ -166,34 +166,32 @@ class F11(MultiprocessBased):
                 o_propietari = int(ct['propietari'])
                 o_num_max_maquines = ct['numero_maxim_maquines']
                 o_incorporacio = self.year
-                x = ''
-                y = ''
                 z = ''
                 res_srid = ['', '']
                 if vertex:
                     res_srid = convert_srid(
                         self.codi_r1, get_srid(O), vertex)
                 self.output_q.put([
-                    o_node,
-                    o_ct,
-                    o_cini,
-                    format_f(res_srid[0], decimals=3),
-                    format_f(res_srid[1], decimals=3),
-                    z,
-                    o_ine_muni,
-                    o_ine_prov,
-                    o_tensio_p,
-                    o_tipo,
-                    format_f(o_potencia, decimals=3),
-                    format_f(o_energia, decimals=3),
-                    o_pic_activa,
-                    o_pic_reactiva,
-                    o_s_utilitades,
-                    o_s_disponibles,
-                    o_codi_r1,
-                    o_propietari,
-                    o_num_max_maquines,
-                    o_incorporacio
+                    o_node,                             # NUDO ALTA
+                    o_ct,                               # CT
+                    o_cini,                             # CINI
+                    format_f(res_srid[0], decimals=3),  # X
+                    format_f(res_srid[1], decimals=3),  # Y 
+                    z,                                  # Z
+                    o_ine_muni,                         # MUNICIPIO
+                    o_ine_prov,                         # PROVINCIA
+                    o_tensio_p,                         # NIVEL TENSION
+                    o_tipo,                             # TIPO
+                    format_f(o_potencia, decimals=3),   # POTENCIA TOTAL INSTALADA
+                    format_f(o_energia, decimals=3),    # ENERGIA ANUAL CIRCULADA
+                    o_pic_activa,                       # DEMANDA PICO ACTIVA
+                    o_pic_reactiva,                     # DEMANDA PICO REACTIVA
+                    o_s_utilitades,                     # NUMERO SALIDAS UTILIZADAS
+                    o_s_disponibles,                    # MAXIMO SALIDAS UTILIZADAS
+                    o_codi_r1,                          # CODIGO DISTRIBUIDORA
+                    o_propietari,                       # PROPIEDAD
+                    o_num_max_maquines,                 # NUM MAX MAQUINAS
+                    o_incorporacio                      # AÑO INFORMACION
                 ])
             except Exception:
                 traceback.print_exc()

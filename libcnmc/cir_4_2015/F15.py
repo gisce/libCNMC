@@ -355,19 +355,19 @@ class F15Cel(MultiprocessBased):
                     x = format_f(res_srid[0], decimals=3)
                     y = format_f(res_srid[1], decimals=3)
                 self.output_q.put([
-                    o_node,
-                    o_fiabilitat,
-                    o_tram,
-                    o_cini,
-                    x,
-                    y,
-                    z,
-                    o_municipi,
-                    o_provincia,
-                    o_tensio,
-                    self.cod_dis,
-                    o_prop,
-                    o_any
+                    o_node,         # NUDO
+                    o_fiabilitat,   # ELEMENTO FIABILIDAD
+                    o_tram,         # TRAMO
+                    o_cini,         # CINI
+                    x,              # X
+                    y,              # Y
+                    z,              # Z
+                    o_municipi,     # MUNICIPIO
+                    o_provincia,    # PROVINCIA
+                    o_tensio,       # NIVEL TENSION
+                    self.cod_dis,   # CODIGO DISTRIBUIDORA
+                    o_prop,         # PROPIEDAD
+                    o_any           # AÑO INFORMACION
                 ])
             except Exception:
                 traceback.print_exc()

@@ -76,6 +76,7 @@ def cir_4_2015_f10at(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('--derechos/--no-derechos', default=False)
+@click.option("--reducir-cups/--no-reducir-cups",default=False)
 def cir_4_2015_f1(**kwargs):
     """
     Click entry to generate the F1 of 4/2015
@@ -96,7 +97,8 @@ def cir_4_2015_f1(**kwargs):
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
-        derechos=kwargs["derechos"]
+        derechos=kwargs["derechos"],
+        reducir_cups=kwargs["reducir_cups"]
     )
     proc.calc()
 
@@ -119,6 +121,7 @@ def cir_4_2015_f1(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option("--reducir-cups/--no-reducir-cups",default=False)
 def cir_4_2015_f11(**kwargs):
     """
     Click entry to generate the F11 of 4/2015
@@ -139,7 +142,8 @@ def cir_4_2015_f11(**kwargs):
         connection=O,
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
-        year=kwargs['year']
+        year=kwargs['year'],
+        reducir_cups=kwargs["recuri_cups"]
     )
     proc.calc()
 
@@ -163,6 +167,7 @@ def cir_4_2015_f11(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('--derechos/--no-derechos', default=False)
+@click.option("--reducir-cups/--no-reducir-cups",default=False)
 def cir_4_2015_f1bis(**kwargs):
     """
     Click entry to gneerate the F1BIS of 4/2015
@@ -184,7 +189,8 @@ def cir_4_2015_f1bis(**kwargs):
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
-        derechos=kwargs['derechos']
+        derechos=kwargs['derechos'],
+        reducir_cups=kwargs["reducir_cups"]
     )
     proc.calc()
 
@@ -539,6 +545,7 @@ def cir_4_2015_f10bt(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('--derechos/--no-derechos', default=False)
+@click.option("--reducir-cups/--no-reducir-cups",default=False)
 def cir_4_2015_f20(**kwargs):
     """
     Click entry to generate the F20 file of 4/2015
@@ -559,7 +566,8 @@ def cir_4_2015_f20(**kwargs):
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
-        derechos=kwargs['derechos']
+        derechos=kwargs['derechos'],
+        reducir_cupss=kwargs["reducir_cups"]
     )
     proc.calc()
 

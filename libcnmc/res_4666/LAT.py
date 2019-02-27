@@ -301,26 +301,26 @@ class LAT(MultiprocessBased):
                     else:
                         conductors = 1
                     output = [
-                        'A{0}'.format(tram['name']),
-                        tram.get('cini', '') or '',
-                        origen or edge['start_node'][1],
-                        final or edge['end_node'][1],
-                        codi_ccuu or '',
-                        comunitat,
-                        comunitat,
-                        format_f(round(
+                        'A{0}'.format(tram['name']),        # IDENTIFICADOR
+                        tram.get('cini', '') or '',         # CINI
+                        origen or edge['start_node'][1],    # ORIGEN
+                        final or edge['end_node'][1],       # DESTINO
+                        codi_ccuu or '',                    # CODIGO_CCUU
+                        comunitat,                          # CODIGO_CCAA_1
+                        comunitat,                          # CODIGO_CCAA_2
+                        format_f(round(         
                             100 - int(tram.get('perc_financament', 0) or 0)),
-                                 2),
-                        data_pm,
-                        fecha_baja or '',
-                        tram.get('circuits', 1) or 1,
-                        conductors,
-                        format_f(tensio, 3),
-                        format_f(longitud, 3),
-                        format_f(cable.get('intensitat_admisible', 0) or 0),
-                        format_f(cable.get('seccio', 0) or 0, 3),
-                        capacitat,
-                        estado
+                                 2),                        # FINANCIADO
+                        data_pm,                            # FECHA APS
+                        fecha_baja or '',                   # FECHA BAJA
+                        tram.get('circuits', 1) or 1,       # NUMERO_CIRCUITOS
+                        conductors,                         # NUMERO_CONDUCTORES
+                        format_f(tensio, 3),                # NIVEL TENSION
+                        format_f(longitud, 3),              # LONGITUD
+                        format_f(cable.get('intensitat_admisible', 0) or 0),    # INTENSIDAD MAXIMA
+                        format_f(cable.get('seccio', 0) or 0, 3),   # SECCION
+                        capacitat,                          # CAPACIDAD
+                        estado                              # ESTADO
                     ]
                     if self.extended:
                         # S'ha especificat que es vol la versio extesa

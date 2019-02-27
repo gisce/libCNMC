@@ -425,16 +425,16 @@ class POS_INT(MultiprocessBased):
                         estado = '1'
 
                 output = [
-                    identificador,
-                    cel["cini"] or "",
-                    denominacion,
-                    codigo_ccuu,
-                    codigo_ccaa,
-                    format_f(tensio, 3),
-                    format_f(round(100 - int(cel['perc_financament'])), 2),
-                    data_pm or '',
-                    data_baixa,
-                    estado
+                    identificador,          # IDENTIFICADOR
+                    cel["cini"] or "",      # CINI
+                    denominacion,           # DENOMINACION
+                    codigo_ccuu,            # CODIGO_CCUU
+                    codigo_ccaa,            # CODIGO_CCAA
+                    format_f(tensio, 3),    # NIVEL_TENSION
+                    format_f(round(100 - int(cel['perc_financament'])), 2), # FINANCIADO
+                    data_pm or '',          # FECHA_APS
+                    data_baixa,             # FECHA_BAJA
+                    estado                  # ESTADO
                 ]
 
                 if self.extended:

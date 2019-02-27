@@ -139,22 +139,22 @@ class F10BT(MultiprocessBased):
                     o_prop = 1
 
                 self.output_q.put([
-                    o_tram,
-                    o_node_inicial,
-                    o_node_final,
-                    o_cini,
-                    o_provincia,
-                    o_nivell_tensio,
-                    o_longitud,
-                    o_num_circuits,
-                    o_tipus,
-                    o_r,
-                    o_x,
-                    o_int_max,
-                    o_op_habitual,
-                    o_cod_dis,
-                    o_prop,
-                    o_any
+                    o_tram,             # TRAMO
+                    o_node_inicial,     # NUDO INICIAL
+                    o_node_final,       # NUDO FINAL
+                    o_cini,             # CINI
+                    o_provincia,        # PROVINCIA
+                    o_nivell_tensio,    # NIVEL TENSION
+                    o_longitud,         # LONGITUD
+                    o_num_circuits,     # NUMERO CIRCUITOS
+                    o_tipus,            # TIPO
+                    o_r,                # RESISTENCIA
+                    o_x,                # REACTANCIA
+                    o_int_max,          # INTENSIDAD MAXIMA
+                    o_op_habitual,      # ESTADO OPERACION HABITUAL
+                    o_cod_dis,          # CODIGO DISTRIBUIDORA
+                    o_prop,             # PROPIEDAD
+                    o_any               # AÑO INFORMACION
                 ])
             except Exception:
                 traceback.print_exc()

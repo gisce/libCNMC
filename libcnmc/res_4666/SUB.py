@@ -167,15 +167,15 @@ class SUB(MultiprocessBased):
                         estado = '1'
 
                 output = [
-                    '{0}'.format(sub['name']),
-                    sub['cini'] or '',
-                    sub['descripcio'] or '',
-                    comunitat,
-                    format_f(round(100 - int(sub['perc_financament'])), 3),
-                    data_pm,
-                    fecha_baja,
-                    num_pos,
-                    estado
+                    '{0}'.format(sub['name']),          # IDENTIFICADOR
+                    sub['cini'] or '',                  # CINI
+                    sub['descripcio'] or '',            # DENOMINACION
+                    comunitat,                          # CODIGO_CCAA
+                    format_f(round(100 - int(sub['perc_financament'])), 3), # FINANCIADO
+                    data_pm,                            # FECHA_APS
+                    fecha_baja,                         # FECHA_BAJA
+                    num_pos,                            # POSICIONES
+                    estado                              # ESTADO
                 ]
 
                 self.output_q.put(output)

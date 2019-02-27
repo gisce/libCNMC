@@ -10,6 +10,7 @@ class F20(MultiprocessBased):
         super(F20, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
+        self.reducir_cups = kwargs.get("reducir_cups", False)
         self.report_name = 'F20 - CTS'
         self.base_object = 'CTS'
         mod_all_year = self.connection.GiscedataPolissaModcontractual.search([
@@ -146,16 +147,19 @@ class F20(MultiprocessBased):
                         continue
 
                 o_codi_r1 = "R1-"+self.codi_r1
-                o_cups = cups['name']
+                if self.reducir_cups:
+                    o_cups = cups['name'][:20]
+                else:
+                    o_cups = cups['name']
                 o_cini = self.get_cini(cups['et'])
                 if not o_cini:
                     o_cini = 'False'
                 o_codi_ct = cups['et']
                 self.output_q.put([
-                    o_codi_r1,
-                    o_cups,
-                    o_cini,
-                    o_codi_ct
+                    o_codi_r1,      # CODIGO DISTRIBUIDOR
+                    o_cups,         # CUPS
+                    o_cini,         # CINI
+                    o_codi_ct       # CODIGO SUBESTACION
                 ])
             except Exception:
                 traceback.print_exc()

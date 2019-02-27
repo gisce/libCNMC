@@ -31,20 +31,21 @@ class F1(MultiprocessBased):
         self.cnaes = manager.dict()
         self.base_object = 'CUPS'
         self.report_name = 'F1 - CUPS'
+        self.reducir_cups = kwargs.get("reducir_cups", False)
         mod_all_year = self.connection.GiscedataPolissaModcontractual.search([
             ("data_inici", "<=", "{}-01-01".format(self.year)),
             ("data_final", ">=", "{}-12-31".format(self.year))],
-            0, 0, False,{"active_test": False}
+            0, 0, False, {"active_test": False}
         )
         mods_ini = self.connection.GiscedataPolissaModcontractual.search(
             [("data_inici", ">=", "{}-01-01".format(self.year)),
             ("data_inici", "<=", "{}-12-31".format(self.year))],
-            0, 0, False,{"active_test": False}
+            0, 0, False, {"active_test": False}
         )
         mods_fi = self.connection.GiscedataPolissaModcontractual.search(
             [("data_final", ">=", "{}-01-01".format(self.year)),
             ("data_final", "<=", "{}-12-31".format(self.year))],
-            0,0,False,{"active_test": False}
+            0, 0, False, {"active_test": False}
         )
         self.modcons_in_year = set(mods_fi + mods_ini + mod_all_year)
         self.default_o_cod_tfa = None
@@ -269,7 +270,10 @@ class F1(MultiprocessBased):
                 if not cups or not cups.get('name'):
                     self.input_q.task_done()
                     continue
-                o_name = cups['name'][:22]
+                if self.reducir_cups:
+                    o_name = cups['name'][:20]
+                else:
+                    o_name = cups['name'][:22]
                 o_codi_ine_mun = ''
                 o_codi_ine_prov = ''
                 o_zona = ''

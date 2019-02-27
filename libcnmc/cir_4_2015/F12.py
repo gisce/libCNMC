@@ -79,15 +79,15 @@ class F12(MultiprocessBased):
                 o_any = self.year
 
                 self.output_q.put([
-                    o_node,
-                    o_ct,
-                    o_cini,
-                    o_maquina,
-                    o_pot,
-                    o_perdues_buit,
-                    o_perdues_nominal,
-                    o_propietari,
-                    o_any
+                    o_node,             # NUDO  
+                    o_ct,               # CT
+                    o_cini,             # CINI
+                    o_maquina,          # MAQUINA
+                    o_pot,              # POT MAQUINA
+                    o_perdues_buit,     # PERDIDAS VACIO
+                    o_perdues_nominal,  # PERDIDAS POT NOMINAL
+                    o_propietari,       # PROPIEDAD
+                    o_any               # AÑO INFORMACION
                 ])
             except Exception:
                 traceback.print_exc()

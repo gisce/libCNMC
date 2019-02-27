@@ -93,13 +93,13 @@ class DES(MultiprocessBased):
                     else:
                         estado = '1'
                 output = [
-                    '{0}'.format(despatx['name']),
-                    despatx['cini'] or '',
-                    despatx['denominacio'] or '',
-                    data_apm,
-                    fecha_baja,
-                    format_f(despatx['vai'], 3),
-                    estado
+                    '{0}'.format(despatx['name']),  # IDENTIFICADOR
+                    despatx['cini'] or '',          # CINI
+                    despatx['denominacio'] or '',   # DENOMINACION
+                    data_apm,                       # FECHA APS
+                    fecha_baja,                     # FECHA BAJA
+                    format_f(despatx['vai'], 3),    # VALOR INVERSION
+                    estado                          # ESTADO
                 ]
 
                 self.output_q.put(output)
