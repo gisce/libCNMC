@@ -160,15 +160,15 @@ class CTS(MultiprocessBased):
                 else:
                     ti = ''
                 output = [
-                    '{0}'.format(ct['name']),
-                    ct['cini'] or '',
-                    ct['descripcio'] or '',
-                    str(ti),
-                    comunitat_codi or '',
-                    format_f(round(100 - int(ct['perc_financament'])), 3),
-                    data_pm,
-                    fecha_baja,
-                    estado
+                    '{0}'.format(ct['name']),   # IDENTIFICADOR
+                    ct['cini'] or '',           # CINI
+                    ct['descripcio'] or '',     # DENOMINACION
+                    str(ti),                    # CODIGO_CCUU
+                    comunitat_codi or '',       # CODIGO_CCAA
+                    format_f(round(100 - int(ct['perc_financament'])), 3),  # FINANCIADO
+                    data_pm,                    # FECHA APS
+                    fecha_baja,                 # FECHA BAJA
+                    estado                      # ESTADO
                 ]
                 if self.extended:
 
