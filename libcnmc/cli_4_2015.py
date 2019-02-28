@@ -551,8 +551,8 @@ def cir_4_2015_f20(**kwargs):
     Click entry to generate the F20 file of 4/2015
 
     :param kwargs: Params to pass to the process
-    :type kwargs:dict(str,str) 
-    :return: None 
+    :type kwargs:dict(str,str)
+    :return: None
     :rtype: None
     """
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
@@ -567,7 +567,7 @@ def cir_4_2015_f20(**kwargs):
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
         derechos=kwargs['derechos'],
-        reducir_cupss=kwargs["reducir_cups"]
+        reducir_cups=kwargs["reducir_cups"]
     )
     proc.calc()
 
