@@ -71,3 +71,5 @@ target/
 
 ## Additional for IntelliJ
 out/
+
+.vscode/
