@@ -385,9 +385,10 @@ class POS_INT(MultiprocessBased):
                     codigo_ccuu = O.GiscedataTipusInstallacio.read(
                         id_ti, ["name"])["name"]
 
-                tensio = 0.000
-                if cel["tensio"]:
-                    tensio = float(cel["tensio"][1])/1000.0
+                ten = O.GiscedataTensionsTensio.read(
+                    cel['tensio'][0], ['tensio']
+                )
+                tensio = (ten['tensio'] / 1000.0) or 0.0
 
 
                 data_pm = ""
