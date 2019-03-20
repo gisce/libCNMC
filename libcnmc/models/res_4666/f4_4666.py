@@ -30,7 +30,7 @@ class F4Res4666(CNMCModel):
     def __cmp__(self, other):
         comp_fields = [
             'cini', 'codigo_ccuu', 'nivel_tension', 'participacion',
-            'denominacion'
+            'denominacion', 'fecha_aps'
         ]
         if self.diff(other, comp_fields):
             return True
