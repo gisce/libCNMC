@@ -8,7 +8,7 @@ from libcnmc.models.fields import String, Integer, Decimal
 
 class F5Res4666(CNMCModel):
     """
-        Class for fifth file of resolution 4666(Maquines)
+        Class for fifth file of resolution 4666 (Maquines) (Transformadors)
     """
     schema = OrderedDict([
         ('identificador', String()),
@@ -32,7 +32,7 @@ class F5Res4666(CNMCModel):
     def __cmp__(self, other):
         comp_fields = [
             'cini', 'codigo_ccuu', 'tension_primario', 'tension_secundario',
-            'participacion', 'capacidad', 'denominacion'
+            'participacion', 'capacidad', 'denominacion', 'fecha_aps'
         ]
         if self.diff(other, comp_fields):
             return True

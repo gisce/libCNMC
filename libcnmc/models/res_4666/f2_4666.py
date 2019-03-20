@@ -7,7 +7,7 @@ from libcnmc.models.fields import String, Integer, Decimal
 
 class F2Res4666(CNMCModel):
     """
-        Class for second file of resolution 4666(BT)
+        Class for second file of resolution 4666(BT) (Trams BT)
     """
 
     schema = OrderedDict([
@@ -37,7 +37,8 @@ class F2Res4666(CNMCModel):
 
     def __cmp__(self, other):
         comp_fields = [
-            'longitud', 'cini', 'seccion', 'codigo_ccuu', 'nivel_tension'
+            'longitud', 'cini', 'seccion', 'codigo_ccuu', 'nivel_tension',
+            'fecha_aps'
         ]
         if self.diff(other, comp_fields):
             return True
