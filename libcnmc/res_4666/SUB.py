@@ -132,9 +132,11 @@ class SUB(MultiprocessBased):
                 if 'posicions' in sub:
                     num_pos = 0
                     for pos in sub['posicions']:
-                        pos_data = O.GiscedataCtsSubestacionsPosicio.read(pos, [
-                            'interruptor'])
-                        if pos_data['interruptor'] == '2':
+                        pos_data = O.GiscedataCtsSubestacionsPosicio.read(
+                            pos, ['interruptor', 'criteri_regulatori']
+                        )
+                        if pos_data['interruptor'] == '2' and \
+                                pos_data['criteri_regulatori'] != "excloure":
                             num_pos += 1
                 else:
                     num_pos = 1
