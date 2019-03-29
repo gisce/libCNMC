@@ -36,6 +36,7 @@ class LAT(MultiprocessBased):
         self.linia_tram_include = {}
         self.forced_ids = {}
         self.prefix = kwargs.pop('prefix', 'A')
+        self.dividir = kwargs.pop('dividir', False)
 
         id_res_like = self.connection.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')])
@@ -229,7 +230,17 @@ class LAT(MultiprocessBased):
                     origen = tallar_text(tram['origen'], 50)
                     final = tallar_text(tram['final'], 50)
                     if 'longitud_cad' in tram:
-                        longitud = round(tram['longitud_cad'] * coeficient/ 1000.0, 3) or 0.001
+                        if self.dividir:
+                            long_tmp = tram['longitud_cad']/tram.get(
+                                'circuits', 1
+                            ) or 1
+                            longitud = round(
+                                long_tmp * coeficient/1000.0, 3
+                            ) or 0.001
+                        else:
+                            longitud = round(
+                                tram['longitud_cad'] * coeficient/1000.0, 3
+                            ) or 0.001
                     else:
                         longitud = 0
                     if not origen or not final:
