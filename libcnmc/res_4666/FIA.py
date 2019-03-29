@@ -30,6 +30,7 @@ class FIA(MultiprocessBased):
         self.report_name = 'CNMC INVENTARI FIA'
         self.compare_filed = kwargs["compare_field"]
         self.extended = kwargs.get("extended", False)
+        self.prefix = kwargs.pop('prefix', 'A')
 
     def get_sequence(self):
         """
@@ -114,7 +115,10 @@ class FIA(MultiprocessBased):
                 #Comprovo si la cella pertany a ct o lat per trobar la ccaa
                 if cll['tram_id']:
                     tram_id = cll['tram_id'][0]
-                    element_act = 'A{0}'.format(O.GiscedataAtTram.read(tram_id, ['name'])['name'])
+                    element_act = '{}{}'.format(
+                        self.prefix, O.GiscedataAtTram.read(
+                            tram_id, ['name'])['name']
+                    )
 
                 if cllinst[0] == 'giscedata.cts':
                     ct_vals = O.GiscedataCts.read(
