@@ -35,7 +35,7 @@ class LBT(MultiprocessBased):
         self.embarrats = kwargs.pop("embarrats", False)
         self.compare_field = kwargs["compare_field"]
         self.extended = kwargs.get("extended", False)
-        self.prefix = kwargs.pop('prefix', 'B')
+        self.prefix = kwargs.pop('prefix', 'B') or 'B'
 
     def get_sequence(self):
         """

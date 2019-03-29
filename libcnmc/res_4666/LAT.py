@@ -35,7 +35,7 @@ class LAT(MultiprocessBased):
         self.compare_field = kwargs["compare_field"]
         self.linia_tram_include = {}
         self.forced_ids = {}
-        self.prefix = kwargs.pop('prefix', 'A')
+        self.prefix = kwargs.pop('prefix', 'A') or 'A'
         self.dividir = kwargs.pop('dividir', False)
 
         id_res_like = self.connection.ResConfig.search(

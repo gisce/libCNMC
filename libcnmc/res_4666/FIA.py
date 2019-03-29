@@ -30,7 +30,7 @@ class FIA(MultiprocessBased):
         self.report_name = 'CNMC INVENTARI FIA'
         self.compare_filed = kwargs["compare_field"]
         self.extended = kwargs.get("extended", False)
-        self.prefix = kwargs.pop('prefix', 'A')
+        self.prefix = kwargs.pop('prefix', 'A') or 'A'
 
     def get_sequence(self):
         """
