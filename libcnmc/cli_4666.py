@@ -102,7 +102,8 @@ def res_lat(LAT, **kwargs):
         embarrats=kwargs['embarrats'],
         compare_field=kwargs["compare_field"],
         extended=kwargs.get('extended', False),
-        prefix=kwargs.get('prefix', False)
+        prefix=kwargs.get('prefix', False),
+        dividir=kwargs.get('div', False),
     )
     proc.calc()
 
@@ -204,6 +205,7 @@ def res_4666_mod(**kwargs):
 @click.option('--extended/--no-extended', default=False,
               help="Generar el fitxer extes")
 @click.option('-pf', '--prefix', help="Prefix dels Trams AT")
+@click.option('--div/--no-div', default=False, help="Dividir la longitud dels Trams AT entre el núm. de circuits")
 def res_4666_lat(**kwargs):
     """
     Click entry to generate LAT(F1) file of 4666
