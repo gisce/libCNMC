@@ -35,6 +35,7 @@ class LAT(MultiprocessBased):
         self.compare_field = kwargs["compare_field"]
         self.linia_tram_include = {}
         self.forced_ids = {}
+        self.prefix = kwargs.pop('prefix', 'A')
 
         id_res_like = self.connection.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')])
@@ -265,7 +266,7 @@ class LAT(MultiprocessBased):
                         else:
                             ti = ''
                         actual = F1Res4666(
-                            'A{0}'.format(tram['name']),
+                            '{}{}'.format(self.prefix, tram['name']),
                             tram['cini'],
                             tram['origen'],
                             tram['final'],
@@ -301,7 +302,7 @@ class LAT(MultiprocessBased):
                     else:
                         conductors = 1
                     output = [
-                        'A{0}'.format(tram['name']),        # IDENTIFICADOR
+                        '{}{}'.format(self.prefix, tram['name']),  # IDENTIFIC.
                         tram.get('cini', '') or '',         # CINI
                         origen or edge['start_node'][1],    # ORIGEN
                         final or edge['end_node'][1],       # DESTINO

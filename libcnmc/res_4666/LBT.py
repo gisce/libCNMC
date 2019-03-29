@@ -35,6 +35,7 @@ class LBT(MultiprocessBased):
         self.embarrats = kwargs.pop("embarrats", False)
         self.compare_field = kwargs["compare_field"]
         self.extended = kwargs.get("extended", False)
+        self.prefix = kwargs.pop('prefix', 'B')
 
     def get_sequence(self):
         """
@@ -190,7 +191,7 @@ class LBT(MultiprocessBased):
                     origen = last_data["origen"]
                     final = last_data["destino"]
                     actual = F2Res4666(
-                        'B{0}'.format(linia['name']),
+                        '{}{}'.format(self.prefix, linia['name']),
                         linia['cini'],
                         origen or '',
                         final or '',
@@ -224,7 +225,7 @@ class LBT(MultiprocessBased):
                 origen = last_data["origen"]
                 final = last_data["destino"]
                 output = [
-                    'B{}'.format(linia['name']),    # IDENTIFICADOR
+                    '{}{}'.format(self.prefix, linia['name']),  # IDENTIFICADOR
                     linia['cini'] or '',            # CINI
                     origen or '',                   # ORIGEN
                     final or '',                    # DESTINO

@@ -101,7 +101,8 @@ def res_lat(LAT, **kwargs):
         year=kwargs['year'],
         embarrats=kwargs['embarrats'],
         compare_field=kwargs["compare_field"],
-        extended=kwargs.get('extended', False)
+        extended=kwargs.get('extended', False),
+        prefix=kwargs.get('prefix', False)
     )
     proc.calc()
 
@@ -202,6 +203,7 @@ def res_4666_mod(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('--extended/--no-extended', default=False,
               help="Generar el fitxer extes")
+@click.option('-pf', '--prefix', help="Prefix dels Trams AT")
 def res_4666_lat(**kwargs):
     """
     Click entry to generate LAT(F1) file of 4666
@@ -240,6 +242,7 @@ def res_4666_lat(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('--extended/--no-extended', default=False,
               help="Generar el fitxer extes")
+@click.option('-pf', '--prefix', help="Prefix dels Trams BT")
 def res_4666_lbt(**kwargs):
     """
     Click entry to generate the LBT(F2) of 4666
@@ -457,6 +460,7 @@ def res_4666_des(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('--extended/--no-extended', default=False,
               help="Generar el fitxer extes")
+@click.option('-pf', '--prefix', help="Prefix dels Trams AT")
 def res_4666_fia(**kwargs):
     """
     Click entry to generate the FIA(F7) file of 4666
