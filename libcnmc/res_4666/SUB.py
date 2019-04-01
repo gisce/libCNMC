@@ -51,10 +51,10 @@ class SUB(MultiprocessBased):
                           ('data_pm', '<', data_pm),
                           '|',
                           '&', ('data_baixa', '>', data_baixa),
-                               ('baixa', '=', True),
+                               ('ct_baixa', '=', True),
                           '|',
                                ('data_baixa', '=', False),
-                               ('baixa', '=', False)
+                               ('ct_baixa', '=', False)
                           ]
         # Revisem que si està de baixa ha de tenir la data informada.
         search_params += ['|',
