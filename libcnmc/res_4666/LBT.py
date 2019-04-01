@@ -84,10 +84,7 @@ class LBT(MultiprocessBased):
             'data_alta', 'propietari', 'tipus_instalacio_cnmc_id', 'baixa',
             'data_baixa', self.compare_field
         ]
-        data_baixa_limit = '{0}-01-01'.format(self.year)
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
-        error_msg = "**** ERROR: l'element {0} (id:{1}) no està en giscegis_edges.\n"
-        error_msg_multi = "**** ERROR: l'element {0} (id:{1}) està més d'una vegada a giscegis_edges. {2}\n"
         while True:
             try:
                 count += 1
