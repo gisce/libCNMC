@@ -57,8 +57,12 @@ class ModCts(MultiprocessBased):
         search_params += [('propietari', '=', True),
                           '|', ('data_pm', '=', False),
                                ('data_pm', '<', data_pm),
-                          '|', ('data_baixa', '>', data_baixa),
-                               ('data_baixa', '=', False)
+                          '|',
+                          '&', ('data_baixa', '>', data_baixa),
+                               ('ct_baixa', '=', True),
+                          '|',
+                               ('data_baixa', '=', False),
+                               ('ct_baixa', '=', False)
                           ]
         # Revisem que si està de baixa ha de tenir la data informada.
         search_params += ['|',
@@ -340,8 +344,12 @@ class ModLbt(MultiprocessBased):
         search_params += [('propietari', '=', True),
                           '|', ('data_pm', '=', False),
                                ('data_pm', '<', data_pm),
-                          '|', ('data_baixa', '>', data_baixa),
+                          '|',
+                          '&', ('data_baixa', '>', data_baixa),
+                               ('baixa', '=', True),
+                          '|',
                                ('data_baixa', '=', False),
+                               ('baixa', '=', False)
                           ]
         # Revisem que si està de baixa ha de tenir la data informada.
         search_params += ['|',
@@ -429,8 +437,12 @@ class ModMaq(MultiprocessBased):
             ('propietari', '=', True),
             '|', ('data_pm', '=', False),
             ('data_pm', '<', data_pm),
-            '|', ('data_baixa', '>', data_baixa),
-            ('data_baixa', '=', False)
+            '|',
+            '&', ('data_baixa', '>', data_baixa),
+                 ('baixa', '=', True),
+            '|',
+                 ('data_baixa', '=', False),
+                 ('baixa', '=', False)
         ]
 
         # Transformadors reductors
