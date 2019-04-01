@@ -32,8 +32,9 @@ class F1Res4666(CNMCModel):
 
     @property
     def ref(self):
-        whitelist = string.digits
-        return ''.join(c for c in self.store.identificador if c in whitelist)
+        return ''.join(
+            c for c in self.store.identificador if c in string.digits
+        )
 
     def __cmp__(self, other):
         comp_fields = [
