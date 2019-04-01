@@ -49,9 +49,13 @@ class LBT(MultiprocessBased):
         if not self.embarrats:
             search_params += [('cable.tipus.codi', '!=', 'E')]
         search_params += [('propietari', '=', True),
-                               ('data_pm', '<', data_pm),
-                          '|', ('data_baixa', '>', data_baixa),
+                          ('data_pm', '<', data_pm),
+                          '|',
+                          '&', ('data_baixa', '>', data_baixa),
+                               ('baixa', '=', True),
+                          '|',
                                ('data_baixa', '=', False),
+                               ('baixa', '=', False)
                           ]
         # Revisem que si està de baixa ha de tenir la data informada.
         search_params += ['|',

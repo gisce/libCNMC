@@ -100,7 +100,12 @@ class LAT(MultiprocessBased):
         static_search_params = [
             ('propietari', '=', True),
             '|', ('data_pm', '=', False), ('data_pm', '<', data_pm_limit),
-            '|', ('data_baixa', '=', False), ('data_baixa', '>', data_baixa)
+            '|',
+            '&', ('data_baixa', '>', data_baixa),
+                 ('baixa', '=', True),
+            '|',
+                 ('data_baixa', '=', False),
+                 ('baixa', '=', False)
             ]
 
         # print 'static_search_params:{}'.format(static_search_params)

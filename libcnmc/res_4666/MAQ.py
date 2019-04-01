@@ -60,8 +60,12 @@ class MAQ(MultiprocessBased):
             ('propietari', '=', True),
             '|', ('data_pm', '=', False),
             ('data_pm', '<', data_pm),
-            '|', ('data_baixa', '>', data_baixa),
-            ('data_baixa', '=', False)
+            '|',
+            '&', ('data_baixa', '>', data_baixa),
+                 ('baixa', '=', True),
+            '|',
+                 ('data_baixa', '=', False),
+                 ('baixa', '=', False)
         ]
 
         # Transformadors reductors
