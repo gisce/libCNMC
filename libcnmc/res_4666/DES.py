@@ -77,7 +77,7 @@ class DES(MultiprocessBased):
                         despatx['denominacio'],
                         data_apm,
                         fecha_baja,
-                        format_f(despatx['vai'], 2),
+                        format_f(despatx['vai']),
                         0
                     )
                     if actual == entregada:
@@ -98,7 +98,7 @@ class DES(MultiprocessBased):
                     despatx['denominacio'] or '',   # DENOMINACION
                     data_apm,                       # FECHA APS
                     fecha_baja,                     # FECHA BAJA
-                    format_f(despatx['vai'], 3),    # VALOR INVERSION
+                    format_f(despatx['vai']),    # VALOR INVERSION
                     estado                          # ESTADO
                 ]
 
