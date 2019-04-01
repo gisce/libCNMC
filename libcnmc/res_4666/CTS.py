@@ -47,8 +47,7 @@ class CTS(MultiprocessBased):
                                ('data_pm', '<', data_pm),
                           '|',
                           '&', ('data_baixa', '>', data_baixa),
-                               ('ct_baixa', '=', True),
-                               ('data_baixa', '=', False)
+                               ('ct_baixa', '=', True)
                           ]
         # Revisem que si està de baixa ha de tenir la data informada.
         search_params += ['|',
