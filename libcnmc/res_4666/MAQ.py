@@ -155,10 +155,9 @@ class MAQ(MultiprocessBased):
                     data_pm = data_pm.strftime('%d/%m/%Y')
 
                 comunitat = ''
-                financiacio = 0
-                if 'perc_financament' in trafo:
-                    financiacio = round(
-                        100.0 - float(trafo['perc_financament']), 2)
+                financiacio = format_f(
+                    100.0 - trafo.get('perc_financament', 0.0), 2
+                )
 
                 # Unitats en MVA
                 capacitat = trafo['potencia_nominal'] / 1000.0
@@ -219,7 +218,7 @@ class MAQ(MultiprocessBased):
                         comunitat,
                         format_f(tensio_primari),
                         format_f(tensio_secundari),
-                        format_f(financiacio),
+                        financiacio,
                         data_pm,
                         fecha_baja,
                         format_f(capacitat, 3),
@@ -246,7 +245,7 @@ class MAQ(MultiprocessBased):
                     comunitat or '',                    # CODIGO_CCAA
                     format_f(tensio_primari, 3),        # TENSION PRIMARIO
                     format_f(tensio_secundari, 3),      # TENSION SECUNDARIO
-                    format_f(financiacio, 2),           # FINANCIADO
+                    financiacio,                        # FINANCIADO
                     data_pm,                            # FECHA APS
                     fecha_baja,                         # FECHA BAJA
                     format_f(capacitat, 3),             # CAPACIDAD

@@ -153,7 +153,9 @@ class SUB(MultiprocessBased):
                         sub['cini'],
                         sub['descripcio'],
                         comunitat,
-                        format_f(round(100 - int(sub['perc_financament'])), 2),
+                        format_f(
+                            100.0 - sub.get('perc_financament', 0.0), 2
+                        ),
                         data_pm,
                         fecha_baja,
                         num_pos,
@@ -177,7 +179,9 @@ class SUB(MultiprocessBased):
                     sub['cini'] or '',                  # CINI
                     sub['descripcio'] or '',            # DENOMINACION
                     comunitat,                          # CODIGO_CCAA
-                    format_f(round(100 - int(sub['perc_financament'])), 3), # FINANCIADO
+                    format_f(
+                        100.0 - sub.get('perc_financament', 0.0), 2
+                    ),                                  # FINANCIADO
                     data_pm,                            # FECHA_APS
                     fecha_baja,                         # FECHA_BAJA
                     num_pos,                            # POSICIONES

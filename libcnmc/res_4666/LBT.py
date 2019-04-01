@@ -202,7 +202,9 @@ class LBT(MultiprocessBased):
                         codi_ccuu or '',
                         comunitat,
                         comunitat,
-                        format_f(100.0 - float(linia['perc_financament']),3),
+                        format_f(
+                            100.0 - linia.get('perc_financament', 0.0), 2
+                        ),
                         data_pm,
                         data_baixa,
                         1,
@@ -236,7 +238,9 @@ class LBT(MultiprocessBased):
                     codi_ccuu or '',                # CODIGO_CCUU
                     comunitat,                      # CODIGO_CCAA
                     comunitat,                      # CODIGO_CCAA_2
-                    format_f(100.0 - linia['perc_financament'], 2), # FINCANCIADO
+                    format_f(
+                        100.0 - linia.get('perc_financament', 0.0), 2
+                    ),                              # FINANCIADO
                     data_pm or '',                  # FECHA_APS
                     fecha_baja,                     # FECHA_BAJA
                     1,                              # NUMERO CIRCUITOS
