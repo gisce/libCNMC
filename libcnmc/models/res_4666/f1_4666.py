@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from libcnmc.models.cnmcmodel import CNMCModel
 from collections import OrderedDict
 from libcnmc.models.fields import String, Integer, Decimal
+import string
 
 
 class F1Res4666(CNMCModel):
@@ -31,7 +32,8 @@ class F1Res4666(CNMCModel):
 
     @property
     def ref(self):
-        return self.store.identificador[1:]
+        whitelist = string.digits
+        return ''.join(c for c in self.store.identificador if c in whitelist)
 
     def __cmp__(self, other):
         comp_fields = [
