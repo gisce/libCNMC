@@ -98,7 +98,7 @@ class DES(MultiprocessBased):
                     despatx['denominacio'] or '',   # DENOMINACION
                     data_apm,                       # FECHA APS
                     fecha_baja,                     # FECHA BAJA
-                    format_f(despatx['vai'], 2),    # VALOR INVERSION
+                    format_f(despatx['vai'], 3),    # VALOR INVERSION
                     estado                          # ESTADO
                 ]
 
