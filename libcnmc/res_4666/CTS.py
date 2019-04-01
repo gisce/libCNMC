@@ -134,7 +134,9 @@ class CTS(MultiprocessBased):
                         ct['descripcio'],
                         ti,
                         comunitat_codi,
-                        format_f(round(100 - int(ct['perc_financament']))),
+                        format_f(
+                            100.0 - ct.get('perc_financament', 0.0), 2
+                        ),
                         data_pm,
                         fecha_baja,
                         0
@@ -165,7 +167,9 @@ class CTS(MultiprocessBased):
                     ct['descripcio'] or '',     # DENOMINACION
                     str(ti),                    # CODIGO_CCUU
                     comunitat_codi or '',       # CODIGO_CCAA
-                    format_f(round(100 - int(ct['perc_financament'])), 3),  # FINANCIADO
+                    format_f(
+                        100.0 - ct.get('perc_financament', 0.0), 2
+                    ),                          # FINANCIADO
                     data_pm,                    # FECHA APS
                     fecha_baja,                 # FECHA BAJA
                     estado                      # ESTADO

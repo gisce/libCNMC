@@ -284,7 +284,9 @@ class LAT(MultiprocessBased):
                             ti,
                             comunitat,
                             comunitat,
-                            format_f(round(100 - int(tram.get('perc_financament', 0) or 0))),
+                            format_f(
+                                100.0 - tram.get('perc_financament', 0.0), 2
+                            ),
                             data_pm,
                             data_baixa,
                             tram.get('circuits', 1) or 1,
@@ -320,9 +322,9 @@ class LAT(MultiprocessBased):
                         codi_ccuu or '',                    # CODIGO_CCUU
                         comunitat,                          # CODIGO_CCAA_1
                         comunitat,                          # CODIGO_CCAA_2
-                        format_f(round(         
-                            100 - int(tram.get('perc_financament', 0) or 0)),
-                                 2),                        # FINANCIADO
+                        format_f(
+                            100.0 - tram.get('perc_financament', 0.0), 2
+                        ),                                  # FINANCIADO
                         data_pm,                            # FECHA APS
                         fecha_baja or '',                   # FECHA BAJA
                         tram.get('circuits', 1) or 1,       # NUMERO_CIRCUITOS

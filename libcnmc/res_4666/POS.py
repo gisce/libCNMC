@@ -195,7 +195,7 @@ class POS(MultiprocessBased):
                         comunitat,
                         format_f(tensio),
                         format_f(
-                            round(100.0 - float(pos['perc_financament']), 2), 2
+                            100.0 - pos.get('perc_financament', 0.0), 2
                         ),
                         data_pm,
                         fecha_baja,
@@ -222,7 +222,7 @@ class POS(MultiprocessBased):
                     comunitat,
                     format_f(tensio, 3),
                     format_f(
-                        round(100.0 - float(pos['perc_financament']), 2), 2
+                        100.0 - pos.get('perc_financament', 0.0), 2
                     ),
                     data_pm or '',
                     fecha_baja,
@@ -414,7 +414,7 @@ class POS_INT(MultiprocessBased):
                         codigo_ccaa,
                         format_f(tensio, 3),
                         format_f(
-                            round(100.0 - float(cel['perc_financament']), 2), 2
+                            100.0 - cel.get('perc_financament', 0.0), 2
                         ),
                         data_pm
                     )
@@ -439,7 +439,7 @@ class POS_INT(MultiprocessBased):
                     codigo_ccaa,            # CODIGO_CCAA
                     format_f(tensio, 3),    # NIVEL_TENSION
                     format_f(
-                        round(100.0 - float(cel['perc_financament']), 2), 2
+                        100.0 - cel.get('perc_financament', 0.0), 2
                     ),                      # FINANCIADO
                     data_pm or '',          # FECHA_APS
                     data_baixa,             # FECHA_BAJA
