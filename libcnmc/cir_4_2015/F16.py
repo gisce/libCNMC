@@ -47,13 +47,14 @@ class F16(MultiprocessBased):
                 data = O.GiscegisElementsat.read(ident[0], ["node", "vertex"])
         else:
             data = O.GiscegisElementsbt.read(ident[0], ["node", "vertex"])
+
         if not ident:
+            node = ''
+            vertex = ''
+        else:
             node = data["node"][1]
             x, y = data["vertex"][1].split(",")
             vertex = (round(float(x), 3), round(float(y), 3))
-        else:
-            node = ''
-            vertex = ''
 
         return node, vertex
 
