@@ -27,7 +27,8 @@ class F16(MultiprocessBased):
                                ('data_baixa', '!=', False),
                           ('active', '=', True)]
         return self.connection.GiscedataCondensadors.search(
-            search_params, 0, 0, False, {'active_test': False})
+            search_params, 0, 0, False, {'active_test': False}
+        )
 
     def get_node_vertex(self, cond_name):
         """
@@ -42,12 +43,19 @@ class F16(MultiprocessBased):
         ident = O.GiscegisElementsbt.search([('codi', '=', cond_name)])
         if not ident:
             ident = O.GiscegisElementsat.search([('codi', '=', cond_name)])
-            data = O.GiscegisElementsat.read(ident[0], ["node", "vertex"])
+            if ident:
+                data = O.GiscegisElementsat.read(ident[0], ["node", "vertex"])
         else:
             data = O.GiscegisElementsbt.read(ident[0], ["node", "vertex"])
-        node = data["node"][1]
-        x, y = data["vertex"][1].split(",")
-        vertex = (round(float(x), 3), round(float(y), 3))
+
+        if not ident:
+            node = ''
+            vertex = ''
+        else:
+            node = data["node"][1]
+            x, y = data["vertex"][1].split(",")
+            vertex = (round(float(x), 3), round(float(y), 3))
+
         return node, vertex
 
     def get_ine(self, municipi_id):
