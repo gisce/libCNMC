@@ -589,6 +589,10 @@ def cir_4_2015_f20(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option(
+    '--alternative/--no-alternative', default=False,
+    help="Generar l'F9 amb el format alternatiu"
+)
 def cir_4_2015_f9(**kwargs):
     """
     Click entry to generate the F9 of 4/20105
@@ -608,7 +612,8 @@ def cir_4_2015_f9(**kwargs):
         output=kwargs['output'],
         connection=O,
         num_proc=kwargs['num_proc'],
-        year=kwargs['year']
+        year=kwargs['year'],
+        alternative=kwargs['alternative']
     )
     proc.calc()
 
