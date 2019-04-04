@@ -167,7 +167,7 @@ class F9(MultiprocessBased):
                 get_srid(o),
                 [line['x'], line['y']]
             )
-            t += '{0};t_name;{1};{2};{3};1\n'.format(
+            t += 'R1-{0};t_name;{1};{2};{3};1\n'.format(
                 self.codi_r1,
                 format_f(res_srid[0], decimals=6),
                 format_f(res_srid[1], decimals=6),
@@ -206,7 +206,7 @@ class F9(MultiprocessBased):
                     else:
                         data = self.conv_text(data)
                         linia = 'B{0}\n{1}\nEND'.format(bt['name'], data)
-                print("PREVIEW: {}".format(linia))
+                print(linia)
                 self.output_q.put([linia])
             except:
                 traceback.print_exc()
