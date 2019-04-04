@@ -205,7 +205,6 @@ class F9(MultiprocessBased):
                     else:
                         data = self.conv_text(data)
                         linia = 'B{0}\n{1}\nEND'.format(bt['name'], data)
-                print(linia)
                 self.output_q.put([linia])
             except:
                 traceback.print_exc()
