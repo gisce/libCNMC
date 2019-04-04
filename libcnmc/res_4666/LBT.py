@@ -125,7 +125,6 @@ class LBT(MultiprocessBased):
                 except Exception:
                     tensio = 0.0
 
-
                 if linia['tipus_instalacio_cnmc_id']:
                     id_ti = linia.get('tipus_instalacio_cnmc_id')[0]
                     codi_ccuu = O.GiscedataTipusInstallacio.read(
@@ -161,7 +160,7 @@ class LBT(MultiprocessBased):
                         fecha_baja = tmp_date.strftime('%d/%m/%Y')
                 else:
                     fecha_baja = ''
-
+                last_data = {}
                 if linia[self.compare_field]:
                     last_data = linia[self.compare_field]
                     entregada = F2Res4666(**last_data)
@@ -185,7 +184,7 @@ class LBT(MultiprocessBased):
                         format_f(tensio, 3),
                         format_f(longitud, 3),
                         format_f(intensitat),
-                        format_f(float(cable['seccio']),2),
+                        format_f(float(cable['seccio']), 2),
                         format_f(capacitat),
                         0
                     )
@@ -201,8 +200,49 @@ class LBT(MultiprocessBased):
                             estado = '2'
                     else:
                         estado = '1'
-                origen = last_data["origen"]
-                final = last_data["destino"]
+
+                if not last_data:
+                    error_msg = (
+                        "**** ERROR: l'element {0} (id:{1}) no està en "
+                        "giscegis_edges.\n"
+                    )
+                    error_msg_multi = (
+                        "**** ERROR: l'element {0} (id:{1}) està més d'una "
+                        "vegada a giscegis_edges. {2}\n"
+                    )
+                    res = O.GiscegisEdge.search(
+                        [
+                            ('id_linktemplate', '=', linia['name']),
+                            ('layer', 'ilike', '%BT%')
+                        ]
+                    )
+                    if not res:
+                        if not QUIET:
+                            sys.stderr.write(
+                                error_msg.format(linia['name'], linia['id'])
+                            )
+                            sys.stderr.flush()
+                        edge = {
+                            'start_node': (0, '{0}_0'.format(linia['name'])),
+                            'end_node': (0, '{0}_1'.format(linia['name']))}
+                    elif len(res) > 1:
+                        if not QUIET:
+                            sys.stderr.write(
+                                error_msg_multi.format(linia['name'],
+                                                       linia['id'], res))
+                            sys.stderr.flush()
+                        edge = {
+                            'start_node': (0, '{0}_0'.format(linia['name'])),
+                            'end_node': (0, '{0}_1'.format(linia['name']))}
+                    else:
+                        edge = O.GiscegisEdge.read(res[0], ['start_node',
+                                                            'end_node'])
+                    origen = tallar_text(edge['start_node'][1], 50)
+                    final = tallar_text(edge['end_node'][1], 50)
+                else:
+                    origen = last_data["origen"]
+                    final = last_data["destino"]
+
                 output = [
                     '{}{}'.format(self.prefix, linia['name']),  # IDENTIFICADOR
                     linia['cini'] or '',            # CINI
