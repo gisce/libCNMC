@@ -591,7 +591,7 @@ def cir_4_2015_f20(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option(
     '--alternative/--no-alternative', default=False,
-    help="Generar l'F9 amb el format alternatiu"
+    help="Generar l'F9 amb una linia per a cada coordenada dels trams"
 )
 def cir_4_2015_f9(**kwargs):
     """
