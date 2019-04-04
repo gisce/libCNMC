@@ -13,9 +13,8 @@ class F9(MultiprocessBased):
     def __init__(self, **kwargs):
         super(F9, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.report_name = 'F9 - CTS'
-        self.codi_r1 = ''
-        self.base_object = 'CTS'
+        self.report_name = 'F9 - Topologia real de la xarxa '
+        self.base_object = 'Trams AT i BT'
         o = self.connection
         wiz_obj = o.WizardCircular4_2015
         self.codi_r1 = wiz_obj.default_get(['codi_r1'])['codi_r1']
@@ -24,6 +23,7 @@ class F9(MultiprocessBased):
         self.layer = 'LBT\_%'
         if id_res_like:
             self.layer = o.ResConfig.read(id_res_like, ['value'])[0]['value']
+        self.alternative = kwargs.get('alternative', False)
 
     def get_sequence(self):
         """
@@ -151,6 +151,29 @@ class F9(MultiprocessBased):
                 '')
         return t[:-1]
 
+    def conv_text_alt(self, data):
+        """
+        Converts the projection of a data
+
+        :param data: list of elemnets to convert
+        :return: Elements with the projection converted
+        """
+        o = self.connection
+        t = ''
+        for line in data:
+            res_srid = convert_srid(
+                self.codi_r1,
+                get_srid(o),
+                [line['x'], line['y']]
+            )
+            t += 'R1-{0};t_name;{1};{2};{3};1\n'.format(
+                self.codi_r1,
+                format_f(res_srid[0], decimals=6),
+                format_f(res_srid[1], decimals=6),
+                ''
+            )
+        return t[:-1]
+
     def consumer(self):
         """
         Function that generates each line of the file
@@ -167,13 +190,21 @@ class F9(MultiprocessBased):
                 if item[1] == 'at':
                     at = o.GiscedataAtTram.read(item[0], ['name'])
                     data = self.get_geom(at['name'], 'at')
-                    data = self.conv_text(data)
-                    linia = 'A{0}\n{1}\nEND'.format(at['name'], data)
+                    if self.alternative:
+                        data = self.conv_text_alt(data)
+                        linia = data.replace('t_name', 'A' + str(at['name']))
+                    else:
+                        data = self.conv_text(data)
+                        linia = 'A{0}\n{1}\nEND'.format(at['name'], data)
                 else:
                     bt = o.GiscedataBtElement.read(item[0], ['name'])
                     data = self.get_geom(bt['name'], 'bt')
-                    data = self.conv_text(data)
-                    linia = 'B{0}\n{1}\nEND'.format(bt['name'], data)
+                    if self.alternative:
+                        data = self.conv_text_alt(data)
+                        linia = data.replace('t_name', 'B' + str(bt['name']))
+                    else:
+                        data = self.conv_text(data)
+                        linia = 'B{0}\n{1}\nEND'.format(bt['name'], data)
                 self.output_q.put([linia])
             except:
                 traceback.print_exc()
