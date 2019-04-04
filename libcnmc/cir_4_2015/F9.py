@@ -13,9 +13,8 @@ class F9(MultiprocessBased):
     def __init__(self, **kwargs):
         super(F9, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.report_name = 'F9 - CTS'
-        self.codi_r1 = ''
-        self.base_object = 'CTS'
+        self.report_name = 'F9 - Topologia real de la xarxa '
+        self.base_object = 'Trams AT i BT'
         o = self.connection
         wiz_obj = o.WizardCircular4_2015
         self.codi_r1 = wiz_obj.default_get(['codi_r1'])['codi_r1']
