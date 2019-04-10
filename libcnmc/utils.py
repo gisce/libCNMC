@@ -65,12 +65,12 @@ def get_forced_elements(connection, model):
         
     include_search_params = [("criteri_regulatori", "=", "incloure")]
     include_ids = mod_obj.search(
-        include_search_params, None, None, None, {'active_test': False}
+        include_search_params, False, False, False, {'active_test': False}
     )
 
     include_search_params = [("criteri_regulatori", "=", "excloure")]
     exclude_ids = mod_obj.search(
-        include_search_params, None, None, None, {'active_test': False}
+        include_search_params, False, False, False, {'active_test': False}
     )
 
     return {
