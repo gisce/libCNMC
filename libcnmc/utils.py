@@ -10,7 +10,6 @@ N_PROC = int(os.getenv('N_PROC', multiprocessing.cpu_count() + 1))
 
 from libcnmc.core.backend import OOOPFactory
 
-
 CODIS_TARIFA = {
     '2.0A': 416,
     '2.0DHA': 417,
@@ -48,6 +47,7 @@ TARIFAS_BT = [
     '2.0A', '2.0DHA', '2.1A', '2.1DHA', '2.0DHS', '2.1DHS', '3.0A'
 ]
 
+
 def get_forced_elements(connection, model):
     """
     Returns the force include and force exclude ids of elements
@@ -64,15 +64,20 @@ def get_forced_elements(connection, model):
         mod_obj = c.model(model)
         
     include_search_params = [("criteri_regulatori", "=", "incloure")]
-    include_ids = mod_obj.search(include_search_params)
+    include_ids = mod_obj.search(
+        include_search_params, False, False, False, {'active_test': False}
+    )
 
     include_search_params = [("criteri_regulatori", "=", "excloure")]
-    exclude_ids = mod_obj.search(include_search_params)
+    exclude_ids = mod_obj.search(
+        include_search_params, False, False, False, {'active_test': False}
+    )
 
     return {
         "include": include_ids,
         "exclude": exclude_ids
     }
+
 
 def fetch_cts_node(connection):
     """
@@ -141,6 +146,7 @@ def fetch_tensions_norm(connection):
     for line in t_data:
         d_out[line["id"]] = format_f(float(line["tensio"]) / 1000.0, decimals=3)
     return d_out
+
 
 def get_norm_tension(connection, tension):
     """
