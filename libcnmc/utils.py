@@ -5,9 +5,10 @@ import tempfile
 
 from pyproj import Proj
 from pyproj import transform
-from libcnmc.core.backend import OOOPFactory
 
 N_PROC = int(os.getenv('N_PROC', multiprocessing.cpu_count() + 1))
+
+from libcnmc.core.backend import OOOPFactory
 
 CODIS_TARIFA = {
     '2.0A': 416,
