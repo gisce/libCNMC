@@ -206,7 +206,7 @@ class LBT(MultiprocessBased):
                     origen = edge['start_node'][1]
                     final = edge['end_node'][1]
                 else:
-                     origen = last_data["origen"]
+                    origen = last_data["origen"]
                     final = last_data["destino"]
 
                 output = [
