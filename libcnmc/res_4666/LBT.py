@@ -86,7 +86,7 @@ class LBT(MultiprocessBased):
             'name', 'municipi', 'data_pm', 'ct', 'coeficient', 'cini',
             'perc_financament', 'longitud_cad', 'cable', 'voltatge',
             'data_alta', 'propietari', 'tipus_instalacio_cnmc_id', 'baixa',
-            'data_baixa', self.compare_field
+            'data_baixa', "edge_id", self.compare_field
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         while True:
@@ -210,12 +210,7 @@ class LBT(MultiprocessBased):
                         "**** ERROR: l'element {0} (id:{1}) està més d'una "
                         "vegada a giscegis_edges. {2}\n"
                     )
-                    res = O.GiscegisEdge.search(
-                        [
-                            ('id_linktemplate', '=', linia['name']),
-                            ('layer', 'ilike', '%BT%')
-                        ]
-                    )
+                    res = lina["edge_id"]
                     if not res:
                         if not QUIET:
                             sys.stderr.write(
@@ -235,8 +230,7 @@ class LBT(MultiprocessBased):
                             'start_node': (0, '{0}_0'.format(linia['name'])),
                             'end_node': (0, '{0}_1'.format(linia['name']))}
                     else:
-                        edge = O.GiscegisEdge.read(res[0], ['start_node',
-                                                            'end_node'])
+                        edge = O.GiscegisEdge.read(res, ['start_node','end_node'])
                     origen = tallar_text(edge['start_node'][1], 50)
                     final = tallar_text(edge['end_node'][1], 50)
                 else:
