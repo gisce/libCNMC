@@ -86,7 +86,7 @@ class LBT(MultiprocessBased):
             'name', 'municipi', 'data_pm', 'ct', 'coeficient', 'cini',
             'perc_financament', 'longitud_cad', 'cable', 'voltatge',
             'data_alta', 'propietari', 'tipus_instalacio_cnmc_id', 'baixa',
-            'data_baixa', self.compare_field
+            'data_baixa', "edge_id", self.compare_field
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         while True:
@@ -200,45 +200,11 @@ class LBT(MultiprocessBased):
                             estado = '2'
                     else:
                         estado = '1'
-
-                if not last_data:
-                    error_msg = (
-                        "**** ERROR: l'element {0} (id:{1}) no està en "
-                        "giscegis_edges.\n"
-                    )
-                    error_msg_multi = (
-                        "**** ERROR: l'element {0} (id:{1}) està més d'una "
-                        "vegada a giscegis_edges. {2}\n"
-                    )
-                    res = O.GiscegisEdge.search(
-                        [
-                            ('id_linktemplate', '=', linia['name']),
-                            ('layer', 'ilike', '%BT%')
-                        ]
-                    )
-                    if not res:
-                        if not QUIET:
-                            sys.stderr.write(
-                                error_msg.format(linia['name'], linia['id'])
-                            )
-                            sys.stderr.flush()
-                        edge = {
-                            'start_node': (0, '{0}_0'.format(linia['name'])),
-                            'end_node': (0, '{0}_1'.format(linia['name']))}
-                    elif len(res) > 1:
-                        if not QUIET:
-                            sys.stderr.write(
-                                error_msg_multi.format(linia['name'],
-                                                       linia['id'], res))
-                            sys.stderr.flush()
-                        edge = {
-                            'start_node': (0, '{0}_0'.format(linia['name'])),
-                            'end_node': (0, '{0}_1'.format(linia['name']))}
-                    else:
-                        edge = O.GiscegisEdge.read(res[0], ['start_node',
-                                                            'end_node'])
-                    origen = tallar_text(edge['start_node'][1], 50)
-                    final = tallar_text(edge['end_node'][1], 50)
+                if linia["edge_id"]:
+                    edge_id =  linia["edge_id"][0]
+                    edge = O.GiscegisEdge.read(edge_id, ['start_node','end_node'])
+                    origen = edge['start_node'][1]
+                    final = edge['end_node'][1]
                 else:
                     origen = last_data["origen"]
                     final = last_data["destino"]
