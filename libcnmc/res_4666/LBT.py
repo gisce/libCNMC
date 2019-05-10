@@ -200,11 +200,14 @@ class LBT(MultiprocessBased):
                             estado = '2'
                     else:
                         estado = '1'
-
-                edge_id =  linia["edge_id"][0]
-                edge = O.GiscegisEdge.read(edge_id, ['start_node','end_node'])
-                origen = edge['start_node'][1]
-                final = edge['end_node'][1]
+                if linia["edge_id"]:
+                    edge_id =  linia["edge_id"][0]
+                    edge = O.GiscegisEdge.read(edge_id, ['start_node','end_node'])
+                    origen = edge['start_node'][1]
+                    final = edge['end_node'][1]
+                else:
+                     origen = last_data["origen"]
+                    final = last_data["destino"]
 
                 output = [
                     '{}{}'.format(self.prefix, linia['name']),  # IDENTIFICADOR
