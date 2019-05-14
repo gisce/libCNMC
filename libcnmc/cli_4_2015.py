@@ -36,8 +36,8 @@ def cir_4_2015_f10at(**kwargs):
     """
     Click entry to gnerate the F10AT of 4/2015
 
-    :param kwargs: Params to pass to the process 
-    :type kwargs: dict(str, str) 
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str, str)
     :return: None
     :rtype: None
     """
@@ -82,7 +82,7 @@ def cir_4_2015_f1(**kwargs):
     Click entry to generate the F1 of 4/2015
 
     :param kwargs: Params to pass to the process
-    :type kwargs: dict(str,str) 
+    :type kwargs: dict(str,str)
     :return: None
     :rtype: None
     """
@@ -143,7 +143,7 @@ def cir_4_2015_f11(**kwargs):
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
-        reducir_cups=kwargs["recuri_cups"]
+        reducir_cups=kwargs["reducir_cups"]
     )
     proc.calc()
 
@@ -173,7 +173,7 @@ def cir_4_2015_f1bis(**kwargs):
     Click entry to gneerate the F1BIS of 4/2015
 
     :param kwargs: Params to pass to the process
-    :type kwargs:dict(str, str) 
+    :type kwargs:dict(str, str)
     :return: None
     :rtype: None
     """
@@ -305,7 +305,7 @@ def cir_4_2015_f13(**kwargs):
     Click entry to generate the F13 file of 4/2015
 
     :param kwargs: Params to pass to the process
-    :type kwargs: dict(str,str) 
+    :type kwargs: dict(str,str)
     :return: None
     :rtype: None
     """
@@ -346,8 +346,8 @@ def cir_4_2015_f13bis(**kwargs):
     """
     Click entry to generate the F13 BIS of 4/2015
 
-    :param kwargs: Params to pas to the process 
-    :type kwargs: dict(str,str) 
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str,str)
     :return: None
     :rtype: None
     """
@@ -390,8 +390,8 @@ def cir_4_2015_f13c(**kwargs):
     """
     Click entry to generate the F13C of 4/2015
 
-    :param kwargs: Params to pass to the process 
-    :type kwargs: dict(str, str) 
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str, str)
     :return: None
     :return: None
     """
@@ -433,7 +433,7 @@ def cir_4_2015_f14(**kwargs):
     Click entry to generate the F14 file of 4/2015
 
     :param kwargs: Params to pass to the process
-    :type kwargs: dict(str,str) 
+    :type kwargs: dict(str,str)
     :return: None
     :rtype: None
     """
@@ -474,9 +474,9 @@ def cir_4_2015_f15(**kwargs):
     """
     Click ent ry to generate F15 of 4/2015
 
-    :param kwargs: Params to pass to the process 
-    :type kwargs: dict(str, str) 
-    :return: None 
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str, str)
+    :return: None
     :rtype: None
     """
 
@@ -551,8 +551,8 @@ def cir_4_2015_f20(**kwargs):
     Click entry to generate the F20 file of 4/2015
 
     :param kwargs: Params to pass to the process
-    :type kwargs:dict(str,str) 
-    :return: None 
+    :type kwargs:dict(str,str)
+    :return: None
     :rtype: None
     """
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
@@ -638,7 +638,7 @@ def cir_4_2015_create_celles(**kwargs):
     Click entry to create celles of 4/2015
 
     :param kwargs: Params to pass to the process
-    :type kwargs: dict(str,str) 
+    :type kwargs: dict(str,str)
     :return: None
     :rtype: None
     """
@@ -677,8 +677,8 @@ def cir_4_2015_f16(**kwargs):
     """
     Click entry to generate the F16 of 4/2015
 
-    :param kwargs: Params to pass to the process 
-    :type kwargs: dict(str,str) 
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str,str)
     :return: None
     :rtype: None
     """
