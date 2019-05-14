@@ -206,8 +206,20 @@ class LBT(MultiprocessBased):
                     origen = edge['start_node'][1]
                     final = edge['end_node'][1]
                 else:
-                    origen = last_data["origen"]
-                    final = last_data["destino"]
+
+                    edge_id = O.GiscegisEdge.search(
+                        [
+                            ('id_linktemplate', '=', linia['name']),
+                            ('layer', 'ilike', '%BT%')
+                        ]
+                    )
+                    if edge_id:
+                        edge = O.GiscegisEdge.read(edge_id, ['start_node','end_node'])
+                        origen = edge['start_node'][1]
+                        final = edge['end_node'][1]
+                    else:
+                        origen = last_data["origen"]
+                        final = last_data["destino"]
 
                 output = [
                     '{}{}'.format(self.prefix, linia['name']),  # IDENTIFICADOR
