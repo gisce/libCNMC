@@ -200,7 +200,7 @@ class LBT(MultiprocessBased):
                             estado = '2'
                     else:
                         estado = '1'
-                if linia["edge_id"]:
+                if linia.get("edge_id", False):
                     edge_id =  linia["edge_id"][0]
                     edge = O.GiscegisEdge.read(edge_id, ['start_node','end_node'])
                     origen = edge['start_node'][1]
