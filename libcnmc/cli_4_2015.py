@@ -143,7 +143,7 @@ def cir_4_2015_f11(**kwargs):
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
-        reducir_cups=kwargs["recuri_cups"]
+        reducir_cups=kwargs["reducir_cups"]
     )
     proc.calc()
 
