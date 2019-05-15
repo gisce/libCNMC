@@ -32,11 +32,13 @@ class MultiprocessBased(object):
         """
 
         self.file_output = kwargs.pop('output', False)
+        self.file_modificaciones = kwargs.pop('modificaciones', False)
         self.connection = kwargs.pop('connection')
         self.num_proc = max(1, kwargs.pop('num_proc', N_PROC))
         self.content = None
         self.input_q = multiprocessing.JoinableQueue()
         self.output_q = multiprocessing.JoinableQueue()
+        self.output_m = multiprocessing.JoinableQueue()
         self.progress_q = multiprocessing.Queue()
         self.quiet = kwargs.pop('quiet', False)
         self.interactive = kwargs.pop('interactive', False)
@@ -120,6 +122,25 @@ class MultiprocessBased(object):
             self.content = fio.getvalue()
         fio.close()
 
+        if self.file_modificaciones:
+            fio_mod = open(self.file_modificaciones, 'wb')
+        else:
+            fio_mod = StringIO()
+
+        while True:
+            try:
+                val = self.output_m.get()
+                if val == 'STOP':
+                    break
+                fio_mod.writelines(val + "\n")
+            except:
+                traceback.print_exc()
+                if self.raven:
+                    self.raven.captureException()
+            finally:
+                self.output_m.task_done()
+        fio_mod.close()
+
     def consumer(self):
         """
         Generates the data for each file
@@ -172,12 +193,17 @@ class MultiprocessBased(object):
         sys.stderr.flush()
         self.input_q.join()
         self.output_q.put('STOP')
+        self.output_m.put('STOP')
         if not self.quiet:
             sys.stderr.write("Time Elapsed: %s\n" % (datetime.now() - start))
             sys.stderr.flush()
+
         self.output_q.join()
+        self.output_m.join()
+
         self.output_q.close()
         self.input_q.close()
+        self.output_m.close()
 
 
 class UpdateFile(MultiprocessBased):
