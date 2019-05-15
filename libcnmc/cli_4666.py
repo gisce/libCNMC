@@ -104,6 +104,7 @@ def res_lat(LAT, **kwargs):
         extended=kwargs.get('extended', False),
         prefix=kwargs.get('prefix', False),
         dividir=kwargs.get('div', False),
+        modificaciones=kwargs.get("modificaciones", False)
     )
     proc.calc()
 
@@ -206,6 +207,7 @@ def res_4666_mod(**kwargs):
               help="Generar el fitxer extes")
 @click.option('-pf', '--prefix', help="Prefix dels Trams AT")
 @click.option('--div/--no-div', default=False, help="Dividir la longitud dels Trams AT entre el núm. de circuits")
+@click.option("-m", "--modificaciones")
 def res_4666_lat(**kwargs):
     """
     Click entry to generate LAT(F1) file of 4666
@@ -245,6 +247,7 @@ def res_4666_lat(**kwargs):
 @click.option('--extended/--no-extended', default=False,
               help="Generar el fitxer extes")
 @click.option('-pf', '--prefix', help="Prefix dels Trams BT")
+@click.option("-m", "--modificaciones")
 def res_4666_lbt(**kwargs):
     """
     Click entry to generate the LBT(F2) of 4666
@@ -283,6 +286,7 @@ def res_4666_lbt(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('--extended/--no-extended', default=False,
               help="Generar el fitxer extes")
+@click.option("-m", "--modificaciones")
 def res_4666_cts(**kwargs):
     """
     Click entry to generate the CTs(F8) of 4666
@@ -318,6 +322,7 @@ def res_4666_cts(**kwargs):
 @click.option('--embarrats/--no-embarrats', default=False,
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option("-m", "--modificaciones")
 def res_4666_sub(**kwargs):
     """
     Click entry to generate the CTs file of 4666
@@ -355,6 +360,7 @@ def res_4666_sub(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('--extended/--no-extended', default=False,
               help="Generar el fitxer extes")
+@click.option("-m", "--modificaciones")
 def res_4666_pos(**kwargs):
     """
     Click entry to generate the POS(F4) file of 4666
@@ -390,6 +396,7 @@ def res_4666_pos(**kwargs):
 @click.option('--embarrats/--no-embarrats', default=False,
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option("-m", "--modificaciones")
 def res_4666_maq(**kwargs):
     """
     Click entry to generate the MAQ file of 4666
@@ -425,6 +432,7 @@ def res_4666_maq(**kwargs):
 @click.option('--embarrats/--no-embarrats', default=False,
               help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option("-m", "--modificaciones")
 def res_4666_des(**kwargs):
     """
     Click entry to generate the DES file of 4666
@@ -463,6 +471,7 @@ def res_4666_des(**kwargs):
 @click.option('--extended/--no-extended', default=False,
               help="Generar el fitxer extes")
 @click.option('-pf', '--prefix', help="Prefix dels Trams AT")
+@click.option("-m", "--modificaciones")
 def res_4666_fia(**kwargs):
     """
     Click entry to generate the FIA(F7) file of 4666
