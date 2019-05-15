@@ -191,14 +191,17 @@ class LBT(MultiprocessBased):
                     if actual == entregada:
                         estado = 0
                     else:
+                        self.output_m.put("Identificador:{} diff:{}".format(linia["name"], actual.diff(entregada)))
                         estado = 1
                 else:
                     if linia['data_pm']:
                         if linia['data_pm'][:4] != str(self.year):
+                            self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(linia["name"]))
                             estado = '1'
                         else:
                             estado = '2'
                     else:
+                        self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(linia["name"]))
                         estado = '1'
                 if linia.get("edge_id", False):
                     edge_id =  linia["edge_id"][0]

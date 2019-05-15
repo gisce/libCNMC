@@ -148,14 +148,17 @@ class CTS(MultiprocessBased):
                     if entregada == actual:
                         estado = '0'
                     else:
+                        self.output_m.put("Identificador:{} diff:{}".format(ct["name"], actual.diff(entregada)))
                         estado = '1'
                 else:
                     if ct['data_pm']:
                         if ct['data_pm'][:4] != str(self.year):
+                            self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(ct["name"]))
                             estado = '1'
                         else:
                             estado = '2'
                     else:
+                        self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(ct["name"]))
                         estado = '1'
                 if ct['tipus_instalacio_cnmc_id']:
                     id_ti = ct['tipus_instalacio_cnmc_id'][0]

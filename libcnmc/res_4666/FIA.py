@@ -220,14 +220,17 @@ class FIA(MultiprocessBased):
                     if entregada == actual:
                         estado = '0'
                     else:
+                        self.output_m.put("Identificador:{} diff:{}".format(cll["name"], actual.diff(entregada)))
                         estado = '1'
                 else:
                     if cll['data_pm']:
                         if cll['data_pm'][:4] != str(self.year):
+                            self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(cll["name"]))
                             estado = '1'
                         else:
                             estado = '2'
                     else:
+                        self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(cll["name"]))
                         estado = '1'
 
                 output = [

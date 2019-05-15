@@ -83,14 +83,17 @@ class DES(MultiprocessBased):
                     if actual == entregada:
                         estado = '0'
                     else:
+                        self.output_m.put("Identificador:{} diff:{}".format(despatx["name"], actual.diff(entregada)))
                         estado = '1'
                 else:
                     if despatx['data_apm']:
                         if despatx['data_apm'][:4] != str(self.year):
+                            self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(despatx["name"]))
                             estado = '1'
                         else:
                             estado = '2'
                     else:
+                        self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(despatx["name"]))
                         estado = '1'
                 output = [
                     '{0}'.format(despatx['name']),  # IDENTIFICADOR

@@ -227,14 +227,17 @@ class MAQ(MultiprocessBased):
                     if entregada == actual:
                         estado = '0'
                     else:
+                        self.output_m.put("Identificador:{} diff:{}".format(trafo["name"], actual.diff(entregada)))
                         estado = '1'
                 else:
                     if trafo['data_pm']:
                         if trafo['data_pm'][:4] != str(self.year):
+                            self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(trafo["name"]))
                             estado = '1'
                         else:
                             estado = '2'
                     else:
+                        self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(trafo["name"]))
                         estado = '1'
 
                 output = [
