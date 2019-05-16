@@ -25,12 +25,22 @@ def res_pos2(proc1, proc2, **kwargs):
                     pwd=kwargs["password"], port=kwargs["port"],
                     uri=kwargs["server"])
     output = kwargs["output"]
-    temp_fd = tempfile.NamedTemporaryFile()
+    modificaciones = kwargs["modificaciones"]
 
+    temp_fd = tempfile.NamedTemporaryFile()
     tmp_out1 = temp_fd.name
     temp_fd.close()
+
     temp_fd = tempfile.NamedTemporaryFile()
     tmp_out2 = temp_fd.name
+    temp_fd.close()
+
+    temp_fd = tempfile.NamedTemporaryFile()
+    tmp_mod1 = temp_fd.name
+    temp_fd.close()
+
+    temp_fd = tempfile.NamedTemporaryFile()
+    tmp_mod2 = temp_fd.name
     temp_fd.close()
 
     proc = proc1(
@@ -43,7 +53,8 @@ def res_pos2(proc1, proc2, **kwargs):
         year=kwargs["year"],
         embarrats=kwargs["embarrats"],
         compare_field=kwargs["compare_field"],
-        extended=kwargs.get('extended', False)
+        extended=kwargs.get('extended', False),
+        modificaciones=tmp_mod1
     )
     proc.calc()
 
@@ -57,7 +68,8 @@ def res_pos2(proc1, proc2, **kwargs):
         year=kwargs["year"],
         embarrats=kwargs["embarrats"],
         compare_field=kwargs["compare_field"],
-        extended=kwargs.get('extended', False)
+        extended=kwargs.get('extended', False),
+        modificaciones=tmp_mod2
     )
     proc_2.calc()
 
@@ -74,6 +86,15 @@ def res_pos2(proc1, proc2, **kwargs):
     os.unlink(tmp_out1)
     os.unlink(tmp_out2)
 
+    final_mod = ""
+    with open(tmp_mod1, 'r') as fd_mod1:
+        final_mod += fd_mod1.read()
+
+    with open(tmp_mod2, 'r') as fd_mod2:
+        final_mod += fd_mod2.read()
+
+    with open(modificaciones, 'w') as fd_mod:
+        fd_mod.write(final_mod)
 
 # CSV LAT
 def res_lat(LAT, **kwargs):
