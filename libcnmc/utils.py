@@ -382,3 +382,17 @@ def merge_procs(procs, **kwargs):
 
     with open(original_out_url, "w") as fd_out:
         fd_out.write(data_out)
+
+def adapt_diff(diff):
+    """
+    Formats diff to human-readable format
+    :param diff: dictionary
+    :type diff: dict
+    :return: result of the formatted text
+    :rtype: str
+    """
+
+    a = ""
+    for key,value in diff.items():
+        a += "[{}] nou:{} antic:{} ".format(key, *value)
+    return a
