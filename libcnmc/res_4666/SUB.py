@@ -11,7 +11,7 @@ import sys
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import \
-    (get_id_municipi_from_company, format_f, get_forced_elements)
+    (get_id_municipi_from_company, format_f, get_forced_elements, adapt_diff)
 from libcnmc.models import F3Res4666
 
 QUIET = False
@@ -164,14 +164,17 @@ class SUB(MultiprocessBased):
                     if entregada == actual:
                         estado = 0
                     else:
+                        self.output_m.put("{} {}".format(sub["name"], adapt_diff(actual.diff(entregada))))
                         estado = 1
                 else:
                     if sub['data_pm']:
                         if sub['data_pm'][:4] != str(self.year):
+                            self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(sub["name"]))
                             estado = '1'
                         else:
                             estado = '2'
                     else:
+                        self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(sub["name"]))
                         estado = '1'
 
                 output = [

@@ -10,7 +10,7 @@ import traceback
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import \
-    (format_f, get_id_municipi_from_company, get_forced_elements)
+    (format_f, get_id_municipi_from_company, get_forced_elements, adapt_diff)
 from libcnmc.models import F8Res4666
 
 
@@ -148,14 +148,17 @@ class CTS(MultiprocessBased):
                     if entregada == actual:
                         estado = '0'
                     else:
+                        self.output_m.put("{} {}".format(ct["name"], adapt_diff(actual.diff(entregada))))
                         estado = '1'
                 else:
                     if ct['data_pm']:
                         if ct['data_pm'][:4] != str(self.year):
+                            self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(ct["name"]))
                             estado = '1'
                         else:
                             estado = '2'
                     else:
+                        self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(ct["name"]))
                         estado = '1'
                 if ct['tipus_instalacio_cnmc_id']:
                     id_ti = ct['tipus_instalacio_cnmc_id'][0]

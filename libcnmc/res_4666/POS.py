@@ -12,7 +12,7 @@ import sys
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import \
-    (get_id_municipi_from_company, format_f, get_forced_elements)
+    (get_id_municipi_from_company, format_f, get_forced_elements, adapt_diff)
 from libcnmc.models import F4Res4666
 
 QUIET = False
@@ -204,14 +204,17 @@ class POS(MultiprocessBased):
                     if entregada == actual:
                         estado = 0
                     else:
+                        self.output_m.put("{} {}".format(pos["name"], adapt_diff(actual.diff(entregada))))
                         estado = 1
                 else:
                     if pos['data_pm']:
                         if pos['data_pm'][:4] != str(self.year):
+                            self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(pos["name"]))
                             estado = '1'
                         else:
                             estado = '2'
                     else:
+                        self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(pos["name"]))
                         estado = '1'
 
                 output = [
@@ -421,14 +424,17 @@ class POS_INT(MultiprocessBased):
                     if entregada == actual:
                         estado = 0
                     else:
+                        self.output_m.put("{} {}".format(cel["name"], adapt_diff(actual.diff(entregada))))
                         estado = 1
                 else:
                     if cel['data_pm']:
                         if cel['data_pm'][:4] != str(self.year):
+                            self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(cel["name"]))
                             estado = '1'
                         else:
                             estado = '2'
                     else:
+                        self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(cel["name"]))
                         estado = '1'
 
                 output = [

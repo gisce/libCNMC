@@ -10,7 +10,7 @@ import traceback
 import math
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import format_f, tallar_text, get_forced_elements
+from libcnmc.utils import format_f, tallar_text, get_forced_elements, adapt_diff
 from libcnmc.models import F1Res4666
 
 
@@ -306,14 +306,17 @@ class LAT(MultiprocessBased):
                         if actual == entregada:
                             estado = 0
                         else:
+                            self.output_m.put("{} {}".format(tram["name"], adapt_diff(actual.diff(entregada))))
                             estado = 1
                     else:
                         if tram['data_pm']:
                             if tram['data_pm'][:4] != str(self.year):
+                                self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(tram["name"]))
                                 estado = '1'
                             else:
                                 estado = '2'
                         else:
+                            self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(tram["name"]))
                             estado = '1'
                     if tram['conductors']:
                         conductors = tram['conductors']
