@@ -9,7 +9,7 @@ from datetime import datetime
 import traceback
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import format_f, get_forced_elements
+from libcnmc.utils import format_f, get_forced_elements, adapt_diff
 from libcnmc.models import F6Res4666
 
 
@@ -83,6 +83,7 @@ class DES(MultiprocessBased):
                     if actual == entregada:
                         estado = '0'
                     else:
+                        self.output_m.put("{} {}".format(despatx["name"], adapt_diff(actual.diff(entregada))))
                         self.output_m.put("Identificador:{} diff:{}".format(despatx["name"], actual.diff(entregada)))
                         estado = '1'
                 else:

@@ -10,7 +10,7 @@ import traceback
 import math
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import format_f, tallar_text, get_forced_elements
+from libcnmc.utils import format_f, tallar_text, get_forced_elements, adapt_diff
 from libcnmc.models import F1Res4666
 
 
@@ -306,7 +306,7 @@ class LAT(MultiprocessBased):
                         if actual == entregada:
                             estado = 0
                         else:
-                            self.output_m.put("Identificador:{} diff:{}".format(tram["name"], actual.diff(entregada)))
+                            self.output_m.put("{} {}".format(tram["name"], adapt_diff(actual.diff(entregada))))
                             estado = 1
                     else:
                         if tram['data_pm']:

@@ -11,7 +11,7 @@ import math
 import sys
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import format_f, tallar_text, get_forced_elements
+from libcnmc.utils import format_f, tallar_text, get_forced_elements, adapt_diff
 from libcnmc.models import F2Res4666
 
 QUIET = False
@@ -191,7 +191,7 @@ class LBT(MultiprocessBased):
                     if actual == entregada:
                         estado = 0
                     else:
-                        self.output_m.put("Identificador:{} diff:{}".format(linia["name"], actual.diff(entregada)))
+                        self.output_m.put("{} {}".format(linia["name"], adapt_diff(actual.diff(entregada))))
                         estado = 1
                 else:
                     if linia['data_pm']:

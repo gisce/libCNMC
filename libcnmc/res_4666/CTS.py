@@ -10,7 +10,7 @@ import traceback
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import \
-    (format_f, get_id_municipi_from_company, get_forced_elements)
+    (format_f, get_id_municipi_from_company, get_forced_elements, adapt_diff)
 from libcnmc.models import F8Res4666
 
 
@@ -148,7 +148,7 @@ class CTS(MultiprocessBased):
                     if entregada == actual:
                         estado = '0'
                     else:
-                        self.output_m.put("Identificador:{} diff:{}".format(ct["name"], actual.diff(entregada)))
+                        self.output_m.put("{} {}".format(ct["name"], adapt_diff(actual.diff(entregada))))
                         estado = '1'
                 else:
                     if ct['data_pm']:

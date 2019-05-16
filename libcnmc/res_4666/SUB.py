@@ -11,7 +11,7 @@ import sys
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import \
-    (get_id_municipi_from_company, format_f, get_forced_elements)
+    (get_id_municipi_from_company, format_f, get_forced_elements, adapt_diff)
 from libcnmc.models import F3Res4666
 
 QUIET = False
@@ -164,7 +164,7 @@ class SUB(MultiprocessBased):
                     if entregada == actual:
                         estado = 0
                     else:
-                        self.output_m.put("Identificador:{} diff:{}".format(sub["name"], actual.diff(entregada)))
+                        self.output_m.put("{} {}".format(sub["name"], adapt_diff(actual.diff(entregada))))
                         estado = 1
                 else:
                     if sub['data_pm']:

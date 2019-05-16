@@ -10,7 +10,7 @@ import traceback
 
 from libcnmc.core import MultiprocessBased
 from libcnmc.models import F7Res4666
-from libcnmc.utils import get_forced_elements
+from libcnmc.utils import get_forced_elements, adapt_diff
 
 
 class FIA(MultiprocessBased):
@@ -220,7 +220,7 @@ class FIA(MultiprocessBased):
                     if entregada == actual:
                         estado = '0'
                     else:
-                        self.output_m.put("Identificador:{} diff:{}".format(cll["name"], actual.diff(entregada)))
+                        self.output_m.put("{} {}".format(cll["name"], adapt_diff(actual.diff(entregada))))
                         estado = '1'
                 else:
                     if cll['data_pm']:
