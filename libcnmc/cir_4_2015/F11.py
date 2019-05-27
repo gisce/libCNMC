@@ -4,6 +4,7 @@ import traceback
 
 from libcnmc.utils import get_ine, format_f, convert_srid, get_srid
 from libcnmc.core import MultiprocessBased
+from shapely import wkt
 
 
 class F11(MultiprocessBased):
@@ -129,8 +130,9 @@ class F11(MultiprocessBased):
                 ct = O.GiscedataCts.read(item, fields_to_read)
                 if "node_id" in ct:
                     o_node = ct["node_id"]
-                    node = O.GiscegisNodes.read(ct["node_id"][0],["x","y"])
-                    vertex = [node["x"], node["y"]]
+                    node = O.GiscegisNodes.read(ct["node_id"][0],["geom"])
+                    coords = wkt.loads(node["geom"]).coords[0]
+                    vertex = [coords[0], coordsþ[1]]
                 else:
                     o_node, vertex = self.get_node_vertex(item)
                 o_node = o_node.replace('*', '')
