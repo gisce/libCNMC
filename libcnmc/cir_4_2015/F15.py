@@ -54,7 +54,7 @@ class F15Pos(MultiprocessBased):
                 item = self.input_q.get()
                 fields_read = [
                     "name", "tensio", "cini", "propietari", "x", "y",
-                    "subestacio_id"
+                    "subestacio_id", "node_id"
                 ]
                 fields_sub_read = [
                     "x", "y", "ct_id","id_municipi","id_provincia"
