@@ -70,12 +70,16 @@ class F15Pos(MultiprocessBased):
                 point = [sub["x"], sub["y"]]
                 point_25830 = convert_srid(self.codi_r1, self.srid, point)
 
+                if "node_id" in sub:
+                    nudo = sub["node_id"]
+                else:
+                    nudo = self.cts_node[sub["ct_id"][0]]
                 self.output_q.put(
                     [
-                        self.cts_node[sub["ct_id"][0]],  # Nudo
-                        pos.get("name", ""),  # Elemento de fiabilidad
-                        "",  # Tramo
-                        pos.get("cini", ""),  # CINI
+                        nudo,     # Nudo
+                        pos.get("name", ""),            # Elemento de fiabilidad
+                        "",                             # Tramo
+                        pos.get("cini", ""),            # CINI
                         format_f(point_25830[0], decimals=3),
                         format_f(point_25830[1], decimals=3),
                         0,
