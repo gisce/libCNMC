@@ -319,7 +319,7 @@ class F15Cel(MultiprocessBased):
                 o_prop = int(cella['propietari'])
                 if "node_id" in cella:
                     o_node = cella["node_id"][1]
-                    geom = o.GiscegisNodes(cella["node_id"][0],["geom"])["geom"]
+                    geom = o.GiscegisNodes.read(cella["node_id"][0],["geom"])["geom"]
                     vertex = wkt.loads(geom).coords[0]
 
                 dict_linia = self.obtenir_camps_linia(cella['installacio'])
