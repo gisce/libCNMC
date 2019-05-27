@@ -77,8 +77,7 @@ class F16(MultiprocessBased):
         o_codi_r1 = 'R1-%s' % self.codi_r1[-3:]
         O = self.connection
         fields_to_read = [
-            'name', 'cini', 'ct_id', 'tensio_id', 'potencia_instalada',
-            "node_id"
+            'name', 'cini', 'ct_id', 'tensio_id', 'potencia_instalada'
         ]
         while True:
             try:
@@ -89,14 +88,8 @@ class F16(MultiprocessBased):
                 o_cini = condensador.get('cini', '')
                 o_potencia = condensador['potencia_instalada']
 
-
-                if "node_id" in condensador and condensador["node_id"]:
-                    o_node = condensador["node_id"]
-                    node = O.GiscegisNodes.read(o_node,["x", "y"])
-                    posicion = [node["x"], node["y"]]
-                else:
-                    o_node, posicion = self.get_node_vertex(condensador['name'])
-                    o_node = o_node.replace('*', '')
+                o_node, posicion = self.get_node_vertex(condensador['name'])
+                o_node = o_node.replace('*', '')
 
                 ct = self.get_dades_ct(condensador['ct_id'][0])
                 o_propietari = int(ct['propietari'])
