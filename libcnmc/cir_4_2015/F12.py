@@ -49,7 +49,7 @@ class F12(MultiprocessBased):
         if trafo.get("ct"):
             ct_id = trafo.get("ct")[0]
             ct = o.GiscedataCts.read(ct_id, ["node_id"])
-            return ct["node_id"]
+            return ct["node_id"][1]
 
         bloc = o.GiscegisBlocsTransformadors.search(
             [('transformadors', '=', trafo_id)])
