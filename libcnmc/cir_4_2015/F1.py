@@ -264,7 +264,8 @@ class F1(MultiprocessBased):
                 fields_to_read = [
                     'name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
                     'cne_anual_reactiva', 'cnmc_potencia_facturada', 'et',
-                    'polisses', 'potencia_conveni', 'potencia_adscrita'
+                    'polisses', 'potencia_conveni', 'potencia_adscrita',
+                    "node_id"
                 ]
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 if not cups or not cups.get('name'):
