@@ -76,7 +76,7 @@ class F15Pos(MultiprocessBased):
                     nudo = self.cts_node[sub["ct_id"][0]]
                 self.output_q.put(
                     [
-                        nudo,     # Nudo
+                        nudo,                           # Nudo
                         pos.get("name", ""),            # Elemento de fiabilidad
                         "",                             # Tramo
                         pos.get("cini", ""),            # CINI
