@@ -4,6 +4,7 @@ import traceback
 from libcnmc.utils import format_f, convert_srid, get_srid, fetch_cts_node
 from libcnmc.utils import fetch_tensions_norm, fetch_mun_ine, fetch_prov_ine
 from libcnmc.core import MultiprocessBased
+from shapely import wkt
 
 
 class F15Pos(MultiprocessBased):
@@ -54,7 +55,7 @@ class F15Pos(MultiprocessBased):
                 item = self.input_q.get()
                 fields_read = [
                     "name", "tensio", "cini", "propietari", "x", "y",
-                    "subestacio_id"
+                    "subestacio_id", "node_id"
                 ]
                 fields_sub_read = [
                     "x", "y", "ct_id","id_municipi","id_provincia"
@@ -70,12 +71,16 @@ class F15Pos(MultiprocessBased):
                 point = [sub["x"], sub["y"]]
                 point_25830 = convert_srid(self.codi_r1, self.srid, point)
 
+                if "node_id" in sub:
+                    nudo = sub["node_id"]
+                else:
+                    nudo = self.cts_node[sub["ct_id"][0]]
                 self.output_q.put(
                     [
-                        self.cts_node[sub["ct_id"][0]],  # Nudo
-                        pos.get("name", ""),  # Elemento de fiabilidad
-                        "",  # Tramo
-                        pos.get("cini", ""),  # CINI
+                        nudo,                           # Nudo
+                        pos.get("name", ""),            # Elemento de fiabilidad
+                        "",                             # Tramo
+                        pos.get("cini", ""),            # CINI
                         format_f(point_25830[0], decimals=3),
                         format_f(point_25830[1], decimals=3),
                         0,
@@ -299,21 +304,26 @@ class F15Cel(MultiprocessBased):
 
         o = self.connection
         fields_to_read = [
-            'installacio', 'cini', 'propietari', 'name', 'tram_id', 'tensio'
+            'installacio', 'cini', 'propietari', 'name', 'tram_id', 'tensio',
+            "node_id"
         ]
         while True:
             try:
                 item = self.input_q.get()
                 self.progress_q.put(item)
-                celles = o.GiscedataCellesCella.read(
+                cella = o.GiscedataCellesCella.read(
                     item, fields_to_read
                 )
-                o_fiabilitat = celles['name']
-                o_cini = celles['cini']
-                o_prop = int(celles['propietari'])
+                o_fiabilitat = cella['name']
+                o_cini = cella['cini']
+                o_prop = int(cella['propietari'])
+                if "node_id" in cella:
+                    o_node = cella["node_id"][1]
+                    geom = o.GiscegisNodes.read(cella["node_id"][0],["geom"])["geom"]
+                    vertex = wkt.loads(geom).coords[0]
 
-                dict_linia = self.obtenir_camps_linia(celles['installacio'])
-                model, element_id = celles['installacio'].split(',')
+                dict_linia = self.obtenir_camps_linia(cella['installacio'])
+                model, element_id = cella['installacio'].split(',')
                 x = ''
                 y = ''
                 z = ''
@@ -321,27 +331,31 @@ class F15Cel(MultiprocessBased):
                     ct_x_y = o.GiscedataCts.read(element_id, ["x", "y"])
                     vertex = False
                     o_tram = ""
-                    o_node = self.get_node_ct(element_id)
+                    if "node_id" not in cella:
+                        o_node = self.get_node_ct(element_id)
                     point = (ct_x_y["x"], ct_x_y["y"])
                     p25830 = convert_srid(self.codi_r1, get_srid(o), point)
                     x = format_f(p25830[0], decimals=3)
                     y = format_f(p25830[1], decimals=3)
                 else:
-                    if not celles['tram_id']:
-                        o_node, vertex, o_tram = self.get_node_vertex_tram(
-                            o_fiabilitat)
+                    if "node_id" not in cella:
+                        if not cella['tram_id']:
+                            o_node, vertex, o_tram = self.get_node_vertex_tram(
+                                o_fiabilitat)
+                        else:
+                            o_node, vertex = self.get_node_vertex(o_fiabilitat)
                     else:
-                        o_tram = "A{0}".format(o.GiscedataAtTram.read(
-                            celles['tram_id'][0], ['name']
-                        )['name'])
-                        o_node, vertex = self.get_node_vertex(o_fiabilitat)
+                        if "tram_id" in cella:
+                            o_tram = "A{0}".format(o.GiscedataAtTram.read(
+                                    cella['tram_id'][0], ['name']
+                                )['name'])
 
                 o_node = o_node.replace('*', '')
                 o_municipi = dict_linia.get('municipi')
                 o_provincia = dict_linia.get('provincia')
-                if celles['tensio']:
+                if cella['tensio']:
                     tensio = o.GiscedataTensionsTensio.read(
-                        celles['tensio'][0], ['tensio']
+                        cella['tensio'][0], ['tensio']
                     )
                     o_tensio = format_f(int(tensio['tensio'])/1000.0, decimals=3)
                 else:

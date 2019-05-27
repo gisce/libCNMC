@@ -4,6 +4,7 @@ import traceback
 
 from libcnmc.utils import get_ine, format_f, convert_srid, get_srid
 from libcnmc.core import MultiprocessBased
+from shapely import wkt
 
 
 class F11(MultiprocessBased):
@@ -120,14 +121,20 @@ class F11(MultiprocessBased):
         fields_to_read = [
             'name', 'cini', 'id_municipi',   'tensio_p', 'id_subtipus',
             'perc_financament', 'propietari', 'numero_maxim_maquines',
-            'potencia'
+            'potencia',"node_id"
         ]
         while True:
             try:
                 item = self.input_q.get()
                 self.progress_q.put(item)
                 ct = O.GiscedataCts.read(item, fields_to_read)
-                o_node, vertex = self.get_node_vertex(item)
+                if ct.get("node_id"):
+                    o_node = ct["node_id"][1]
+                    node = O.GiscegisNodes.read(ct["node_id"][0],["geom"])
+                    coords = wkt.loads(node["geom"]).coords[0]
+                    vertex = [coords[0], coords[1]]
+                else:
+                    o_node, vertex = self.get_node_vertex(item)
                 o_node = o_node.replace('*', '')
                 o_ct = ct['name']
                 o_cini = ct['cini'] or ''
@@ -176,7 +183,7 @@ class F11(MultiprocessBased):
                     o_ct,                               # CT
                     o_cini,                             # CINI
                     format_f(res_srid[0], decimals=3),  # X
-                    format_f(res_srid[1], decimals=3),  # Y 
+                    format_f(res_srid[1], decimals=3),  # Y
                     z,                                  # Z
                     o_ine_muni,                         # MUNICIPIO
                     o_ine_prov,                         # PROVINCIA

@@ -34,7 +34,23 @@ class F12(MultiprocessBased):
             search_params, 0, 0, False, {'active_test': False})
 
     def get_node(self, trafo_id):
+        """
+        Returns the node of the CT
+
+        :param trafo_id: Id of the trafo
+        :type trafo_id: int
+
+        :return: Node of the CT
+        :rtype: int
+        """
+
         o = self.connection
+        trafo = o.GiscedataTransformadorTrafo.read(trafo_id, ["ct"])
+        if trafo.get("ct"):
+            ct_id = trafo.get("ct")[0]
+            ct = o.GiscedataCts.read(ct_id, ["node_id"])
+            return ct["node_id"][1]
+
         bloc = o.GiscegisBlocsTransformadors.search(
             [('transformadors', '=', trafo_id)])
         node = ''
@@ -48,7 +64,7 @@ class F12(MultiprocessBased):
         o = self.connection
         fields_to_read = [
             'ct', 'name', 'cini', 'potencia_nominal', 'propietari',
-            'perdues_buit', 'perdues_curtcircuit_nominal'
+            'perdues_buit', 'perdues_curtcircuit_nominal',
         ]
         while True:
             try:
@@ -59,6 +75,7 @@ class F12(MultiprocessBased):
                     item, fields_to_read
                 )
                 o_ct = trafo['ct'] and trafo['ct'][1] or ''
+
                 o_node = self.get_node(item)
                 o_node = o_node.replace('*', '')
                 o_cini = trafo['cini'] or ''
@@ -79,7 +96,7 @@ class F12(MultiprocessBased):
                 o_any = self.year
 
                 self.output_q.put([
-                    o_node,             # NUDO  
+                    o_node,             # NUDO
                     o_ct,               # CT
                     o_cini,             # CINI
                     o_maquina,          # MAQUINA

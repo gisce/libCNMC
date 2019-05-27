@@ -264,7 +264,8 @@ class F1(MultiprocessBased):
                 fields_to_read = [
                     'name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
                     'cne_anual_reactiva', 'cnmc_potencia_facturada', 'et',
-                    'polisses', 'potencia_conveni', 'potencia_adscrita'
+                    'polisses', 'potencia_conveni', 'potencia_adscrita',
+                    "node_id"
                 ]
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 if not cups or not cups.get('name'):
@@ -284,11 +285,11 @@ class F1(MultiprocessBased):
                 if cups['id_municipi']:
                     id_mun = cups["id_municipi"][0]
                     o_codi_ine_prov, o_codi_ine_mun = self.get_ine(id_mun)
-                o_nom_node = ''
+                o_nom_node = cups.get("node_id")[1]
                 o_tensio = ''
                 o_connexio = ''
                 vertex = False
-                if cups and cups['id_escomesa']:
+                if cups and cups['id_escomesa'] and "node_id" not in cups:
                     o_connexio = self.get_tipus_connexio(
                         cups['id_escomesa'][0]
                     )
