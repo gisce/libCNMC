@@ -37,7 +37,7 @@ class F13bis(MultiprocessBased):
             "name": sub['name']
         }
         if 'node_id' in sub:
-            ret["node"] = sub["node_id"]
+            ret["node"] = sub["node_id"][1]
             return ret
         else:
             bloc_ids = o.GiscegisBlocsCtat.search([('ct', '=', ret["ct_id"])])
