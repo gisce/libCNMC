@@ -62,7 +62,7 @@ def get_forced_elements(connection, model):
         mod_obj = getattr(c, c.normalize_model_name(model))
     except Exception:
         mod_obj = c.model(model)
-        
+
     include_search_params = [("criteri_regulatori", "=", "incloure")]
     include_ids = mod_obj.search(
         include_search_params, False, False, False, {'active_test': False}
@@ -87,7 +87,6 @@ def fetch_cts_node(connection):
     :return: Ct id, node name
     :rtype: dict
     """
-
     ids_blk = connection.GiscegisBlocsCtat.search([])
     read_fields = ["ct", "node"]
     data_blk = connection.GiscegisBlocsCtat.read(ids_blk, read_fields)
@@ -151,10 +150,10 @@ def fetch_tensions_norm(connection):
 def get_norm_tension(connection, tension):
     """
     Returns the tension normalizada from a given tensio
-    
-    :param connection: OpenERP connection  
+
+    :param connection: OpenERP connection
     :param tension: Tensio
-    :return: Tensio normalitzada 
+    :return: Tensio normalitzada
     """
 
     if not TENS_NORM:
@@ -177,7 +176,7 @@ def get_norm_tension(connection, tension):
 def get_name_ti(connection, ti):
     """
     Returns the name of the TI
-    
+
     :param connection: Database connection
     :param ti: Id of the TI
     :type ti: int
@@ -197,7 +196,7 @@ def get_name_ti(connection, ti):
 def get_codigo_ccaa(connection, ccaa):
     """
     Return the code from CCAA
-    
+
     :param connection: Database conection
     :param ccaa: Id of the CCAA
     :return: Codigo CCAA
@@ -216,7 +215,7 @@ def get_codigo_ccaa(connection, ccaa):
 def get_ine(connection, ine):
     """
     Retornem dos valors el codi de l'estat i el codi ine sense estat.
-    
+
     :param connection: OpenERP connection
     :param ine:
     :return: State, ine municipi
@@ -289,10 +288,10 @@ def tallar_text(text, longitud):
 def format_f(num, decimals=2):
     """
     Formats float with comma decimal separator
-    
-    :param num: 
-    :param decimals: 
-    :return: 
+
+    :param num:
+    :param decimals:
+    :return:
     """
 
     if isinstance(num, float):
@@ -329,8 +328,8 @@ def convert_srid(codi, srid_source, point):
 def get_srid(connection):
     """
     Returns the SRID from the configuration
-    
-    :param connection: OpenERP connection  
+
+    :param connection: OpenERP connection
     :return: SRID
     :rtype: str
     """
