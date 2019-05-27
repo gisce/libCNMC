@@ -285,7 +285,7 @@ class F1(MultiprocessBased):
                 if cups['id_municipi']:
                     id_mun = cups["id_municipi"][0]
                     o_codi_ine_prov, o_codi_ine_mun = self.get_ine(id_mun)
-                o_nom_node = cups.get("node_id", "")
+                o_nom_node = cups.get("node_id")[1]
                 o_tensio = ''
                 o_connexio = ''
                 vertex = False
