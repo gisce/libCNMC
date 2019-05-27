@@ -34,7 +34,23 @@ class F12(MultiprocessBased):
             search_params, 0, 0, False, {'active_test': False})
 
     def get_node(self, trafo_id):
+        """
+        Returns the node of the CT
+
+        :param trafo_id: Id of the trafo
+        :type trafo_id: int
+
+        :return: Node of the CT
+        :rtype: int
+        """
+
         o = self.connection
+        trafo = o.GiscedataTransformadorTrafo.read(trafo_id, ["ct"])
+        if trafo.get("ct"):
+            ct_id = trafo.get("ct")[0]
+            ct = o.GiscedataCts.read(ct_id, ["node_id"])
+            return ct["node_id"]
+
         bloc = o.GiscegisBlocsTransformadors.search(
             [('transformadors', '=', trafo_id)])
         node = ''
