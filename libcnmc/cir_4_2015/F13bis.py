@@ -19,6 +19,16 @@ class F13bis(MultiprocessBased):
             search_params, 0, 0, False, {'active_test': False})
 
     def get_subestacio(self, sub_id):
+        """
+        Returns the subestacio information
+
+        :param sub_id: Id of subestacio
+        :type sub_id: int
+
+        :return: Node, cini and name of subestacio
+        :rtype: dict
+        """
+
         o = self.connection
         sub = o.GiscedataCtsSubestacions.read(sub_id, ['ct_id', 'cini', 'name'])
         ct_id = sub['ct_id'][0]
