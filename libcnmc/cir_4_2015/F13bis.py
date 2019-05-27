@@ -30,18 +30,25 @@ class F13bis(MultiprocessBased):
         """
 
         o = self.connection
-        sub = o.GiscedataCtsSubestacions.read(sub_id, ['ct_id', 'cini', 'name'])
-        ct_id = sub['ct_id'][0]
-        cini = sub['cini']
-        name = sub['name']
-        bloc_ids = o.GiscegisBlocsCtat.search([('ct', '=', ct_id)])
-        node = ''
-        if bloc_ids:
-            bloc = o.GiscegisBlocsCtat.read(bloc_ids[0], ['node'])
-            node = bloc['node'][1]
+        sub = o.GiscedataCtsSubestacions.read(sub_id, ['ct_id', 'cini', 'name','node_id'])
+        ret = {
+            "ct_id": sub['ct_id'][0],
+            "cini": sub['cini'],
+            "name": sub['name']
+        }
+        if 'node_id' in sub:
+            ret["node"] = sub["node_id"]
+            return ret
         else:
-            print("ct id: {}".format(ct_id))
-        return {'node': node, 'cini': cini, 'name': name}
+            bloc_ids = o.GiscegisBlocsCtat.search([('ct', '=', ret["ct_id"])])
+            node = ''
+            if bloc_ids:
+                bloc = o.GiscegisBlocsCtat.read(bloc_ids[0], ['node'])
+                node = bloc['node'][1]
+            else:
+                print("ct id: {}".format(ret["ct_id"]))
+            ret["node"] = node
+            return ret
 
     def get_tensio(self, parc_id):
         o = self.connection
