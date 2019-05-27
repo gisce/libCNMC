@@ -303,7 +303,8 @@ class F15Cel(MultiprocessBased):
 
         o = self.connection
         fields_to_read = [
-            'installacio', 'cini', 'propietari', 'name', 'tram_id', 'tensio'
+            'installacio', 'cini', 'propietari', 'name', 'tram_id', 'tensio',
+            "node_id"
         ]
         while True:
             try:
