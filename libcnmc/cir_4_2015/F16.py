@@ -90,7 +90,7 @@ class F16(MultiprocessBased):
                 o_potencia = condensador['potencia_instalada']
 
 
-                if "node_id" in condensador:
+                if "node_id" in condensador and condensador["node_id"]:
                     o_node = condensador["node_id"]
                     node = O.GiscegisNodes.read(o_node,["x", "y"])
                     posicion = [node["x"], node["y"]]
