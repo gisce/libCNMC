@@ -129,7 +129,7 @@ class F11(MultiprocessBased):
                 ct = O.GiscedataCts.read(item, fields_to_read)
                 if "node_id" in ct:
                     o_node = ct["node_id"]
-                    node = O.GiscegisNodes(ct["node_id"][0],["x","y"])
+                    node = O.GiscegisNodes.read(ct["node_id"][0],["x","y"])
                     vertex = [node["x"], node["y"]]
                 else:
                     o_node, vertex = self.get_node_vertex(item)
