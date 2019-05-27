@@ -77,7 +77,8 @@ class F16(MultiprocessBased):
         o_codi_r1 = 'R1-%s' % self.codi_r1[-3:]
         O = self.connection
         fields_to_read = [
-            'name', 'cini', 'ct_id', 'tensio_id', 'potencia_instalada'
+            'name', 'cini', 'ct_id', 'tensio_id', 'potencia_instalada',
+            "node_id"
         ]
         while True:
             try:
