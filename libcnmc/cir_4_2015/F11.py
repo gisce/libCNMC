@@ -132,7 +132,7 @@ class F11(MultiprocessBased):
                     o_node = ct["node_id"]
                     node = O.GiscegisNodes.read(ct["node_id"][0],["geom"])
                     coords = wkt.loads(node["geom"]).coords[0]
-                    vertex = [coords[0], coordsþ[1]]
+                    vertex = [coords[0], coords[1]]
                 else:
                     o_node, vertex = self.get_node_vertex(item)
                 o_node = o_node.replace('*', '')
