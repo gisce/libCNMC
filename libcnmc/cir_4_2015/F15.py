@@ -4,6 +4,7 @@ import traceback
 from libcnmc.utils import format_f, convert_srid, get_srid, fetch_cts_node
 from libcnmc.utils import fetch_tensions_norm, fetch_mun_ine, fetch_prov_ine
 from libcnmc.core import MultiprocessBased
+from shapely import wkt
 
 
 class F15Pos(MultiprocessBased):
@@ -318,6 +319,9 @@ class F15Cel(MultiprocessBased):
                 o_prop = int(cella['propietari'])
                 if "node_id" in cella:
                     o_node = cella["node_id"][1]
+                    geom = o.GiscegisNodes(cella["node_id"][0],["geom"])["geom"]
+                    vertex = wkt.loads(geom).coords[0]
+
                 dict_linia = self.obtenir_camps_linia(cella['installacio'])
                 model, element_id = cella['installacio'].split(',')
                 x = ''
