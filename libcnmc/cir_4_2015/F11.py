@@ -128,7 +128,7 @@ class F11(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
                 ct = O.GiscedataCts.read(item, fields_to_read)
-                if "node_id" in ct:
+                if ct.get("node_id"):
                     o_node = ct["node_id"][1]
                     node = O.GiscegisNodes.read(ct["node_id"][0],["geom"])
                     coords = wkt.loads(node["geom"]).coords[0]
