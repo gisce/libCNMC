@@ -85,12 +85,22 @@ class F16(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
                 condensador = O.GiscedataCondensadors.read(item, fields_to_read)
-
-                o_node, vertex = self.get_node_vertex(condensador['name'])
-                o_node = o_node.replace('*', '')
                 o_cond = condensador['name']
                 o_cini = condensador.get('cini', '')
+                o_potencia = condensador['potencia_instalada']
+
+
+                if "node_id" in condensador:
+                    o_node = condensador["node_id"]
+                    node = O.GiscegisNodes.read(o_node,["x", "y"])
+                    posicion = [node["x"], node["y"]]
+                else:
+                    o_node, posicion = self.get_node_vertex(condensador['name'])
+                    o_node = o_node.replace('*', '')
+
                 ct = self.get_dades_ct(condensador['ct_id'][0])
+                o_propietari = int(ct['propietari'])
+
                 o_ine_muni, o_ine_prov = '', ''
                 if ct['id_municipi']:
                     o_ine_prov, o_ine_muni = self.get_ine(ct['id_municipi'][0])
@@ -98,14 +108,13 @@ class F16(MultiprocessBased):
                     float(self.get_tensio(condensador['tensio_id'][0])) / 1000.0,
                     decimals=3
                 )
-                o_potencia = condensador['potencia_instalada']
-                o_propietari = int(ct['propietari'])
+
                 o_any = self.year
                 z = ''
                 res_srid = ['', '']
-                if vertex:
+                if posicion:
                     res_srid = convert_srid(
-                        self.codi_r1, get_srid(O), vertex)
+                        self.codi_r1, get_srid(O), posicion)
                 self.output_q.put([
                     o_node,                             # NUDO
                     o_cond,                             # CONDENSADOR
