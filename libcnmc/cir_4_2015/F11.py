@@ -181,7 +181,7 @@ class F11(MultiprocessBased):
                     o_ct,                               # CT
                     o_cini,                             # CINI
                     format_f(res_srid[0], decimals=3),  # X
-                    format_f(res_srid[1], decimals=3),  # Y 
+                    format_f(res_srid[1], decimals=3),  # Y
                     z,                                  # Z
                     o_ine_muni,                         # MUNICIPIO
                     o_ine_prov,                         # PROVINCIA
