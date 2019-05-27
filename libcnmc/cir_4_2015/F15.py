@@ -317,7 +317,7 @@ class F15Cel(MultiprocessBased):
                 o_cini = cella['cini']
                 o_prop = int(cella['propietari'])
                 if "node_id" in cella:
-                    o_node = cella["node_id"]
+                    o_node = cella["node_id"][1]
                 dict_linia = self.obtenir_camps_linia(cella['installacio'])
                 model, element_id = cella['installacio'].split(',')
                 x = ''
