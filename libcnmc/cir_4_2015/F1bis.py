@@ -173,10 +173,14 @@ class F1bis(MultiprocessBased):
 
     def get_baixa_cups(self, cups_id):
         """
+        Devuelve si un CUPS ha estado de baja durante el año
 
-        :param cups_id:
-        :return:
+        :param cups_id: Id del
+        :param cups_id: int
+        :return: Si ha estado de baja durante el año devuelve 0 ,sino 1
+        :rtype: int
         """
+
         O = self.connection
         polissa_obj = O.GiscedataPolissa
 
