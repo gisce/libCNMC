@@ -192,6 +192,7 @@ class F1bis(MultiprocessBased):
             ('cups', '=', cups_id),
             ('data_baixa', '>=', data_inici),
             ('data_baixa', '<', data_fi)
+            ('state', 'in', ['tall','activa','baixa'])
         ]
         polisses_baixa_ids = polissa_obj.search(
             search_params, 0, False, False, {'active_test': False})
