@@ -154,9 +154,8 @@ class F1bis(MultiprocessBased):
         }
         polissa_id = polissa_obj.search([
             ('cups', '=', cups_id),
-            ('state', 'not in', ('esborrany', 'validar')),
+            ('state', 'in', ['tall', 'activa', 'baixa']),
             ('data_alta', '<=', self.ultim_dia_any),
-            # '|',
         ], 0, 1, 'data_alta desc', context)
         return polissa_id
 
@@ -191,8 +190,7 @@ class F1bis(MultiprocessBased):
         search_params = [
             ('cups', '=', cups_id),
             ('data_baixa', '>=', data_inici),
-            ('data_baixa', '<', data_fi),
-            ('state', 'in', ['tall','activa','baixa'])
+            ('data_baixa', '<', data_fi)
         ]
         polisses_baixa_ids = polissa_obj.search(
             search_params, 0, False, False, {'active_test': False})
