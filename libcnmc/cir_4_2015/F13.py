@@ -60,7 +60,7 @@ class F13(MultiprocessBased):
         o = self.connection
         fields_to_read = [
             'name', 'cini', 'propietari', 'id_municipi', 'id_provincia',
-            'ct_id', 'descripcio'
+            'ct_id', 'descripcio', "x", "y"
         ]
         while True:
             try:
@@ -74,7 +74,10 @@ class F13(MultiprocessBased):
                     'id_municipi': sub['id_municipi'],
                     'id_provincia': sub['id_provincia']
                 }
-                vertex = self.get_vertex(sub['ct_id'][0])
+                if "node_id" in sub:
+                    vertext =(sub["x"], sub["y"])
+                else:
+                    vertex = self.get_vertex(sub['ct_id'][0])
                 ines = self.get_ines(ids_sub)
                 o_subestacio = sub['name']
                 o_cini = sub['cini']
