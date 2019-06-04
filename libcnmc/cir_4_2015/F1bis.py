@@ -15,20 +15,26 @@ class F1bis(MultiprocessBased):
         self.report_name = 'F1bis - CUPS'
         self.base_object = 'CUPS'
         self.ultim_dia_any = '{}-12-31'.format(self.year)
-        mod_all_year = self.connection.GiscedataPolissaModcontractual.search([
-            ("data_inici", "<=", "{}-01-01".format(self.year)),
-            ("data_final", ">=", "{}-12-31".format(self.year))],
-            0, 0, False,{"active_test": False}
+        mod_all_year = self.connection.GiscedataPolissaModcontractual.search(
+            [
+                ("data_inici", "<=", "{}-01-01".format(self.year)),
+                ("data_final", ">=", "{}-12-31".format(self.year)),
+                ("tarifa.name", 'not ilike', '%RE%')
+            ], 0, 0, False, {"active_test": False}
         )
         mods_ini = self.connection.GiscedataPolissaModcontractual.search(
-            [("data_inici", ">=", "{}-01-01".format(self.year)),
-            ("data_inici", "<=", "{}-12-31".format(self.year))],
-            0, 0, False,{"active_test": False}
+            [
+                ("data_inici", ">=", "{}-01-01".format(self.year)),
+                ("data_inici", "<=", "{}-12-31".format(self.year)),
+                ("tarifa.name", 'not ilike', '%RE%')
+            ], 0, 0, False, {"active_test": False}
         )
         mods_fi = self.connection.GiscedataPolissaModcontractual.search(
-            [("data_final", ">=", "{}-01-01".format(self.year)),
-            ("data_final", "<=", "{}-12-31".format(self.year))],
-            0, 0, False, {"active_test": False}
+            [
+                ("data_final", ">=", "{}-01-01".format(self.year)),
+                ("data_final", "<=", "{}-12-31".format(self.year)),
+                ("tarifa.name", 'not ilike', '%RE%')
+            ], 0, 0, False, {"active_test": False}
         )
 
         self.generate_derechos = kwargs.pop("derechos", False)
@@ -91,28 +97,28 @@ class F1bis(MultiprocessBased):
         :return: List of id of CUPS
         :rtype: list of int
         """
-        o = self.connection
         data_ini = '%s-01-01' % (self.year + 1)
         search_params = [('active', '=', True),
                          '|',
                          ('create_date', '<', data_ini),
                          ('create_date', '=', False)]
 
-        cups_derechos_bt = self.get_derechos(TARIFAS_BT, 2)
-        cups_derechos_at = self.get_derechos(TARIFAS_AT, 4)
-
-        tmp_ret_cups = self.connection.GiscedataCupsPs.search(
+        ret_cups_ids = self.connection.GiscedataCupsPs.search(
             search_params, 0, 0, False, {'active_test': False})
+
+        ret_cups_tmp = self.connection.GiscedataCupsPs.read(
+            ret_cups_ids, ["polisses"]
+        )
         ret_cups = []
 
-        fields_to_check = ["polisses"]
-
-        for cups in o.GiscedataCupsPs.read(tmp_ret_cups, fields_to_check):
-            if set(cups["polisses"]).intersection(self.modcons_in_year):
+        for cups in ret_cups_tmp:
+            if set(cups['polisses']).intersection(self.modcons_in_year):
                 ret_cups.append(cups["id"])
 
         if self.generate_derechos:
-            return ret_cups + cups_derechos_at + cups_derechos_bt
+            cups_derechos_bt = self.get_derechos(TARIFAS_BT, 2)
+            cups_derechos_at = self.get_derechos(TARIFAS_AT, 4)
+            return list(set(ret_cups + cups_derechos_at + cups_derechos_bt))
         else:
             return ret_cups
 
@@ -247,9 +253,6 @@ class F1bis(MultiprocessBased):
                 else:
                     o_cups = cups['name'][:22]
                 polissa_id = self.get_polissa(cups['id'])
-                polissa = O.GiscedataPolissa.read(polissa_id[0], ['tarifa'])
-                if 'RE' in polissa['tarifa'][1]:
-                    continue
                 if polissa_id:
                     polissa_id = polissa_id[0]
                     o_comptador_cini = self.get_comptador_cini(polissa_id)
