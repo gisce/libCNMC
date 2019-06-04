@@ -32,20 +32,26 @@ class F1(MultiprocessBased):
         self.base_object = 'CUPS'
         self.report_name = 'F1 - CUPS'
         self.reducir_cups = kwargs.get("reducir_cups", False)
-        mod_all_year = self.connection.GiscedataPolissaModcontractual.search([
-            ("data_inici", "<=", "{}-01-01".format(self.year)),
-            ("data_final", ">=", "{}-12-31".format(self.year))],
-            0, 0, False, {"active_test": False}
+        mod_all_year = self.connection.GiscedataPolissaModcontractual.search(
+            [
+                ("data_inici", "<=", "{}-01-01".format(self.year)),
+                ("data_final", ">=", "{}-12-31".format(self.year)),
+                ("tarifa.name", 'not ilike', '%RE%')
+            ], 0, 0, False, {"active_test": False}
         )
         mods_ini = self.connection.GiscedataPolissaModcontractual.search(
-            [("data_inici", ">=", "{}-01-01".format(self.year)),
-            ("data_inici", "<=", "{}-12-31".format(self.year))],
-            0, 0, False, {"active_test": False}
+            [
+                ("data_inici", ">=", "{}-01-01".format(self.year)),
+                ("data_inici", "<=", "{}-12-31".format(self.year)),
+                ("tarifa.name", 'not ilike', '%RE%')
+            ], 0, 0, False, {"active_test": False}
         )
         mods_fi = self.connection.GiscedataPolissaModcontractual.search(
-            [("data_final", ">=", "{}-01-01".format(self.year)),
-            ("data_final", "<=", "{}-12-31".format(self.year))],
-            0, 0, False, {"active_test": False}
+            [
+                ("data_final", ">=", "{}-01-01".format(self.year)),
+                ("data_final", "<=", "{}-12-31".format(self.year)),
+                ("tarifa.name", 'not ilike', '%RE%')
+            ], 0, 0, False, {"active_test": False}
         )
         self.modcons_in_year = set(mods_fi + mods_ini + mod_all_year)
         self.default_o_cod_tfa = None
@@ -152,24 +158,24 @@ class F1(MultiprocessBased):
                          ('create_date', '<', data_ini),
                          ('create_date', '=', False)]
 
-        ret_cups_tmp = self.connection.GiscedataCupsPs.search(
+        ret_cups_ids = self.connection.GiscedataCupsPs.search(
             search_params, 0, 0, False, {'active_test': False})
 
-        ret_cups_data = self.connection.GiscedataCupsPs.read(
-            ret_cups_tmp, ["polisses"])
-
+        ret_cups_tmp = self.connection.GiscedataCupsPs.read(
+            ret_cups_ids, ["polisses"]
+        )
         ret_cups = []
-        for cups in ret_cups_data:
-            if set(cups["polisses"]).intersection(self.modcons_in_year):
+
+        for cups in ret_cups_tmp:
+            if set(cups['polisses']).intersection(self.modcons_in_year):
                 ret_cups.append(cups["id"])
 
         if self.generate_derechos:
             cups_derechos_bt = self.get_derechos(TARIFAS_BT, 2)
             cups_derechos_at = self.get_derechos(TARIFAS_AT, 4)
-            return set(cups_derechos_bt +cups_derechos_at)
+            return list(set(ret_cups + cups_derechos_at + cups_derechos_bt))
         else:
             return ret_cups
-
 
     def get_zona_qualitat(self, codi_ct):
         """
@@ -334,8 +340,6 @@ class F1(MultiprocessBased):
                     polissa = O.GiscedataPolissa.read(
                         polissa_id[0], fields_to_read, context_glob
                     )
-                    if 'RE' in polissa['tarifa'][1]:
-                        continue
                     if polissa['tensio']:
                         o_tensio = format_f(
                             float(polissa['tensio']) / 1000.0, decimals=3)
