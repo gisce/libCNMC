@@ -82,13 +82,7 @@ class F13(MultiprocessBased):
                 o_subestacio = sub['name']
                 o_cini = sub['cini']
                 o_denominacio = sub['descripcio']
-                x = ''
-                y = ''
                 z = ''
-                if vertex[0]:
-                    x = format_f(float(vertex[0]), decimals=3)
-                if vertex[1]:
-                    y = format_f(float(vertex[1]), decimals=3)
                 o_municipi = ines['ine_municipi']
                 o_provincia = ines['ine_provincia']
                 o_prop = int(sub['propietari'])
