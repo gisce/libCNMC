@@ -154,6 +154,7 @@ class F1(MultiprocessBased):
         """
         data_ini = '%s-01-01' % (self.year + 1)
         search_params = [('active', '=', True),
+                         ('et', '=', 'CT-007'),
                          '|',
                          ('create_date', '<', data_ini),
                          ('create_date', '=', False)]
