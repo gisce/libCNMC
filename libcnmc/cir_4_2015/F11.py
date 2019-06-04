@@ -4,6 +4,7 @@ import traceback
 
 from libcnmc.utils import get_ine, format_f, convert_srid, get_srid
 from libcnmc.core import MultiprocessBased
+from libcnmc.cir_4_2015.F1 import TARIFAS_AT, TARIFAS_BT
 from shapely import wkt
 
 
@@ -14,6 +15,23 @@ class F11(MultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.report_name = 'F11 - CTS'
         self.base_object = 'CTS'
+        mod_all_year = self.connection.GiscedataPolissaModcontractual.search([
+            ("data_inici", "<=", "{}-01-01".format(self.year)),
+            ("data_final", ">=", "{}-12-31".format(self.year))],
+            0, 0, False, {"active_test": False}
+        )
+        mods_ini = self.connection.GiscedataPolissaModcontractual.search(
+            [("data_inici", ">=", "{}-01-01".format(self.year)),
+             ("data_inici", "<=", "{}-12-31".format(self.year))],
+            0, 0, False, {"active_test": False}
+        )
+        mods_fi = self.connection.GiscedataPolissaModcontractual.search(
+            [("data_final", ">=", "{}-01-01".format(self.year)),
+             ("data_final", "<=", "{}-12-31".format(self.year))],
+            0, 0, False, {"active_test": False}
+        )
+        self.modcons_in_year = set(mods_fi + mods_ini + mod_all_year)
+        self.generate_derechos = kwargs.pop("derechos", False)
 
     def get_sequence(self):
         search_params = [('id_installacio.name', '!=', 'SE')]
@@ -115,13 +133,95 @@ class F11(MultiprocessBased):
                     res += trafo['potencia_nominal']
         return res
 
+    def get_derechos(self, tarifas, years):
+        """
+        Returns a list of CUPS with derechos
+
+        :param tarifas: Lis of tarifas of the polissas that are in the CUPS
+        :param years: Number of years to search back
+        :return: List of ids of the
+        """
+
+        O = self.connection
+
+        polisses_baixa_id = O.GiscedataPolissa.search(
+            [
+                ("data_baixa", "<=", "{}-12-31".format(self.year - 1)),
+                ("data_baixa", ">", "{}-01-01".format(self.year - years)),
+                ("tarifa", "in", tarifas)
+            ],
+            0, 0, False, {'active_test': False}
+        )
+
+        cups_polisses_baixa = [x["cups"][0] for x in O.GiscedataPolissa.read(
+            polisses_baixa_id, ["cups"]
+        )]
+
+        cups_derechos = O.GiscedataCupsPs.search(
+            [
+                ("id", "in", cups_polisses_baixa),
+                ("polissa_polissa", "=", False)
+            ]
+        )
+
+        polissa_eliminar_id = O.GiscedataPolissaModcontractual.search(
+            [
+                ("cups", "in", cups_derechos),
+                '|', ("data_inici", ">", "{}-01-01".format(self.year)),
+                ("data_final", ">", "{}-01-01".format(self.year))
+            ],
+            0, 0, False, {'active_test': False}
+        )
+
+        cups_eliminar_id = [x["cups"][0] for x in
+                            O.GiscedataPolissaModcontractual.read(
+                                polissa_eliminar_id, ["cups"]
+                            )]
+
+        cups_derechos = list(set(cups_derechos) - set(cups_eliminar_id))
+
+        return cups_derechos
+
+    def get_cups(self, ct_name):
+        """
+        Get the CUPS using the same search criteria used on the F1 to 
+        :param ct_name: Name of the CT to retrieve the cups IDS
+        :type ct_name: str
+        :return: The IDS of the cups matching with the search criteria
+        :rtype list of int
+        """
+        data_ini = '%s-01-01' % (self.year + 1)
+        search_params = [('active', '=', True),
+                         ('et', '=', ct_name),
+                         '|',
+                         ('create_date', '<', data_ini),
+                         ('create_date', '=', False)]
+
+        ret_cups_tmp = self.connection.GiscedataCupsPs.search(
+            search_params, 0, 0, False, {'active_test': False})
+
+        ret_cups_data = self.connection.GiscedataCupsPs.read(
+            ret_cups_tmp, ["polisses"])
+
+        ret_cups = []
+        for cups in ret_cups_data:
+            if set(cups["polisses"]).intersection(self.modcons_in_year):
+                ret_cups.append(cups["id"])
+
+        if self.generate_derechos:
+            cups_derechos_bt = self.get_derechos(TARIFAS_BT, 2)
+            cups_derechos_at = self.get_derechos(TARIFAS_AT, 4)
+            return set(cups_derechos_bt + cups_derechos_at)
+        else:
+            return ret_cups
+
     def consumer(self):
         o_codi_r1 = 'R1-%s' % self.codi_r1[-3:]
         O = self.connection
         fields_to_read = [
             'name', 'cini', 'id_municipi',   'tensio_p', 'id_subtipus',
             'perc_financament', 'propietari', 'numero_maxim_maquines',
-            'potencia',"node_id"
+            'potencia', "node_id"
         ]
         while True:
             try:
@@ -130,7 +230,7 @@ class F11(MultiprocessBased):
                 ct = O.GiscedataCts.read(item, fields_to_read)
                 if ct.get("node_id"):
                     o_node = ct["node_id"][1]
-                    node = O.GiscegisNodes.read(ct["node_id"][0],["geom"])
+                    node = O.GiscegisNodes.read(ct["node_id"][0], ["geom"])
                     coords = wkt.loads(node["geom"]).coords[0]
                     vertex = [coords[0], coords[1]]
                 else:
@@ -154,10 +254,14 @@ class F11(MultiprocessBased):
                 else:
                     o_tipo = ''
                 o_potencia = float(self.get_potencia_trafos(item))
-                cups = O.GiscedataCupsPs.search([
-                    ('et', '=', ct['name']),
-                    ('polissa_polissa.tarifa.name', 'not in', ["RE", "RE12"])
-                ])
+                # Si s'ha de fer cuadrar amb els cups s'ha de fer servir un
+                # criteri de filtratge igual al de l'F1 per a fer el SUM
+
+                # cups = O.GiscedataCupsPs.search([
+                #     ('et', '=', ct['name']),
+                #     ('polissa_polissa.tarifa.name', 'not in', ["RE", "RE12"])
+                # ])
+                cups = get_cups(ct['name'])
                 o_energia = sum(
                     x['cne_anual_activa']
                     for x in O.GiscedataCupsPs.read(
