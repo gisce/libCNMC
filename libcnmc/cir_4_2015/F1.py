@@ -154,7 +154,6 @@ class F1(MultiprocessBased):
         """
         data_ini = '%s-01-01' % (self.year + 1)
         search_params = [('active', '=', True),
-                         ('et', '=', ct_name),
                          '|',
                          ('create_date', '<', data_ini),
                          ('create_date', '=', False)]
@@ -272,7 +271,7 @@ class F1(MultiprocessBased):
                     'name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
                     'cne_anual_reactiva', 'cnmc_potencia_facturada', 'et',
                     'polisses', 'potencia_conveni', 'potencia_adscrita',
-                    "node_id"
+                    "node_id", 'et'
                 ]
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 if not cups or not cups.get('name'):
@@ -282,6 +281,7 @@ class F1(MultiprocessBased):
                     o_name = cups['name'][:20]
                 else:
                     o_name = cups['name'][:22]
+                o_et = cups['et']
                 o_codi_ine_mun = ''
                 o_codi_ine_prov = ''
                 o_zona = ''
@@ -485,7 +485,8 @@ class F1(MultiprocessBased):
                     format_f(o_pot_ads, decimals=3),        # Potencia adscrita a la instalacion
                     format_f(o_anual_activa, decimals=3),   # Energia activa anual consumida
                     format_f(o_anual_reactiva, decimals=3), # Energia reactiva anual consumida
-                    o_any_incorporacio  # Año informacion
+                    o_any_incorporacio,  # Año informacion
+                    o_et
                 ])
             except Exception:
                 traceback.print_exc()
