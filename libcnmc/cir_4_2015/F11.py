@@ -15,20 +15,26 @@ class F11(MultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.report_name = 'F11 - CTS'
         self.base_object = 'CTS'
-        mod_all_year = self.connection.GiscedataPolissaModcontractual.search([
-            ("data_inici", "<=", "{}-01-01".format(self.year)),
-            ("data_final", ">=", "{}-12-31".format(self.year))],
-            0, 0, False, {"active_test": False}
+        mod_all_year = self.connection.GiscedataPolissaModcontractual.search(
+            [
+                ("data_inici", "<=", "{}-01-01".format(self.year)),
+                ("data_final", ">=", "{}-12-31".format(self.year)),
+                ("tarifa.name", 'not ilike', '%RE%')
+            ], 0, 0, False, {"active_test": False}
         )
         mods_ini = self.connection.GiscedataPolissaModcontractual.search(
-            [("data_inici", ">=", "{}-01-01".format(self.year)),
-             ("data_inici", "<=", "{}-12-31".format(self.year))],
-            0, 0, False, {"active_test": False}
+            [
+                ("data_inici", ">=", "{}-01-01".format(self.year)),
+                ("data_inici", "<=", "{}-12-31".format(self.year)),
+                ("tarifa.name", 'not ilike', '%RE%')
+            ], 0, 0, False, {"active_test": False}
         )
         mods_fi = self.connection.GiscedataPolissaModcontractual.search(
-            [("data_final", ">=", "{}-01-01".format(self.year)),
-             ("data_final", "<=", "{}-12-31".format(self.year))],
-            0, 0, False, {"active_test": False}
+            [
+                ("data_final", ">=", "{}-01-01".format(self.year)),
+                ("data_final", "<=", "{}-12-31".format(self.year)),
+                ("tarifa.name", 'not ilike', '%RE%')
+            ], 0, 0, False, {"active_test": False}
         )
         self.modcons_in_year = set(mods_fi + mods_ini + mod_all_year)
         self.generate_derechos = kwargs.pop("derechos", False)
@@ -254,13 +260,7 @@ class F11(MultiprocessBased):
                 else:
                     o_tipo = ''
                 o_potencia = float(self.get_potencia_trafos(item))
-                # Si s'ha de fer cuadrar amb els cups s'ha de fer servir un
-                # criteri de filtratge igual al de l'F1 per a fer el SUM
 
-                # cups = O.GiscedataCupsPs.search([
-                #     ('et', '=', ct['name']),
-                #     ('polissa_polissa.tarifa.name', 'not in', ["RE", "RE12"])
-                # ])
                 cups = self.get_cups(ct['name'])
                 o_energia = sum(
                     x['cne_anual_activa']

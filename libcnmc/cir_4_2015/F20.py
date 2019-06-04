@@ -13,20 +13,26 @@ class F20(MultiprocessBased):
         self.reducir_cups = kwargs.get("reducir_cups", False)
         self.report_name = 'F20 - CTS'
         self.base_object = 'CTS'
-        mod_all_year = self.connection.GiscedataPolissaModcontractual.search([
+        mod_all_year = self.connection.GiscedataPolissaModcontractual.search(
+            [
                 ("data_inici", "<=", "{}-01-01".format(self.year)),
-                ("data_final", ">=", "{}-12-31".format(self.year))],
-                0, 0, False, {"active_test": False}
+                ("data_final", ">=", "{}-12-31".format(self.year)),
+                ("tarifa.name", 'not ilike', '%RE%')
+            ], 0, 0, False, {"active_test": False}
                                 )
         mods_ini = self.connection.GiscedataPolissaModcontractual.search(
-                [("data_inici", ">=", "{}-01-01".format(self.year)),
-                 ("data_inici", "<=", "{}-12-31".format(self.year))],
-                0, 0, False, {"active_test": False}
+            [
+                ("data_inici", ">=", "{}-01-01".format(self.year)),
+                ("data_inici", "<=", "{}-12-31".format(self.year)),
+                ("tarifa.name", 'not ilike', '%RE%')
+            ], 0, 0, False, {"active_test": False}
         )
         mods_fi = self.connection.GiscedataPolissaModcontractual.search(
-                [("data_final", ">=", "{}-01-01".format(self.year)),
-                 ("data_final", "<=", "{}-12-31".format(self.year))],
-                0, 0, False, {"active_test": False}
+            [
+                ("data_final", ">=", "{}-01-01".format(self.year)),
+                ("data_final", "<=", "{}-12-31".format(self.year)),
+                ("tarifa.name", 'not ilike', '%RE%')
+            ], 0, 0, False, {"active_test": False}
         )
 
         self.generate_derechos = kwargs.pop("derechos", False)
@@ -80,7 +86,6 @@ class F20(MultiprocessBased):
         cups_derechos = list(set(cups_derechos) - set(cups_eliminar_id))
 
         return cups_derechos
-
 
     def get_sequence(self):
         data_ini = '%s-01-01' % (self.year + 1)
@@ -137,14 +142,6 @@ class F20(MultiprocessBased):
                 cups = o.GiscedataCupsPs.read(
                     item, fields_to_read
                 )
-                search_params = [('cups', '=', cups['id'])]
-                polissa_id = o.GiscedataPolissa.search(
-                    search_params, 0, 1, 'data_alta desc')
-                if polissa_id:
-                    polissa = o.GiscedataPolissa.read(
-                        polissa_id[0], ['tarifa'])
-                    if 'RE' in polissa['tarifa'][1]:
-                        continue
 
                 o_codi_r1 = "R1-"+self.codi_r1
                 if self.reducir_cups:
