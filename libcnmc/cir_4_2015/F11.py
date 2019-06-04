@@ -261,7 +261,7 @@ class F11(MultiprocessBased):
                 #     ('et', '=', ct['name']),
                 #     ('polissa_polissa.tarifa.name', 'not in', ["RE", "RE12"])
                 # ])
-                cups = get_cups(ct['name'])
+                cups = self.get_cups(ct['name'])
                 o_energia = sum(
                     x['cne_anual_activa']
                     for x in O.GiscedataCupsPs.read(
