@@ -75,7 +75,7 @@ class F13(MultiprocessBased):
                     'id_provincia': sub['id_provincia']
                 }
                 if "x" in sub and "y" in sub:
-                    vertext = (sub["x"], sub["y"])
+                    vertex = (sub["x"], sub["y"])
                 else:
                     vertex = self.get_vertex(sub['ct_id'][0])
                 ines = self.get_ines(ids_sub)
