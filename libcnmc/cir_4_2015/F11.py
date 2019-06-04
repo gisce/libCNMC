@@ -263,6 +263,7 @@ class F11(MultiprocessBased):
                 o_potencia = float(self.get_potencia_trafos(item))
 
                 cups = self.get_cups(ct['name'])
+                o_ncups = len(cups)
                 o_energia = sum(
                     x['cne_anual_activa']
                     for x in O.GiscedataCupsPs.read(
@@ -303,7 +304,8 @@ class F11(MultiprocessBased):
                     o_codi_r1,                          # CODIGO DISTRIBUIDORA
                     o_propietari,                       # PROPIEDAD
                     o_num_max_maquines,                 # NUM MAX MAQUINAS
-                    o_incorporacio                      # AÑO INFORMACION
+                    o_incorporacio,                      # AÑO INFORMACION
+                    o_ncups
                 ])
             except Exception:
                 traceback.print_exc()
