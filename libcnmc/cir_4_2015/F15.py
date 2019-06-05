@@ -339,14 +339,14 @@ class F15Cel(MultiprocessBased):
                     x = format_f(p25830[0], decimals=3)
                     y = format_f(p25830[1], decimals=3)
                 else:
-                    if "node_id" not in cella:
+                    if not cella.get("node_id", False):
                         if not cella['tram_id']:
                             o_node, vertex, o_tram = self.get_node_vertex_tram(
                                 o_fiabilitat)
                         else:
                             o_node, vertex = self.get_node_vertex(o_fiabilitat)
                     else:
-                        if "tram_id" in cella:
+                        if cella.get("tram_id"):
                             o_tram = "A{0}".format(o.GiscedataAtTram.read(
                                     cella['tram_id'][0], ['name']
                                 )['name'])
