@@ -317,6 +317,7 @@ class F15Cel(MultiprocessBased):
                 o_fiabilitat = cella['name']
                 o_cini = cella['cini']
                 o_prop = int(cella['propietari'])
+                o_tram = ""
                 if cella.get("node_id"):
                     o_node = cella["node_id"][1]
                     geom = o.GiscegisNodes.read(cella["node_id"][0],["geom"])["geom"]
