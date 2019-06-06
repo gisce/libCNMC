@@ -32,6 +32,7 @@ class F1(MultiprocessBased):
         self.base_object = 'CUPS'
         self.report_name = 'F1 - CUPS'
         self.reducir_cups = kwargs.get("reducir_cups", False)
+        self.allow_cna = kwargs.get("allow_cna", False)
         mod_all_year = self.connection.GiscedataPolissaModcontractual.search(
             [
                 ("data_inici", "<=", "{}-01-01".format(self.year)),
@@ -252,7 +253,8 @@ class F1(MultiprocessBased):
         :return: None
         """
 
-        o_codi_r1 = 'R1-%s' % self.codi_r1[-3:]
+        # o_codi_r1 = 'R1-%s' % self.codi_r1[-3:]
+        o_codi_r1 = 'R1-001'
         O = self.connection
         ultim_dia_any = '%s-12-31' % self.year
         search_glob = [
@@ -328,7 +330,6 @@ class F1(MultiprocessBased):
                 o_potencia = ''
                 o_cnae = ''
                 o_pot_ads = cups.get('potencia_adscrita', '0,000') or '0,000'
-                o_equip = 'MEC'
                 o_cod_tfa = ''
                 o_estat_contracte = 0
                 # energies consumides
@@ -373,8 +374,10 @@ class F1(MultiprocessBased):
                                 self.cnaes[cnae_id] = o_cnae
                         except:
                             pass
+                    # Si som aqui es perque tenim polissa activa a dia 31/12/18
                     comptador_actiu = get_comptador(
-                        self.connection, polissa['id'], self.year)
+                        self.connection, polissa['id'], self.year
+                    )
                     if comptador_actiu:
                         comptador_actiu = comptador_actiu[0]
                         comptador = O.GiscedataLecturesComptador.read(
@@ -382,19 +385,19 @@ class F1(MultiprocessBased):
                         )
                         if not comptador['cini']:
                             comptador['cini'] = ''
-                        if comptador.get('tg', False):
+
+                        if re.findall(CINI_TG_REGEXP, comptador['cini']):
                             o_equip = 'SMT'
-                        elif re.findall(CINI_TG_REGEXP, comptador['cini']):
+                        elif comptador.get('tg', False):
                             o_equip = 'SMT'
                         else:
                             o_equip = 'MEC'
+                    else:
+                        o_equip = ''
+
                     if polissa['tarifa']:
                         o_cod_tfa = self.get_codi_tarifa(polissa['tarifa'][1])
                 else:
-                    # Si no trobem polissa activa, considerem
-                    # "Contrato no activo (CNA)"
-
-                    o_equip = 'CNA'
                     o_estat_contracte = 1
 
                     search_modcon = [
@@ -413,7 +416,9 @@ class F1(MultiprocessBased):
                             'cnae',
                             'tarifa',
                             'tensio',
-                            'potencia'
+                            'potencia',
+                            'polissa_id',
+                            'data_final'
                         ]
 
                         modcon = O.GiscedataPolissaModcontractual.read(
@@ -438,6 +443,30 @@ class F1(MultiprocessBased):
                         if modcon['potencia']:
                             o_potencia = format_f(
                                 float(modcon['potencia']), decimals=3)
+                        # Si no trobem polissa activa haurem de comprovar
+                        # si permet posar CNA o no
+                        if self.allow_cna:
+                            o_equip = 'CNA'
+                        else:
+                            meter_id = O.GiscedataPolissa.get_comptador_data(
+                                [modcon['polissa_id']], modcon['data_final']
+                            )[modcon['polissa_id']]
+                            if meter_id:
+                                comptador = O.GiscedataLecturesComptador.read(
+                                    meter_id, ['cini', 'tg']
+                                )
+                                if not comptador['cini']:
+                                    comptador['cini'] = ''
+
+                                if re.findall(CINI_TG_REGEXP,
+                                              comptador['cini']):
+                                    o_equip = 'SMT'
+                                elif comptador.get('tg', False):
+                                    o_equip = 'SMT'
+                                else:
+                                    o_equip = 'MEC'
+                            else:
+                                o_equip = ''
                     else:
                         # No existeix modificació contractual per el CUPS
                         o_potencia = cups['potencia_conveni']
@@ -461,6 +490,7 @@ class F1(MultiprocessBased):
                             o_cnae = self.default_o_cnae
                         if self.default_o_cod_tfa:
                             o_cod_tfa = self.default_o_cod_tfa
+                        o_equip = ''
 
                 o_any_incorporacio = self.year
                 res_srid = ['', '']
