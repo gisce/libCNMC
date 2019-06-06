@@ -449,7 +449,7 @@ class F1(MultiprocessBased):
                             o_equip = 'CNA'
                         elif modcon['polissa_id'] and modcon['data_final']:
                             meter_id = O.GiscedataPolissa.get_comptador_data(
-                                [modcon['polissa_id']], modcon['data_final']
+                                [modcon['polissa_id'][0]], modcon['data_final']
                             )
                             if meter_id:
                                 comptador = O.GiscedataLecturesComptador.read(
