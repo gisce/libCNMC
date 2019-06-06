@@ -317,8 +317,6 @@ class F1(MultiprocessBased):
                 o_zona = ''
                 o_potencia_facturada = format_f(
                     cups['cnmc_potencia_facturada'], 3) or ''
-                # if 'et' in cups:
-                #     o_zona = self.get_zona_qualitat(cups['et'])
                 if self.zona_qualitat:
                     o_zona = self.get_zona_qualitat(self.zona_qualitat, cups['et'], cups['id_municipi'])
                 if cups['id_municipi']:
