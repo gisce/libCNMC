@@ -170,7 +170,6 @@ class F1(MultiprocessBased):
         for cups in ret_cups_tmp:
             if set(cups['polisses']).intersection(self.modcons_in_year):
                 ret_cups.append(cups["id"])
-        return [(ret_cups[0])]
         if self.generate_derechos:
             cups_derechos_bt = self.get_derechos(TARIFAS_BT, 2)
             cups_derechos_at = self.get_derechos(TARIFAS_AT, 4)
@@ -232,7 +231,7 @@ class F1(MultiprocessBased):
         if id_municipi:
             zona = conn.ResMunicipi.read(id_municipi[0], ["zona"])
             if zona.get('zona'):
-                zona_desc = zona.get('zona')[1].zona_desc.upper().replace(' ', '')
+                zona_desc = zona.get('zona')[1].upper().replace(' ', '')
                 if zona_desc in CODIS_ZONA:
                     zona_qualitat = CODIS_ZONA[zona_desc]
         return zona_qualitat
