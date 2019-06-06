@@ -305,7 +305,8 @@ class F1(MultiprocessBased):
                     id_escomesa = cups.get("id_escomesa")
                     if id_escomesa:
                         escomesa = O.GiscedataCupsEscomesa.read(id_escomesa[0], ["node_id"])
-                        o_nom_node = escomesa.get("node_id")[1]
+                        if escomesa.get("node_id",False):
+                            o_nom_node = escomesa.get("node_id")[1]
                     elif bloc_escomesa_id:
                         bloc_escomesa = O.GiscegisBlocsEscomeses.read(
                             bloc_escomesa_id[0], ['node', 'vertex']
