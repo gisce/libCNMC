@@ -447,7 +447,7 @@ class F1(MultiprocessBased):
                         # si permet posar CNA o no
                         if self.allow_cna:
                             o_equip = 'CNA'
-                        else:
+                        elif modcon['polissa_id'] and modcon['data_final']:
                             meter_id = O.GiscedataPolissa.get_comptador_data(
                                 [modcon['polissa_id']], modcon['data_final']
                             )
@@ -467,6 +467,8 @@ class F1(MultiprocessBased):
                                     o_equip = 'MEC'
                             else:
                                 o_equip = ''
+                        else:
+                            o_equip = ''
                     else:
                         # No existeix modificació contractual per el CUPS
                         o_potencia = cups['potencia_conveni']
