@@ -33,6 +33,7 @@ class F1(MultiprocessBased):
         self.report_name = 'F1 - CUPS'
         self.reducir_cups = kwargs.get("reducir_cups", False)
         self.allow_cna = kwargs.get("allow_cna", False)
+        self.zona_qualitat = kwargs.get("zona_qualitat", "ct")
         mod_all_year = self.connection.GiscedataPolissaModcontractual.search(
             [
                 ("data_inici", "<=", "{}-01-01".format(self.year)),
@@ -170,7 +171,6 @@ class F1(MultiprocessBased):
         for cups in ret_cups_tmp:
             if set(cups['polisses']).intersection(self.modcons_in_year):
                 ret_cups.append(cups["id"])
-
         if self.generate_derechos:
             cups_derechos_bt = self.get_derechos(TARIFAS_BT, 2)
             cups_derechos_at = self.get_derechos(TARIFAS_AT, 4)
@@ -178,7 +178,17 @@ class F1(MultiprocessBased):
         else:
             return ret_cups
 
-    def get_zona_qualitat(self, codi_ct):
+    def get_zona_qualitat(self, tipus_zona, codi_ct, id_municipi):
+        zona_q = False
+        if tipus_zona == 'ct':
+            if codi_ct:
+                zona_q = self.get_zona_qualitat_ct(codi_ct)
+        elif tipus_zona == 'municipi':
+            if id_municipi:
+                zona_q = self.get_zona_qualitat_municipi(id_municipi)
+        return zona_q
+
+    def get_zona_qualitat_ct(self, codi_ct):
         """
         Returns the quality zone of a given ct
         :param codi_ct: Codi CT
@@ -206,6 +216,25 @@ class F1(MultiprocessBased):
                         if zona_desc in CODIS_ZONA:
                             zona_qualitat = CODIS_ZONA[zona_desc]
                             self.cts[codi_ct] = zona_qualitat
+        return zona_qualitat
+
+    def get_zona_qualitat_municipi(self, id_municipi):
+        """
+        Returns the quality zone of a given municipi
+        :param id_municipi: identificador del municipi
+        :type id_municipi: int
+        :return: Quality zone
+        :rtype: str
+        """
+        conn = self.connection
+        zona_qualitat = ''
+
+        if id_municipi:
+            zona = conn.ResMunicipi.read(id_municipi[0], ["zona"])
+            if zona.get('zona'):
+                zona_desc = zona.get('zona')[1].upper().replace(' ', '')
+                if zona_desc in CODIS_ZONA:
+                    zona_qualitat = CODIS_ZONA[zona_desc]
         return zona_qualitat
 
     def get_tipus_connexio(self, id_escomesa):
@@ -265,6 +294,7 @@ class F1(MultiprocessBased):
             ('data_baixa', '=', False)
         ]
         context_glob = {'date': ultim_dia_any, 'active_test': False}
+        zq = self.zona_qualitat
         while True:
             try:
                 item = self.input_q.get()
@@ -288,11 +318,12 @@ class F1(MultiprocessBased):
                 o_zona = ''
                 o_potencia_facturada = format_f(
                     cups['cnmc_potencia_facturada'], 3) or ''
-                if 'et' in cups:
-                    o_zona = self.get_zona_qualitat(cups['et'])
+                if self.zona_qualitat:
+                    o_zona = self.get_zona_qualitat(self.zona_qualitat, cups['et'], cups['id_municipi'])
                 if cups['id_municipi']:
                     id_mun = cups["id_municipi"][0]
                     o_codi_ine_prov, o_codi_ine_mun = self.get_ine(id_mun)
+                o_nom_node = ''
                 o_tensio = ''
                 o_connexio = ''
                 vertex = False

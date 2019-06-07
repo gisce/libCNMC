@@ -78,6 +78,7 @@ def cir_4_2015_f10at(**kwargs):
 @click.option('--derechos/--no-derechos', default=False)
 @click.option("--reducir-cups/--no-reducir-cups", default=False)
 @click.option("--allow-cna/--no-allow-cna", default=False)
+@click.option("--zona_qualitat",default="ct")
 def cir_4_2015_f1(**kwargs):
     """
     Click entry to generate the F1 of 4/2015
@@ -100,7 +101,8 @@ def cir_4_2015_f1(**kwargs):
         year=kwargs['year'],
         derechos=kwargs["derechos"],
         reducir_cups=kwargs["reducir_cups"],
-        allow_cna=kwargs["allow_cna"]
+        allow_cna=kwargs["allow_cna"],
+        zona_qualitat=kwargs["zona_qualitat"]
     )
     proc.calc()
 
