@@ -433,7 +433,8 @@ class F1(MultiprocessBased):
 
                     search_modcon = [
                         ('id', 'in', cups['polisses']),
-                        ('data_inici', '<=', ultim_dia_any)
+                        ('data_inici', '<=', ultim_dia_any),
+                        ('polissa_id.state', 'in', ['tall', 'activa', 'baixa'])
                     ]
                     modcons = None
                     if len(cups['polisses']):
