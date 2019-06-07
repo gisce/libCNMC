@@ -258,7 +258,7 @@ class F1(MultiprocessBased):
         O = self.connection
         ultim_dia_any = '%s-12-31' % self.year
         search_glob = [
-            ('state', 'not in', ('esborrany', 'validar')),
+            ('state', 'in', ['tall', 'activa', 'baixa']),
             ('data_alta', '<=', ultim_dia_any),
             '|',
             ('data_baixa', '>=', ultim_dia_any),
