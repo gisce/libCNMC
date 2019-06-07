@@ -17,21 +17,24 @@ class F20(MultiprocessBased):
             [
                 ("data_inici", "<=", "{}-01-01".format(self.year)),
                 ("data_final", ">=", "{}-12-31".format(self.year)),
-                ("tarifa.name", 'not ilike', '%RE%')
+                ("tarifa.name", 'not ilike', '%RE%'),
+                ('polissa_id.state', 'in', ['tall', 'activa', 'baixa'])
             ], 0, 0, False, {"active_test": False}
                                 )
         mods_ini = self.connection.GiscedataPolissaModcontractual.search(
             [
                 ("data_inici", ">=", "{}-01-01".format(self.year)),
                 ("data_inici", "<=", "{}-12-31".format(self.year)),
-                ("tarifa.name", 'not ilike', '%RE%')
+                ("tarifa.name", 'not ilike', '%RE%'),
+                ('polissa_id.state', 'in', ['tall', 'activa', 'baixa'])
             ], 0, 0, False, {"active_test": False}
         )
         mods_fi = self.connection.GiscedataPolissaModcontractual.search(
             [
                 ("data_final", ">=", "{}-01-01".format(self.year)),
                 ("data_final", "<=", "{}-12-31".format(self.year)),
-                ("tarifa.name", 'not ilike', '%RE%')
+                ("tarifa.name", 'not ilike', '%RE%'),
+                ('polissa_id.state', 'in', ['tall', 'activa', 'baixa'])
             ], 0, 0, False, {"active_test": False}
         )
 
