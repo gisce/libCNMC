@@ -159,13 +159,7 @@ class F1(MultiprocessBased):
         :rtype: list[int]
         """
         data_ini = '%s-01-01' % (self.year + 1)
-        search_params = [('active', '=', True),
-                         '|',
-                         ('create_date', '<', data_ini),
-                         ('create_date', '=', False)]
-
-        ret_cups_ids = self.connection.GiscedataCupsPs.search(
-            search_params, 0, 0, False, {'active_test': False})
+        ret_cups_ids = self.connection.GiscedataCupsPs.search([])
 
         ret_cups_tmp = self.connection.GiscedataCupsPs.read(
             ret_cups_ids, ["polisses"]
