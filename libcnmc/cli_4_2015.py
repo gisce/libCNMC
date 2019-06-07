@@ -76,7 +76,8 @@ def cir_4_2015_f10at(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('--derechos/--no-derechos', default=False)
-@click.option("--reducir-cups/--no-reducir-cups",default=False)
+@click.option("--reducir-cups/--no-reducir-cups", default=False)
+@click.option("--allow-cna/--no-allow-cna", default=False)
 @click.option("--zona_qualitat",default="ct")
 def cir_4_2015_f1(**kwargs):
     """
@@ -100,8 +101,8 @@ def cir_4_2015_f1(**kwargs):
         year=kwargs['year'],
         derechos=kwargs["derechos"],
         reducir_cups=kwargs["reducir_cups"],
+        allow_cna=kwargs["allow_cna"],
         zona_qualitat=kwargs["zona_qualitat"]
-
     )
     proc.calc()
 
