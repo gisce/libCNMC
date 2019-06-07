@@ -10,6 +10,7 @@ from libcnmc.utils import get_ine, get_comptador, format_f, get_srid,\
     convert_srid
 from libcnmc.core import MultiprocessBased
 from ast import literal_eval
+import logging
 
 
 class F1(MultiprocessBased):
@@ -428,6 +429,12 @@ class F1(MultiprocessBased):
                             o_equip = 'MEC'
                     else:
                         o_equip = ''
+                        self.raven.captureMessage(
+                            "Missing Comptador on Polissa with ID {}".format(
+                                polissa['id']
+                            ),
+                            level=logging.WARNING
+                        )
 
                     if polissa['tarifa']:
                         o_cod_tfa = self.get_codi_tarifa(polissa['tarifa'][1])
@@ -502,8 +509,22 @@ class F1(MultiprocessBased):
                                     o_equip = 'MEC'
                             else:
                                 o_equip = ''
+                                self.raven.captureMessage(
+                                    "Missing Comptador on Polissa with "
+                                    "ID {}".format(
+                                        modcon['polissa_id'][0]
+                                    ),
+                                    level=logging.WARNING
+                                )
                         else:
                             o_equip = ''
+                            self.raven.captureMessage(
+                                "ModCon with ID {} have missing Polissa or "
+                                "Data Final".format(
+                                    modcon_id
+                                ),
+                                level=logging.WARNING
+                            )
                     else:
                         # No existeix modificació contractual per el CUPS
                         o_potencia = cups['potencia_conveni']
