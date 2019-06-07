@@ -64,7 +64,6 @@ class FIA(MultiprocessBased):
             self.compare_filed
         ]
         data_pm_limit= '{0}-01-01' .format(self.year + 1)
-        data_baixa_limit = '{0}-01-01'.format(self.year)
         while True:
             try:
                 item = self.input_q.get()
@@ -73,10 +72,6 @@ class FIA(MultiprocessBased):
                 cll = O.GiscedataCellesCella.read(item, fields_to_read)
 
                 #Comprovar si es tipus fiabilitat
-                if cll['tipus_element']:
-
-                    cllt = O.GiscedataCellesTipusElement.read(
-                        cll['tipus_element'][0], ['name'])
                 if cll['tipus_instalacio_cnmc_id']:
                     id_cll = cll['tipus_instalacio_cnmc_id'][0]
                     codigo_ccuu = O.GiscedataTipusInstallacio.read(
