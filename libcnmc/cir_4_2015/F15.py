@@ -340,7 +340,13 @@ class F15Cel(MultiprocessBased):
                     y = format_f(p25830[1], decimals=3)
                 else:
                     if not cella.get("node_id", False):
-                        o_node, vertex, o_tram = self.get_node_vertex_tram(o_fiabilitat)
+                        if cella.get("tram_id"):
+                            o_node, vertex = self.get_node_vertex(o_fiabilitat)
+                            o_tram = "A{0}".format(o.GiscedataAtTram.read(
+                                    cella['tram_id'][0], ['name']
+                                )['name'])
+                        else:
+                            o_node, vertex, o_tram = self.get_node_vertex_tram(o_fiabilitat)
                     else:
                         if cella.get("tram_id"):
                             o_tram = "A{0}".format(o.GiscedataAtTram.read(
