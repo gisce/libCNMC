@@ -92,8 +92,8 @@ class F16(MultiprocessBased):
 
                 if "node_id" in condensador:
                     o_node = condensador["node_id"][1]
-                    geom = O.GiscegisNondes.read(condensador["node_id"][0], ["geom"])
-                    posicion = wkt.loads(geom).coords[0]
+                    geom = O.GiscegisNodes.read(condensador["node_id"][0], ["geom"])
+                    posicion = wkt.loads(geom["geom"]).coords[0]
                 else:
                     o_node, posicion = self.get_node_vertex(condensador['name'])
 
