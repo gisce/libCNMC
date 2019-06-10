@@ -239,3 +239,25 @@ class F9(MultiprocessBased):
         if not self.file_output:
             self.content = fio.getvalue()
         fio.close()
+
+        if not self.file_output:
+            self.content = fio.getvalue()
+        fio.close()
+        if self.file_modificaciones:
+            fio_mod = open(self.file_modificaciones, 'wb')
+        else:
+            fio_mod = StringIO()
+
+        while True:
+            try:
+                val = self.output_m.get()
+                if val == 'STOP':
+                    break
+                fio_mod.writelines(val + "\n")
+            except:
+                traceback.print_exc()
+                if self.raven:
+                    self.raven.captureException()
+            finally:
+                self.output_m.task_done()
+        fio_mod.close()
