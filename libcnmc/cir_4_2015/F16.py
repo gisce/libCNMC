@@ -4,6 +4,7 @@ import traceback
 
 from libcnmc.utils import get_ine, format_f, convert_srid, get_srid
 from libcnmc.core import MultiprocessBased
+from shapely import wkt
 
 
 class F16(MultiprocessBased):
@@ -77,7 +78,8 @@ class F16(MultiprocessBased):
         o_codi_r1 = 'R1-%s' % self.codi_r1[-3:]
         O = self.connection
         fields_to_read = [
-            'name', 'cini', 'ct_id', 'tensio_id', 'potencia_instalada'
+            'name', 'cini', 'ct_id', 'tensio_id', 'potencia_instalada',
+            "node_id"
         ]
         while True:
             try:
@@ -88,7 +90,13 @@ class F16(MultiprocessBased):
                 o_cini = condensador.get('cini', '')
                 o_potencia = condensador['potencia_instalada']
 
-                o_node, posicion = self.get_node_vertex(condensador['name'])
+                if "node_id" in condensador:
+                    o_node = condensador["node_id"][1]
+                    geom = O.GiscegisNondes.read(condensador["node_id"][0], ["geom"])
+                    posicion = wkt.loads(geom).coords[0]
+                else:
+                    o_node, posicion = self.get_node_vertex(condensador['name'])
+
                 o_node = o_node.replace('*', '')
 
                 ct = self.get_dades_ct(condensador['ct_id'][0])
