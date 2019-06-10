@@ -427,12 +427,13 @@ class F1(MultiprocessBased):
                             o_equip = 'MEC'
                     else:
                         o_equip = ''
-                        self.raven.captureMessage(
-                            "Missing Comptador on Polissa with ID {}".format(
-                                polissa['id']
-                            ),
-                            level=logging.WARNING
-                        )
+                        if self.raven:
+                            self.raven.captureMessage(
+                                "Missing Comptador on Polissa with ID {}".format(
+                                    polissa['id']
+                                ),
+                                level=logging.WARNING
+                            )
 
                     if polissa['tarifa']:
                         o_cod_tfa = self.get_codi_tarifa(polissa['tarifa'][1])
