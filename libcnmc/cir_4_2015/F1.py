@@ -11,6 +11,7 @@ from libcnmc.utils import get_ine, get_comptador, format_f, get_srid,\
 from libcnmc.core import MultiprocessBased
 from ast import literal_eval
 import logging
+from shapely import wkt
 
 
 class F1(MultiprocessBased):
@@ -336,8 +337,11 @@ class F1(MultiprocessBased):
                     id_escomesa = cups.get("id_escomesa")
                     o_nom_node = ''
                     if id_escomesa:
-                        escomesa = O.GiscedataCupsEscomesa.read(id_escomesa[0], ["node_id"])
-                        if escomesa.get("node_id",False):
+                        escomesa = O.GiscedataCupsEscomesa.read(id_escomesa[0], ["node_id", "geom"])
+                        if escomesa.get("geom",False):
+                            geom = wkt.loads(escomesa["geom"]).coords[0]
+                            vertex = {"x":geom[0], "y": geom[1]}
+                        if escomesa.get("node_id", False):
                             o_nom_node = escomesa.get("node_id")[1]
                     if bloc_escomesa_id and not o_nom_node:
                         bloc_escomesa = O.GiscegisBlocsEscomeses.read(
