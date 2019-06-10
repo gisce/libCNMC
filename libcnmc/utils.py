@@ -92,7 +92,7 @@ def fetch_cts_node(connection):
     data_blk = connection.GiscegisBlocsCtat.read(ids_blk, read_fields)
     result_dict = dict.fromkeys(ids_blk)
     for linia in data_blk:
-        result_dict[linia["ct"][0]] = linia["node"][1]
+        result_dict[linia["ct"][0]] = linia.get("node",['','']][1]
     return result_dict
 
 
