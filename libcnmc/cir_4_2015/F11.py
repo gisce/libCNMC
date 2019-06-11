@@ -95,7 +95,7 @@ class F11(MultiprocessBased):
             [("ct_id", "=", ct_id)]
         )
         utilitzades = 0
-        disponibles = len(quadres_bt)
+        disponibles = len(quadres_bt_ids)
 
         for quadre in O.GiscedataBtQuadreElement.read(quadres_bt_ids,["node_id"]):
             if quadre["node_id"]:
@@ -105,7 +105,7 @@ class F11(MultiprocessBased):
                 )
                 if len(edges) > 1:
                     utilitzades += 1
-        if quadres_bt:
+        if quadres_bt_ids:
             return utilitzades, disponibles
 
         sortides = O.GiscegisBlocsFusiblesbt.search(
