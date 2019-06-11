@@ -303,7 +303,7 @@ class F11(MultiprocessBased):
                 o_pic_activa = format_f(
                     self.get_saturacio(ct['id']), decimals=3)
                 o_pic_reactiva = ''
-                o_s_utilitades, o_s_disponibles = self.get_sortides_ct(ct['name'], item.id)
+                o_s_utilitades, o_s_disponibles = self.get_sortides_ct(ct['name'], item)
                 o_propietari = int(ct['propietari'])
                 o_num_max_maquines = ct['numero_maxim_maquines']
                 o_incorporacio = self.year
