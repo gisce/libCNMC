@@ -2,7 +2,7 @@
 from datetime import datetime
 import traceback
 
-from libcnmc.utils import format_f
+from libcnmc.utils import format_f, get_total_elements
 from libcnmc.core import MultiprocessBased
 
 
@@ -30,8 +30,11 @@ class F12(MultiprocessBased):
                           '&', ('active', '=', False),
                                ('data_baixa', '!=', False),
                           ('active', '=', True)]
-        return self.connection.GiscedataTransformadorTrafo.search(
+
+        ids = self.connection.GiscedataTransformadorTrafo.search(
             search_params, 0, 0, False, {'active_test': False})
+
+        return get_total_elements(self.connection, "giscedata.transformador.trafo", ids)
 
     def get_node(self, trafo_id):
         """

@@ -2,7 +2,7 @@
 from datetime import datetime
 import traceback
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import TARIFAS_BT, TARIFAS_AT
+from libcnmc.utils import TARIFAS_BT, TARIFAS_AT, get_total_elements
 
 
 class F20(MultiprocessBased):
@@ -110,9 +110,9 @@ class F20(MultiprocessBased):
         if self.generate_derechos:
             cups_derechos_bt = self.get_derechos(TARIFAS_BT, 2)
             cups_derechos_at = self.get_derechos(TARIFAS_AT, 4)
-            return list(set(ret_cups + cups_derechos_at + cups_derechos_bt))
-        else:
-            return ret_cups
+            ids = list(set(ret_cups + cups_derechos_at + cups_derechos_bt))
+
+        return get_total_elements(self.connection, "giscedata.cups.ps", ids)
 
     def get_cini(self, et):
         o = self.connection

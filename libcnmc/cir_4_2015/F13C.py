@@ -3,7 +3,7 @@ from datetime import datetime
 from multiprocessing import Manager
 import re
 import traceback
-
+from libcnmc.utils import get_total_elements
 from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP
 from libcnmc.utils import get_ine, get_comptador
 from libcnmc.core import MultiprocessBased
@@ -40,8 +40,10 @@ class F13c(MultiprocessBased):
                           '&', ('active', '=', False),
                                ('data_baixa', '!=', False),
                           ('active', '=', True)]
-        return self.connection.GiscedataCtsSubestacionsPosicio.search(
+        ids = self.connection.GiscedataCtsSubestacionsPosicio.search(
             search_params, 0, 0, False, {'active_test': False})
+
+        return get_total_elements(self.connection, "giscedata.cts.subestacions.posicio", ids)
 
     def get_tensio(self, sub):
         o = self.connection

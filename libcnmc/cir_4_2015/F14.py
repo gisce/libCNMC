@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import traceback
-from libcnmc.utils import format_f, get_norm_tension
+from libcnmc.utils import format_f, get_norm_tension, get_total_elements
 from libcnmc.core import MultiprocessBased
 
 
@@ -17,9 +17,10 @@ class F14(MultiprocessBased):
             ('reductor', '=', True),
             ('id_estat.cnmc_inventari', '=', True)
         ]
-        return self.connection.GiscedataTransformadorTrafo.search(
+        ids = self.connection.GiscedataTransformadorTrafo.search(
             search_params
         )
+        return get_total_elements(self.connection, "giscedata.transformador.trafo", ids)
 
     def get_estat(self, estat_id):
         o = self.connection

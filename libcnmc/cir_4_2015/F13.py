@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import traceback
-from libcnmc.utils import format_f, convert_srid, get_srid
+from libcnmc.utils import format_f, convert_srid, get_srid, get_total_elements
 from libcnmc.core import MultiprocessBased
 
 
@@ -27,8 +27,10 @@ class F13(MultiprocessBased):
                           '&', ('ct_id.active', '=', False),
                                ('ct_id.data_baixa', '!=', False),
                           ('ct_id.active', '=', True)]
-        return self.connection.GiscedataCtsSubestacions.search(
+        ids = self.connection.GiscedataCtsSubestacions.search(
             search_params, 0, 0, False, {'active_test': False})
+
+        return get_total_elements(self.connection, "giscedata.cts.subestacions", ids)
 
     def get_ines(self, ids):
         o = self.connection

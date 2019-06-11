@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import traceback
-from libcnmc.utils import format_f, tallar_text
+from libcnmc.utils import format_f, tallar_text, get_total_elements
 from libcnmc.core import MultiprocessBased
 
 
@@ -29,7 +29,9 @@ class F10AT(MultiprocessBased):
         search_params = [('name', '=', '1')]
         fict_line_id = self.connection.GiscedataAtLinia.search(
             search_params, 0, 0, False, {'active_test': False})
-        return lines_id + fict_line_id
+
+        ids = lines_id + fict_line_id
+        return get_total_elements(self.connection, "giscedata.at.linia", ids)
 
     def get_provincia(self, id_prov):
         o = self.connection

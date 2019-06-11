@@ -2,7 +2,7 @@
 from datetime import datetime
 import traceback
 
-from libcnmc.utils import get_ine, format_f, convert_srid, get_srid
+from libcnmc.utils import get_ine, format_f, convert_srid, get_srid, get_total_elements
 from libcnmc.core import MultiprocessBased
 from libcnmc.cir_4_2015.F1 import TARIFAS_AT, TARIFAS_BT
 from shapely import wkt
@@ -53,8 +53,11 @@ class F11(MultiprocessBased):
                           '&', ('active', '=', False),
                                ('data_baixa', '!=', False),
                           ('active', '=', True)]
-        return self.connection.GiscedataCts.search(
+
+        ids = self.connection.GiscedataCts.search(
             search_params, 0, 0, False, {'active_test': False})
+
+        return get_total_elements(self.connection, "giscedata.cts", ids)
 
     def get_node_vertex(self, ct_id):
         O = self.connection

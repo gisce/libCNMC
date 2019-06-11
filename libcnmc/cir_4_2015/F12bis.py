@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import traceback
+from libcnmc.utils import get_total_elements
 from libcnmc.core import MultiprocessBased
 
 
@@ -53,8 +54,10 @@ class F12bis(MultiprocessBased):
                           '&', ('active', '=', False),
                                ('data_baixa', '!=', False),
                           ('active', '=', True)]
-        return self.connection.GiscedataCellesCella.search(
+        ids = self.connection.GiscedataCellesCella.search(
             search_params, 0, 0, False, {'active_test': False})
+
+        return get_total_elements(self.connection, "giscedata.celles.cella", ids)
 
     def obtenir_ct(self, ct):
         i = 0

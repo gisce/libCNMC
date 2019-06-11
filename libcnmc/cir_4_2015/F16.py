@@ -2,7 +2,7 @@
 from datetime import datetime
 import traceback
 
-from libcnmc.utils import get_ine, format_f, convert_srid, get_srid
+from libcnmc.utils import get_ine, format_f, convert_srid, get_srid, get_total_elements
 from libcnmc.core import MultiprocessBased
 
 
@@ -26,9 +26,11 @@ class F16(MultiprocessBased):
                           '&', ('active', '=', False),
                                ('data_baixa', '!=', False),
                           ('active', '=', True)]
-        return self.connection.GiscedataCondensadors.search(
+        ids = self.connection.GiscedataCondensadors.search(
             search_params, 0, 0, False, {'active_test': False}
         )
+        return get_total_elements(self.connection, "giscedata.condensadors", ids)
+
 
     def get_node_vertex(self, cond_name):
         """

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import traceback
-from libcnmc.utils import format_f, tallar_text
+from libcnmc.utils import format_f, tallar_text, get_total_elements
 from libcnmc.core import MultiprocessBased
 
 
@@ -35,8 +35,11 @@ class F10BT(MultiprocessBased):
                           '&', ('active', '=', False),
                                ('data_baixa', '!=', False),
                           ('active', '=', True)]
-        return self.connection.GiscedataBtElement.search(
+
+        ids = self.connection.GiscedataBtElement.search(
             search_params, 0, 0, False, {'active_test': False})
+
+        return get_total_elements(self.connection, "giscedata.bt.element", ids)
 
     def get_tipus_cable(self, id_cable, id_tipus_linia):
         o = self.connection

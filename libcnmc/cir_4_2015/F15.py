@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import traceback
-from libcnmc.utils import format_f, convert_srid, get_srid, fetch_cts_node
+from libcnmc.utils import format_f, convert_srid, get_srid, fetch_cts_node, get_total_elements
 from libcnmc.utils import fetch_tensions_norm, fetch_mun_ine, fetch_prov_ine
 from libcnmc.core import MultiprocessBased
 from shapely import wkt
@@ -41,7 +41,7 @@ class F15Pos(MultiprocessBased):
         search_params = [("interruptor", "=", "3")]
         ids = pos_model.search(search_params)
 
-        return ids
+        return get_total_elements(self.connection, "giscedata.cts.subestacions.posicio", ids)
 
     def consumer(self):
         """

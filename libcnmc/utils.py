@@ -48,6 +48,26 @@ TARIFAS_BT = [
 ]
 
 
+def get_total_elements(connection, model, ids):
+    """
+    Returns the list of force, excluded and regular ids of elements
+    :param connection:
+    :param model: model of elements
+    :type: str
+    :param ids: list of regular ids
+    :type: list
+    :return: list of excluded, forced and regular ids
+    :rtype: list
+    """
+    forced_ids = get_forced_elements(connection, model)
+
+    ids = ids + forced_ids["include"]
+    ids_excluded = forced_ids["exclude"]
+    ids = list(set(ids) - set(ids_excluded))
+
+    return list(set(ids))
+
+
 def get_forced_elements(connection, model):
     """
     Returns the force include and force exclude ids of elements

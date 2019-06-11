@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import traceback
-from libcnmc.utils import format_f
+from libcnmc.utils import format_f, get_total_elements
 from libcnmc.core import MultiprocessBased
 
 
@@ -15,8 +15,10 @@ class F13bis(MultiprocessBased):
     def get_sequence(self):
         # Revisem que estigui actiu
         search_params = [('active', '!=', False)]
-        return self.connection.GiscedataParcs.search(
+        ids = self.connection.GiscedataParcs.search(
             search_params, 0, 0, False, {'active_test': False})
+
+        return get_total_elements(self.connection, "giscedata.parcs", ids)
 
     def get_subestacio(self, sub_id):
         """

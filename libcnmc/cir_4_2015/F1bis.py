@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 import traceback
 
-from libcnmc.utils import get_comptador, format_f, TARIFAS_AT, TARIFAS_BT
+from libcnmc.utils import get_comptador, format_f, TARIFAS_AT, TARIFAS_BT, get_total_elements
 from libcnmc.core import MultiprocessBased
 
 
@@ -118,9 +118,9 @@ class F1bis(MultiprocessBased):
         if self.generate_derechos:
             cups_derechos_bt = self.get_derechos(TARIFAS_BT, 2)
             cups_derechos_at = self.get_derechos(TARIFAS_AT, 4)
-            return list(set(ret_cups + cups_derechos_at + cups_derechos_bt))
-        else:
-            return ret_cups
+            ids = list(set(ret_cups + cups_derechos_at + cups_derechos_bt))
+
+        return get_total_elements(self.connection, "giscedata.cups.ps", ids)
 
     def get_comptador(self, polissa_id):
         o = self.connection
