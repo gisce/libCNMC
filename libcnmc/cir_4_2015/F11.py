@@ -99,7 +99,7 @@ class F11(MultiprocessBased):
 
         for quadre in O.GiscedataBtQuadreElement.read(quadres_bt_ids,["node_id"]):
             if quadre["node_id"]:
-                node = quadre['node'][0]
+                node = quadre['node_id'][0]
                 edges = O.GiscegisEdge.search(
                     ['|', ('start_node', '=', node), ('end_node', '=', node)]
                 )
