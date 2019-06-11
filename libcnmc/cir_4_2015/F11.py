@@ -77,14 +77,42 @@ class F11(MultiprocessBased):
         muni = O.ResMunicipi.read(municipi_id, ['ine', 'dc'])
         return get_ine(O, muni['ine'])
 
-    def get_sortides_ct(self, ct_name):
+    def get_sortides_ct(self, ct_name,ct_id):
+        """
+        Returns the used sortides
+
+        :param ct_name: Name of the CT
+        :type ct_name: str
+        :param ct_id: Id of the CT
+        :type ct_id: int
+
+        :return: Number of outputs and used outputs
+        :rytpe: tuple(int,int)
+        """
         O = self.connection
         search = '%s-' % ct_name
+        quadres_bt_ids = O.GiscedataBtQuadreElement.search(
+            [("ct_id", "=", ct_id)]
+        )
+        utilitzades = 0
+        disponibles = len(quadres_bt_ids)
+
+        for quadre in O.GiscedataBtQuadreElement.read(quadres_bt_ids,["node_id"]):
+            if quadre["node_id"]:
+                node = quadre['node_id'][0]
+                edges = O.GiscegisEdge.search(
+                    ['|', ('start_node', '=', node), ('end_node', '=', node)]
+                )
+                if len(edges) > 1:
+                    utilitzades += 1
+        if quadres_bt_ids:
+            return utilitzades, disponibles
+
         sortides = O.GiscegisBlocsFusiblesbt.search(
             [('codi', 'ilike', search)]
         )
         disponibles = len(sortides)
-        utilitzades = 0
+
         for sortida in O.GiscegisBlocsFusiblesbt.read(sortides, ['node']):
             if sortida['node']:
                 node = sortida['node'][0]
@@ -193,7 +221,7 @@ class F11(MultiprocessBased):
 
     def get_cups(self, ct_name):
         """
-        Get the CUPS using the same search criteria used on the F1 to 
+        Get the CUPS using the same search criteria used on the F1 to
         :param ct_name: Name of the CT to retrieve the cups IDS
         :type ct_name: str
         :return: The IDS of the cups matching with the search criteria
@@ -275,9 +303,7 @@ class F11(MultiprocessBased):
                 o_pic_activa = format_f(
                     self.get_saturacio(ct['id']), decimals=3)
                 o_pic_reactiva = ''
-                o_s_utilitades, o_s_disponibles = self.get_sortides_ct(
-                    ct['name']
-                )
+                o_s_utilitades, o_s_disponibles = self.get_sortides_ct(ct['name'], item)
                 o_propietari = int(ct['propietari'])
                 o_num_max_maquines = ct['numero_maxim_maquines']
                 o_incorporacio = self.year
