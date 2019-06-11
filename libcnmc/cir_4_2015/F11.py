@@ -91,13 +91,13 @@ class F11(MultiprocessBased):
         """
         O = self.connection
         search = '%s-' % ct_name
-        quadres_bt = O.GiscedataBtQuadreElement.search(
+        quadres_bt_ids = O.GiscedataBtQuadreElement.search(
             [("ct_id", "=", ct_id)]
         )
         utilitzades = 0
         disponibles = len(quadres_bt)
 
-        for quadre in quadres_bt:
+        for quadre in O.GiscedataBtQuadreElement.read(quadres_bt_ids,["node_id"]):
             if quadre["node_id"]:
                 node = quadre['node'][0]
                 edges = O.GiscegisEdge.search(
