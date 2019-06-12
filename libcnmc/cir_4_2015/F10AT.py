@@ -79,7 +79,6 @@ class F10AT(MultiprocessBased):
                 ids = o.GiscedataAtTram.search(
                     search_params, 0, 0, False, {'active_test': False})
 
-                # ids = get_total_elements(self.connection, "giscedata.at.tram", ids)
                 ids = get_total_elements_linia(self.connection, "giscedata.at.tram", ids)
 
                 for at in o.GiscedataAtTram.read(ids, fields_to_read):
