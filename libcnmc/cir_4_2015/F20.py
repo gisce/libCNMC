@@ -110,9 +110,9 @@ class F20(MultiprocessBased):
         if self.generate_derechos:
             cups_derechos_bt = self.get_derechos(TARIFAS_BT, 2)
             cups_derechos_at = self.get_derechos(TARIFAS_AT, 4)
-            ids = list(set(ret_cups + cups_derechos_at + cups_derechos_bt))
+            ret_cups = list(set(ret_cups + cups_derechos_at + cups_derechos_bt))
 
-        return get_total_elements(self.connection, "giscedata.cups.ps", ids)
+        return get_total_elements(self.connection, "giscedata.cups.ps", ret_cups)
 
     def get_cini(self, et):
         o = self.connection

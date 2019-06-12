@@ -68,6 +68,56 @@ def get_total_elements(connection, model, ids):
     return list(set(ids))
 
 
+def get_total_elements_linia(connection, model, ids):
+    """
+        Returns the force include and force exclude ids of elements
+        :param connection:
+        :param model:
+
+        :return:Included and excluded elements
+        :rtype: dict(str,list)
+        """
+    c = connection
+    try:
+        mod_obj = getattr(c, c.normalize_model_name(model))
+    except Exception:
+        mod_obj = c.model(model)
+
+    include_search_params = [
+        ("criteri_regulatori", "=", "incloure"),
+        ("id", "in", ids)
+    ]
+    include_ids = mod_obj.search(
+        include_search_params, False, False, False, {'active_test': False}
+    )
+
+    include_search_params = [
+        ("criteri_regulatori", "=", "excloure"),
+        ("id", "in", ids)
+    ]
+    exclude_ids = mod_obj.search(
+        include_search_params, False, False, False, {'active_test': False}
+    )
+
+    forced_ids = {
+        "include": include_ids,
+        "exclude": exclude_ids
+    }
+
+    ids = ids + forced_ids["include"]
+    ids_excluded = forced_ids["exclude"]
+    if len(forced_ids["include"]) > 0:
+        print "included: "
+        print forced_ids["include"]
+    if len(forced_ids["exclude"]) > 0:
+        print "exclude: "
+        print forced_ids["exclude"]
+
+    ids = list(set(ids) - set(ids_excluded))
+
+    return list(set(ids))
+
+
 def get_forced_elements(connection, model):
     """
     Returns the force include and force exclude ids of elements

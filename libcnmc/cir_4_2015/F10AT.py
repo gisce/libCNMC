@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import traceback
-from libcnmc.utils import format_f, tallar_text, get_total_elements
+from libcnmc.utils import format_f, tallar_text, get_total_elements_linia
 from libcnmc.core import MultiprocessBased
 
 
@@ -31,7 +31,7 @@ class F10AT(MultiprocessBased):
             search_params, 0, 0, False, {'active_test': False})
 
         ids = lines_id + fict_line_id
-        return get_total_elements(self.connection, "giscedata.at.linia", ids)
+        return ids
 
     def get_provincia(self, id_prov):
         o = self.connection
@@ -78,6 +78,10 @@ class F10AT(MultiprocessBased):
                 search_params += static_search_params
                 ids = o.GiscedataAtTram.search(
                     search_params, 0, 0, False, {'active_test': False})
+
+                # ids = get_total_elements(self.connection, "giscedata.at.tram", ids)
+                ids = get_total_elements_linia(self.connection, "giscedata.at.tram", ids)
+
                 for at in o.GiscedataAtTram.read(ids, fields_to_read):
                     # Coeficient per ajustar longituds de trams
                     coeficient = at['coeficient'] or 1.0
