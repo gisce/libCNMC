@@ -281,8 +281,7 @@ class F1(MultiprocessBased):
         :return: None
         """
 
-        # o_codi_r1 = 'R1-%s' % self.codi_r1[-3:]
-        o_codi_r1 = 'R1-001'
+        o_codi_r1 = 'R1-%s' % self.codi_r1[-3:]
         O = self.connection
         ultim_dia_any = '%s-12-31' % self.year
         search_glob = [
