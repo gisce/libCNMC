@@ -91,23 +91,27 @@ class F11(MultiprocessBased):
         """
         O = self.connection
         search = '%s-' % ct_name
-        quadres_bt_ids = O.GiscedataBtQuadreElement.search(
-            [("ct_id", "=", ct_id)]
-        )
         utilitzades = 0
-        disponibles = len(quadres_bt_ids)
 
-        for quadre in O.GiscedataBtQuadreElement.read(quadres_bt_ids,["node_id"]):
-            if quadre["node_id"]:
-                node = quadre['node_id'][0]
-                edges = O.GiscegisEdge.search(
-                    ['|', ('start_node', '=', node), ('end_node', '=', node)]
-                )
-                if len(edges) > 1:
-                    utilitzades += 1
-        if quadres_bt_ids:
-            return utilitzades, disponibles
+        try:
+            quadres_bt_ids = O.GiscedataBtQuadreElement.search(
+                [("ct_id", "=", ct_id)]
+            )
 
+            disponibles = len(quadres_bt_ids)
+
+            for quadre in O.GiscedataBtQuadreElement.read(quadres_bt_ids,["node_id"]):
+                if quadre["node_id"]:
+                    node = quadre['node_id'][0]
+                    edges = O.GiscegisEdge.search(
+                        ['|', ('start_node', '=', node), ('end_node', '=', node)]
+                    )
+                    if len(edges) > 1:
+                        utilitzades += 1
+            if quadres_bt_ids:
+                return utilitzades, disponibles
+        except Exception:
+            pass
         sortides = O.GiscegisBlocsFusiblesbt.search(
             [('codi', 'ilike', search)]
         )
