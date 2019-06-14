@@ -110,7 +110,7 @@ class F11(MultiprocessBased):
                         utilitzades += 1
             if quadres_bt_ids:
                 return utilitzades, disponibles
-        except Exception:
+        except AttributeError:
             pass
         sortides = O.GiscegisBlocsFusiblesbt.search(
             [('codi', 'ilike', search)]
