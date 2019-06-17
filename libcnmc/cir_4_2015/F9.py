@@ -137,13 +137,16 @@ class F9(MultiprocessBased):
         :param geom: Geometry of the Line on WKT: 'LINESTRING(X1 Y2,...XnYn)'
         :type geom: str
         :return: The Points that compose the Geometry of the Line
-        :rtype list of dict[str,str]
+        :rtype list of dict[str,str] or []
         """
 
-        points = [
-            {'x': x.split(' ')[0], 'y': x.split(' ')[1]}
-            for x in geom[11:-1].split(',')
-        ]
+        if geom:
+            points = [
+                {'x': x.split(' ')[0], 'y': x.split(' ')[1]}
+                for x in geom[11:-1].split(',')
+            ]
+        else:
+            points = []
 
         return points
 
