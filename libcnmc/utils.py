@@ -317,19 +317,16 @@ def convert_srid(srid_source, point):
     return point
 
 
-def get_srid(connection):
+def get_srid(c):
     """
     Returns the SRID from the configuration
 
-    :param connection: OpenERP connection
+    :param c: OpenERP connection
     :return: SRID
     :rtype: str
     """
 
-    giscegis_srid_id = connection.ResConfig.search(
-                    [('name', '=', 'giscegis_srid')])
-    giscegis_srid = connection.ResConfig.read(giscegis_srid_id)[0]['value']
-    return giscegis_srid
+    return str(c.GiscegisBaseGeom.get_srid())
 
 
 def merge_procs(procs, **kwargs):
