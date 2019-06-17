@@ -3,6 +3,7 @@ from datetime import datetime
 import traceback
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import get_srid, convert_srid, format_f
+
 try:
     from cStringIO import StringIO
 except:
@@ -140,11 +141,7 @@ class F9(MultiprocessBased):
         o = self.connection
         t = ''
         for line in data:
-            res_srid = convert_srid(
-                self.codi_r1,
-                get_srid(o),
-                [line['x'], line['y']]
-            )
+            res_srid = convert_srid(get_srid(o), [line['x'], line['y']])
             t += '{0};{1};{2}\n'.format(
                 format_f(res_srid[0], decimals=6),
                 format_f(res_srid[1], decimals=6),
@@ -161,11 +158,7 @@ class F9(MultiprocessBased):
         o = self.connection
         t = ''
         for line in data:
-            res_srid = convert_srid(
-                self.codi_r1,
-                get_srid(o),
-                [line['x'], line['y']]
-            )
+            res_srid = convert_srid(get_srid(o), [line['x'], line['y']])
             t += 'R1-{0};t_name;{1};{2};{3};1\n'.format(
                 self.codi_r1,
                 format_f(res_srid[0], decimals=6),
