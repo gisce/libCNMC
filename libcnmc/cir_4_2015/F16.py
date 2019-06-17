@@ -114,8 +114,7 @@ class F16(MultiprocessBased):
                 z = ''
                 res_srid = ['', '']
                 if posicion:
-                    res_srid = convert_srid(
-                        self.codi_r1, get_srid(O), posicion)
+                    res_srid = convert_srid(get_srid(O), posicion)
                 self.output_q.put([
                     o_node,                             # NUDO
                     o_cond,                             # CONDENSADOR

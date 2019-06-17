@@ -89,8 +89,7 @@ class F13(MultiprocessBased):
                 o_any = self.year
                 res_srid = ['', '']
                 if vertex:
-                    res_srid = convert_srid(
-                        self.codi_r1, get_srid(o), vertex)
+                    res_srid = convert_srid(get_srid(o), vertex)
                 self.output_q.put([
                     o_subestacio,                       # SUBESTACION
                     o_cini,                             # CINI

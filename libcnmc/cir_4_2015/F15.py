@@ -69,7 +69,7 @@ class F15Pos(MultiprocessBased):
                 )
 
                 point = [sub["x"], sub["y"]]
-                point_25830 = convert_srid(self.codi_r1, self.srid, point)
+                point_25830 = convert_srid(self.srid, point)
 
                 if "node_id" in sub:
                     nudo = sub["node_id"]
@@ -335,7 +335,7 @@ class F15Cel(MultiprocessBased):
                     if "node_id" not in cella:
                         o_node = self.get_node_ct(element_id)
                     point = (ct_x_y["x"], ct_x_y["y"])
-                    p25830 = convert_srid(self.codi_r1, get_srid(o), point)
+                    p25830 = convert_srid(get_srid(o), point)
                     x = format_f(p25830[0], decimals=3)
                     y = format_f(p25830[1], decimals=3)
                 else:
@@ -367,8 +367,7 @@ class F15Cel(MultiprocessBased):
                 o_any = self.year
                 res_srid = ['', '']
                 if vertex:
-                    res_srid = convert_srid(
-                        self.codi_r1, get_srid(o), vertex)
+                    res_srid = convert_srid(get_srid(o), vertex)
                     x = format_f(res_srid[0], decimals=3)
                     y = format_f(res_srid[1], decimals=3)
                 self.output_q.put([

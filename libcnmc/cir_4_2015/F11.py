@@ -314,8 +314,7 @@ class F11(MultiprocessBased):
                 z = ''
                 res_srid = ['', '']
                 if vertex:
-                    res_srid = convert_srid(
-                        self.codi_r1, get_srid(O), vertex)
+                    res_srid = convert_srid(get_srid(O), vertex)
                 self.output_q.put([
                     o_node,                             # NUDO ALTA
                     o_ct,                               # CT
