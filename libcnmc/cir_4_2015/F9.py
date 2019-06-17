@@ -131,6 +131,22 @@ class F9(MultiprocessBased):
                          'y': punt['y']})
         return data
 
+    def get_geom_alt(self, geom):
+        """
+        Returns the Points that compose the Geometry of the Line
+        :param geom: Geometry of the Line on WKT: 'LINESTRING(X1 Y2,...XnYn)'
+        :type geom: str
+        :return: The Points that compose the Geometry of the Line
+        :rtype list of dict[str,str]
+        """
+
+        points = [
+            {'x': x.split(' ')[0], 'y': x.split(' ')[1]}
+            for x in geom[11:-1].split(',')
+        ]
+
+        return points
+
     def conv_text(self, data):
         """
         Converts the projection of a data
@@ -181,8 +197,12 @@ class F9(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
                 if item[1] == 'at':
-                    at = o.GiscedataAtTram.read(item[0], ['name'])
-                    data = self.get_geom(at['name'], 'at')
+                    if 'geom' in o.GiscedataAtTram.fields():
+                        at = o.GiscedataAtTram.read(item[0], ['geom', 'name'])
+                        data = self.get_geom_alt(at['geom'])
+                    else:
+                        at = o.GiscedataAtTram.read(item[0], ['name'])
+                        data = self.get_geom(at['name'], 'at')
                     if self.alternative:
                         data = self.conv_text_alt(data)
                         linia = data.replace('t_name', 'A' + str(at['name']))
@@ -190,8 +210,14 @@ class F9(MultiprocessBased):
                         data = self.conv_text(data)
                         linia = 'A{0}\n{1}\nEND'.format(at['name'], data)
                 else:
-                    bt = o.GiscedataBtElement.read(item[0], ['name'])
-                    data = self.get_geom(bt['name'], 'bt')
+                    if 'geom' in o.GiscedataBtElement.fields():
+                        bt = o.GiscedataBtElement.read(
+                            item[0], ['geom', 'name']
+                        )
+                        data = self.get_geom_alt(bt['geom'])
+                    else:
+                        bt = o.GiscedataBtElement.read(item[0], ['name'])
+                        data = self.get_geom(bt['name'], 'bt')
                     if self.alternative:
                         data = self.conv_text_alt(data)
                         linia = data.replace('t_name', 'B' + str(bt['name']))
