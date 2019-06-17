@@ -197,7 +197,7 @@ class F9(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
                 if item[1] == 'at':
-                    if 'geom' in o.GiscedataAtTram.fields():
+                    if 'geom' in o.GiscedataAtTram.fields_get().keys():
                         at = o.GiscedataAtTram.read(item[0], ['geom', 'name'])
                         data = self.get_geom_alt(at['geom'])
                     else:
@@ -210,7 +210,7 @@ class F9(MultiprocessBased):
                         data = self.conv_text(data)
                         linia = 'A{0}\n{1}\nEND'.format(at['name'], data)
                 else:
-                    if 'geom' in o.GiscedataBtElement.fields():
+                    if 'geom' in o.GiscedataBtElement.fields_get().keys():
                         bt = o.GiscedataBtElement.read(
                             item[0], ['geom', 'name']
                         )
