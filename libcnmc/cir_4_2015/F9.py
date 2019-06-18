@@ -2,7 +2,7 @@
 from datetime import datetime
 import traceback
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import get_srid, convert_srid, format_f
+from libcnmc.utils import get_srid, convert_srid, format_f, parse_geom
 
 try:
     from cStringIO import StringIO
@@ -131,25 +131,6 @@ class F9(MultiprocessBased):
                          'y': punt['y']})
         return data
 
-    def get_geom_alt(self, geom):
-        """
-        Returns the Points that compose the Geometry of the Line
-        :param geom: Geometry of the Line on WKT: 'LINESTRING(X1 Y2,...XnYn)'
-        :type geom: str
-        :return: The Points that compose the Geometry of the Line
-        :rtype list of dict[str,str] or []
-        """
-
-        if geom:
-            points = [
-                {'x': x.split(' ')[0], 'y': x.split(' ')[1]}
-                for x in geom[11:-1].split(',')
-            ]
-        else:
-            points = []
-
-        return points
-
     def conv_text(self, data):
         """
         Converts the projection of a data
@@ -202,7 +183,7 @@ class F9(MultiprocessBased):
                 if item[1] == 'at':
                     if 'geom' in o.GiscedataAtTram.fields_get().keys():
                         at = o.GiscedataAtTram.read(item[0], ['geom', 'name'])
-                        data = self.get_geom_alt(at['geom'])
+                        data = parse_geom(at['geom'])
                     else:
                         at = o.GiscedataAtTram.read(item[0], ['name'])
                         data = self.get_geom(at['name'], 'at')
@@ -217,7 +198,7 @@ class F9(MultiprocessBased):
                         bt = o.GiscedataBtElement.read(
                             item[0], ['geom', 'name']
                         )
-                        data = self.get_geom_alt(bt['geom'])
+                        data = parse_geom(bt['geom'])
                     else:
                         bt = o.GiscedataBtElement.read(item[0], ['name'])
                         data = self.get_geom(bt['name'], 'bt')
