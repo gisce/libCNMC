@@ -2,7 +2,8 @@
 from datetime import datetime
 import traceback
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import get_srid, convert_srid, format_f
+from libcnmc.utils import get_srid, convert_srid, format_f, parse_geom
+
 try:
     from cStringIO import StringIO
 except:
@@ -140,11 +141,7 @@ class F9(MultiprocessBased):
         o = self.connection
         t = ''
         for line in data:
-            res_srid = convert_srid(
-                self.codi_r1,
-                get_srid(o),
-                [line['x'], line['y']]
-            )
+            res_srid = convert_srid(get_srid(o), [line['x'], line['y']])
             t += '{0};{1};{2}\n'.format(
                 format_f(res_srid[0], decimals=6),
                 format_f(res_srid[1], decimals=6),
@@ -161,11 +158,7 @@ class F9(MultiprocessBased):
         o = self.connection
         t = ''
         for line in data:
-            res_srid = convert_srid(
-                self.codi_r1,
-                get_srid(o),
-                [line['x'], line['y']]
-            )
+            res_srid = convert_srid(get_srid(o), [line['x'], line['y']])
             t += 'R1-{0};t_name;{1};{2};{3};1\n'.format(
                 self.codi_r1,
                 format_f(res_srid[0], decimals=6),
@@ -188,8 +181,12 @@ class F9(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
                 if item[1] == 'at':
-                    at = o.GiscedataAtTram.read(item[0], ['name'])
-                    data = self.get_geom(at['name'], 'at')
+                    if 'geom' in o.GiscedataAtTram.fields_get().keys():
+                        at = o.GiscedataAtTram.read(item[0], ['geom', 'name'])
+                        data = parse_geom(at['geom'])
+                    else:
+                        at = o.GiscedataAtTram.read(item[0], ['name'])
+                        data = self.get_geom(at['name'], 'at')
                     if self.alternative:
                         data = self.conv_text_alt(data)
                         linia = data.replace('t_name', 'A' + str(at['name']))
@@ -197,8 +194,14 @@ class F9(MultiprocessBased):
                         data = self.conv_text(data)
                         linia = 'A{0}\n{1}\nEND'.format(at['name'], data)
                 else:
-                    bt = o.GiscedataBtElement.read(item[0], ['name'])
-                    data = self.get_geom(bt['name'], 'bt')
+                    if 'geom' in o.GiscedataBtElement.fields_get().keys():
+                        bt = o.GiscedataBtElement.read(
+                            item[0], ['geom', 'name']
+                        )
+                        data = parse_geom(bt['geom'])
+                    else:
+                        bt = o.GiscedataBtElement.read(item[0], ['name'])
+                        data = self.get_geom(bt['name'], 'bt')
                     if self.alternative:
                         data = self.conv_text_alt(data)
                         linia = data.replace('t_name', 'B' + str(bt['name']))

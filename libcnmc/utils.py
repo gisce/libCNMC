@@ -5,6 +5,7 @@ import tempfile
 
 from pyproj import Proj
 from pyproj import transform
+from shapely import wkt
 
 N_PROC = int(os.getenv('N_PROC', multiprocessing.cpu_count() + 1))
 
@@ -300,44 +301,33 @@ def format_f(num, decimals=2):
     return num
 
 
-def convert_srid(codi, srid_source, point):
+def convert_srid(srid_source, point):
     """
     Converts the projection of the point from srid_source to 25830
-
-    :param codi: Company code
-    :type codi: str
     :param srid_source: Source SRID
     :param point: Point to convert
-    :type point: list
+    :type point: list or tuple
     :return: Converted point
     :rtype: tuple
     """
     assert srid_source in ['25829', '25830', '25831']
-    if codi == '056':
-        return point
-    else:
-        if srid_source == '25830':
-            return point
-        else:
-            source = Proj(init='epsg:{0}'.format(srid_source))
-            dest = Proj(init='epsg:25830')
-            result_point = transform(source, dest, point[0], point[1])
-            return result_point
+    if srid_source != '25830':
+        source = Proj(init='epsg:{0}'.format(srid_source))
+        dest = Proj(init='epsg:25830')
+        point = transform(source, dest, point[0], point[1])
+    return point
 
 
-def get_srid(connection):
+def get_srid(c):
     """
     Returns the SRID from the configuration
 
-    :param connection: OpenERP connection
+    :param c: OpenERP connection
     :return: SRID
     :rtype: str
     """
 
-    giscegis_srid_id = connection.ResConfig.search(
-                    [('name', '=', 'giscegis_srid')])
-    giscegis_srid = connection.ResConfig.read(giscegis_srid_id)[0]['value']
-    return giscegis_srid
+    return str(c.GiscegisBaseGeom.get_srid())
 
 
 def merge_procs(procs, **kwargs):
@@ -382,6 +372,7 @@ def merge_procs(procs, **kwargs):
     with open(original_out_url, "w") as fd_out:
         fd_out.write(data_out)
 
+
 def adapt_diff(diff):
     """
     Formats diff to human-readable format
@@ -392,6 +383,25 @@ def adapt_diff(diff):
     """
 
     a = ""
-    for key,value in diff.items():
+    for key, value in diff.items():
         a += "[{}] nou:{} antic:{} ".format(key, *value)
     return a
+
+
+def parse_geom(geom):
+    """
+    Parse the input Geom to a list of dicts with the coordinates that compose it
+    :param geom: Geometry on WKT: 'LINESTRING(X1 Y2,...,Xn Yn)', 'POINT(X Y)'
+    :type geom: str
+    :return: The Points that compose theinput Geometry
+    :rtype list of dict[str,str] or []
+    """
+
+    if geom:
+        points = [
+            {'x': str(x[0]), 'y': str(x[1])} for x in wkt.loads(geom).coords
+        ]
+    else:
+        points = []
+
+    return points
