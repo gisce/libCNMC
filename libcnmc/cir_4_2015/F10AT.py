@@ -10,7 +10,7 @@ class F10AT(MultiprocessBased):
         super(F10AT, self).__init__(**kwargs)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.report_name = 'F10AT - CTS'
+        self.report_name = 'F10AT - LAT'
         self.base_object = 'AT'
         self.layer = 'LBT\_%'
         id_res_like = self.connection.ResConfig.search(

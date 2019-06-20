@@ -9,8 +9,8 @@ class F13bis(MultiprocessBased):
     def __init__(self, **kwargs):
         super(F13bis, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.report_name = 'F13 bis - CTS'
-        self.base_object = 'CTS'
+        self.report_name = 'F13 bis - PARCS'
+        self.base_object = 'PARCS'
 
     def get_sequence(self):
         # Revisem que estigui actiu

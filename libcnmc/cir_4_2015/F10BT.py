@@ -10,8 +10,8 @@ class F10BT(MultiprocessBased):
         super(F10BT, self).__init__(**kwargs)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.report_name = 'F10BT - CTS'
-        self.base_object = 'CTS'
+        self.report_name = 'F10BT - LBT'
+        self.base_object = 'BT'
         self.layer = 'LBT\_%'
         id_res_like = self.connection.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')])
