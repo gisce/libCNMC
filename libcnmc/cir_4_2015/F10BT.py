@@ -80,19 +80,6 @@ class F10BT(MultiprocessBased):
                 self.progress_q.put(item)
                 linia = o.GiscedataBtElement.read(item, fields_to_read)
 
-                res = o.GiscegisEdge.search(
-                    [('id_linktemplate', '=', linia['name']),
-                     '|',
-                     ('layer', 'ilike', self.layer),
-                     ('layer', 'ilike', 'EMBARRA%BT%')
-                     ])
-                if not res or len(res) > 1:
-                    edge = {'start_node': (0, '%s_0' % linia['name']),
-                            'end_node': (0, '%s_1' % linia['name'])}
-                else:
-                    edge = o.GiscegisEdge.read(res[0], ['start_node',
-                                                        'end_node'])
-
                 o_prop = linia['propietari'] and '1' or '0'
                 # Coeficient per ajustar longituds de trams
                 coeficient = linia['coeficient'] or 1.0
@@ -111,10 +98,40 @@ class F10BT(MultiprocessBased):
                 except:
                     o_nivell_tensio = 0.0
                 o_tram = 'B%s' % linia['name']
-                o_node_inicial = tallar_text(edge['start_node'][1], 20)
-                o_node_inicial = o_node_inicial.replace('*', '')
-                o_node_final = tallar_text(edge['end_node'][1], 20)
-                o_node_final = o_node_final.replace('*', '')
+                if 'edge_id' in o.GiscedataBtElement.fields_get().keys():
+                    bt_edge = o.GiscedataBtElement.read(
+                        linia['id'], ['edge_id']
+                    )['edge_id']
+                    if not bt_edge:
+                        edge = {
+                            'start_node': (0, '%s_0' % linia['name']),
+                            'end_node': (0, '%s_1' % linia['name'])
+                        }
+                    else:
+                        edge = o.GiscegisEdge.read(
+                            bt_edge[0], ['start_node', 'end_node']
+                        )
+                    o_node_inicial = tallar_text(edge['start_node'][1], 20)
+                    o_node_inicial = o_node_inicial.replace('*', '')
+                    o_node_final = tallar_text(edge['end_node'][1], 20)
+                    o_node_final = o_node_final.replace('*', '')
+                else:
+                    res = o.GiscegisEdge.search(
+                        [('id_linktemplate', '=', linia['name']),
+                         '|',
+                         ('layer', 'ilike', self.layer),
+                         ('layer', 'ilike', 'EMBARRA%BT%')
+                         ])
+                    if not res or len(res) > 1:
+                        edge = {'start_node': (0, '%s_0' % linia['name']),
+                                'end_node': (0, '%s_1' % linia['name'])}
+                    else:
+                        edge = o.GiscegisEdge.read(res[0], ['start_node',
+                                                            'end_node'])
+                    o_node_inicial = tallar_text(edge['start_node'][1], 20)
+                    o_node_inicial = o_node_inicial.replace('*', '')
+                    o_node_final = tallar_text(edge['end_node'][1], 20)
+                    o_node_final = o_node_final.replace('*', '')
                 o_cini = linia['cini']
                 o_provincia = ''
                 if linia['municipi']:
