@@ -35,30 +35,27 @@ class F12(MultiprocessBased):
 
     def get_node(self, trafo_id):
         """
-        Returns the node of the CT
-
-        :param trafo_id: Id of the trafo
+        Returns the Node name of the Trafo
+        :param trafo_id: ID of the trafo
         :type trafo_id: int
-
-        :return: Node of the CT
-        :rtype: int
+        :return: Node name of the Trafo
+        :rtype: str
         """
 
         o = self.connection
-        trafo = o.GiscedataTransformadorTrafo.read(trafo_id, ["ct"])
-        if trafo.get("ct"):
-            ct_id = trafo.get("ct")[0]
-            ct = o.GiscedataCts.read(ct_id, ["node_id"])
-            if ct.get("node_id",False):
-                return ct["node_id"][1]
 
-        bloc = o.GiscegisBlocsTransformadors.search(
-            [('transformadors', '=', trafo_id)])
-        node = ''
-        if bloc:
-            bloc_vals = o.GiscegisBlocsTransformadors.read(
-                bloc[0], ['node'])
-            node = bloc_vals['node'][1]
+        trafo = o.GiscedataTransformadorTrafo.read(trafo_id, ["node_id"])
+        if trafo.get("node_id"):
+            node = trafo.get("node_id")[1]
+        else:
+            bloc = o.GiscegisBlocsTransformadors.search(
+                [('transformadors', '=', trafo_id)])
+            node = ''
+            if bloc:
+                bloc_vals = o.GiscegisBlocsTransformadors.read(
+                    bloc[0], ['node'])
+                node = bloc_vals['node'][1]
+
         return node
 
     def consumer(self):
