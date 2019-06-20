@@ -11,8 +11,8 @@ class F20(MultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.reducir_cups = kwargs.get("reducir_cups", False)
-        self.report_name = 'F20 - CTS'
-        self.base_object = 'CTS'
+        self.report_name = 'F20 - CUPS-CT'
+        self.base_object = 'CTS i CUPS'
         mod_all_year = self.connection.GiscedataPolissaModcontractual.search(
             [
                 ("data_inici", "<=", "{}-01-01".format(self.year)),

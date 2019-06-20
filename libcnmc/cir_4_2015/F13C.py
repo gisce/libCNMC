@@ -13,8 +13,8 @@ class F13c(MultiprocessBased):
     def __init__(self, **kwargs):
         super(F13c, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.report_name = 'F13 C - CTS'
-        self.base_object = 'CTS'
+        self.report_name = 'F13 C - POSICIONS'
+        self.base_object = 'POSICIONS'
         self.all_int = kwargs.get('all_int', True)
 
     def get_sequence(self):

@@ -10,8 +10,8 @@ class F13(MultiprocessBased):
         super(F13, self).__init__(**kwargs)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.report_name = 'F13 - CTS'
-        self.base_object = 'CTS'
+        self.report_name = 'F13 - SE'
+        self.base_object = 'SE'
 
     def get_sequence(self):
         data_pm = '%s-01-01' % (self.year + 1)
