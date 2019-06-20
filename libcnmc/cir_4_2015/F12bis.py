@@ -19,15 +19,10 @@ class F12bis(MultiprocessBased):
 
         :return: None
         """
-        ids_fus_at = self.connection.GiscedataCellesCella.search(
-            ['|', ("cini", "like", "I26204%"), '|', ("cini", "like", "I26304%"),
-             ("cini", "like", "I26404%")],
-            0, 0, False, {'active_test': False}
-        )
 
         search_params = [
             ("installacio", "like", "giscedata.cts"),
-            ("id", "not in", ids_fus_at)
+            ("tipus_element.codi", "!=", "FUS_AT")
         ]
 
         if self.fiabilitat and self.doslmesp:
