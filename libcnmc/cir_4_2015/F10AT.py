@@ -18,10 +18,26 @@ class F10AT(MultiprocessBased):
         if id_res_like:
             self.layer = self.connection.ResConfig.read(
                 id_res_like, ['value'])[0]['value']
-
-        ids_red = self.connection.GiscegisBlocsTransformadorsReductors.search([])
-        data_nodes = self.connection.GiscegisBlocsTransformadorsReductors.read(ids_red, ["node"])
-        self.nodes_red = [nod["node"][1] for nod in data_nodes if nod["node"]]
+        o = self.connection
+        trafos_fields = o.GiscedataTransformadorTrafo.fields_get().keys()
+        if 'node_id' in trafos_fields:
+            ids_red = o.GiscedataTransformadorTrafo.search(
+                [('reductor', '=', True)]
+            )
+            data_nodes = o.GiscedataTransformadorTrafo.read(
+                ids_red, ["node_id"]
+            )
+            self.nodes_red = [
+                nod["node_id"][1] for nod in data_nodes if nod["node_id"]
+            ]
+        else:
+            ids_red = o.GiscegisBlocsTransformadorsReductors.search([])
+            data_nodes = o.GiscegisBlocsTransformadorsReductors.read(
+                ids_red, ["node"]
+            )
+            self.nodes_red = [
+                nod["node"][1] for nod in data_nodes if nod["node"]
+            ]
 
     def get_sequence(self):
         search_params = [('name', '!=', '1')]
@@ -103,27 +119,60 @@ class F10AT(MultiprocessBased):
                     o_nivell_tensio = format_f(
                         float(o_nivell_tensio) / 1000.0, 3)
                     o_tram = 'A%s' % at['name']
-                    res = o.GiscegisEdge.search(
-                        [('id_linktemplate', '=', at['name']),
-                         ('layer', 'not ilike', self.layer),
-                         ('layer', 'not ilike', 'EMBARRA%BT%')
-                         ])
-                    if not res or len(res) > 1:
-                        edge = {'start_node': (0, '%s_0' % at['name']),
-                                'end_node': (0, '%s_1' % at['name'])}
+                    if 'edge_id' in o.GiscedataAtTram.fields_get().keys():
+                        at_edge = o.GiscedataAtTram.read(
+                            at['id'], ['edge_id']
+                        )['edge_id']
+                        if not at_edge:
+                            edge = {
+                                'start_node': (0, '%s_0' % at['name']),
+                                'end_node': (0, '%s_1' % at['name'])
+                            }
+                        else:
+                            edge = o.GiscegisEdge.read(
+                                at_edge[0], ['start_node', 'end_node']
+                            )
+                        o_node_inicial = tallar_text(edge['start_node'][1], 20)
+                        o_node_inicial = o_node_inicial.replace('*', '')
+                        if o_node_inicial in self.nodes_red:
+                            o_node_inicial = "{}-{}".format(
+                                o_node_inicial, o_nivell_tensio
+                            )
+                        o_node_final = tallar_text(edge['end_node'][1], 20)
+                        o_node_final = o_node_final.replace('*', '')
+                        if o_node_final in self.nodes_red:
+                            o_node_final = "{}-{}".format(
+                                o_node_final, o_nivell_tensio
+                            )
                     else:
-                        edge = o.GiscegisEdge.read(res[0], ['start_node',
-                                                            'end_node'])
-
-                    o_node_inicial = tallar_text(edge['start_node'][1], 20)
-                    o_node_inicial = o_node_inicial.replace('*', '')
-                    if o_node_inicial in self.nodes_red:
-                        o_node_inicial = "{}-{}".format(o_node_inicial, o_nivell_tensio)
-
-                    o_node_final = tallar_text(edge['end_node'][1], 20)
-                    o_node_final = o_node_final.replace('*', '')
-                    if o_node_final in self.nodes_red:
-                        o_node_final = "{}-{}".format(o_node_final, o_nivell_tensio)
+                        res = o.GiscegisEdge.search(
+                            [
+                                ('id_linktemplate', '=', at['name']),
+                                ('layer', 'not ilike', self.layer),
+                                ('layer', 'not ilike', 'EMBARRA%BT%')
+                            ]
+                        )
+                        if not res or len(res) > 1:
+                            edge = {
+                                'start_node': (0, '%s_0' % at['name']),
+                                'end_node': (0, '%s_1' % at['name'])
+                            }
+                        else:
+                            edge = o.GiscegisEdge.read(
+                                res[0], ['start_node', 'end_node']
+                            )
+                        o_node_inicial = tallar_text(edge['start_node'][1], 20)
+                        o_node_inicial = o_node_inicial.replace('*', '')
+                        if o_node_inicial in self.nodes_red:
+                            o_node_inicial = "{}-{}".format(
+                                o_node_inicial, o_nivell_tensio
+                            )
+                        o_node_final = tallar_text(edge['end_node'][1], 20)
+                        o_node_final = o_node_final.replace('*', '')
+                        if o_node_final in self.nodes_red:
+                            o_node_final = "{}-{}".format(
+                                o_node_final, o_nivell_tensio
+                            )
                     o_cini = at['cini']
                     o_provincia = ''
                     if linia['provincia']:
