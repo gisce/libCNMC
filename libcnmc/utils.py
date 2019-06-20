@@ -88,13 +88,19 @@ def fetch_cts_node(connection):
     :return: Ct id, node name
     :rtype: dict
     """
-    ids_blk = connection.GiscegisBlocsCtat.search([])
-    read_fields = ["ct", "node"]
-    data_blk = connection.GiscegisBlocsCtat.read(ids_blk, read_fields)
-    result_dict = dict.fromkeys(ids_blk)
-    for linia in data_blk:
-        result_dict[linia["ct"][0]] = linia.get("node",['',''])[1]
-    return result_dict
+    try:
+        obj_ct = connection.GiscedataCts
+        ids_cts = obj_ct.search([])
+        data_cts = obj_ct.read(ids_cts,["node_id"])
+        return {data["id"]:data["node_id"] for data in data_cts}
+    except Exception:
+        ids_blk = connection.GiscegisBlocsCtat.search([])
+        read_fields = ["ct", "node"]
+        data_cts = connection.GiscegisBlocsCtat.read(ids_blk, read_fields)
+        result_dict = dict.fromkeys(ids_blk)
+        for ct in data_cts:
+            result_dict[ct["ct"][0]] = ct.get("node",['',''])[1]
+        return result_dict
 
 
 def fetch_prov_ine(connection):
