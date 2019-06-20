@@ -20,17 +20,17 @@ class F13bis(MultiprocessBased):
 
     def get_subestacio(self, sub_id):
         """
-        Returns the subestacio information
-
-        :param sub_id: Id of subestacio
+        Returns the SE data
+        :param sub_id: ID of SE
         :type sub_id: int
-
-        :return: Node, cini and name of subestacio
-        :rtype: dict
+        :return: Node, Name, CINI and CT-ID of the SE
+        :rtype: dict[str,str]
         """
 
         o = self.connection
-        sub = o.GiscedataCtsSubestacions.read(sub_id, ['ct_id', 'cini', 'name','node_id'])
+        sub = o.GiscedataCtsSubestacions.read(
+            sub_id, ['ct_id', 'cini', 'name', 'node_id']
+        )
         ret = {
             "ct_id": sub['ct_id'][0],
             "cini": sub['cini'],
@@ -38,17 +38,14 @@ class F13bis(MultiprocessBased):
         }
         if 'node_id' in sub:
             ret["node"] = sub["node_id"][1]
-            return ret
         else:
             bloc_ids = o.GiscegisBlocsCtat.search([('ct', '=', ret["ct_id"])])
             node = ''
             if bloc_ids:
                 bloc = o.GiscegisBlocsCtat.read(bloc_ids[0], ['node'])
                 node = bloc['node'][1]
-            else:
-                print("ct id: {}".format(ret["ct_id"]))
             ret["node"] = node
-            return ret
+        return ret
 
     def get_tensio(self, parc_id):
         o = self.connection
