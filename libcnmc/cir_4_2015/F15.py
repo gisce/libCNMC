@@ -144,7 +144,7 @@ class F15(MultiprocessBased):
                 if cella['tram_id']:
                     o_tram = "A{0}".format(
                         o.GiscedataAtTram.read(
-                            cella['tram_id'], ['name']
+                            cella['tram_id'][0], ['name']
                         )['name']
                     )
                 if cella.get("node_id"):
