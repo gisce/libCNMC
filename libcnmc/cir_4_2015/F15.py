@@ -142,7 +142,9 @@ class F15(MultiprocessBased):
                 o_prop = int(cella['propietari'])
                 o_tram = ""
                 if cella['installacio']:
+                    print("++++++{}".format(cella['installacio']))
                     tram_id = int(cella['installacio'].split(',')[1])
+                    print(">>>>>>{}".format((tram_id)))
                     o_tram = "A{0}".format(
                         o.GiscedataAtTram.read(tram_id, ['name'])['name']
                     )
