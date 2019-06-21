@@ -141,12 +141,11 @@ class F15(MultiprocessBased):
                 o_cini = cella['cini']
                 o_prop = int(cella['propietari'])
                 o_tram = ""
-                if cella['installacio']:
-                    print("++++++{}".format(cella['installacio']))
-                    tram_id = int(cella['installacio'].split(',')[1])
-                    print(">>>>>>{}".format((tram_id)))
+                if cella['tram_id']:
                     o_tram = "A{0}".format(
-                        o.GiscedataAtTram.read(tram_id, ['name'])['name']
+                        o.GiscedataAtTram.read(
+                            cella['tram_id'], ['name']
+                        )['name']
                     )
                 if cella.get("node_id"):
                     o_node = cella["node_id"][1]
