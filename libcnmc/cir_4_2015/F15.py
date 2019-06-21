@@ -128,7 +128,7 @@ class F15(MultiprocessBased):
         o = self.connection
         fields_to_read = [
             'installacio', 'cini', 'propietari', 'name', 'tensio', 'node_id',
-            'geom'
+            'geom', 'tram_id'
         ]
         while True:
             try:
