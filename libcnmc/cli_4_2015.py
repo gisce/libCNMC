@@ -484,7 +484,20 @@ def cir_4_2015_f15(**kwargs):
     :rtype: None
     """
 
-    merge_procs([cir_4_2015.F15Cel, cir_4_2015.F15Pos], **kwargs)
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
+
+    proc = cir_4_2015.F15(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year']
+    )
+    proc.calc()
 
 
 @cnmc_4_2015.command()
