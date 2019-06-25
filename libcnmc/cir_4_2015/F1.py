@@ -262,7 +262,7 @@ class F1(MultiprocessBased):
         if 'node_id' in o.GiscedataCupsEscomesa.fields_get().keys():
             node_id = o.GiscedataCupsEscomesa.read(
                 id_escomesa, ['node_id']
-            )['node_id']
+            )['node_id'][0]
             edge_id = o.GiscegisEdge.search(
                 [
                     '|',
