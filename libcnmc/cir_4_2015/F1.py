@@ -259,7 +259,7 @@ class F1(MultiprocessBased):
 
         o = self.connection
         tipus = 'A'
-        if 'node_id' in o.GiscegisBlocsEscomeses.fields_get().keys():
+        if 'node_id' in o.GiscedataCupsEscomesa.fields_get().keys():
             node_id = o.GiscegisCupsEscomesa.read(
                 id_escomesa, ['node_id']
             )['node_id']
