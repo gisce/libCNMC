@@ -262,24 +262,25 @@ class F1(MultiprocessBased):
         if 'node_id' in o.GiscedataCupsEscomesa.fields_get().keys():
             node_id = o.GiscedataCupsEscomesa.read(
                 id_escomesa, ['node_id']
-            )['node_id'][0]
-            edge_id = o.GiscegisEdge.search(
-                [
-                    '|',
-                    ('start_node', '=', node_id),
-                    ('end_node', '=', node_id)
-                ]
-            )
-            if edge_id:
-                tram_bt = o.GiscedataBtElement.search(
-                    [('edge_id', '=', edge_id[0])]
+            )['node_id']
+            if node_id:
+                edge_id = o.GiscegisEdge.search(
+                    [
+                        '|',
+                        ('start_node', '=', node_id[0]),
+                        ('end_node', '=', node_id[0])
+                    ]
                 )
-                if tram_bt:
-                    tram_bt = o.GiscedataBtElement.read(
-                        tram_bt[0], ['tipus_linia']
+                if edge_id:
+                    tram_bt = o.GiscedataBtElement.search(
+                        [('edge_id', '=', edge_id[0])]
                     )
-                    if tram_bt['tipus_linia']:
-                        tipus = tram_bt['tipus_linia'][1][0]
+                    if tram_bt:
+                        tram_bt = o.GiscedataBtElement.read(
+                            tram_bt[0], ['tipus_linia']
+                        )
+                        if tram_bt['tipus_linia']:
+                            tipus = tram_bt['tipus_linia'][1][0]
         else:
             bloc = o.GiscegisBlocsEscomeses.search(
                 [('escomesa', '=', id_escomesa)]
