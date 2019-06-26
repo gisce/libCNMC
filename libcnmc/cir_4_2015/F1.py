@@ -36,6 +36,14 @@ class F1(MultiprocessBased):
         self.reducir_cups = kwargs.get("reducir_cups", False)
         self.allow_cna = kwargs.get("allow_cna", False)
         self.zona_qualitat = kwargs.get("zona_qualitat", "ct")
+        self.layer = 'LBT\_%'
+        id_res_like = self.connection.ResConfig.search(
+            [('name', '=', 'giscegis_btlike_layer')]
+        )
+        if id_res_like:
+            self.layer = self.connection.ResConfig.read(
+                id_res_like, ['value']
+            )[0]['value']
         mod_all_year = self.connection.GiscedataPolissaModcontractual.search(
             [
                 ("data_inici", "<=", "{}-01-01".format(self.year)),
@@ -238,40 +246,79 @@ class F1(MultiprocessBased):
 
     def get_tipus_connexio(self, id_escomesa):
         """
-        Gets the tipus of conexio of an escomesa
-
+        Gets the tipus of connexio of an escomesa. If it's a BT escomesa we
+        check the TramBT that suplies it to see if its aerial or underground.
+        If it's not a BT escomesa we directly set the tipus of connexio to
+        aerial.
         :param id_escomesa: Id of the escomesa
         :type id_escomesa: int
-        :return: A or S depending on if the linia is aerial o underground
+        :return: A or S depending on if the linia that suplies the escomesa
+                 is aerial or underground
         :rtype: str
         """
-        O = self.connection
-        bloc = O.GiscegisBlocsEscomeses.search(
-            [('escomesa', '=', id_escomesa)]
-        )
-        tipus = ''
-        if bloc:
-            bloc = O.GiscegisBlocsEscomeses.read(bloc[0], ['node'])
-            if bloc['node']:
-                node = bloc['node'][0]
-                edge = O.GiscegisEdge.search(
-                    ['|', ('start_node', '=', node), ('end_node', '=', node)]
+
+        o = self.connection
+        tipus = 'A'
+        if 'node_id' in o.GiscedataCupsEscomesa.fields_get().keys():
+            node_id = o.GiscedataCupsEscomesa.read(
+                id_escomesa, ['node_id']
+            )['node_id']
+            if node_id:
+                edge_id = o.GiscegisEdge.search(
+                    [
+                        '|',
+                        ('start_node', '=', node_id[0]),
+                        ('end_node', '=', node_id[0])
+                    ]
                 )
-                if edge:
-                    edge = O.GiscegisEdge.read(edge[0], ['id_linktemplate'])
-                    if edge['id_linktemplate']:
-                        bt = O.GiscedataBtElement.search(
-                            [('name', '=', edge['id_linktemplate'])]
+                if edge_id:
+                    tram_bt = o.GiscedataBtElement.search(
+                        [('edge_id', '=', edge_id[0])]
+                    )
+                    if tram_bt:
+                        tram_bt = o.GiscedataBtElement.read(
+                            tram_bt[0], ['tipus_linia']
                         )
-                        if bt:
-                            bt = O.GiscedataBtElement.read(
-                                bt[0], ['tipus_linia']
+                        if tram_bt['tipus_linia']:
+                            tipus = tram_bt['tipus_linia'][1][0]
+        else:
+            bloc = o.GiscegisBlocsEscomeses.search(
+                [('escomesa', '=', id_escomesa)]
+            )
+            if bloc:
+                bloc = o.GiscegisBlocsEscomeses.read(bloc[0], ['node'])
+                if bloc['node']:
+                    node = bloc['node'][0]
+                    edge_bt = o.GiscegisEdge.search(
+                        [
+                            '|',
+                            ('start_node', '=', node),
+                            ('end_node', '=', node),
+                            '|',
+                            ('layer', 'ilike', self.layer),
+                            ('layer', 'ilike', 'EMBARRA%BT%')
+                        ]
+                    )
+                    edge = o.GiscegisEdge.read(
+                        edge_bt[0], ['id_linktemplate']
+                    )
+                    if edge['id_linktemplate']:
+                        tram_bt = o.GiscedataBtElement.search(
+                            [
+                                ('name', '=', edge['id_linktemplate'])
+                            ]
+                        )
+                        if tram_bt:
+                            tram_bt = o.GiscedataBtElement.read(
+                                tram_bt[0], ['tipus_linia']
                             )
-                            if bt['tipus_linia']:
-                                if bt['tipus_linia'][0] == 1:
-                                    tipus = 'A'
-                                else:
-                                    tipus = 'S'
+                            if tram_bt:
+                                tram_bt = o.GiscedataBtElement.read(
+                                    tram_bt[0], ['tipus_linia']
+                                )
+                                if tram_bt['tipus_linia']:
+                                    tipus = tram_bt['tipus_linia'][1][0]
+
         return tipus
 
     def consumer(self):
