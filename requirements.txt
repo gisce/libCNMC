@@ -1,4 +1,4 @@
-progressbar
+progressbar<=2.3
 click<7.0
 libcomxml
 chardet
