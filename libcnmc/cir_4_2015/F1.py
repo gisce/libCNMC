@@ -313,9 +313,6 @@ class F1(MultiprocessBased):
                                 tram_bt[0], ['tipus_linia']
                             )
                             if tram_bt:
-                                tram_bt = o.GiscedataBtElement.read(
-                                    tram_bt[0], ['tipus_linia']
-                                )
                                 if tram_bt['tipus_linia']:
                                     tipus = tram_bt['tipus_linia'][1][0]
 
