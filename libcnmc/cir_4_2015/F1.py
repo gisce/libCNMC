@@ -259,7 +259,7 @@ class F1(MultiprocessBased):
 
         o = self.connection
         tipus = 'A'
-        if 'node_id' in o.GiscedataCupsEscomesa.fields_get().keys():
+        if 'node_id' in o.GiscedataCupsEscomesa.fields_get().keys() and 'edge_id' in o.GiscedataBtElement.fields_get().keys():
             node_id = o.GiscedataCupsEscomesa.read(
                 id_escomesa, ['node_id']
             )['node_id']
