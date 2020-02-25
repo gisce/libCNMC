@@ -217,12 +217,17 @@ class LBT(MultiprocessBased):
                         ]
                     )
                     if edge_id:
-                        edge = O.GiscegisEdge.read(edge_id, ['start_node','end_node'])
+                        edge = O.GiscegisEdge.read(
+                            edge_id[0], ['start_node', 'end_node']
+                        )
                         origen = edge['start_node'][1]
                         final = edge['end_node'][1]
                     else:
-                        origen = last_data["origen"]
-                        final = last_data["destino"]
+                        # El tram ha estat donat de baixa aquest any i ja no
+                        # te edge. Utilitzem el seu propi nom com a nus inicial
+                        # i nus final
+                        origen = str(linia['name']) + '_0'
+                        final = str(linia['name']) + '_1'
 
                 output = [
                     '{}{}'.format(self.prefix, linia['name']),  # IDENTIFICADOR
