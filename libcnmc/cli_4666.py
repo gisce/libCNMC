@@ -240,7 +240,7 @@ def res_4666_lat(**kwargs):
     """
 
     from libcnmc.res_4666 import LAT
-    last_year = datetime.now().year - 1
+    last_year = kwargs["year"] - 1
     kwargs["compare_field"] = "4666_entregada_{}".format(last_year)
     res_lat(LAT, **kwargs)
 
@@ -280,7 +280,7 @@ def res_4666_lbt(**kwargs):
     """
 
     from libcnmc.res_4666 import LBT
-    last_year = datetime.now().year - 1
+    last_year = kwargs["year"] - 1
     kwargs["compare_field"] = "4666_entregada_{}".format(last_year)
     res_lat(LBT, **kwargs)
 
@@ -319,7 +319,8 @@ def res_4666_cts(**kwargs):
     """
 
     from libcnmc.res_4666 import CTS
-    kwargs["compare_field"] = "4666_entregada_{}".format(kwargs["year"])
+    last_year = kwargs["year"] - 1
+    kwargs["compare_field"] = "4666_entregada_{}".format(last_year)
     res_lat(CTS, **kwargs)
 
 
@@ -355,7 +356,8 @@ def res_4666_sub(**kwargs):
     """
 
     from libcnmc.res_4666 import SUB
-    kwargs["compare_field"] = "4666_entregada_{}".format(kwargs["year"])
+    last_year = kwargs["year"] - 1
+    kwargs["compare_field"] = "4666_entregada_{}".format(last_year)
     res_lat(SUB, **kwargs)
 
 
@@ -393,7 +395,8 @@ def res_4666_pos(**kwargs):
     """
 
     from libcnmc.res_4666 import POS, POS_INT
-    kwargs["compare_field"] = "4666_entregada_{}".format(kwargs["year"])
+    last_year = kwargs["year"] - 1
+    kwargs["compare_field"] = "4666_entregada_{}".format(last_year)
     res_pos2(POS, POS_INT, **kwargs)
 
 
@@ -429,7 +432,8 @@ def res_4666_maq(**kwargs):
     """
 
     from libcnmc.res_4666 import MAQ
-    kwargs["compare_field"] = "4666_entregada_{}".format(kwargs["year"])
+    last_year = kwargs["year"] - 1
+    kwargs["compare_field"] = "4666_entregada_{}".format(last_year)
     res_lat(MAQ, **kwargs)
 
 
@@ -465,7 +469,8 @@ def res_4666_des(**kwargs):
     """
 
     from libcnmc.res_4666 import DES
-    kwargs["compare_field"] = "4666_entregada_{}".format(kwargs["year"])
+    last_year = kwargs["year"] - 1
+    kwargs["compare_field"] = "4666_entregada_{}".format(last_year)
     res_lat(DES, **kwargs)
 
 
@@ -503,7 +508,8 @@ def res_4666_fia(**kwargs):
     :rtype: None 
     """
     from libcnmc.res_4666 import FIA
-    kwargs["compare_field"] = "4666_entregada_{}".format(kwargs["year"])
+    last_year = kwargs["year"] - 1
+    kwargs["compare_field"] = "4666_entregada_{}".format(last_year)
     res_lat(FIA, **kwargs)
 
 
@@ -538,7 +544,8 @@ def res_4666_con(**kwargs):
     """
 
     from libcnmc.res_4666 import CON
-    kwargs["compare_field"] = "4666_entregada_{}".format(kwargs["year"])
+    last_year = kwargs["year"] - 1
+    kwargs["compare_field"] = "4666_entregada_{}".format(last_year)
     res_lat(CON, **kwargs)
 
 
@@ -564,7 +571,8 @@ def res_4666_con(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def res_466_con(**kwargs):
     from libcnmc.res_4666 import CON
-    kwargs["compare_field"] = "4666_entregada_{}".format(kwargs["year"])
+    last_year = kwargs["year"] - 1
+    kwargs["compare_field"] = "4666_entregada_{}".format(last_year)
     res_lat(CON, **kwargs)
 
 
@@ -591,7 +599,7 @@ def res_466_con(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def aud_4666_lat(**kwargs):
     from libcnmc.res_4666.AUD_LAT import LAT
-    last_year = datetime.now().year - 1
+    last_year = kwargs["year"] - 1
     kwargs["compare_field"] = "4666_entregada_{}".format(last_year)
     res_lat(LAT, **kwargs)
 
@@ -619,7 +627,7 @@ def aud_4666_lat(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def aud_4666_lbt(**kwargs):
     from libcnmc.res_4666.AUD_LBT import LBT
-    last_year = datetime.now().year-1
+    last_year = kwargs["year"] - 1
     kwargs["compare_field"] = "4666_entregada_{}".format(last_year)
     res_lat(LBT, **kwargs)
 
@@ -647,7 +655,8 @@ def aud_4666_lbt(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def aud_4666_cts(**kwargs):
     from libcnmc.res_4666.AUD_CTS import CTS
-    kwargs["compare_field"] = "4666_entregada_{}".format(kwargs["year"])
+    last_year = kwargs["year"] - 1
+    kwargs["compare_field"] = "4666_entregada_{}".format(last_year)
     res_lat(CTS, **kwargs)
 
 
@@ -674,7 +683,8 @@ def aud_4666_cts(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def aud_4666_pos(**kwargs):
     from libcnmc.res_4666.AUD_POS import POS, POS_INT
-    kwargs["compare_field"] = "4666_entregada_{}".format(kwargs["year"])
+    last_year = kwargs["year"] - 1
+    kwargs["compare_field"] = "4666_entregada_{}".format(last_year)
     res_pos2(POS, POS_INT, **kwargs)
 
 
@@ -701,6 +711,7 @@ def aud_4666_pos(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def aud_4666_fia(**kwargs):
     from libcnmc.res_4666.AUD_FIA import FIA
-    kwargs["compare_field"] = "4666_entregada_{}".format(kwargs["year"])
+    last_year = kwargs["year"] - 1
+    kwargs["compare_field"] = "4666_entregada_{}".format(last_year)
     res_lat(FIA, **kwargs)
 
