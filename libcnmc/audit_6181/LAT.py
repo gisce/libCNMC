@@ -89,7 +89,7 @@ class LAT(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-                linia = O.GiscedataProjecteObraTiAt.read(item, fields_to_read)
+                linia = O.GiscedataProjecteObraTiAt.read([item], fields_to_read)[0]
                 output = [
                     linia['name'],
                     linia['cini'],

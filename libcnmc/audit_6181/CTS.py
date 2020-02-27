@@ -78,7 +78,7 @@ class CTS(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-                linia = O.GiscedataProjecteObraTiCts.read(item, fields_to_read)
+                linia = O.GiscedataProjecteObraTiCts.read([item], fields_to_read)[0]
                 output = [
                     linia['name'],
                     linia['cini'],

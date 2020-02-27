@@ -7,7 +7,7 @@ INVENTARI DE CNMC AT
 import traceback
 from os import environ
 
-from libcnmc.utils import get_codigo_ccaa, format_f
+from libcnmc.utils import format_f
 from libcnmc.core import MultiprocessBased
 
 
@@ -75,7 +75,7 @@ class DES(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-                linia = O.GiscedataProjecteObraTiDespatx.read(item, fields_to_read)
+                linia = O.GiscedataProjecteObraTiDespatx.read([item], fields_to_read)[0]
                 output = [
                     linia['name'],
                     linia['cini'],

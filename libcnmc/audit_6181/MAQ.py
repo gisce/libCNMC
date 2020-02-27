@@ -78,7 +78,7 @@ class MAQ(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-                linia = O.GiscedataProjecteObraTiTransformador.read(item, fields_to_read)
+                linia = O.GiscedataProjecteObraTiTransformador.read([item], fields_to_read)[0]
                 output = [
                     linia['name'],
                     linia['cini'],
