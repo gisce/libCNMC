@@ -183,7 +183,10 @@ class F9(MultiprocessBased):
                 if item[1] == 'at':
                     if 'geom' in o.GiscedataAtTram.fields_get().keys():
                         at = o.GiscedataAtTram.read(item[0], ['geom', 'name'])
-                        data = parse_geom(at['geom'])
+                        if at['geom']:
+                            data = parse_geom(at['geom'])
+                        else:
+                            data = self.get_geom(at['name'], 'at')
                     else:
                         at = o.GiscedataAtTram.read(item[0], ['name'])
                         data = self.get_geom(at['name'], 'at')
@@ -198,7 +201,10 @@ class F9(MultiprocessBased):
                         bt = o.GiscedataBtElement.read(
                             item[0], ['geom', 'name']
                         )
-                        data = parse_geom(bt['geom'])
+                        if bt['geom']:
+                            data = parse_geom(bt['geom'])
+                        else:
+                            data = self.get_geom(bt['name'], 'bt')
                     else:
                         bt = o.GiscedataBtElement.read(item[0], ['name'])
                         data = self.get_geom(bt['name'], 'bt')
