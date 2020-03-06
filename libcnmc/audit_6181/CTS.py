@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-INVENTARI DE CNMC AT
-"""
 import traceback
 from os import environ
 
