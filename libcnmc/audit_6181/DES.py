@@ -25,7 +25,7 @@ class DES(MultiprocessBased):
         """
 
         self.year = kwargs.pop("year")
-        self.price_accuracy = environ.get('OPENERP_OBRES_PRICE_ACCURACY', 3)
+        self.price_accuracy = int(environ.get('OPENERP_OBRES_PRICE_ACCURACY', '3'))
         super(DES, self).__init__(**kwargs)
 
     def get_sequence(self):
