@@ -191,7 +191,7 @@ def get_name_ti(connection, ti):
     :rtype: str
     """
     if ti:
-        data = connection.GiscedataTipusInstallacio.read(ti, ["name"])
+        data = connection.GiscedataTipusInstallacio.read([ti], ["name"])[0]
         if data:
             return data["name"]
         else:
