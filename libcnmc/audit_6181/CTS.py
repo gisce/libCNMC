@@ -68,6 +68,7 @@ class CTS(MultiprocessBased):
             'valor_contabilidad',
             'cuenta_contable',
             'porcentaje_modificacion',
+            'motivacion',
         ]
 
         while True:
@@ -101,6 +102,7 @@ class CTS(MultiprocessBased):
                              self.price_accuracy),
                     linia['cuenta_contable'],
                     linia['porcentaje_modificacion'],
+                    linia['motivacion'],
                 ]
                 output = map(lambda e: e or '', output)
                 self.output_q.put(output)
