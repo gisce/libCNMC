@@ -102,7 +102,7 @@ class CTS(MultiprocessBased):
                              self.price_accuracy),
                     linia['cuenta_contable'],
                     linia['porcentaje_modificacion'],
-                    get_codi_actuacio(O, linia['motivacion']),
+                    get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]),
                 ]
                 output = map(lambda e: e or '', output)
                 self.output_q.put(output)
