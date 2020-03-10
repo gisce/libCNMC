@@ -212,7 +212,7 @@ def get_codi_actuacio(connection, actuacio):
     """
     code = ''
     if actuacio:
-        data = connection.GiscedataActuacio.read([actuacio], ["codi"])
+        data = connection.GiscedataActuacio.read([actuacio], ["codi"])[0]
         if data:
             code = data["codi"]
 
