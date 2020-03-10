@@ -4,7 +4,7 @@
 import traceback
 from os import environ
 
-from libcnmc.utils import format_f, get_name_ti, get_codigo_ccaa
+from libcnmc.utils import format_f, get_name_ti, get_codi_actuacio
 from libcnmc.core import MultiprocessBased
 
 
@@ -102,7 +102,7 @@ class CTS(MultiprocessBased):
                              self.price_accuracy),
                     linia['cuenta_contable'],
                     linia['porcentaje_modificacion'],
-                    linia['motivacion'],
+                    get_codi_actuacio(O, linia['motivacion']),
                 ]
                 output = map(lambda e: e or '', output)
                 self.output_q.put(output)

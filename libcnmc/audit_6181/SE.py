@@ -4,7 +4,6 @@
 import traceback
 from os import environ
 
-from libcnmc.utils import format_f, get_name_ti, get_codigo_ccaa
 from libcnmc.core import MultiprocessBased
 
 

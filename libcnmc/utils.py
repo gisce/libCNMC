@@ -200,6 +200,25 @@ def get_name_ti(connection, ti):
         return ""
 
 
+def get_codi_actuacio(connection, actuacio):
+    """
+    Returns the code of the actuacio
+
+    :param connection: Database connection
+    :param actuacio: Id of the Actuacio
+    :type actuacio: int
+    :return: Code of the Actuacio
+    :rtype: str
+    """
+    code = ''
+    if actuacio:
+        data = connection.GiscedataActuacio.read([actuacio], ["codi"])
+        if data:
+            code = data["codi"]
+
+    return code
+
+
 def get_codigo_ccaa(connection, ccaa):
     """
     Return the code from CCAA
