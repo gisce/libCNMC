@@ -24,6 +24,8 @@ class CTS(MultiprocessBased):
         self.year = kwargs.pop("year")
         self.price_accuracy = int(environ.get('OPENERP_OBRES_PRICE_ACCURACY', '3'))
         super(CTS, self).__init__(**kwargs)
+        if kwargs.get("include_header", False):
+            self.file_header = self.get_header()
 
     def get_sequence(self):
         """
@@ -38,6 +40,31 @@ class CTS(MultiprocessBased):
         )
 
         return installations_ids[8]
+
+    def get_header(self):
+        return [
+            'IDENTIFICADOR',
+            'CINI',
+            'TIPO_INVERSION',
+            'CODIGO_CCUU',
+            'CODIGO_CCAA',
+            'NIVEL_TENSION_EXPLOTACION',
+            'FINANCIADO',
+            'FECHA_APS',
+            'FECHA_BAJA',
+            'CAUSA_BAJA',
+            'IM_INGENIERIA',
+            'IM_MATERIALES',
+            'IM_OBRACIVIL' 
+            'IM_TRABAJOS',
+            'SUBVENCIONES_EUROPEAS',
+            'SUBVENCIONES_NACIONALES',
+            'VALOR_AUDITADO',
+            'VALOR_CONTABLE',
+            'CUENTA_CONTABLE',
+            'PORCENTAJE_MODIFICACION',
+            'MOTIVACION',
+        ]
 
     def consumer(self):
         """

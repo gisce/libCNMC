@@ -24,6 +24,30 @@ class DES(MultiprocessBased):
         self.year = kwargs.pop("year")
         self.price_accuracy = int(environ.get('OPENERP_OBRES_PRICE_ACCURACY', '3'))
         super(DES, self).__init__(**kwargs)
+        if kwargs.get("include_header", False):
+            self.file_header = self.get_header()
+
+    def get_header(self):
+        return [
+            'IDENTIFICADOR',
+            'CINI',
+            'FINANCIADO',
+            'CODIGO_CCAA',
+            'FECHA_APS',
+            'FECHA_BAJA',
+            'CAUSA_BAJA',
+            'IM_INGENIERIA',
+            'IM_MATERIALES',
+            'IM_OBRACIVIL' 
+            'IM_TRABAJOS',
+            'SUBVENCIONES_EUROPEAS',
+            'SUBVENCIONES_NACIONALES',
+            'VALOR_AUDITADO',
+            'VALOR_CONTABLE',
+            'CUENTA_CONTABLE',
+            'PORCENTAJE_MODIFICACION',
+            'MOTIVACION',
+        ]
 
     def get_sequence(self):
         """

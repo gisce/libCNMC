@@ -33,6 +33,7 @@ def calc_report(process_cls, **kwargs):
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
+        include_header=eval(kwargs['include_header'].title()),
         extended=kwargs.get('extended', False),
     )
     proc.calc()
@@ -45,6 +46,7 @@ def calc_report(process_cls, **kwargs):
               help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -55,6 +57,7 @@ def calc_report(process_cls, **kwargs):
 @click.option('-w', '--password', default='admin',
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('-pf', '--prefix', help="Prefix dels Trams AT")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def audit_6181_lat(**kwargs):
     """
@@ -77,6 +80,7 @@ def audit_6181_lat(**kwargs):
               help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -110,6 +114,7 @@ def audit_6181_lbt(**kwargs):
               help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -142,6 +147,7 @@ def audit_6181_se(**kwargs):
               help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -174,6 +180,7 @@ def audit_6181_pos(**kwargs):
               help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -208,6 +215,7 @@ def audit_6181_maq(**kwargs):
               help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -240,6 +248,7 @@ def audit_6181_fia(**kwargs):
               help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -272,6 +281,7 @@ def audit_6181_cts(**kwargs):
               help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',

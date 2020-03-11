@@ -19,8 +19,46 @@ class LBT(MultiprocessBased):
         :param kwargs: 
         """
         self.year = kwargs.pop("year")
+        self.prefix = kwargs.pop('prefix', 'B') or 'B'
         self.price_accuracy = int(environ.get('OPENERP_OBRES_PRICE_ACCURACY', '3'))
         super(LBT, self).__init__(**kwargs)
+        if kwargs.get("include_header", False):
+            self.file_header = self.get_header()
+
+    def get_header(self):
+        return [
+            'IDENTIFICADOR',
+            'CINI',
+            'TIPO_INVERSION',
+            'ORIGEN',
+            'DESTINO',
+            'CODIGO_CCUU',
+            'CODIGO_CCAA_1',
+            'CODIGO_CCAA_2',
+            'NIVEL_TENSION_EXPLOTACION',
+            'NUMERO_CIRCUITOS',
+            'NUMERO_CONDUCTORES',
+            'LONGITUD',
+            'INTENSIDAD_MAXIMA',
+            'SECCION',
+            'FINANCIADO',
+            'TIPO_SUELO',
+            'PLANIFICACION',
+            'FECHA_APS',
+            'FECHA_BAJA',
+            'CAUSA_BAJA',
+            'IM_INGENIERIA',
+            'IM_MATERIALES',
+            'IM_OBRACIVIL' 
+            'IM_TRABAJOS',
+            'SUBVENCIONES_EUROPEAS',
+            'SUBVENCIONES_NACIONALES',
+            'VALOR_AUDITADO',
+            'VALOR_CONTABLE',
+            'CUENTA_CONTABLE',
+            'PORCENTAJE_MODIFICACION',
+            'MOTIVACION',
+        ]
 
     def get_sequence(self):
         """
@@ -80,12 +118,14 @@ class LBT(MultiprocessBased):
 
         while True:
             try:
+
+
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
                 linia = O.GiscedataProjecteObraTiBt.read([item], fields_to_read)[0]
                 output = [
-                    linia['name'],
+                    '{}{}'.format(self.prefix, linia['name']),
                     linia['cini'],
                     linia['tipo_inversion'],
                     linia['origen'],

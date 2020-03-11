@@ -19,8 +19,50 @@ class LAT(MultiprocessBased):
         :param kwargs: 
         """
         self.year = kwargs.pop('year')
+        self.prefix = kwargs.pop('prefix', 'A') or 'A'
         self.price_accuracy = int(environ.get('OPENERP_OBRES_PRICE_ACCURACY', '3'))
         super(LAT, self).__init__(**kwargs)
+        if kwargs.get("include_header", False):
+            self.file_header = self.get_header()
+
+    def get_header(self):
+        return [
+            'IDENTIFICADOR',
+            'CINI',
+            'TIPO_INVERSION',
+            'ORIGEN',
+            'DESTINO',
+            'CODIGO_CCUU',
+            'CODIGO_CCAA_1',
+            'CODIGO_CCAA_2',
+            'NUM_APOYO_TOTAL',
+            'NUM_APOYO_SUSPENSE',
+            'NUM_APOYO_AMARRE',
+            'VELOCIDAD_VIENTO',
+            'NIVEL_TENSION_EXPLOTACION',
+            'NUMERO_CIRCUITOS',
+            'NUMERO_CONDUCTORES',
+            'LONGITUD',
+            'INTENSIDAD_MAXIMA',
+            'SECCION',
+            'FINANCIADO',
+            'TIPO_SUELO',
+            'PLANIFICACION',
+            'FECHA_APS',
+            'FECHA_BAJA',
+            'CAUSA_BAJA',
+            'IM_INGENIERIA',
+            'IM_MATERIALES',
+            'IM_OBRACIVIL' 
+            'IM_TRABAJOS',
+            'SUBVENCIONES_EUROPEAS',
+            'SUBVENCIONES_NACIONALES',
+            'VALOR_AUDITADO',
+            'VALOR_CONTABLE',
+            'CUENTA_CONTABLE',
+            'PORCENTAJE_MODIFICACION',
+            'MOTIVACION',
+        ]
 
     def get_sequence(self):
         """
@@ -89,7 +131,7 @@ class LAT(MultiprocessBased):
 
                 linia = O.GiscedataProjecteObraTiAt.read([item], fields_to_read)[0]
                 output = [
-                    linia['name'],
+                    '{}{}'.format(self.prefix, linia['name']),
                     linia['cini'],
                     linia['tipo_inversion'],
                     linia['origen'],

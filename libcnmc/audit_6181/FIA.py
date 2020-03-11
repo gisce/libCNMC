@@ -22,8 +22,37 @@ class FIA(MultiprocessBased):
         """
 
         self.year = kwargs.pop("year")
+        self.prefix = kwargs.pop('prefix', 'A') or 'A'
         self.price_accuracy = int(environ.get('OPENERP_OBRES_PRICE_ACCURACY', '3'))
         super(FIA, self).__init__(**kwargs)
+        if kwargs.get("include_header", False):
+            self.file_header = self.get_header()
+
+    def get_header(self):
+        return [
+            'IDENTIFICADOR',
+            'CINI',
+            'TIPO_INVERSION',
+            'CODIGO_CCUU',
+            'CODIGO_CCAA',
+            'NIVEL_TENSION_EXPLOTACION',
+            'ELEMENTO_ACT',
+            'FINANCIADO',
+            'FECHA_APS',
+            'FECHA_BAJA',
+            'CAUSA_BAJA',
+            'IM_INGENIERIA',
+            'IM_MATERIALES',
+            'IM_OBRACIVIL' 
+            'IM_TRABAJOS',
+            'SUBVENCIONES_EUROPEAS',
+            'SUBVENCIONES_NACIONALES',
+            'VALOR_AUDITADO',
+            'VALOR_CONTABLE',
+            'CUENTA_CONTABLE',
+            'PORCENTAJE_MODIFICACION',
+            'MOTIVACION',
+        ]
 
     def get_sequence(self):
         """
@@ -75,12 +104,14 @@ class FIA(MultiprocessBased):
 
         while True:
             try:
+
+
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
                 linia = O.GiscedataProjecteObraTiCelles.read([item], fields_to_read)[0]
                 output = [
-                    linia['name'],
+                    '{}{}'.format(self.prefix, linia['name']),
                     linia['cini'],
                     linia['tipo_inversion'],
                     get_name_ti(O, linia['ccuu'] and linia['ccuu'][0]),
