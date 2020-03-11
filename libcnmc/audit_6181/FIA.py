@@ -43,7 +43,7 @@ class FIA(MultiprocessBased):
             'CAUSA_BAJA',
             'IM_INGENIERIA',
             'IM_MATERIALES',
-            'IM_OBRACIVIL' 
+            'IM_OBRACIVIL',
             'IM_TRABAJOS',
             'SUBVENCIONES_EUROPEAS',
             'SUBVENCIONES_NACIONALES',
