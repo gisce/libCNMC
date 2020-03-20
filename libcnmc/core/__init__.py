@@ -129,15 +129,15 @@ class MultiprocessBased(object):
 
         while True:
             try:
-                val = self.output_m.get()
-                if val == 'STOP':
+                if self.output_m.empty():
                     break
+                val = self.output_m.get()
                 fio_mod.writelines(val + "\n")
+                self.output_m.task_done()
             except:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
                 self.output_m.task_done()
         fio_mod.close()
 
@@ -193,7 +193,6 @@ class MultiprocessBased(object):
         sys.stderr.flush()
         self.input_q.join()
         self.output_q.put('STOP')
-        self.output_m.put('STOP')
         if not self.quiet:
             sys.stderr.write("Time Elapsed: %s\n" % (datetime.now() - start))
             sys.stderr.flush()

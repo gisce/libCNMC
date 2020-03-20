@@ -185,7 +185,7 @@ class LBT(MultiprocessBased):
                         format_f(longitud, 3),
                         format_f(intensitat),
                         format_f(float(cable['seccio']), 2),
-                        format_f(capacitat),
+                        format_f(capacitat, 3),
                         0
                     )
                     if actual == entregada:
