@@ -4,7 +4,8 @@
 import traceback
 from os import environ
 
-from libcnmc.utils import get_name_ti, format_f, get_codi_actuacio
+from libcnmc.utils import get_name_ti, format_f, get_codi_actuacio, \
+    format_ccaa_code, convert_spanish_date
 from libcnmc.core import MultiprocessBased
 
 
@@ -20,7 +21,7 @@ class LAT(MultiprocessBased):
         """
         self.year = kwargs.pop('year')
         self.prefix = kwargs.pop('prefix', 'A') or 'A'
-        self.price_accuracy = int(environ.get('OPENERP_OBRES_PRICE_ACCURACY', '3'))
+        self.price_accuracy = int(environ.get('OPENERP_OBRES_PRICE_ACCURACY', '2'))
         super(LAT, self).__init__(**kwargs)
         if kwargs.get("include_header", False):
             self.file_header = self.get_header()
@@ -137,8 +138,8 @@ class LAT(MultiprocessBased):
                     linia['origen'],
                     linia['destino'],
                     get_name_ti(O, linia['ccuu'] and linia['ccuu'][0]),
-                    linia['codigo_ccaa_1'],
-                    linia['codigo_ccaa_2'],
+                    format_ccaa_code(linia['codigo_ccaa_1']),
+                    format_ccaa_code(linia['codigo_ccaa_2']),
                     linia['num_apoyo_total'],
                     linia['num_apoyo_suspension'],
                     linia['num_apoyo_amarre'],
@@ -149,11 +150,11 @@ class LAT(MultiprocessBased):
                     linia['longitud'],
                     linia['intensidad_maxima'],
                     linia['seccion'],
-                    linia['financiado'],
+                    format_f(linia['financiado']),
                     linia['tipo_suelo'],
                     linia['planificacion'],
-                    linia['fecha_aps'],
-                    linia['fecha_baja'],
+                    convert_spanish_date(linia['fecha_aps']),
+                    convert_spanish_date(linia['fecha_baja']),
                     linia['causa_baja'],
                     format_f(linia['im_ingenieria'] or 0.0, self.price_accuracy),
                     format_f(linia['im_materiales'] or 0.0, self.price_accuracy),
@@ -164,7 +165,7 @@ class LAT(MultiprocessBased):
                     format_f(linia['valor_auditado'] or 0.0, self.price_accuracy),
                     format_f(linia['valor_contabilidad'] or 0.0, self.price_accuracy),
                     linia['cuenta_contable'],
-                    linia['porcentaje_modificacion'],
+                    format_f(linia['porcentaje_modificacion'] or 0.0),
                     get_codi_actuacio(O, linia.get('motivacion') and linia['motivacion'][0]),
                 ]
                 output = map(lambda e: e or '', output)

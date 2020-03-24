@@ -191,8 +191,6 @@ def audit_6181_pos(**kwargs):
 @click.option('-w', '--password', default='admin',
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
-@click.option('--embarrats/--no-embarrats', default=False,
-              help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def audit_6181_maq(**kwargs):
     """
@@ -292,8 +290,6 @@ def audit_6181_cts(**kwargs):
 @click.option('-w', '--password', default='admin',
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
-@click.option('--embarrats/--no-embarrats', default=False,
-              help="Afegir embarrats")
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def audit_6181_des(**kwargs):
     """
