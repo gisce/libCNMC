@@ -4,7 +4,7 @@
 import traceback
 from os import environ
 
-from libcnmc.utils import format_f, get_name_ti, get_codigo_ccaa
+from libcnmc.utils import format_f, get_name_ti, get_codi_actuacio
 from libcnmc.core import MultiprocessBased
 
 
@@ -24,6 +24,8 @@ class CTS(MultiprocessBased):
         self.year = kwargs.pop("year")
         self.price_accuracy = int(environ.get('OPENERP_OBRES_PRICE_ACCURACY', '3'))
         super(CTS, self).__init__(**kwargs)
+        if kwargs.get("include_header", False):
+            self.file_header = self.get_header()
 
     def get_sequence(self):
         """
@@ -38,6 +40,31 @@ class CTS(MultiprocessBased):
         )
 
         return installations_ids[8]
+
+    def get_header(self):
+        return [
+            'IDENTIFICADOR',
+            'CINI',
+            'TIPO_INVERSION',
+            'CODIGO_CCUU',
+            'CODIGO_CCAA',
+            'NIVEL_TENSION_EXPLOTACION',
+            'FINANCIADO',
+            'FECHA_APS',
+            'FECHA_BAJA',
+            'CAUSA_BAJA',
+            'IM_INGENIERIA',
+            'IM_MATERIALES',
+            'IM_OBRACIVIL',
+            'IM_TRABAJOS',
+            'SUBVENCIONES_EUROPEAS',
+            'SUBVENCIONES_NACIONALES',
+            'VALOR_AUDITADO',
+            'VALOR_CONTABLE',
+            'CUENTA_CONTABLE',
+            'PORCENTAJE_MODIFICACION',
+            'MOTIVACION',
+        ]
 
     def consumer(self):
         """
@@ -68,6 +95,7 @@ class CTS(MultiprocessBased):
             'valor_contabilidad',
             'cuenta_contable',
             'porcentaje_modificacion',
+            'motivacion',
         ]
 
         while True:
@@ -101,6 +129,7 @@ class CTS(MultiprocessBased):
                              self.price_accuracy),
                     linia['cuenta_contable'],
                     linia['porcentaje_modificacion'],
+                    get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]),
                 ]
                 output = map(lambda e: e or '', output)
                 self.output_q.put(output)

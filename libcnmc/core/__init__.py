@@ -44,6 +44,7 @@ class MultiprocessBased(object):
         self.interactive = kwargs.pop('interactive', False)
         self.report_name = ''
         self.base_object = ''
+        self.file_header = []
         if 'SENTRY_DSN' in os.environ and Client:
             self.raven = Client()
             self.raven.tags_context({'version': VERSION})
@@ -104,6 +105,8 @@ class MultiprocessBased(object):
         else:
             fio = StringIO()
         fitxer = csv.writer(fio, delimiter=';', lineterminator='\n')
+        if self.file_header:
+            fitxer.writerow(self.file_header)
         while True:
             try:
                 item = self.output_q.get()

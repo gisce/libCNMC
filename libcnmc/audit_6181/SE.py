@@ -4,7 +4,6 @@
 import traceback
 from os import environ
 
-from libcnmc.utils import format_f, get_name_ti, get_codigo_ccaa
 from libcnmc.core import MultiprocessBased
 
 
@@ -22,6 +21,32 @@ class SE(MultiprocessBased):
         self.year = kwargs.pop("year")
         self.price_accuracy = int(environ.get('OPENERP_OBRES_PRICE_ACCURACY', '3'))
         super(SE, self).__init__(**kwargs)
+        if kwargs.get("include_header", False):
+            self.file_header = self.get_header()
+
+    def get_header(self):
+        return [
+            'IDENTIFICADOR',
+            'CINI',
+            'DENOMINACION',
+            'TIPO_SUELO',
+            'PLANIFICACION',
+            'IDENTIFICADOR_PARQUE_1',
+            'IDENTIFICADOR_PARQUE_2',
+            'IDENTIFICADOR_PARQUE_3',
+            'IDENTIFICADOR_PARQUE_4',
+            'CINI_PARQUE_1',
+            'CINI_PARQUE_2',
+            'CINI_PARQUE_3',
+            'CINI_PARQUE_4',
+            'NUM_POSICIONES_PARQUE_1',
+            'NUM_POSICIONES_PARQUE_2',
+            'NUM_POSICIONES_PARQUE_3',
+            'NUM_POSICIONES_PARQUE_4',
+            'PN_TRANSFORMACION',
+            'PN_REACTANCIAS',
+            'PN_CONDENSADORES',
+        ]
 
     def get_sequence(self):
         """
@@ -70,6 +95,8 @@ class SE(MultiprocessBased):
 
         while True:
             try:
+
+
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
