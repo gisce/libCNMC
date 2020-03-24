@@ -4,7 +4,8 @@
 import traceback
 from os import environ
 
-from libcnmc.utils import format_f, get_name_ti, get_codi_actuacio
+from libcnmc.utils import format_f, get_name_ti, get_codi_actuacio, \
+    format_ccaa_code, convert_spanish_date
 from libcnmc.core import MultiprocessBased
 
 
@@ -22,7 +23,7 @@ class CTS(MultiprocessBased):
         """
 
         self.year = kwargs.pop("year")
-        self.price_accuracy = int(environ.get('OPENERP_OBRES_PRICE_ACCURACY', '3'))
+        self.price_accuracy = int(environ.get('OPENERP_OBRES_PRICE_ACCURACY', '2'))
         super(CTS, self).__init__(**kwargs)
         if kwargs.get("include_header", False):
             self.file_header = self.get_header()
@@ -109,26 +110,22 @@ class CTS(MultiprocessBased):
                     linia['cini'],
                     linia['tipo_inversion'],
                     get_name_ti(O, linia['ccuu'] and linia['ccuu'][0]),
-                    linia['codigo_ccaa'],
+                    format_ccaa_code(linia['codigo_ccaa']),
                     linia['nivel_tension_explotacion'],
-                    linia['financiado'],
-                    linia['fecha_aps'],
-                    linia['fecha_baja'],
+                    format_f(linia['financiado']),
+                    convert_spanish_date(linia['fecha_aps']),
+                    convert_spanish_date(linia['fecha_baja']),
                     linia['causa_baja'],
-                    format_f(linia['im_ingenieria'] or 0.0,
-                             self.price_accuracy),
-                    format_f(linia['im_materiales'] or 0.0,
-                             self.price_accuracy),
+                    format_f(linia['im_ingenieria'] or 0.0, self.price_accuracy),
+                    format_f(linia['im_materiales'] or 0.0, self.price_accuracy),
                     format_f(linia['im_obracivil'] or 0.0, self.price_accuracy),
                     format_f(linia['im_trabajos'] or 0.0, self.price_accuracy),
                     format_f(linia['subvenciones_europeas'] or 0.0, self.price_accuracy),
                     format_f(linia['subvenciones_nacionales'] or 0.0, self.price_accuracy),
-                    format_f(linia['valor_auditado'] or 0.0,
-                             self.price_accuracy),
-                    format_f(linia['valor_contabilidad'] or 0.0,
-                             self.price_accuracy),
+                    format_f(linia['valor_auditado'] or 0.0, self.price_accuracy),
+                    format_f(linia['valor_contabilidad'] or 0.0, self.price_accuracy),
                     linia['cuenta_contable'],
-                    linia['porcentaje_modificacion'],
+                    format_f(linia['porcentaje_modificacion'] or 0.0),
                     get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]),
                 ]
                 output = map(lambda e: e or '', output)

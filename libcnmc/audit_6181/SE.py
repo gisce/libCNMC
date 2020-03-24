@@ -19,7 +19,7 @@ class SE(MultiprocessBased):
         """
 
         self.year = kwargs.pop("year")
-        self.price_accuracy = int(environ.get('OPENERP_OBRES_PRICE_ACCURACY', '3'))
+        self.price_accuracy = int(environ.get('OPENERP_OBRES_PRICE_ACCURACY', '2'))
         super(SE, self).__init__(**kwargs)
         if kwargs.get("include_header", False):
             self.file_header = self.get_header()
@@ -95,8 +95,6 @@ class SE(MultiprocessBased):
 
         while True:
             try:
-
-
                 item = self.input_q.get()
                 self.progress_q.put(item)
 

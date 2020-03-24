@@ -326,6 +326,24 @@ def format_f(num, decimals=2):
     return num
 
 
+def format_ccaa_code(ccaa):
+    if not ccaa:
+        return ''
+    if isinstance(ccaa, int):
+        ccaa = str(ccaa)
+    return ccaa.zfill(2)
+
+
+def convert_spanish_date(date):
+    from datetime import datetime
+    try:
+        date_parsed = datetime.strptime(str(date), '%Y-%m-%d')
+        date = date_parsed.strftime('%d/%m/%Y')
+    except:
+        pass
+    return date
+
+
 def convert_srid(srid_source, point):
     """
     Converts the projection of the point from srid_source to 25830
