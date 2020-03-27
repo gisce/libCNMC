@@ -33,6 +33,7 @@ def calc_report(process_cls, **kwargs):
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
+        prefix=kwargs.get('prefix', False),
         include_header=eval(kwargs['include_header'].title()),
         extended=kwargs.get('extended', False),
     )
