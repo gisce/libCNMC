@@ -110,13 +110,13 @@ class FIA(MultiprocessBased):
 
                 linia = O.GiscedataProjecteObraTiCelles.read([item], fields_to_read)[0]
                 output = [
-                    '{}{}'.format(self.prefix, linia['name']),
+                    linia['name'],
                     linia['cini'],
                     linia['tipo_inversion'],
                     get_name_ti(O, linia['ccuu'] and linia['ccuu'][0]),
                     format_ccaa_code(linia['codigo_ccaa']),
                     linia['nivel_tension_explotacion'],
-                    linia['elemento_act'],
+                    '{}{}'.format(self.prefix, linia['elemento_act']),
                     format_f(linia['financiado']),
                     convert_spanish_date(linia['fecha_aps']),
                     convert_spanish_date(linia['fecha_baja']),
