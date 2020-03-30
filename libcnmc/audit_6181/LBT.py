@@ -132,7 +132,7 @@ class LBT(MultiprocessBased):
                     get_name_ti(O, linia['ccuu'] and linia['ccuu'][0]),
                     format_ccaa_code(linia['codigo_ccaa_1']),
                     format_ccaa_code(linia['codigo_ccaa_2']),
-                    linia['nivel_tension_explotacion'],
+                    format_f(linia['nivel_tension_explotacion']),
                     linia['numero_circuitos'],
                     linia['numero_conductores'],
                     format_f(linia['longitud']),

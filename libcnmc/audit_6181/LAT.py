@@ -144,7 +144,7 @@ class LAT(MultiprocessBased):
                     linia['num_apoyo_suspension'],
                     linia['num_apoyo_amarre'],
                     linia['velocidad_viento'],
-                    linia['nivel_tension_explotacion'],
+                    format_f(linia['nivel_tension_explotacion']),
                     linia['numero_circuitos'],
                     linia['numero_conductores'],
                     format_f(linia['longitud']),
