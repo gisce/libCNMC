@@ -115,7 +115,7 @@ class FIA(MultiprocessBased):
                     linia['tipo_inversion'],
                     get_name_ti(O, linia['ccuu'] and linia['ccuu'][0]),
                     format_ccaa_code(linia['codigo_ccaa']),
-                    linia['nivel_tension_explotacion'],
+                    format_f(linia['nivel_tension_explotacion']),
                     '{}{}'.format(self.prefix, linia['elemento_act']),
                     format_f(linia['financiado']),
                     convert_spanish_date(linia['fecha_aps']),

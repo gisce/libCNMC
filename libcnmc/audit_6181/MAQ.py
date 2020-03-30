@@ -118,7 +118,7 @@ class MAQ(MultiprocessBased):
                     linia['identificador_emplazamiento'],
                     get_name_ti(O, linia['ccuu'] and linia['ccuu'][0]),
                     format_ccaa_code(linia['codigo_ccaa']),
-                    linia['nivel_tension_explotacion'],
+                    format_f(linia['nivel_tension_explotacion']),
                     linia['potencia_instalada'],
                     format_f(linia['financiado']),
                     linia['planificacion'],
