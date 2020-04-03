@@ -25,11 +25,14 @@ class DES(MultiprocessBased):
         self.year = kwargs.pop("year")
         self.price_accuracy = int(environ.get('OPENERP_OBRES_PRICE_ACCURACY', '2'))
         super(DES, self).__init__(**kwargs)
+        self.include_obres = False
+        if kwargs.get("include_obra", False):
+            self.include_obres = True
         if kwargs.get("include_header", False):
             self.file_header = self.get_header()
 
     def get_header(self):
-        return [
+        header = [
             'IDENTIFICADOR',
             'CINI',
             'FINANCIADO',
@@ -48,8 +51,10 @@ class DES(MultiprocessBased):
             'CUENTA_CONTABLE',
             'PORCENTAJE_MODIFICACION',
             'MOTIVACION',
-            'IDENTIFICADOR_OBRA'
         ]
+        if self.include_obres:
+            header.append('IDENTIFICADOR_OBRA')
+        return header
 
     def get_sequence(self):
         """
@@ -120,8 +125,9 @@ class DES(MultiprocessBased):
                     linia['cuenta_contable'],
                     format_f(linia['porcentaje_modificacion'] or 0.0),
                     get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]),
-                    linia['obra_id'][1],
                 ]
+                if self.include_obres:
+                    output.append(linia['obra_id'][1])
                 output = map(lambda e: e or '', output)
                 self.output_q.put(output)
 

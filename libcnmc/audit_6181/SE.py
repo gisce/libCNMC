@@ -21,11 +21,14 @@ class SE(MultiprocessBased):
         self.year = kwargs.pop("year")
         self.price_accuracy = int(environ.get('OPENERP_OBRES_PRICE_ACCURACY', '2'))
         super(SE, self).__init__(**kwargs)
+        self.include_obres = False
+        if kwargs.get("include_obra", False):
+            self.include_obres = True
         if kwargs.get("include_header", False):
             self.file_header = self.get_header()
 
     def get_header(self):
-        return [
+        header = [
             'IDENTIFICADOR',
             'CINI',
             'DENOMINACION',
@@ -46,8 +49,10 @@ class SE(MultiprocessBased):
             'PN_TRANSFORMACION',
             'PN_REACTANCIAS',
             'PN_CONDENSADORES',
-            'IDENTIFICADOR_OBRA',
         ]
+        if self.include_obres:
+            header.append('IDENTIFICADOR_OBRA')
+        return header
 
     def get_sequence(self):
         """
@@ -124,8 +129,9 @@ class SE(MultiprocessBased):
                     linia['pn_transformacion'],
                     linia['pn_reactancias'],
                     linia['pn_condensadores'],
-                    linia['obra_id'][1],
                 ]
+                if self.include_obres:
+                    output.append(linia['obra_id'][1])
                 output = map(lambda e: e or '', output)
                 self.output_q.put(output)
 

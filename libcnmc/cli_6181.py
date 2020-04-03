@@ -35,6 +35,7 @@ def calc_report(process_cls, **kwargs):
         year=kwargs['year'],
         prefix=kwargs.get('prefix', False),
         include_header=eval(kwargs['include_header'].title()),
+        include_obra=eval(kwargs['include_obra'].title()),
         extended=kwargs.get('extended', False),
     )
     proc.calc()
@@ -48,6 +49,7 @@ def calc_report(process_cls, **kwargs):
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
 @click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
+@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -82,6 +84,7 @@ def audit_6181_lat(**kwargs):
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
 @click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
+@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -116,6 +119,7 @@ def audit_6181_lbt(**kwargs):
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
 @click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
+@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -149,6 +153,7 @@ def audit_6181_se(**kwargs):
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
 @click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
+@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -182,6 +187,7 @@ def audit_6181_pos(**kwargs):
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
 @click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
+@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -215,6 +221,7 @@ def audit_6181_maq(**kwargs):
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
 @click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
+@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -248,6 +255,7 @@ def audit_6181_fia(**kwargs):
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
 @click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
+@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -281,6 +289,7 @@ def audit_6181_cts(**kwargs):
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
 @click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
+@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
