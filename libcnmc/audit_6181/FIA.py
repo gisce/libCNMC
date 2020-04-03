@@ -70,6 +70,13 @@ class FIA(MultiprocessBased):
 
         return installations_ids[7]
 
+    def renderElementoAct(self, elemento_act):
+        tram_at = self.connection.GiscedataAtTram.search([('name', '=', elemento_act)])
+        if tram_at:
+            return '{}{}'.format(self.prefix, elemento_act)
+        else:
+            return elemento_act
+
     def consumer(self):
         """
         Generates the line of the file
@@ -118,7 +125,7 @@ class FIA(MultiprocessBased):
                     get_name_ti(O, linia['ccuu'] and linia['ccuu'][0]),
                     format_ccaa_code(linia['codigo_ccaa']),
                     format_f(linia['nivel_tension_explotacion']),
-                    '{}{}'.format(self.prefix, linia['elemento_act']),
+                    self.renderElementoAct(linia['elemento_act']),
                     format_f(linia['financiado']),
                     convert_spanish_date(linia['fecha_aps']),
                     convert_spanish_date(linia['fecha_baja']),
