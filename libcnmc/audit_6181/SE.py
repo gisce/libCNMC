@@ -106,8 +106,8 @@ class SE(MultiprocessBased):
                 self.progress_q.put(item)
 
                 linia = O.GiscedataProjecteObraTiSubestacions.read(
-                    item, fields_to_read
-                )
+                    [item], fields_to_read
+                )[0]
                 output = [
                     linia['name'],
                     linia['cini'],
