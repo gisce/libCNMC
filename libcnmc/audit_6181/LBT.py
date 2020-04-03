@@ -137,7 +137,7 @@ class LBT(MultiprocessBased):
                     format_f(linia['nivel_tension_explotacion']),
                     linia['numero_circuitos'],
                     linia['numero_conductores'],
-                    format_f(linia['longitud'] or 0.0 / 1000.0),
+                    format_f((linia['longitud'] or 0.0) / 1000.0),
                     linia['intensidad_maxima'],
                     linia['seccion'],
                     format_f(linia['financiado']),
