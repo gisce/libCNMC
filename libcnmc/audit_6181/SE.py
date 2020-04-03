@@ -46,6 +46,7 @@ class SE(MultiprocessBased):
             'PN_TRANSFORMACION',
             'PN_REACTANCIAS',
             'PN_CONDENSADORES',
+            'IDENTIFICADOR_OBRA',
         ]
 
     def get_sequence(self):
@@ -91,6 +92,7 @@ class SE(MultiprocessBased):
             'pn_transformacion',
             'pn_reactancias',
             'pn_condensadores',
+            'obra_id'
         ]
 
         while True:
@@ -122,6 +124,7 @@ class SE(MultiprocessBased):
                     linia['pn_transformacion'],
                     linia['pn_reactancias'],
                     linia['pn_condensadores'],
+                    linia['obra_id'][1],
                 ]
                 output = map(lambda e: e or '', output)
                 self.output_q.put(output)

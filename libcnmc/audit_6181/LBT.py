@@ -59,6 +59,7 @@ class LBT(MultiprocessBased):
             'CUENTA_CONTABLE',
             'PORCENTAJE_MODIFICACION',
             'MOTIVACION',
+            'IDENTIFICADOR_OBRA',
         ]
 
     def get_sequence(self):
@@ -115,6 +116,7 @@ class LBT(MultiprocessBased):
             'cuenta_contable',
             'porcentaje_modificacion',
             'motivacion',
+            'obra_id',
         ]
 
         while True:
@@ -155,6 +157,7 @@ class LBT(MultiprocessBased):
                     linia['cuenta_contable'],
                     format_f(linia['porcentaje_modificacion'] or 0.0),
                     get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]),
+                    linia['obra_id'][1],
                 ]
                 output = map(lambda e: e or '', output)
                 self.output_q.put(output)
