@@ -34,8 +34,8 @@ def calc_report(process_cls, **kwargs):
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
         prefix=kwargs.get('prefix', False),
-        include_header=eval(kwargs['include_header'].title()),
-        include_obra=eval(kwargs['include_obra'].title()),
+        include_header=kwargs.get('include_header', False),
+        include_obra=kwargs.get('include_obra', False),
         extended=kwargs.get('extended', False),
     )
     proc.calc()
@@ -48,8 +48,8 @@ def calc_report(process_cls, **kwargs):
               help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
-@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
-@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False)
+@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False, type=click.BOOL)
+@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False, type=click.BOOL)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -83,8 +83,8 @@ def audit_6181_lat(**kwargs):
               help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
-@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
-@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False)
+@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False, type=click.BOOL)
+@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False, type=click.BOOL)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -118,8 +118,8 @@ def audit_6181_lbt(**kwargs):
               help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
-@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
-@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False)
+@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False, type=click.BOOL)
+@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False, type=click.BOOL)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -152,8 +152,8 @@ def audit_6181_se(**kwargs):
               help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
-@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
-@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False)
+@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False, type=click.BOOL)
+@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False, type=click.BOOL)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -186,8 +186,8 @@ def audit_6181_pos(**kwargs):
               help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
-@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
-@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False)
+@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False, type=click.BOOL)
+@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False, type=click.BOOL)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -220,8 +220,8 @@ def audit_6181_maq(**kwargs):
               help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
-@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
-@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False)
+@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False, type=click.BOOL)
+@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False, type=click.BOOL)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -254,8 +254,8 @@ def audit_6181_fia(**kwargs):
               help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
-@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
-@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False)
+@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False, type=click.BOOL)
+@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False, type=click.BOOL)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -288,8 +288,8 @@ def audit_6181_cts(**kwargs):
               help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
 @click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
-@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False)
-@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False)
+@click.option('-h', '--include-header', help='Incloure capçaleres al fitxer', default=False, type=click.BOOL)
+@click.option('--include-obra', help='Incloure obres com a ultima columna', default=False, type=click.BOOL)
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
