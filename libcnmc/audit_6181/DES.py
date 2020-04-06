@@ -49,8 +49,6 @@ class DES(MultiprocessBased):
             'VALOR_AUDITADO',
             'VALOR_CONTABLE',
             'CUENTA_CONTABLE',
-            'PORCENTAJE_MODIFICACION',
-            'MOTIVACION',
         ]
         if self.include_obres:
             header.append('IDENTIFICADOR_OBRA')
@@ -95,8 +93,6 @@ class DES(MultiprocessBased):
             'valor_auditado',
             'valor_contabilidad',
             'cuenta_contable',
-            'porcentaje_modificacion',
-            'motivacion',
             'obra_id'
         ]
 
@@ -123,8 +119,6 @@ class DES(MultiprocessBased):
                     format_f(linia['valor_auditado'] or 0.0, self.price_accuracy),
                     format_f(linia['valor_contabilidad'] or 0.0, self.price_accuracy),
                     linia['cuenta_contable'],
-                    format_f(linia['porcentaje_modificacion'] or 0.0),
-                    get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]),
                 ]
                 if self.include_obres:
                     output.append(linia['obra_id'][1])
