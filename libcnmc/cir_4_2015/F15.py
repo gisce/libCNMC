@@ -118,6 +118,43 @@ class F15(MultiprocessBased):
 
         return res
 
+    def get_node_vertex_tram(self, element_name):
+        o = self.connection
+        tram_name = ""
+        if element_name:
+            # Search on the diferent models
+            models = [
+                o.GiscegisBlocsInterruptorat, o.GiscegisBlocsFusiblesat,
+                o.GiscegisBlocsSeccionadorat, o.GiscegisBlocsSeccionadorunifilar
+            ]
+            for model in models:
+                bloc_id = model.search([('codi', '=', element_name)])
+                if bloc_id:
+                    bloc_id = bloc_id[0]
+                    bloc = model.read(bloc_id, ['node', 'vertex'])
+                    v = o.GiscegisVertex.read(bloc['vertex'][0], ['id'])
+                    polver_ids = o.GiscegisPolylineVertex.search(
+                        [('vertex', '=', v['id'])]
+                    )
+                    if polver_ids:
+                        poly_id = o.GiscegisPolyline.search(
+                            [('vertex_ids', 'in', polver_ids[0])]
+                        )[0]
+                        edge_id = o.GiscegisEdge.search(
+                            [('polyline', '=', poly_id)]
+                        )[0]
+                        linktemplate = o.GiscegisEdge.read(
+                            edge_id, ['id_linktemplate']
+                        )['id_linktemplate']
+                        tram_id = o.GiscedataAtTram.search(
+                            [('name', '=', linktemplate)]
+                        )
+                        tram_name = o.GiscedataAtTram.read(
+                            tram_id, ['name']
+                        )[0]['name']
+                        return "A{0}".format(tram_name)
+        return ""
+
     def consumer(self):
         """
         Function that generates each line of the file
@@ -147,6 +184,9 @@ class F15(MultiprocessBased):
                             cella['tram_id'][0], ['name']
                         )['name']
                     )
+                else:
+                    o_tram = self.get_node_vertex_tram(o_fiabilitat)
+
                 if cella.get("node_id"):
                     o_node = cella["node_id"][1]
                     vertex = wkt.loads(cella["geom"]).coords[0]
