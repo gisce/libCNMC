@@ -150,7 +150,7 @@ class LAT(MultiprocessBased):
                     linia['num_apoyo_total'],
                     linia['num_apoyo_suspension'],
                     linia['num_apoyo_amarre'],
-                    linia['velocidad_viento'],
+                    format_f_6181(linia['velocidad_viento'], float_type='decimal'),
                     format_f_6181(linia['nivel_tension_explotacion'], float_type='decimal'),
                     linia['numero_circuitos'],
                     linia['numero_conductores'],
