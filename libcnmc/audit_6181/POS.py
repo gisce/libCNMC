@@ -144,7 +144,7 @@ class POS(MultiprocessBased):
                 ]
                 if self.include_obres:
                     output.append(linia['obra_id'][1])
-                output = map(lambda e: e or '', output)
+                output = map(lambda e: '' if e is False or e is None else e, output)
                 self.output_q.put(output)
 
             except Exception:
