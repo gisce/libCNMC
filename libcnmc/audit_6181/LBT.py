@@ -5,7 +5,7 @@ import traceback
 from os import environ
 
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import get_name_ti, format_f, get_codi_actuacio, \
+from libcnmc.utils import get_name_ti, format_f_6181, get_codi_actuacio, \
     format_ccaa_code, convert_spanish_date
 
 
@@ -21,13 +21,14 @@ class LBT(MultiprocessBased):
         """
         self.year = kwargs.pop("year")
         self.prefix = kwargs.pop('prefix', 'B') or 'B'
-        self.price_accuracy = int(environ.get('OPENERP_OBRES_PRICE_ACCURACY', '2'))
+
         super(LBT, self).__init__(**kwargs)
         self.include_obres = False
         if kwargs.get("include_obra", False):
             self.include_obres = True
         if kwargs.get("include_header", False):
             self.file_header = self.get_header()
+
     def get_header(self):
         header = [
             'IDENTIFICADOR',
@@ -138,28 +139,28 @@ class LBT(MultiprocessBased):
                     get_name_ti(O, linia['ccuu'] and linia['ccuu'][0]),
                     format_ccaa_code(linia['codigo_ccaa_1']),
                     format_ccaa_code(linia['codigo_ccaa_2']),
-                    format_f(linia['nivel_tension_explotacion']),
+                    format_f_6181(linia['nivel_tension_explotacion'], float_type='decimal'),
                     linia['numero_circuitos'],
                     linia['numero_conductores'],
-                    format_f((linia['longitud'] or 0.0) / 1000.0),
+                    format_f_6181((linia['longitud'] or 0.0) / 1000.0, float_type='decimal'),
                     linia['intensidad_maxima'],
-                    linia['seccion'],
-                    format_f(linia['financiado']),
+                    format_f_6181(linia['seccion'], float_type='decimal'),
+                    format_f_6181(linia['financiado'], float_type='decimal'),
                     linia['tipo_suelo'],
                     linia['planificacion'],
                     convert_spanish_date(linia['fecha_aps']),
                     convert_spanish_date(linia['fecha_baja']),
                     linia['causa_baja'],
-                    format_f(linia['im_ingenieria'] or 0.0, self.price_accuracy),
-                    format_f(linia['im_materiales'] or 0.0, self.price_accuracy),
-                    format_f(linia['im_obracivil'] or 0.0, self.price_accuracy),
-                    format_f(linia['im_trabajos'] or 0.0, self.price_accuracy),
-                    format_f(linia['subvenciones_europeas'] or 0.0, self.price_accuracy),
-                    format_f(linia['subvenciones_nacionales'] or 0.0, self.price_accuracy),
-                    format_f(linia['valor_auditado'] or 0.0, self.price_accuracy),
-                    format_f(linia['valor_contabilidad'] or 0.0, self.price_accuracy),
+                    format_f_6181(linia['im_ingenieria'] or 0.0, float_type='euro'),
+                    format_f_6181(linia['im_materiales'] or 0.0, float_type='euro'),
+                    format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro'),
+                    format_f_6181(linia['im_trabajos'] or 0.0, float_type='euro'),
+                    format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro'),
+                    format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro'),
+                    format_f_6181(linia['valor_auditado'] or 0.0, float_type='euro'),
+                    format_f_6181(linia['valor_contabilidad'] or 0.0, float_type='euro'),
                     linia['cuenta_contable'],
-                    format_f(linia['porcentaje_modificacion'] or 0.0),
+                    format_f_6181(linia['porcentaje_modificacion'] or 0.0, float_type='decimal'),
                     get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]),
                 ]
                 if self.include_obres:

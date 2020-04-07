@@ -19,7 +19,7 @@ class SE(MultiprocessBased):
         """
 
         self.year = kwargs.pop("year")
-        self.price_accuracy = int(environ.get('OPENERP_OBRES_PRICE_ACCURACY', '2'))
+
         super(SE, self).__init__(**kwargs)
         self.include_obres = False
         if kwargs.get("include_obra", False):

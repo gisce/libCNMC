@@ -326,6 +326,24 @@ def format_f(num, decimals=2):
     return num
 
 
+def format_f_6181(num, decimals=2, float_type=None):
+    """
+    Formats float with comma decimal separator according to 6181 resolution specs
+
+    :param num:
+    :param decimals:
+    :param float_type: type of float the BOE defines.
+                       It can be either 'euro', which has 2 decimals, or
+                       'decimal', which has 3.
+    :return:
+    """
+
+    if isinstance(float_type, str):
+        decimals = 2 if float_type == 'euro' else 3 if float_type == 'decimal' else decimals
+
+    return format_f(num, decimals=decimals)
+
+
 def format_ccaa_code(ccaa):
     if not ccaa:
         return ''
