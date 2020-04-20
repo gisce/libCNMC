@@ -19,13 +19,16 @@ class SE(MultiprocessBased):
         """
 
         self.year = kwargs.pop("year")
-        self.price_accuracy = int(environ.get('OPENERP_OBRES_PRICE_ACCURACY', '2'))
+
         super(SE, self).__init__(**kwargs)
+        self.include_obres = False
+        if kwargs.get("include_obra", False):
+            self.include_obres = True
         if kwargs.get("include_header", False):
             self.file_header = self.get_header()
 
     def get_header(self):
-        return [
+        header = [
             'IDENTIFICADOR',
             'CINI',
             'DENOMINACION',
@@ -47,6 +50,9 @@ class SE(MultiprocessBased):
             'PN_REACTANCIAS',
             'PN_CONDENSADORES',
         ]
+        if self.include_obres:
+            header.append('IDENTIFICADOR_OBRA')
+        return header
 
     def get_sequence(self):
         """
@@ -91,6 +97,7 @@ class SE(MultiprocessBased):
             'pn_transformacion',
             'pn_reactancias',
             'pn_condensadores',
+            'obra_id'
         ]
 
         while True:
@@ -99,8 +106,8 @@ class SE(MultiprocessBased):
                 self.progress_q.put(item)
 
                 linia = O.GiscedataProjecteObraTiSubestacions.read(
-                    item, fields_to_read
-                )
+                    [item], fields_to_read
+                )[0]
                 output = [
                     linia['name'],
                     linia['cini'],
@@ -123,7 +130,9 @@ class SE(MultiprocessBased):
                     linia['pn_reactancias'],
                     linia['pn_condensadores'],
                 ]
-                output = map(lambda e: e or '', output)
+                if self.include_obres:
+                    output.append(linia['obra_id'][1])
+                output = map(lambda e: '' if e is False or e is None else e, output)
                 self.output_q.put(output)
 
             except Exception:

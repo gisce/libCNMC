@@ -2,11 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import traceback
-from os import environ
 
-from libcnmc.utils import format_f, get_name_ti, get_codi_actuacio, \
-    convert_spanish_date, format_ccaa_code
 from libcnmc.core import MultiprocessBased
+from libcnmc.utils import format_f_6181, get_name_ti, get_codi_actuacio, \
+    convert_spanish_date, format_ccaa_code
 
 
 class FIA(MultiprocessBased):
@@ -24,13 +23,16 @@ class FIA(MultiprocessBased):
 
         self.year = kwargs.pop("year")
         self.prefix = kwargs.pop('prefix', 'A') or 'A'
-        self.price_accuracy = int(environ.get('OPENERP_OBRES_PRICE_ACCURACY', '2'))
+
         super(FIA, self).__init__(**kwargs)
+        self.include_obres = False
+        if kwargs.get("include_obra", False):
+            self.include_obres = True
         if kwargs.get("include_header", False):
             self.file_header = self.get_header()
 
     def get_header(self):
-        return [
+        header = [
             'IDENTIFICADOR',
             'CINI',
             'TIPO_INVERSION',
@@ -54,6 +56,9 @@ class FIA(MultiprocessBased):
             'PORCENTAJE_MODIFICACION',
             'MOTIVACION',
         ]
+        if self.include_obres:
+            header.append('IDENTIFICADOR_OBRA')
+        return header
 
     def get_sequence(self):
         """
@@ -68,6 +73,16 @@ class FIA(MultiprocessBased):
         )
 
         return installations_ids[7]
+
+    def render_elemento_act(self, elemento_act):
+        try:
+            tram_at = self.connection.GiscedataAtTram.search(
+                [('name', '=', elemento_act)])
+            if tram_at:
+                return '{}{}'.format(self.prefix, elemento_act)
+        except:
+            pass
+        return elemento_act
 
     def consumer(self):
         """
@@ -101,6 +116,7 @@ class FIA(MultiprocessBased):
             'cuenta_contable',
             'porcentaje_modificacion',
             'motivacion',
+            'obra_id'
         ]
 
         while True:
@@ -110,30 +126,33 @@ class FIA(MultiprocessBased):
 
                 linia = O.GiscedataProjecteObraTiCelles.read([item], fields_to_read)[0]
                 output = [
-                    '{}{}'.format(self.prefix, linia['name']),
+                    linia['name'],
                     linia['cini'],
                     linia['tipo_inversion'],
                     get_name_ti(O, linia['ccuu'] and linia['ccuu'][0]),
                     format_ccaa_code(linia['codigo_ccaa']),
-                    linia['nivel_tension_explotacion'],
-                    linia['elemento_act'],
-                    format_f(linia['financiado']),
+                    format_f_6181(linia['nivel_tension_explotacion'], float_type='decimal'),
+                    self.render_elemento_act(linia['elemento_act']),
+                    format_f_6181(linia['financiado'], float_type='decimal'),
                     convert_spanish_date(linia['fecha_aps']),
                     convert_spanish_date(linia['fecha_baja']),
                     linia['causa_baja'],
-                    format_f(linia['im_ingenieria'] or 0.0, self.price_accuracy),
-                    format_f(linia['im_materiales'] or 0.0, self.price_accuracy),
-                    format_f(linia['im_obracivil'] or 0.0, self.price_accuracy),
-                    format_f(linia['im_trabajos'] or 0.0, self.price_accuracy),
-                    format_f(linia['subvenciones_europeas'] or 0.0, self.price_accuracy),
-                    format_f(linia['subvenciones_nacionales'] or 0.0, self.price_accuracy),
-                    format_f(linia['valor_auditado'] or 0.0, self.price_accuracy),
-                    format_f(linia['valor_contabilidad'] or 0.0, self.price_accuracy),
+                    format_f_6181(linia['im_ingenieria'] or 0.0, float_type='euro'),
+                    format_f_6181(linia['im_materiales'] or 0.0, float_type='euro'),
+                    format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro'),
+                    format_f_6181(linia['im_trabajos'] or 0.0, float_type='euro'),
+                    format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro'),
+                    format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro'),
+                    format_f_6181(linia['valor_auditado'] or 0.0, float_type='euro'),
+                    format_f_6181(linia['valor_contabilidad'] or 0.0, float_type='euro'),
                     linia['cuenta_contable'],
-                    format_f(linia['porcentaje_modificacion'] or 0.0),
+                    format_f_6181(linia['porcentaje_modificacion'] or 0.0, float_type='decimal'),
                     get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]),
                 ]
-                output = map(lambda e: e or '', output)
+                if self.include_obres:
+                    output.append(linia['obra_id'][1])
+
+                output = map(lambda e: '' if e is False or e is None else e, output)
                 self.output_q.put(output)
 
             except Exception:
