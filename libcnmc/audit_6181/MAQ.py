@@ -141,7 +141,10 @@ class MAQ(MultiprocessBased):
                     format_f_6181(linia['valor_auditado'] or 0.0, float_type='euro'),
                     format_f_6181(linia['valor_contabilidad'] or 0.0, float_type='euro'),
                     linia['cuenta_contable'],
-                    format_f_6181(linia['porcentaje_modificacion'] or 0.0, float_type='decimal'),
+                    (
+                        format_f_6181(linia['porcentaje_modificacion'] or 0.0, float_type='decimal')
+                        if linia['tipo_inversion'] != '0' else ''
+                    ),
                     get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]),
                 ]
                 if self.include_obres:
