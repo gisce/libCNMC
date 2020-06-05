@@ -345,6 +345,10 @@ def format_f_6181(num, decimals=2, float_type=None):
 
 
 def format_ccaa_code(ccaa):
+    """
+    E.g. Catalonia has ccaa code: 09.
+    If *ccaa* input is '9', the output will be '09'.
+    """
     if not ccaa:
         return ''
     if isinstance(ccaa, int):

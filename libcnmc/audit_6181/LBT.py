@@ -62,9 +62,10 @@ class LBT(MultiprocessBased):
             'CUENTA_CONTABLE',
             'PORCENTAJE_MODIFICACION',
             'MOTIVACION',
+            'IDENTIFICADOR_BAJA',
         ]
         if self.include_obres:
-            header.append('IDENTIFICADOR_OBRA')
+            header.insert(0, 'IDENTIFICADOR_OBRA')
         return header
 
     def get_sequence(self):
@@ -122,6 +123,7 @@ class LBT(MultiprocessBased):
             'porcentaje_modificacion',
             'motivacion',
             'obra_id',
+            'identificador_baja',
         ]
 
         while True:
@@ -150,7 +152,7 @@ class LBT(MultiprocessBased):
                     format_f_6181(linia['nivel_tension_explotacion'], float_type='decimal'),
                     linia['numero_circuitos'],
                     linia['numero_conductores'],
-                    format_f_6181((linia['longitud'] or 0.0) / 1000.0, float_type='decimal'),
+                    format_f_6181((linia['longitud'] or 1.0) / 1000.0, float_type='decimal'),
                     linia['intensidad_maxima'],
                     format_f_6181(linia['seccion'], float_type='decimal'),
                     format_f_6181(linia['financiado'], float_type='decimal'),
@@ -177,6 +179,7 @@ class LBT(MultiprocessBased):
                     ) if not linia['fecha_baja'] else '',
                     get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]) 
                     if not linia['fecha_baja'] else '',
+                    linia['identificador_baja'],
                 ]
                 if self.include_obres:
                     output.insert(0, linia['obra_id'][1])

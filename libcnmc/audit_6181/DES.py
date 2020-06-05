@@ -50,7 +50,7 @@ class DES(MultiprocessBased):
             'CUENTA_CONTABLE',
         ]
         if self.include_obres:
-            header.append('IDENTIFICADOR_OBRA')
+            header.insert(0, 'IDENTIFICADOR_OBRA')
         return header
 
     def get_sequence(self):

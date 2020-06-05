@@ -55,9 +55,10 @@ class FIA(MultiprocessBased):
             'CUENTA_CONTABLE',
             'PORCENTAJE_MODIFICACION',
             'MOTIVACION',
+            'IDENTIFICADOR_BAJA',
         ]
         if self.include_obres:
-            header.append('IDENTIFICADOR_OBRA')
+            header.insert(0, 'IDENTIFICADOR_OBRA')
         return header
 
     def get_sequence(self):
@@ -116,7 +117,8 @@ class FIA(MultiprocessBased):
             'cuenta_contable',
             'porcentaje_modificacion',
             'motivacion',
-            'obra_id'
+            'obra_id',
+            'identificador_baja',
         ]
 
         while True:
@@ -163,6 +165,7 @@ class FIA(MultiprocessBased):
                     ) if not linia['fecha_baja'] else '',
                     get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]) 
                     if not linia['fecha_baja'] else '',
+                    linia['identificador_baja'],
                 ]
                 if self.include_obres:
                     output.insert(0, linia['obra_id'][1])
