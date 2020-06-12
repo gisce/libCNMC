@@ -138,7 +138,7 @@ class FIA(MultiprocessBased):
                 output = [
                     linia['name'],
                     linia['cini'],
-                    linia['tipo_inversion'] if not linia['fecha_baja'] else '',
+                    (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '',
                     get_name_ti(O, linia['ccuu'] and linia['ccuu'][0]),
                     format_ccaa_code(linia['codigo_ccaa']),
                     format_f_6181(linia['nivel_tension_explotacion'], float_type='decimal'),
