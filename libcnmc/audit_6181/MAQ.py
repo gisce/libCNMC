@@ -114,6 +114,11 @@ class MAQ(MultiprocessBased):
             'identificador_baja',
         ]
 
+        def get_inst_name(element_id):
+            vals = self.connection.GiscedataBtElement.read(
+                element_id, ['name'])
+            return vals['name']
+
         while True:
             try:
                 item = self.input_q.get()
@@ -160,7 +165,7 @@ class MAQ(MultiprocessBased):
                     get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]) 
                     if not linia['fecha_baja'] else '',
                     (
-                        linia['identificador_baja'][1]
+                        get_inst_name(linia['identificador_baja'][0])
                         if linia['identificador_baja'] else ''
                     ),
                 ]

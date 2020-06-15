@@ -134,6 +134,11 @@ class LAT(MultiprocessBased):
             'identificador_baja',
         ]
 
+        def get_inst_name(element_id):
+            vals = self.connection.GiscedataBtElement.read(
+                element_id, ['name'])
+            return vals['name']
+
         while True:
             try:
                 item = self.input_q.get()
@@ -192,7 +197,7 @@ class LAT(MultiprocessBased):
                     get_codi_actuacio(O, linia.get('motivacion') and linia['motivacion'][0])
                     if not linia['fecha_baja'] else '',
                     (
-                        '{}{}'.format(self.prefix, linia['identificador_baja'][1])
+                        '{}{}'.format(self.prefix, get_inst_name(linia['identificador_baja'][0]))
                         if linia['identificador_baja'] else ''
                     ),
                 ]
