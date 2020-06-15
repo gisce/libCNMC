@@ -191,7 +191,10 @@ class LAT(MultiprocessBased):
                     ) if not linia['fecha_baja'] else '',
                     get_codi_actuacio(O, linia.get('motivacion') and linia['motivacion'][0])
                     if not linia['fecha_baja'] else '',
-                    linia['identificador_baja'],
+                    (
+                        '{}{}'.format(self.prefix, linia['identificador_baja'][1])
+                        if linia['identificador_baja'] else ''
+                    ),
                 ]
                 if self.include_obres:
                     output.insert(0, linia['obra_id'][1])
