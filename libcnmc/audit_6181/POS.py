@@ -156,7 +156,7 @@ class POS(MultiprocessBased):
                     linia['cuenta_contable'],
                     (
                         format_f_6181(
-                            max(linia['porcentaje_modificacion'] or 0.0, 100.0),
+                            linia['porcentaje_modificacion'] or 0.0,
                             float_type='decimal'
                         )
                         if linia['tipo_inversion'] != '0' else ''
