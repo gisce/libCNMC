@@ -156,7 +156,7 @@ class LAT(MultiprocessBased):
                 output = [
                     '{}{}'.format(self.prefix, linia['name']),
                     linia['cini'],
-                    (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '',
+                    (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1',
                     linia['origen'],
                     linia['destino'],
                     get_name_ti(O, linia['ccuu'] and linia['ccuu'][0]),
