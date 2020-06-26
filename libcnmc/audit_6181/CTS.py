@@ -120,7 +120,8 @@ class CTS(MultiprocessBased):
                 linia = O.GiscedataProjecteObraTiCts.read([item], fields_to_read)[0]
 
                 fecha_aps = convert_spanish_date(
-                    linia['fecha_aps'] if not linia['fecha_baja'] else ''
+                    linia['fecha_aps'] if not linia['fecha_baja']
+                                          and linia['tipo_inversion'] != '1' else ''
                 )
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data APS sortirà en blanc
