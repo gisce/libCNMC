@@ -135,7 +135,7 @@ class LAT(MultiprocessBased):
         ]
 
         def get_inst_name(element_id):
-            vals = self.connection.GiscedataBtElement.read(
+            vals = self.connection.GiscedataAtTram.read(
                 element_id, ['name'])
             return vals['name']
 

@@ -108,7 +108,7 @@ class CTS(MultiprocessBased):
         ]
 
         def get_inst_name(element_id):
-            vals = self.connection.GiscedataBtElement.read(
+            vals = self.connection.GiscedataCts.read(
                 element_id, ['name'])
             return vals['name']
 

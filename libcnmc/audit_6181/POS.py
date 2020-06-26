@@ -113,7 +113,7 @@ class POS(MultiprocessBased):
         ]
 
         def get_inst_name(element_id):
-            vals = self.connection.GiscedataBtElement.read(
+            vals = self.connection.GiscedataCtsSubestacionsPosicio.read(
                 element_id, ['name'])
             return vals['name']
 
