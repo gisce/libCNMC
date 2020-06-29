@@ -124,25 +124,25 @@ class F10AT(MultiprocessBased):
                             at['id'], ['edge_id']
                         )['edge_id']
                         if not at_edge:
-                            edge = {
-                                'start_node': (0, '%s_0' % at['name']),
-                                'end_node': (0, '%s_1' % at['name'])
-                            }
+                            res = o.GiscegisEdge.search(
+                                [
+                                    ('id_linktemplate', '=', at['name']),
+                                    ('layer', 'not ilike', self.layer),
+                                    ('layer', 'not ilike', 'EMBARRA%BT%')
+                                ]
+                            )
+                            if not res or len(res) > 1:
+                                edge = {
+                                    'start_node': (0, '%s_0' % at['name']),
+                                    'end_node': (0, '%s_1' % at['name'])
+                                }
+                            else:
+                                edge = o.GiscegisEdge.read(
+                                    res[0], ['start_node', 'end_node']
+                                )
                         else:
                             edge = o.GiscegisEdge.read(
                                 at_edge[0], ['start_node', 'end_node']
-                            )
-                        o_node_inicial = tallar_text(edge['start_node'][1], 20)
-                        o_node_inicial = o_node_inicial.replace('*', '')
-                        if o_node_inicial in self.nodes_red:
-                            o_node_inicial = "{}-{}".format(
-                                o_node_inicial, o_nivell_tensio
-                            )
-                        o_node_final = tallar_text(edge['end_node'][1], 20)
-                        o_node_final = o_node_final.replace('*', '')
-                        if o_node_final in self.nodes_red:
-                            o_node_final = "{}-{}".format(
-                                o_node_final, o_nivell_tensio
                             )
                     else:
                         res = o.GiscegisEdge.search(
@@ -161,18 +161,18 @@ class F10AT(MultiprocessBased):
                             edge = o.GiscegisEdge.read(
                                 res[0], ['start_node', 'end_node']
                             )
-                        o_node_inicial = tallar_text(edge['start_node'][1], 20)
-                        o_node_inicial = o_node_inicial.replace('*', '')
-                        if o_node_inicial in self.nodes_red:
-                            o_node_inicial = "{}-{}".format(
-                                o_node_inicial, o_nivell_tensio
-                            )
-                        o_node_final = tallar_text(edge['end_node'][1], 20)
-                        o_node_final = o_node_final.replace('*', '')
-                        if o_node_final in self.nodes_red:
-                            o_node_final = "{}-{}".format(
-                                o_node_final, o_nivell_tensio
-                            )
+                    o_node_inicial = tallar_text(edge['start_node'][1], 20)
+                    o_node_inicial = o_node_inicial.replace('*', '')
+                    if o_node_inicial in self.nodes_red:
+                        o_node_inicial = "{}-{}".format(
+                            o_node_inicial, o_nivell_tensio
+                        )
+                    o_node_final = tallar_text(edge['end_node'][1], 20)
+                    o_node_final = o_node_final.replace('*', '')
+                    if o_node_final in self.nodes_red:
+                        o_node_final = "{}-{}".format(
+                            o_node_final, o_nivell_tensio
+                        )
                     o_cini = at['cini']
                     o_provincia = ''
                     if linia['provincia']:

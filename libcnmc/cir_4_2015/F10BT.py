@@ -103,18 +103,23 @@ class F10BT(MultiprocessBased):
                         linia['id'], ['edge_id']
                     )['edge_id']
                     if not bt_edge:
-                        edge = {
-                            'start_node': (0, '%s_0' % linia['name']),
-                            'end_node': (0, '%s_1' % linia['name'])
-                        }
+                        res = o.GiscegisEdge.search(
+                            [('id_linktemplate', '=', linia['name']),
+                             '|',
+                             ('layer', 'ilike', self.layer),
+                             ('layer', 'ilike', 'EMBARRA%BT%')
+                             ])
+                        if not res or len(res) > 1:
+                            edge = {'start_node': (0, '%s_0' % linia['name']),
+                                    'end_node': (0, '%s_1' % linia['name'])}
+                        else:
+                            edge = o.GiscegisEdge.read(
+                                res[0], ['start_node', 'end_node']
+                            )
                     else:
                         edge = o.GiscegisEdge.read(
                             bt_edge[0], ['start_node', 'end_node']
                         )
-                    o_node_inicial = tallar_text(edge['start_node'][1], 20)
-                    o_node_inicial = o_node_inicial.replace('*', '')
-                    o_node_final = tallar_text(edge['end_node'][1], 20)
-                    o_node_final = o_node_final.replace('*', '')
                 else:
                     res = o.GiscegisEdge.search(
                         [('id_linktemplate', '=', linia['name']),
@@ -128,10 +133,10 @@ class F10BT(MultiprocessBased):
                     else:
                         edge = o.GiscegisEdge.read(res[0], ['start_node',
                                                             'end_node'])
-                    o_node_inicial = tallar_text(edge['start_node'][1], 20)
-                    o_node_inicial = o_node_inicial.replace('*', '')
-                    o_node_final = tallar_text(edge['end_node'][1], 20)
-                    o_node_final = o_node_final.replace('*', '')
+                o_node_inicial = tallar_text(edge['start_node'][1], 20)
+                o_node_inicial = o_node_inicial.replace('*', '')
+                o_node_final = tallar_text(edge['end_node'][1], 20)
+                o_node_final = o_node_final.replace('*', '')
                 o_cini = linia['cini']
                 o_provincia = ''
                 if linia['municipi']:
