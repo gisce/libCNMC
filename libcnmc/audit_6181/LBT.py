@@ -158,7 +158,7 @@ class LBT(MultiprocessBased):
                     format_f_6181(linia['nivel_tension_explotacion'], float_type='decimal'),
                     linia['numero_circuitos'],
                     linia['numero_conductores'],
-                    format_f_6181((linia['longitud'] or 1.0) / 1000.0, float_type='decimal'),
+                    format_f_6181(linia['longitud'] / 1000.0, float_type='decimal') or 0.001,
                     linia['intensidad_maxima'],
                     format_f_6181(linia['seccion'], float_type='decimal'),
                     format_f_6181(linia['financiado'], float_type='decimal'),
