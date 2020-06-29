@@ -52,7 +52,7 @@ class F14(MultiprocessBased):
         res = ''
         if trafo['conexions']:
             con = o.GiscedataTransformadorConnexio.read(trafo['conexions'][0])
-            tensio = con['tensio_primari']
+            tensio = con['tensio_b1']
             tensio_n = get_norm_tension(o, tensio)
             se_id = trafo['ct'][1]
             parc_id = o.GiscedataParcs.search(
