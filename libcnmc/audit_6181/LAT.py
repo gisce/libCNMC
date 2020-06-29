@@ -152,7 +152,7 @@ class LAT(MultiprocessBased):
                 )
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data APS sortirà en blanc
-                fecha_aps = '' if fecha_aps and int(fecha_aps.split('/')[2]) == self.year \
+                fecha_aps = '' if fecha_aps and int(fecha_aps.split('/')[2]) != self.year \
                     else fecha_aps
                 output = [
                     '{}{}'.format(self.prefix, linia['name']),
