@@ -34,10 +34,14 @@ class F14(MultiprocessBased):
         res = ''
         if trafo['conexions']:
             con = o.GiscedataTransformadorConnexio.read(trafo['conexions'][0])
-            tensio_id = con['tensio_primari'][1]
+            tensio = con['tensio_primari']
+            tensio_n = get_norm_tension(o, tensio)
             se_id = trafo['ct'][1]
             parc_id = o.GiscedataParcs.search(
-                [('subestacio_id', '=', se_id), ('tensio_id', '=', tensio_id)]
+                [
+                    ('subestacio_id', '=', se_id),
+                    ('tensio_id.tensio', '=', tensio_n)
+                ]
             )
             if parc_id:
                 res = o.GiscedataParcs.read(parc_id[0], ['name'])['name']
@@ -48,10 +52,14 @@ class F14(MultiprocessBased):
         res = ''
         if trafo['conexions']:
             con = o.GiscedataTransformadorConnexio.read(trafo['conexions'][0])
-            tensio_id = con['tensio_primari'][1]
+            tensio = con['tensio_primari']
+            tensio_n = get_norm_tension(o, tensio)
             se_id = trafo['ct'][1]
             parc_id = o.GiscedataParcs.search(
-                [('subestacio_id', '=', se_id), ('tensio_id', '=', tensio_id)]
+                [
+                    ('subestacio_id', '=', se_id),
+                    ('tensio_id.tensio', '=', tensio_n)
+                ]
             )
             if parc_id:
                 res = o.GiscedataParcs.read(parc_id[0], ['name'])['name']
