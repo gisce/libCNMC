@@ -155,6 +155,8 @@ class CON(MultiprocessBased):
                     fecha_baja = ''
                 if cond['data_pm'] > data_baixa_limit:
                     estado = '2'
+                elif fecha_baja != '':
+                    estado = '1'
                 else:
                     estado = '0'
                 capacidad = format_f(cond['potencia_instalada']/1000, 3)

@@ -188,7 +188,7 @@ class LBT(MultiprocessBased):
                         format_f(capacitat, 3),
                         0
                     )
-                    if actual == entregada:
+                    if actual == entregada and fecha_baja == '':
                         estado = 0
                     else:
                         self.output_m.put("{} {}".format(linia["name"], adapt_diff(actual.diff(entregada))))

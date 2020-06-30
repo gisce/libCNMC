@@ -303,7 +303,7 @@ class LAT(MultiprocessBased):
                             str(capacitat),
                             0
                         )
-                        if actual == entregada:
+                        if actual == entregada and fecha_baja == '':
                             estado = 0
                         else:
                             self.output_m.put("{} {}".format(tram["name"], adapt_diff(actual.diff(entregada))))
