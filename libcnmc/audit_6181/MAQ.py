@@ -57,9 +57,10 @@ class MAQ(MultiprocessBased):
             'CUENTA_CONTABLE',
             'PORCENTAJE_MODIFICACION',
             'MOTIVACION',
+            'IDENTIFICADOR_BAJA',
         ]
         if self.include_obres:
-            header.append('IDENTIFICADOR_OBRA')
+            header.insert(0, 'IDENTIFICADOR_OBRA')
         return header
 
     def get_sequence(self):
@@ -109,8 +110,14 @@ class MAQ(MultiprocessBased):
             'cuenta_contable',
             'porcentaje_modificacion',
             'motivacion',
-            'obra_id'
+            'obra_id',
+            'identificador_baja',
         ]
+
+        def get_inst_name(element_id):
+            vals = self.connection.GiscedataTransformadorTrafo.read(
+                element_id, ['name'])
+            return vals['name']
 
         while True:
             try:
@@ -118,10 +125,18 @@ class MAQ(MultiprocessBased):
                 self.progress_q.put(item)
 
                 linia = O.GiscedataProjecteObraTiTransformador.read([item], fields_to_read)[0]
+                fecha_aps = convert_spanish_date(
+                    linia['fecha_aps'] if not linia['fecha_baja']
+                                          and linia['tipo_inversion'] != '1' else ''
+                )
+                # Si la data APS es igual a l'any de la generació del fitxer,
+                # la data APS sortirà en blanc
+                fecha_aps = '' if fecha_aps and int(fecha_aps.split('/')[2]) != self.year \
+                    else fecha_aps
                 output = [
                     linia['name'],
                     linia['cini'],
-                    linia['tipo_inversion'],
+                    (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1',
                     linia['identificador_emplazamiento'],
                     get_name_ti(O, linia['ccuu'] and linia['ccuu'][0]),
                     format_ccaa_code(linia['codigo_ccaa']),
@@ -129,7 +144,7 @@ class MAQ(MultiprocessBased):
                     linia['potencia_instalada'],
                     format_f_6181(linia['financiado'], float_type='decimal'),
                     linia['planificacion'],
-                    convert_spanish_date(linia['fecha_aps']),
+                    fecha_aps,
                     convert_spanish_date(linia['fecha_baja']),
                     linia['causa_baja'],
                     format_f_6181(linia['im_ingenieria'] or 0.0, float_type='euro'),
@@ -141,11 +156,19 @@ class MAQ(MultiprocessBased):
                     format_f_6181(linia['valor_auditado'] or 0.0, float_type='euro'),
                     format_f_6181(linia['valor_contabilidad'] or 0.0, float_type='euro'),
                     linia['cuenta_contable'],
-                    format_f_6181(linia['porcentaje_modificacion'] or 0.0, float_type='decimal'),
-                    get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]),
+                    format_f_6181(
+                        linia['porcentaje_modificacion'] or 0.0,
+                        float_type='decimal'
+                    ) if not linia['fecha_baja'] else '',
+                    get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]) 
+                    if not linia['fecha_baja'] else '',
+                    (
+                        get_inst_name(linia['identificador_baja'][0])
+                        if linia['identificador_baja'] else ''
+                    ),
                 ]
                 if self.include_obres:
-                    output.append(linia['obra_id'][1])
+                    output.insert(0, linia['obra_id'][1])
                 output = map(lambda e: '' if e is False or e is None else e, output)
                 self.output_q.put(output)
 

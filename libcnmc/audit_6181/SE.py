@@ -51,7 +51,7 @@ class SE(MultiprocessBased):
             'PN_CONDENSADORES',
         ]
         if self.include_obres:
-            header.append('IDENTIFICADOR_OBRA')
+            header.insert(0, 'IDENTIFICADOR_OBRA')
         return header
 
     def get_sequence(self):
@@ -131,7 +131,7 @@ class SE(MultiprocessBased):
                     linia['pn_condensadores'],
                 ]
                 if self.include_obres:
-                    output.append(linia['obra_id'][1])
+                    output.insert(0, linia['obra_id'][1])
                 output = map(lambda e: '' if e is False or e is None else e, output)
                 self.output_q.put(output)
 
