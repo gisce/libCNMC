@@ -35,7 +35,16 @@ class F14(MultiprocessBased):
         if trafo['conexions']:
             con = o.GiscedataTransformadorConnexio.read(trafo['conexions'][0])
             tensio = con['tensio_primari']
-            res = get_norm_tension(o, tensio)
+            tensio_n = get_norm_tension(o, tensio)
+            se_id = trafo['ct'][1]
+            parc_id = o.GiscedataParcs.search(
+                [
+                    ('subestacio_id', '=', se_id),
+                    ('tensio_id.tensio', '=', tensio_n)
+                ]
+            )
+            if parc_id:
+                res = o.GiscedataParcs.read(parc_id[0], ['name'])['name']
         return res
 
     def get_costat_baixa(self, trafo):
@@ -44,7 +53,16 @@ class F14(MultiprocessBased):
         if trafo['conexions']:
             con = o.GiscedataTransformadorConnexio.read(trafo['conexions'][0])
             tensio = con['tensio_b1']
-            res = get_norm_tension(o, tensio)
+            tensio_n = get_norm_tension(o, tensio)
+            se_id = trafo['ct'][1]
+            parc_id = o.GiscedataParcs.search(
+                [
+                    ('subestacio_id', '=', se_id),
+                    ('tensio_id.tensio', '=', tensio_n)
+                ]
+            )
+            if parc_id:
+                res = o.GiscedataParcs.read(parc_id[0], ['name'])['name']
         return res
 
 
