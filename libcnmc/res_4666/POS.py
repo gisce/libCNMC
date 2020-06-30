@@ -201,7 +201,7 @@ class POS(MultiprocessBased):
                         fecha_baja,
                         0
                     )
-                    if entregada == actual:
+                    if entregada == actual and fecha_baja == '':
                         estado = 0
                     else:
                         self.output_m.put("{} {}".format(pos["name"], adapt_diff(actual.diff(entregada))))

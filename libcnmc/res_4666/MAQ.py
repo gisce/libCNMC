@@ -224,7 +224,7 @@ class MAQ(MultiprocessBased):
                         format_f(capacitat, 3),
                         0
                     )
-                    if entregada == actual:
+                    if entregada == actual and fecha_baja == '':
                         estado = '0'
                     else:
                         self.output_m.put("{} {}".format(trafo["name"], adapt_diff(actual.diff(entregada))))
