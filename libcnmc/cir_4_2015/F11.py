@@ -100,8 +100,9 @@ class F11(MultiprocessBased):
         utilitzades = 0
 
         try:
+            id_intbt = O.GiscedataBtQuadreElementTipus.search([("code", "=", "INT_BT")])
             quadres_bt_ids = O.GiscedataBtQuadreElement.search(
-                [("ct_id", "=", ct_id)]
+                [("ct_id", "=", ct_id),("blockname", "!=", id_intbt)]
             )
 
             disponibles = len(quadres_bt_ids)
