@@ -465,9 +465,9 @@ def parse_geom(geom):
     if geom:
         points = [
             {
-                'x': str(x[0]).replace('.', ','),
-                'y': str(x[1]).replace('.', ',')
-            } for x in wkt.loads(geom).coords
+                'x': coord[0],
+                'y': coord[1]
+            } for coord in wkt.loads(geom).coords
         ]
     else:
         points = []
