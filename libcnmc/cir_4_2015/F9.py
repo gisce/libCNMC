@@ -181,39 +181,47 @@ class F9(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
                 if item[1] == 'at':
+                    if 'id_regulatori' in o.GiscedataAtTram.fields_get().keys():
+                        name = 'id_regulatori'
+                    else:
+                        name = 'name'
                     if 'geom' in o.GiscedataAtTram.fields_get().keys():
-                        at = o.GiscedataAtTram.read(item[0], ['geom', 'name'])
+                        at = o.GiscedataAtTram.read(item[0], ['geom', name])
                         if at['geom']:
                             data = parse_geom(at['geom'])
                         else:
-                            data = self.get_geom(at['name'], 'at')
+                            data = self.get_geom(at[name], 'at')
                     else:
-                        at = o.GiscedataAtTram.read(item[0], ['name'])
-                        data = self.get_geom(at['name'], 'at')
+                        at = o.GiscedataAtTram.read(item[0], [name])
+                        data = self.get_geom(at[name], 'at')
                     if self.alternative:
                         data = self.conv_text_alt(data)
                         linia = data.replace('t_name', 'A' + str(at['name']))
                     else:
                         data = self.conv_text(data)
-                        linia = 'A{0}\n{1}\nEND'.format(at['name'], data)
+                        linia = 'A{0}\n{1}\nEND'.format(at[name], data)
                 else:
                     if 'geom' in o.GiscedataBtElement.fields_get().keys():
+                        if 'id_regulatori' in o.GiscedataBtElement.fields_get().keys():
+                            name = 'id_regulatori'
+                        else:
+                            name = 'name'
                         bt = o.GiscedataBtElement.read(
-                            item[0], ['geom', 'name']
+                            item[0], ['geom', name]
                         )
                         if bt['geom']:
                             data = parse_geom(bt['geom'])
                         else:
-                            data = self.get_geom(bt['name'], 'bt')
+                            data = self.get_geom(bt[name], 'bt')
                     else:
-                        bt = o.GiscedataBtElement.read(item[0], ['name'])
-                        data = self.get_geom(bt['name'], 'bt')
+                        bt = o.GiscedataBtElement.read(item[0], [name])
+                        data = self.get_geom(bt[name], 'bt')
                     if self.alternative:
                         data = self.conv_text_alt(data)
-                        linia = data.replace('t_name', 'B' + str(bt['name']))
+                        linia = data.replace('t_name', 'B' + str(bt[name]))
                     else:
                         data = self.conv_text(data)
-                        linia = 'B{0}\n{1}\nEND'.format(bt['name'], data)
+                        linia = 'B{0}\n{1}\nEND'.format(bt[name], data)
                 self.output_q.put([linia])
             except:
                 traceback.print_exc()

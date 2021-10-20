@@ -86,7 +86,7 @@ class LBT(MultiprocessBased):
             'name', 'municipi', 'data_pm', 'ct', 'coeficient', 'cini',
             'perc_financament', 'longitud_cad', 'cable', 'voltatge',
             'data_alta', 'propietari', 'tipus_instalacio_cnmc_id', 'baixa',
-            'data_baixa', "edge_id", self.compare_field
+            'data_baixa', "edge_id", self.compare_field, 'id_regulatori'
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         while True:
@@ -166,42 +166,75 @@ class LBT(MultiprocessBased):
                     entregada = F2Res4666(**last_data)
                     origen = last_data["origen"]
                     final = last_data["destino"]
-                    actual = F2Res4666(
-                        '{}{}'.format(self.prefix, linia['name']),
-                        linia['cini'],
-                        origen or '',
-                        final or '',
-                        codi_ccuu or '',
-                        comunitat,
-                        comunitat,
-                        format_f(
-                            100.0 - linia.get('perc_financament', 0.0), 2
-                        ),
-                        data_pm,
-                        data_baixa,
-                        1,
-                        1,
-                        format_f(tensio, 3),
-                        format_f(longitud, 3),
-                        format_f(intensitat),
-                        format_f(float(cable['seccio']), 2),
-                        format_f(capacitat, 3),
-                        0
-                    )
+                    if linia['id_regulatori']:
+                        actual = F2Res4666(
+                            '{}{}'.format(self.prefix, linia['id_regulatori']),
+                            linia['cini'],
+                            origen or '',
+                            final or '',
+                            codi_ccuu or '',
+                            comunitat,
+                            comunitat,
+                            format_f(
+                                100.0 - linia.get('perc_financament', 0.0), 2
+                            ),
+                            data_pm,
+                            data_baixa,
+                            1,
+                            1,
+                            format_f(tensio, 3),
+                            format_f(longitud, 3),
+                            format_f(intensitat),
+                            format_f(float(cable['seccio']), 2),
+                            format_f(capacitat, 3),
+                            0
+                        )
+                    else:
+                        actual = F2Res4666(
+                            '{}{}'.format(self.prefix, linia['name']),
+                            linia['cini'],
+                            origen or '',
+                            final or '',
+                            codi_ccuu or '',
+                            comunitat,
+                            comunitat,
+                            format_f(
+                                100.0 - linia.get('perc_financament', 0.0), 2
+                            ),
+                            data_pm,
+                            data_baixa,
+                            1,
+                            1,
+                            format_f(tensio, 3),
+                            format_f(longitud, 3),
+                            format_f(intensitat),
+                            format_f(float(cable['seccio']), 2),
+                            format_f(capacitat, 3),
+                            0
+                        )
                     if actual == entregada and fecha_baja == '':
                         estado = 0
                     else:
-                        self.output_m.put("{} {}".format(linia["name"], adapt_diff(actual.diff(entregada))))
+                        if linia['id_regulatori']:
+                            self.output_m.put("{} {}".format(linia["id_regulatori"],adapt_diff(actual.diff(entregada))))
+                        else:
+                            self.output_m.put("{} {}".format(linia["name"], adapt_diff(actual.diff(entregada))))
                         estado = 1
                 else:
                     if linia['data_pm']:
                         if linia['data_pm'][:4] != str(self.year):
-                            self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(linia["name"]))
+                            if linia['id_regulatori']:
+                                self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(linia["id_regulatori"]))
+                            else:
+                                self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(linia["name"]))
                             estado = '1'
                         else:
                             estado = '2'
                     else:
-                        self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(linia["name"]))
+                        if linia['id_regulatori']:
+                            self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(linia["id_regulatori"]))
+                        else:
+                            self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(linia["name"]))
                         estado = '1'
                 if linia.get("edge_id", False):
                     edge_id =  linia["edge_id"][0]
@@ -226,31 +259,60 @@ class LBT(MultiprocessBased):
                         # El tram ha estat donat de baixa aquest any i ja no
                         # te edge. Utilitzem el seu propi nom com a nus inicial
                         # i nus final
-                        origen = str(linia['name']) + '_0'
-                        final = str(linia['name']) + '_1'
+                        if linia['id_regulatori']:
+                            origen = str(linia['id_regulatori']) + '_0'
+                            final = str(linia['id_regulatori']) + '_1'
+                        else:
+                            origen = str(linia['name']) + '_0'
+                            final = str(linia['name']) + '_1'
 
-                output = [
-                    '{}{}'.format(self.prefix, linia['name']),  # IDENTIFICADOR
-                    linia['cini'] or '',            # CINI
-                    origen or '',                   # ORIGEN
-                    final or '',                    # DESTINO
-                    codi_ccuu or '',                # CODIGO_CCUU
-                    comunitat,                      # CODIGO_CCAA
-                    comunitat,                      # CODIGO_CCAA_2
-                    format_f(
-                        100.0 - linia.get('perc_financament', 0.0), 2
-                    ),                              # FINANCIADO
-                    data_pm or '',                  # FECHA_APS
-                    fecha_baja,                     # FECHA_BAJA
-                    1,                              # NUMERO CIRCUITOS
-                    1,                              # NUMERO CONDUCTORES
-                    format_f(tensio, 3),            # NIVEL_TENSION
-                    format_f(longitud, 3),          # LONGITUD
-                    format_f(intensitat, 3),        # INTENSITAT MAXIMA
-                    format_f(cable['seccio'], 3),   # SECCION
-                    format_f(capacitat, 3),         # CAPACIDAD
-                    estado                          # ESTADO
-                ]
+                if linia['id_regulatori']:
+                    output = [
+                        '{}{}'.format(self.prefix, linia['id_regulatori']),
+                        # IDENTIFICADOR
+                        linia['cini'] or '',  # CINI
+                        origen or '',  # ORIGEN
+                        final or '',  # DESTINO
+                        codi_ccuu or '',  # CODIGO_CCUU
+                        comunitat,  # CODIGO_CCAA
+                        comunitat,  # CODIGO_CCAA_2
+                        format_f(
+                            100.0 - linia.get('perc_financament', 0.0), 2
+                        ),  # FINANCIADO
+                        data_pm or '',  # FECHA_APS
+                        fecha_baja,  # FECHA_BAJA
+                        1,  # NUMERO CIRCUITOS
+                        1,  # NUMERO CONDUCTORES
+                        format_f(tensio, 3),  # NIVEL_TENSION
+                        format_f(longitud, 3),  # LONGITUD
+                        format_f(intensitat, 3),  # INTENSITAT MAXIMA
+                        format_f(cable['seccio'], 3),  # SECCION
+                        format_f(capacitat, 3),  # CAPACIDAD
+                        estado  # ESTADO
+                    ]
+                else:
+                    output = [
+                        '{}{}'.format(self.prefix, linia['name']),  # IDENTIFICADOR
+                        linia['cini'] or '',            # CINI
+                        origen or '',                   # ORIGEN
+                        final or '',                    # DESTINO
+                        codi_ccuu or '',                # CODIGO_CCUU
+                        comunitat,                      # CODIGO_CCAA
+                        comunitat,                      # CODIGO_CCAA_2
+                        format_f(
+                            100.0 - linia.get('perc_financament', 0.0), 2
+                        ),                              # FINANCIADO
+                        data_pm or '',                  # FECHA_APS
+                        fecha_baja,                     # FECHA_BAJA
+                        1,                              # NUMERO CIRCUITOS
+                        1,                              # NUMERO CONDUCTORES
+                        format_f(tensio, 3),            # NIVEL_TENSION
+                        format_f(longitud, 3),          # LONGITUD
+                        format_f(intensitat, 3),        # INTENSITAT MAXIMA
+                        format_f(cable['seccio'], 3),   # SECCION
+                        format_f(capacitat, 3),         # CAPACIDAD
+                        estado                          # ESTADO
+                    ]
 
                 if self.extended:
 

@@ -59,7 +59,7 @@ class F10AT(MultiprocessBased):
         o = self.connection
         fields_to_read = [
             'name', 'cini', 'circuits', 'longitud_cad', 'linia', 'origen',
-            'final', 'coeficient', 'cable', 'tensio_max_disseny','tensio_max_disseny_id'
+            'final', 'coeficient', 'cable', 'tensio_max_disseny','tensio_max_disseny_id', 'id_regulatori'
         ]
         data_pm_limit = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
@@ -118,7 +118,11 @@ class F10AT(MultiprocessBased):
                         o_nivell_tensio = linia["tensio"]
                     o_nivell_tensio = format_f(
                         float(o_nivell_tensio) / 1000.0, 3)
-                    o_tram = 'A%s' % at['name']
+                    if 'id_regulatori' in o.GiscedataAtTram.fields_get().keys():
+                        name = 'id_regulatori'
+                    else:
+                        name = 'name'
+                    o_tram = 'A%s' % at[name]
                     if 'edge_id' in o.GiscedataAtTram.fields_get().keys():
                         at_edge = o.GiscedataAtTram.read(
                             at['id'], ['edge_id']
@@ -126,15 +130,15 @@ class F10AT(MultiprocessBased):
                         if not at_edge:
                             res = o.GiscegisEdge.search(
                                 [
-                                    ('id_linktemplate', '=', at['name']),
+                                    ('id_linktemplate', '=', at[name]),
                                     ('layer', 'not ilike', self.layer),
                                     ('layer', 'not ilike', 'EMBARRA%BT%')
                                 ]
                             )
                             if not res or len(res) > 1:
                                 edge = {
-                                    'start_node': (0, '%s_0' % at['name']),
-                                    'end_node': (0, '%s_1' % at['name'])
+                                    'start_node': (0, '%s_0' % at[name]),
+                                    'end_node': (0, '%s_1' % at[name])
                                 }
                             else:
                                 edge = o.GiscegisEdge.read(
@@ -147,15 +151,15 @@ class F10AT(MultiprocessBased):
                     else:
                         res = o.GiscegisEdge.search(
                             [
-                                ('id_linktemplate', '=', at['name']),
+                                ('id_linktemplate', '=', at[name]),
                                 ('layer', 'not ilike', self.layer),
                                 ('layer', 'not ilike', 'EMBARRA%BT%')
                             ]
                         )
                         if not res or len(res) > 1:
                             edge = {
-                                'start_node': (0, '%s_0' % at['name']),
-                                'end_node': (0, '%s_1' % at['name'])
+                                'start_node': (0, '%s_0' % at[name]),
+                                'end_node': (0, '%s_1' % at[name])
                             }
                         else:
                             edge = o.GiscegisEdge.read(

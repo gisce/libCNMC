@@ -92,7 +92,7 @@ class LAT(MultiprocessBased):
             'propietari', 'tensio_max_disseny_id', 'name', 'origen', 'final',
             'perc_financament', 'circuits', 'longitud_cad', 'cable',
             'tipus_instalacio_cnmc_id', 'data_baixa', self.compare_field,
-            'baixa', 'data_baixa', 'conductors'
+            'baixa', 'data_baixa', 'conductors', 'id_regulatori'
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
@@ -249,12 +249,20 @@ class LAT(MultiprocessBased):
                     else:
                         longitud = 0
                     if not origen or not final:
-                        res = O.GiscegisEdge.search(
-                            [
-                                ('id_linktemplate', '=', tram['name']),
-                                ('layer', 'not ilike', self.layer),
-                                ('layer', 'not ilike', 'EMBARRA%BT%')
-                            ])
+                        if tram['id_regulatori']:
+                            res = O.GiscegisEdge.search(
+                                [
+                                    ('id_linktemplate', '=', tram['id_regulatori']),
+                                    ('layer', 'not ilike', self.layer),
+                                    ('layer', 'not ilike', 'EMBARRA%BT%')
+                                ])
+                        else:
+                            res = O.GiscegisEdge.search(
+                                [
+                                    ('id_linktemplate', '=', tram['name']),
+                                    ('layer', 'not ilike', self.layer),
+                                    ('layer', 'not ilike', 'EMBARRA%BT%')
+                                ])
                         if not res or len(res) > 1:
                             edge = {'start_node': (0, '{0}_0'.format(tram.get('name'))),
                                     'end_node': (0, '{0}_1'.format(tram.get('name')))}
@@ -281,69 +289,133 @@ class LAT(MultiprocessBased):
                                 ['name'])['name']
                         else:
                             ti = ''
-                        actual = F1Res4666(
-                            '{}{}'.format(self.prefix, tram['name']),
-                            tram['cini'],
-                            tram['origen'],
-                            tram['final'],
-                            ti,
-                            comunitat,
-                            comunitat,
-                            format_f(
-                                100.0 - tram.get('perc_financament', 0.0), 2
-                            ),
-                            data_pm,
-                            data_baixa,
-                            tram.get('circuits', 1) or 1,
-                            1,
-                            tensio,
-                            format_f(longitud, 3),
-                            format_f(cable.get('intensitat_admisible', 0) or 0),
-                            format_f(float(cable.get('seccio', 0)), 2),
-                            str(capacitat),
-                            0
-                        )
+
+                        if tram['id_regulatori']:
+                            actual = F1Res4666(
+                                '{}{}'.format(self.prefix, tram['id_regulatori']),
+                                tram['cini'],
+                                tram['origen'],
+                                tram['final'],
+                                ti,
+                                comunitat,
+                                comunitat,
+                                format_f(
+                                    100.0 - tram.get('perc_financament', 0.0),
+                                    2
+                                ),
+                                data_pm,
+                                data_baixa,
+                                tram.get('circuits', 1) or 1,
+                                1,
+                                tensio,
+                                format_f(longitud, 3),
+                                format_f(
+                                    cable.get('intensitat_admisible', 0) or 0),
+                                format_f(float(cable.get('seccio', 0)), 2),
+                                str(capacitat),
+                                0
+                            )
+                        else:
+                            actual = F1Res4666(
+                                '{}{}'.format(self.prefix, tram['name']),
+                                tram['cini'],
+                                tram['origen'],
+                                tram['final'],
+                                ti,
+                                comunitat,
+                                comunitat,
+                                format_f(
+                                    100.0 - tram.get('perc_financament', 0.0), 2
+                                ),
+                                data_pm,
+                                data_baixa,
+                                tram.get('circuits', 1) or 1,
+                                1,
+                                tensio,
+                                format_f(longitud, 3),
+                                format_f(cable.get('intensitat_admisible', 0) or 0),
+                                format_f(float(cable.get('seccio', 0)), 2),
+                                str(capacitat),
+                                0
+                            )
                         if actual == entregada and fecha_baja == '':
                             estado = 0
                         else:
-                            self.output_m.put("{} {}".format(tram["name"], adapt_diff(actual.diff(entregada))))
+                            if tram['id_regulatori']:
+                                self.output_m.put("{} {}".format(tram["id_regulatori"], adapt_diff(actual.diff(entregada))))
+                            else:
+                                self.output_m.put("{} {}".format(tram["name"], adapt_diff(actual.diff(entregada))))
                             estado = 1
                     else:
                         if tram['data_pm']:
                             if tram['data_pm'][:4] != str(self.year):
-                                self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(tram["name"]))
+                                if tram['id_regulatori']:
+                                    self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(tram["id_regulatori"]))
+                                else:
+                                    self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(tram["name"]))
                                 estado = '1'
                             else:
                                 estado = '2'
                         else:
-                            self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(tram["name"]))
+                            if tram['id_regulatori']:
+                                self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(tram["id_regulatori"]))
+                            else:
+                                self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(tram["name"]))
                             estado = '1'
                     if tram['conductors']:
                         conductors = tram['conductors']
                     else:
                         conductors = 1
-                    output = [
-                        '{}{}'.format(self.prefix, tram['name']),  # IDENTIFIC.
-                        tram.get('cini', '') or '',         # CINI
-                        origen or edge['start_node'][1],    # ORIGEN
-                        final or edge['end_node'][1],       # DESTINO
-                        codi_ccuu or '',                    # CODIGO_CCUU
-                        comunitat,                          # CODIGO_CCAA_1
-                        comunitat,                          # CODIGO_CCAA_2
-                        format_f(
-                            100.0 - tram.get('perc_financament', 0.0), 2
-                        ),                                  # FINANCIADO
-                        data_pm,                            # FECHA APS
-                        fecha_baja or '',                   # FECHA BAJA
-                        tram.get('circuits', 1) or 1,       # NUMERO_CIRCUITOS
-                        conductors,                         # NUMERO_CONDUCTORES
-                        format_f(tensio, 3),                # NIVEL TENSION
-                        format_f(longitud, 3),              # LONGITUD
-                        format_f(cable.get('intensitat_admisible', 0) or 0),    # INTENSIDAD MAXIMA
-                        format_f(cable.get('seccio', 0) or 0, 3),   # SECCION
-                        capacitat,                          # CAPACIDAD
-                        estado                              # ESTADO
-                    ]
+                    if tram['id_regulatori']:
+                        output = [
+                            '{}{}'.format(self.prefix, tram['id_regulatori']),
+                            # IDENTIFIC.
+                            tram.get('cini', '') or '',  # CINI
+                            origen or edge['start_node'][1],  # ORIGEN
+                            final or edge['end_node'][1],  # DESTINO
+                            codi_ccuu or '',  # CODIGO_CCUU
+                            comunitat,  # CODIGO_CCAA_1
+                            comunitat,  # CODIGO_CCAA_2
+                            format_f(
+                                100.0 - tram.get('perc_financament', 0.0), 2
+                            ),  # FINANCIADO
+                            data_pm,  # FECHA APS
+                            fecha_baja or '',  # FECHA BAJA
+                            tram.get('circuits', 1) or 1,  # NUMERO_CIRCUITOS
+                            conductors,  # NUMERO_CONDUCTORES
+                            format_f(tensio, 3),  # NIVEL TENSION
+                            format_f(longitud, 3),  # LONGITUD
+                            format_f(
+                                cable.get('intensitat_admisible', 0) or 0),
+                            # INTENSIDAD MAXIMA
+                            format_f(cable.get('seccio', 0) or 0, 3),
+                            # SECCION
+                            capacitat,  # CAPACIDAD
+                            estado  # ESTADO
+                        ]
+                    else:
+                        output = [
+                            '{}{}'.format(self.prefix, tram['name']),  # IDENTIFIC.
+                            tram.get('cini', '') or '',         # CINI
+                            origen or edge['start_node'][1],    # ORIGEN
+                            final or edge['end_node'][1],       # DESTINO
+                            codi_ccuu or '',                    # CODIGO_CCUU
+                            comunitat,                          # CODIGO_CCAA_1
+                            comunitat,                          # CODIGO_CCAA_2
+                            format_f(
+                                100.0 - tram.get('perc_financament', 0.0), 2
+                            ),                                  # FINANCIADO
+                            data_pm,                            # FECHA APS
+                            fecha_baja or '',                   # FECHA BAJA
+                            tram.get('circuits', 1) or 1,       # NUMERO_CIRCUITOS
+                            conductors,                         # NUMERO_CONDUCTORES
+                            format_f(tensio, 3),                # NIVEL TENSION
+                            format_f(longitud, 3),              # LONGITUD
+                            format_f(cable.get('intensitat_admisible', 0) or 0),    # INTENSIDAD MAXIMA
+                            format_f(cable.get('seccio', 0) or 0, 3),   # SECCION
+                            capacitat,                          # CAPACIDAD
+                            estado                              # ESTADO
+                        ]
                     if self.extended:
                         # S'ha especificat que es vol la versio extesa
                         if 'provincia' in linia:

@@ -71,7 +71,7 @@ class F10BT(MultiprocessBased):
         o = self.connection
         fields_to_read = [
             'name', 'propietari', 'coeficient', 'cable', 'voltatge', 'cini',
-            'longitud_cad', 'municipi', 'longitud_cad', 'tipus_linia'
+            'longitud_cad', 'municipi', 'longitud_cad', 'tipus_linia', 'id_regulatori'
         ]
         while True:
             try:
@@ -97,21 +97,25 @@ class F10BT(MultiprocessBased):
                     )
                 except:
                     o_nivell_tensio = 0.0
-                o_tram = 'B%s' % linia['name']
+                if 'edge_id' in o.GiscedataBtElement.fields_get().keys():
+                    name = 'id_regulatori'
+                else:
+                    name = 'name'
+                o_tram = 'B%s' % linia[name]
                 if 'edge_id' in o.GiscedataBtElement.fields_get().keys():
                     bt_edge = o.GiscedataBtElement.read(
                         linia['id'], ['edge_id']
                     )['edge_id']
                     if not bt_edge:
                         res = o.GiscegisEdge.search(
-                            [('id_linktemplate', '=', linia['name']),
+                            [('id_linktemplate', '=', linia[name]),
                              '|',
                              ('layer', 'ilike', self.layer),
                              ('layer', 'ilike', 'EMBARRA%BT%')
                              ])
                         if not res or len(res) > 1:
-                            edge = {'start_node': (0, '%s_0' % linia['name']),
-                                    'end_node': (0, '%s_1' % linia['name'])}
+                            edge = {'start_node': (0, '%s_0' % linia[name]),
+                                    'end_node': (0, '%s_1' % linia[name])}
                         else:
                             edge = o.GiscegisEdge.read(
                                 res[0], ['start_node', 'end_node']
@@ -122,14 +126,14 @@ class F10BT(MultiprocessBased):
                         )
                 else:
                     res = o.GiscegisEdge.search(
-                        [('id_linktemplate', '=', linia['name']),
+                        [('id_linktemplate', '=', linia[name]),
                          '|',
                          ('layer', 'ilike', self.layer),
                          ('layer', 'ilike', 'EMBARRA%BT%')
                          ])
                     if not res or len(res) > 1:
-                        edge = {'start_node': (0, '%s_0' % linia['name']),
-                                'end_node': (0, '%s_1' % linia['name'])}
+                        edge = {'start_node': (0, '%s_0' % linia[name]),
+                                'end_node': (0, '%s_1' % linia[name])}
                     else:
                         edge = o.GiscegisEdge.read(res[0], ['start_node',
                                                             'end_node'])
