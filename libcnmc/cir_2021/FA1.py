@@ -482,7 +482,7 @@ class FA1(MultiprocessBased):
                     'name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
                     'cne_anual_reactiva', 'cnmc_potencia_facturada', 'et',
                     'polisses', 'potencia_conveni', 'potencia_adscrita',
-                    "node_id", 'autoconsum_id'
+                    "node_id", 'autoconsum_id', 'cnmc_numero_lectures'
                 ]
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 if not cups or not cups.get('name'):
@@ -540,10 +540,7 @@ class FA1(MultiprocessBased):
                                     [bloc_escomesa['node'][0]], ['name'])
                                 o_nom_node = node[0]['name']
                 o_nom_node = o_nom_node.replace('*', '')
-                search_params = [('cups', '=', cups['id'])] + search_glob
-                polissa_id = O.GiscedataPolissa.search(
-                    search_params, 0, 1, 'data_alta desc', context_glob)
-
+                polissa_id = self.get_polissa(cups['id'])
                 o_potencia = ''
                 o_cnae = ''
                 o_pot_ads = cups.get('potencia_adscrita', '0,000') or '0,000'
@@ -554,17 +551,16 @@ class FA1(MultiprocessBased):
                     cups['cne_anual_activa'] or 0.0, decimals=3)
                 o_anual_reactiva = format_f(
                     cups['cne_anual_reactiva'] or 0.0, decimals=3)
-
                 if polissa_id:
                     fields_to_read = [
                         'potencia', 'cnae', 'tarifa', 'butlletins', 'tensio'
                     ]
-                    polissa_id = polissa_id[0]
                     o_comptador_cini = self.get_comptador_cini(polissa_id)
                     o_comptador_data = self.get_data_comptador(polissa_id)
-
+                    print(polissa_id)
+                    polissa_id = polissa_id[0]
                     polissa = O.GiscedataPolissa.read(
-                        polissa_id[0], fields_to_read, context_glob
+                        polissa_id, fields_to_read, context_glob
                     )
                     if polissa['tensio']:
                         o_tensio = format_f(
@@ -582,7 +578,7 @@ class FA1(MultiprocessBased):
                     else:
                         try:
                             polissa_act = O.GiscedataPolissa.read(
-                                polissa_id[0], fields_to_read
+                                polissa_id, fields_to_read
                             )
                             cnae_id = polissa_act['cnae'][0]
                             if cnae_id in self.cnaes:
