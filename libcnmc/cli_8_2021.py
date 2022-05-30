@@ -2,15 +2,15 @@
 import click
 from libcnmc.utils import N_PROC
 from libcnmc.core.backend import OOOPFactory
-from libcnmc import cir_2021
+from libcnmc import cir_8_2021
 from datetime import datetime
 
 
 @click.group()
-def cnmc_2021():
+def cnmc_8_2021():
     pass
 
-@cnmc_2021.command()
+@cnmc_8_2021.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -44,7 +44,7 @@ def cir_2021_fa1(**kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
                     pwd=kwargs['password'], port=kwargs['port'],
                     uri=kwargs['server'])
-    proc = cir_2021.FA1(
+    proc = cir_8_2021.FA1(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
         output=kwargs['output'],
@@ -60,7 +60,7 @@ def cir_2021_fa1(**kwargs):
     proc.calc()
 
 
-@cnmc_2021.command()
+@cnmc_8_2021.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -80,7 +80,7 @@ def cir_2021_fa1(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('--derechos/--no-derechos', default=False)
 @click.option("--reducir-cups/--no-reducir-cups",default=False)
-def cir_2021_fa4(**kwargs):
+def cir_8_2021_fa4(**kwargs):
     """
     Click entry to generate the FA4 file of 2021
 
@@ -92,7 +92,7 @@ def cir_2021_fa4(**kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
                     pwd=kwargs['password'], port=kwargs['port'],
                     uri=kwargs['server'])
-    proc = cir_2021.FA4(
+    proc = cir_8_2021.FA4(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
         output=kwargs['output'],
@@ -106,7 +106,7 @@ def cir_2021_fa4(**kwargs):
     proc.calc()
 
 
-@cnmc_2021.command()
+@cnmc_8_2021.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
