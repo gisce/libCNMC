@@ -32,7 +32,7 @@ def cnmc_8_2021():
 @click.option("--reducir-cups/--no-reducir-cups", default=False)
 @click.option("--allow-cna/--no-allow-cna", default=False)
 @click.option("--zona_qualitat",default="ct")
-def cir_2021_fa1(**kwargs):
+def cir_8_2021_fa1(**kwargs):
     """
     Click entry to generate the FA1 of 2021
 
@@ -126,7 +126,7 @@ def cir_8_2021_fa4(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('--derechos/--no-derechos', default=False)
 @click.option("--reducir-cups/--no-reducir-cups",default=False)
-def cir_2021_fb1_1(**kwargs):
+def cir_8_2021_fb1_1(**kwargs):
     """
     Click entry to generate the FB1.1 file of 2021
 
