@@ -79,7 +79,7 @@ class RESCCAA(MultiprocessBased):
                 format_f(resum["ayudas_prv_ccaa_prtr"], 2) or "0.00",
                 format_f(resum["financiacion_prv_ccaa_prtr"], 2) or "0.00",
                 format_f(resum["vpi_retribuible_prv_ccaa_prtr"], 2) or "0.00",
-                resum["num_proyectos_prtr"],
+                resum["num_proyectos_prtr"] or "0",
             ]
             self.output_q.put(output)
         except Exception:

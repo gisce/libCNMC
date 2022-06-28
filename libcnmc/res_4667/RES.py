@@ -97,7 +97,7 @@ class RES(MultiprocessBased):
                     format_f(resumen["ayudas_prv_prtr"], 2) or "0.00",
                     format_f(resumen["financiacion_prv_prtr"], 2) or "0.00",
                     format_f(resumen["vpi_retribuible_prv_prtr"], 2) or "0.00",
-                    resumen["num_proyectos_prtr"],
+                    resumen["num_proyectos_prtr"] or "0",
                 ]
                 self.output_q.put(output)
 
