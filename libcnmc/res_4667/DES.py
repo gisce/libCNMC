@@ -50,7 +50,8 @@ class DES(MultiprocessBased):
         O = self.connection
         fields_to_read = [
             "codi", "finalitat", "id_instalacio", "cini", "codigo_ccaa",
-            "any_apm", "vol_total_inv", "ajudes", "vpi_retri", "estado"
+            "any_apm", "vol_total_inv", "ajudes", "vpi_retri", "estado",
+            "actuacio_elegible_prtr"
         ]
 
         while True:
@@ -69,7 +70,8 @@ class DES(MultiprocessBased):
                     format_f(des["vol_total_inv"], 2) or "0.00",
                     format_f(des["ajudes"], 2) or "0.00",
                     format_f(des["vpi_retri"], 2) or "0.00",
-                    des["estado"]
+                    des["estado"],
+                    des["actuacio_elegible_prtr"] or '',
                 ]
                 self.output_q.put(output)
 

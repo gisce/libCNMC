@@ -48,7 +48,7 @@ class MAQ(MultiprocessBased):
         fields_to_read = [
             "codi", "finalitat", "id_instalacio", "cini", "codi_tipus_inst",
             "ccaa", "any_apm", "pot_inst_prev", "vol_total_inv", "ajudes",
-            "inv_financiada", "vpi_retri", "estado"
+            "inv_financiada", "vpi_retri", "estado", "actuacio_elegible_prtr"
         ]
 
         while True:
@@ -70,7 +70,8 @@ class MAQ(MultiprocessBased):
                     format_f(maq["ajudes"], 2) or "0.00",
                     format_f(maq["inv_financiada"], 2) or "0.00",
                     format_f(maq["vpi_retri"], 2) or "0.00",
-                    maq["estado"]
+                    maq["estado"],
+                    maq["actuacio_elegible_prtr"] or '',
                 ]
                 self.output_q.put(output)
             except Exception:

@@ -47,7 +47,7 @@ class POS(MultiprocessBased):
         fields_to_read = [
             "codi", "finalitat", "id_instalacio", "cini", "codi_tipus_inst",
             "ccaa", "any_apm", "vol_total_inv", "ajudes", "inv_financiada",
-            "vpi_retri", "estado"
+            "vpi_retri", "estado", "actuacio_elegible_prtr"
         ]
 
         while True:
@@ -68,7 +68,8 @@ class POS(MultiprocessBased):
                     format_f(pos["ajudes"], 2) or "0.00",
                     format_f(pos["inv_financiada"], 2) or "0.00",
                     format_f(pos["vpi_retri"], 2) or "0.00",
-                    pos["estado"]
+                    pos["estado"],
+                    pos["actuacio_elegible_prtr"] or '',
                 ]
                 self.output_q.put(output)
             except Exception:

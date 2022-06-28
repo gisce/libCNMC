@@ -45,7 +45,7 @@ class Otros(MultiprocessBased):
         fields_to_read = [
             "codi", "finalitat", "identificador_py", "cini", "codigo_ccaa",
             "any_apm", "vol_total_inv", "ajudes", "inv_financiada",
-            "vpi_retri", "estado"
+            "vpi_retri", "estado", "actuacio_elegible_prtr"
         ]
 
         while True:
@@ -66,6 +66,7 @@ class Otros(MultiprocessBased):
                     format_f(otro["inv_financiada"], 2) or "0.00",
                     format_f(otro["vpi_retri"], 2) or "0.00",
                     otro["estado"],
+                    otro["actuacio_elegible_prtr"] or '',
                 ]
                 self.output_q.put(output)
 
