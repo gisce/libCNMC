@@ -73,7 +73,7 @@ class CT(MultiprocessBased):
                     format_f(ct["inv_financiada"], 2) or "0.00",
                     format_f(ct["vpi_retri"], 2) or "0.00",
                     ct["estado"],
-                    ct["actuacio_elegible_prtr"],
+                    ct["actuacio_elegible_prtr"] or '',
                 ]
                 self.output_q.put(output)
 

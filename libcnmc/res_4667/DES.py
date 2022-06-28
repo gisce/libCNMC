@@ -71,7 +71,7 @@ class DES(MultiprocessBased):
                     format_f(des["ajudes"], 2) or "0.00",
                     format_f(des["vpi_retri"], 2) or "0.00",
                     des["estado"],
-                    des["actuacio_elegible_prtr"],
+                    des["actuacio_elegible_prtr"] or '',
                 ]
                 self.output_q.put(output)
 

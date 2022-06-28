@@ -61,7 +61,10 @@ class RES(MultiprocessBased):
         fields_to_read = [
             "anyo", "limit_empresa", "demanda_empresa_p0", "inc_demanda",
             "frri", "vpi_sup", "volum_total_inv", "ajudes_prev", "financiacio",
-            "vpi_retribuible_prv", "n_projectes", "voltotal_inv_bt_prv"
+            "vpi_retribuible_prv", "n_projectes", "voltotal_inv_bt_prv",
+            "vol_total_inv_gr_prv", "vol_total_inv_prv_prtr",
+            "ayudas_prv_prtr", "financiacion_prv_prtr",
+            "vpi_retribuible_prv_prtr", "num_proyectos_prtr"
         ]
 
         while True:

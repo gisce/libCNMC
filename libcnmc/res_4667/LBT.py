@@ -71,7 +71,7 @@ class LBT(MultiprocessBased):
                     format_f(lbt["financiacion_prv"], 2) or "0.00",
                     format_f(lbt["vpi_retribuible_prv"], 2) or "0.00",
                     lbt["estado"],
-                    lbt["actuacio_elegible_prtr"],
+                    lbt["actuacio_elegible_prtr"] or '',
                 ]
                 self.output_q.put(output)
 

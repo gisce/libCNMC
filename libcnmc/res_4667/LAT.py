@@ -83,7 +83,7 @@ class LAT(MultiprocessBased):
                     format_f(linia["inv_financiada"], 2) or "0.000",
                     format_f(linia["vpi_retri"], 2) or "0.00",
                     linia["estado"],
-                    linia["actuacio_elegible_prtr"],
+                    linia["actuacio_elegible_prtr"] or '',
                 ]
                 self.output_q.put(output)
 

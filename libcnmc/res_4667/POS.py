@@ -69,7 +69,7 @@ class POS(MultiprocessBased):
                     format_f(pos["inv_financiada"], 2) or "0.00",
                     format_f(pos["vpi_retri"], 2) or "0.00",
                     pos["estado"],
-                    pos["actuacio_elegible_prtr"],
+                    pos["actuacio_elegible_prtr"] or '',
                 ]
                 self.output_q.put(output)
             except Exception:

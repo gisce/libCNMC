@@ -66,7 +66,7 @@ class Otros(MultiprocessBased):
                     format_f(otro["inv_financiada"], 2) or "0.00",
                     format_f(otro["vpi_retri"], 2) or "0.00",
                     otro["estado"],
-                    otro["actuacio_elegible_prtr"],
+                    otro["actuacio_elegible_prtr"] or '',
                 ]
                 self.output_q.put(output)
 

@@ -71,7 +71,7 @@ class MAQ(MultiprocessBased):
                     format_f(maq["inv_financiada"], 2) or "0.00",
                     format_f(maq["vpi_retri"], 2) or "0.00",
                     maq["estado"],
-                    maq["actuacio_elegible_prtr"]
+                    maq["actuacio_elegible_prtr"] or '',
                 ]
                 self.output_q.put(output)
             except Exception:
