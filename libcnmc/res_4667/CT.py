@@ -51,7 +51,7 @@ class CT(MultiprocessBased):
         fields_to_read = [
             "codi", "finalitat", "id_instalacio", "cini", "codi_tipus_inst",
             "ccaa", "any_apm", "vol_total_inv", "ajudes", "inv_financiada",
-            "vpi_retri", "estado"
+            "vpi_retri", "estado", "actuacio_elegible_prtr"
         ]
 
         while True:
@@ -72,7 +72,8 @@ class CT(MultiprocessBased):
                     format_f(ct["ajudes"], 2) or "0.00",
                     format_f(ct["inv_financiada"], 2) or "0.00",
                     format_f(ct["vpi_retri"], 2) or "0.00",
-                    ct["estado"]
+                    ct["estado"],
+                    ct["actuacio_elegible_prtr"],
                 ]
                 self.output_q.put(output)
 

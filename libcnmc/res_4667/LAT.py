@@ -47,7 +47,8 @@ class LAT(MultiprocessBased):
         fields_to_read = [
             "codi", "finalitat", "id_instalacio", "codi_tipus_inst", "cini",
             "ccaa", "ccaa_2", "any_apm", "capacidad_prv", "long_total",
-            "vol_total_inv", "ajudes", "inv_financiada", "vpi_retri", "estado"
+            "vol_total_inv", "ajudes", "inv_financiada", "vpi_retri", "estado",
+            "actuacio_elegible_prtr"
         ]
 
         while True:
@@ -81,7 +82,8 @@ class LAT(MultiprocessBased):
                     format_f(linia["ajudes"], 2) or "0.00",
                     format_f(linia["inv_financiada"], 2) or "0.000",
                     format_f(linia["vpi_retri"], 2) or "0.00",
-                    linia["estado"]
+                    linia["estado"],
+                    linia["actuacio_elegible_prtr"],
                 ]
                 self.output_q.put(output)
 

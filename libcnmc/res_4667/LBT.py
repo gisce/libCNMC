@@ -45,7 +45,8 @@ class LBT(MultiprocessBased):
             "cod_proyecto", "finalidad", "identificador_py", "cini_prv",
             "cod_tipo_inst", "codigo_ccaa_1", "codigo_ccaa_2", "anio_prev_aps",
             "longitud_prv", "capacidad_prv", "vol_inv_prev", "ayudas_prv",
-            "financiacion_prv", "vpi_retribuible_prv", "estado"
+            "financiacion_prv", "vpi_retribuible_prv", "estado",
+            "actuacio_elegible_prtr"
         ]
 
         while True:
@@ -69,7 +70,8 @@ class LBT(MultiprocessBased):
                     format_f(lbt["ayudas_prv"], 2) or "0.00",
                     format_f(lbt["financiacion_prv"], 2) or "0.00",
                     format_f(lbt["vpi_retribuible_prv"], 2) or "0.00",
-                    lbt["estado"]
+                    lbt["estado"],
+                    lbt["actuacio_elegible_prtr"],
                 ]
                 self.output_q.put(output)
 
