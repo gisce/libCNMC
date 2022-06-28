@@ -66,7 +66,7 @@ class RESCCAA(MultiprocessBased):
         resum = model_ccaa.read(item, fields_read)
         try:
             output = [
-                get_codigo_ccaa(resum["codigo_ccaa"][0]),
+                get_codigo_ccaa(self.connection, resum["codigo_ccaa"][0]),
                 resum["anio_periodo"],
                 format_f(resum["vol_total_inv_prv_ccaa"], 2) or "0.00",
                 format_f(resum["ayudas_prv_ccaa"], 2) or "0.00",
