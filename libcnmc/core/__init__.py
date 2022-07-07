@@ -85,12 +85,11 @@ class MultiprocessBased(object):
         if total:
             pbar = ProgressBar(widgets=widgets, maxval=total).start()
             done = 0
-            while True:
+            while done < total:
                 self.progress_q.get()
                 done += 1
                 pbar.update(done)
-                if done >= total:
-                    pbar.finish()
+            pbar.finish()
 
     def writer(self):
         """
@@ -125,6 +124,9 @@ class MultiprocessBased(object):
             self.content = fio.getvalue()
         fio.close()
 
+    def writer_mod(self):
+        """Worker to write modification
+        """
         if self.file_modificaciones:
             fio_mod = open(self.file_modificaciones, 'wb')
         else:
@@ -132,15 +134,15 @@ class MultiprocessBased(object):
 
         while True:
             try:
-                if self.output_m.empty():
+                item = self.output_m.get()
+                if item == 'STOP':
                     break
-                val = self.output_m.get()
-                fio_mod.writelines(val + "\n")
-                self.output_m.task_done()
+                fio_mod.writelines(item + "\n")
             except:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
+            finally:
                 self.output_m.task_done()
         fio_mod.close()
 
@@ -186,6 +188,7 @@ class MultiprocessBased(object):
                 )
             ]
         processes.append(multiprocessing.Process(target=self.writer))
+        processes.append(multiprocessing.Process(target=self.writer_mod))
         self.producer(sequence)
         for proc in processes:
             proc.daemon = True
@@ -201,6 +204,7 @@ class MultiprocessBased(object):
             sys.stderr.flush()
 
         self.output_q.join()
+        self.output_m.put('STOP')
         self.output_m.join()
 
         self.output_q.close()
