@@ -7,7 +7,9 @@ from pyproj import Proj
 from pyproj import transform
 from shapely import wkt
 
-N_PROC = int(os.getenv('N_PROC', multiprocessing.cpu_count() + 1))
+AVAILABLE_CPUS = max(multiprocessing.cpu_count() - os.getloadavg()[0], 0) + 1
+
+N_PROC = max(int(os.getenv('N_PROC', 0)), AVAILABLE_CPUS)
 
 from libcnmc.core.backend import OOOPFactory
 
