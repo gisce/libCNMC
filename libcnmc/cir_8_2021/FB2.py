@@ -139,7 +139,7 @@ class FB2(MultiprocessBased):
 
                 ct = O.GiscedataCts.read(item, fields_to_read)
 
-                print("Obra: " + O.GiscedataProjecteObraTiCts.read([item], fields_to_read_obra))
+                print(O.GiscedataProjecteObraTiCts.read([item], fields_to_read_obra))
 
                 linia = O.GiscedataProjecteObraTiCts.read([item], fields_to_read_obra)[0]
 
