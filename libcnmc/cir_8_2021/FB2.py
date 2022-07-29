@@ -190,7 +190,7 @@ class FB2(MultiprocessBased):
                             ct['data_baixa'], '%Y-%m-%d %H:%M:%S')
                         fecha_baja = tmp_date.strftime('%d/%m/%Y')
 
-                        if data_pm.split("/")[2] - fecha_baja.split("/")[2] >= 40:
+                        if int(data_pm.split("/")[2]) - int(fecha_baja.split("/")[2]) >= 40:
                             if identificador_baja != '':
                                 causa_baja = 1
                             else:
