@@ -139,8 +139,10 @@ class FB2(MultiprocessBased):
 
                 ct = O.GiscedataCts.read(item, fields_to_read)
 
-                linia = O.GiscedataProjecteObraTiCts.read(ct, fields_to_read_obra)[0]
+                linia = O.GiscedataProjecteObraTiCts.read([], fields_to_read_obra)[0]
 
+                print(linia)
+                
                 data_ip = convert_spanish_date(
                     linia['fecha_aps'] if not linia['fech_baja']
                                           and linia['tipo_inversion'] != '1' else ''
