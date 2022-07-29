@@ -143,7 +143,10 @@ class FB2(MultiprocessBased):
                     [], self.year, [8]
                 )
 
-                linia = O.GiscedataProjecteObraTiCts.read([installations_ids[8]], fields_to_read_obra)[0]
+                item_obra = self.input_q.get()
+                self.progress_q.put(item_obra)
+
+                linia = O.GiscedataProjecteObraTiCts.read([item_obra], fields_to_read_obra)[0]
 
                 print(linia)
 
