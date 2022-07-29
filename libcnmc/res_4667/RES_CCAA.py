@@ -19,14 +19,6 @@ class RESCCAA(MultiprocessBased):
         :param kwargs: 
         """
         self.year = kwargs.pop("year")
-        self.ccaas = []
-        self.years = []
-        self.ayudas = {}
-        self.vol_inv = {}
-        self.financiacion = {}
-        self.vpi = {}
-        self.num_proy = {}
-        self.inv_bt = {}
 
         super(RESCCAA, self).__init__(**kwargs)
 
@@ -38,35 +30,21 @@ class RESCCAA(MultiprocessBased):
         :rtype: list
         """
 
-        self.ayudas = dict.fromkeys(self.years, 0)
-        self.vol_inv = dict.fromkeys(self.years, 0)
-        self.financiacion = dict.fromkeys(self.years, 0)
-        self.vpi = dict.fromkeys(self.years, 0)
-        self.inv_bt = dict.fromkeys(self.years, 0)
-        self.num_proy = dict.fromkeys(self.years, 0)
-
         model_ccaa = self.connection.GiscedataCnmcResum_ccaa
 
         ids_resums = get_resum_any_id(self.connection, self.year)
         search_res = [("resums_inversio", "in", ids_resums)]
 
-        ids_resums_ccaa = model_ccaa.search(search_res)
+        return model_ccaa.search(search_res)
 
-        r_fields = ["anyo"]
-        data = self.connection.GiscedataCnmcResum_any.read(ids_resums, r_fields)
-        for line in data:
-            self.years.append(line["anyo"])
-
-        for line in model_ccaa.read(ids_resums_ccaa, ["codigo_ccaa"]):
-            self.ccaas.append(line["codigo_ccaa"][0])
-        self.ccaas = list(set(self.ccaas))
-        for year in self.years:
-            self.ayudas[year] = dict.fromkeys(self.ccaas, 0.0)
-            self.vol_inv[year] = dict.fromkeys(self.ccaas, 0.0)
-            self.financiacion[year] = dict.fromkeys(self.ccaas, 0.0)
-            self.vpi[year] = dict.fromkeys(self.ccaas, 0.0)
-            self.inv_bt[year] = dict.fromkeys(self.ccaas, 0.0)
-            self.num_proy[year] = dict.fromkeys(self.ccaas, 0.0)
+    def consumer(self):
+        """
+        Generates the line of the file
+        :return: Line
+        :rtype: str
+        """
+        item = self.input_q.get()
+        self.progress_q.put(item)
 
         fields_read = [
             "anio_periodo",
@@ -76,43 +54,34 @@ class RESCCAA(MultiprocessBased):
             "financiacion_prv_ccaa",
             "vpi_retribuible_prv_ccaa",
             "vol_total_inv_bt_prv_ccaa",
-            "num_proyectos_ccaa"
+            "num_proyectos_ccaa",
+            "vol_total_inv_gr_prv_ccaa",
+            "vol_total_inv_prv_ccaa_prtr",
+            "ayudas_prv_ccaa_prtr",
+            "financiacion_prv_ccaa_prtr",
+            "vpi_retribuible_prv_ccaa_prtr",
+            "num_proyectos_prtr",
         ]
-        for line in model_ccaa.read(ids_resums_ccaa, fields_read):
-            year = line["anio_periodo"]
-            ccaa = line["codigo_ccaa"][0]
-
-            self.ayudas[year][ccaa] += line["ayudas_prv_ccaa"]
-            self.vol_inv[year][ccaa] += line["vol_total_inv_prv_ccaa"]
-            self.financiacion[year][ccaa] += line["financiacion_prv_ccaa"]
-            self.vpi[year][ccaa] += line["vpi_retribuible_prv_ccaa"]
-            self.inv_bt[year][ccaa] += line["vol_total_inv_bt_prv_ccaa"]
-            self.num_proy[year][ccaa] += line["num_proyectos_ccaa"]
-
-        return [1]
-
-    def consumer(self):
-        """
-        Generates the line of the file
-        :return: Line 
-        :rtype: str
-        """
-        self.input_q.get()
-        O = self.connection
+        model_ccaa = self.connection.GiscedataCnmcResum_ccaa
+        resum = model_ccaa.read(item, fields_read)
         try:
-            for year in self.years:
-                for ccaa in self.ccaas:
-                    output = [
-                        get_codigo_ccaa(O, ccaa),
-                        year,
-                        format_f(self.vol_inv[year][ccaa], 2) or "0.00",
-                        format_f(self.ayudas[year][ccaa], 2) or "0.00",
-                        format_f(self.financiacion[year][ccaa], 2) or "0.00",
-                        format_f(self.vpi[year][ccaa], 2) or "0.00",
-                        format_f(self.num_proy[year][ccaa], 0) or "0",
-                        format_f(self.inv_bt[year][ccaa], 2) or "0.00",
-                    ]
-                    self.output_q.put(output)
+            output = [
+                get_codigo_ccaa(self.connection, resum["codigo_ccaa"][0]),
+                resum["anio_periodo"],
+                format_f(resum["vol_total_inv_prv_ccaa"], 2) or "0.00",
+                format_f(resum["ayudas_prv_ccaa"], 2) or "0.00",
+                format_f(resum["financiacion_prv_ccaa"], 2) or "0.00",
+                format_f(resum["vpi_retribuible_prv_ccaa"], 2) or "0.00",
+                resum["num_proyectos_ccaa"],
+                format_f(resum["vol_total_inv_bt_prv_ccaa"], 2) or "0.00",
+                format_f(resum["vol_total_inv_gr_prv_ccaa"], 2) or "0.00",
+                format_f(resum["vol_total_inv_prv_ccaa_prtr"], 2) or "0.00",
+                format_f(resum["ayudas_prv_ccaa_prtr"], 2) or "0.00",
+                format_f(resum["financiacion_prv_ccaa_prtr"], 2) or "0.00",
+                format_f(resum["vpi_retribuible_prv_ccaa_prtr"], 2) or "0.00",
+                resum["num_proyectos_prtr"] or "0",
+            ]
+            self.output_q.put(output)
         except Exception:
             traceback.print_exc()
             if self.raven:

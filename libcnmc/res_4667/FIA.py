@@ -52,7 +52,7 @@ class FIA(MultiprocessBased):
         fields_to_read = [
             "codi", "finalitat", "id_instalacio", "cini", "codi_tipus_inst",
             "ccaa", "any_apm", "vol_total_inv", "ajudes", "inv_financiada",
-            "vpi_retri", "estado"
+            "vpi_retri", "estado", "actuacio_elegible_prtr"
         ]
 
         while True:
@@ -74,6 +74,7 @@ class FIA(MultiprocessBased):
                     format_f(fia["inv_financiada"], 2) or "0.00",
                     format_f(fia["vpi_retri"], 2) or "0.00",
                     fia["estado"],
+                    fia["actuacio_elegible_prtr"] or '',
                 ]
                 self.output_q.put(output)
 
