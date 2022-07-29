@@ -139,13 +139,10 @@ class FB2(MultiprocessBased):
 
                 ct = O.GiscedataCts.read(item, fields_to_read)
 
-                print("item + " + item)
-                print(O.GiscedataProjecteObraTiCts.read(item, fields_to_read_obra))
-
                 linia = O.GiscedataProjecteObraTiCts.read(item, fields_to_read_obra)[0]
 
                 data_ip = convert_spanish_date(
-                    linia['fecha_aps'] if not linia['fecha_baja']
+                    linia['fecha_aps'] if not linia['fech_baja']
                                           and linia['tipo_inversion'] != '1' else ''
                 )
                 # Si la data APS es igual a l'any de la generació del fitxer,
