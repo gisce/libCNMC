@@ -11,7 +11,7 @@ import traceback
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import (
     format_f, get_id_municipi_from_company, get_forced_elements, adapt_diff, convert_srid, get_srid, format_f,
-    convert_spanish_date, get_name_ti, format_f_6181, get_codi_actuacio
+    convert_spanish_date, get_name_ti, format_f_6181, get_codi_actuacio, get_ine
 )
 from libcnmc.models import F8Res4666
 from shapely import wkt
@@ -71,6 +71,24 @@ class FB2(MultiprocessBased):
         ids = list(set(ids) - set(forced_ids["exclude"]))
 
         return list(set(ids))
+
+    def get_node_vertex(self, ct_id):
+        O = self.connection
+        bloc = O.GiscegisBlocsCtat.search([('ct', '=', ct_id)])
+        node = ''
+        vertex = None
+        if bloc:
+            bloc = O.GiscegisBlocsCtat.read(bloc[0], ['node', 'vertex'])
+            node = bloc['node'][1]
+            if bloc['vertex']:
+                v = O.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
+                vertex = (round(v['x'], 3), round(v['y'], 3))
+        return node, vertex
+
+    def get_ine(self, municipi_id):
+        O = self.connection
+        muni = O.ResMunicipi.read(municipi_id, ['ine', 'dc'])
+        return get_ine(O, muni['ine'])
 
     def get_potencia_trafos(self, id_ct):
         o = self.connection
