@@ -272,11 +272,6 @@ class FB2(MultiprocessBased):
                 if vertex:
                     res_srid = convert_srid(get_srid(O), vertex)
 
-                if ct['id_municipi']:
-                    o_ine_prov, o_ine_muni = self.get_ine(ct['id_municipi'][0])
-                else:
-                    o_ine_muni, o_ine_prov = '', ''
-
                # tipo_inversion = (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1', get_name_ti(
                #     O, linia['ccuu'] and linia['ccuu'][0])
 
@@ -309,8 +304,6 @@ class FB2(MultiprocessBased):
                     format_f(res_srid[0], decimals=3),  # X
                     format_f(res_srid[1], decimals=3),  # Y
                     z,                                  # Z
-                    o_ine_muni,                         # MUNICIPIO
-                    o_ine_prov,                         # PROVINCIA
                     comunitat_codi or '',               # CODIGO_CCAA
                     estado,                             # ESTADO
                     data_pm,                            # FECHA APS
