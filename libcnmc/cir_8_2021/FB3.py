@@ -67,7 +67,9 @@ class FB3(MultiprocessBased):
     def get_zona_id(self, ct_id):
         o = self.connection
         ct = o.GiscedataCts.search([('id', '=', ct_id)])
-        return ct
+        if ct:
+            zona = o.GiscedataCts.read(ct, ['zona_id'])
+        return zona
 
     def consumer(self):
         o_codi_r1 = 'R1-%s' % self.codi_r1[-3:]
@@ -105,13 +107,14 @@ class FB3(MultiprocessBased):
                 if vertex:
                     res_srid = convert_srid(get_srid(o), vertex)
 
-                ct = self.get_zona_id(sub['ct_id'][0])
-                print(ct)
-                if 'zona_id' in ct:
+                zona = self.get_zona_id(sub['ct_id'][0])
+                print(zona)
+                if zona:
                     zona = o.GiscedataCtsZona.read(
-                        ct['zona_id'][0], ['name']
+                        zona[0], ['name']
                     )
                     o_zona = zona.get('name', "")
+
                 else:
                     o_zona = ""
 
