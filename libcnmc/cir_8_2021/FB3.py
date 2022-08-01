@@ -111,7 +111,7 @@ class FB3(MultiprocessBased):
 
                 if zona['zona_id']:
 
-                    o_zona = zona.get('zona_id')[1]
+                    o_zona = zona['zona_id'][1]
 
                 else:
                     o_zona = ""
