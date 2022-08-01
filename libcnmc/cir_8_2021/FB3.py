@@ -72,7 +72,7 @@ class FB3(MultiprocessBased):
     def consumer(self):
         o_codi_r1 = 'R1-%s' % self.codi_r1[-3:]
         o = self.connection
-        
+
         fields_to_read = [
             'name', 'cini', 'propietari', 'id_municipi', 'id_provincia',
             'ct_id', 'descripcio', "x", "y"
@@ -106,7 +106,7 @@ class FB3(MultiprocessBased):
                 if vertex:
                     res_srid = convert_srid(get_srid(o), vertex)
 
-                ct = self.get_zona_id(sub['ct'])
+                ct = self.get_zona_id(sub['ct_id'][0])
 
                 if 'zona_id' in ct:
                     zona = o.GiscedataCtsZona.read(
