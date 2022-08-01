@@ -109,10 +109,11 @@ class FB3(MultiprocessBased):
 
                 zona = self.get_zona_id(sub['ct_id'][0])
 
+                print(zona)
                 if zona['zona_id']:
 
-                    o_zona = zona['zona_id'][1]
-
+                    zona_def = zona['zona_id']
+                    o_zona = zona_def[1]
                 else:
                     o_zona = ""
 
