@@ -83,7 +83,7 @@ class FB2_1(MultiprocessBased):
                 )
 
                 tmp_date = datetime.strptime(
-                    trafo['data_pm'], '%Y-%m-%d %H:%M:%S')
+                    trafo['data_pm'], '%Y-%m-%d')
                 o_any = tmp_date.strftime('%d/%m/%Y')
 
                 if trafo['id_estat'] == 1:
