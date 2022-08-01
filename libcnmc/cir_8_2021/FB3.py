@@ -10,6 +10,13 @@ import traceback, psycopg2.extras
 from libcnmc.utils import format_f, convert_srid, get_srid
 from libcnmc.core import MultiprocessBased
 
+ZONA = {
+    'RURAL CONCENTRADA': 'RC',
+    'RURAL DISPERSA': 'RD',
+    'URBANA': 'U',
+    'SEMIURBANA': 'SU'
+}
+
 class FB3(MultiprocessBased):
 
     """
@@ -110,7 +117,8 @@ class FB3(MultiprocessBased):
                 zona = self.get_zona_id(sub['ct_id'][0])[0]
 
                 if zona.get('zona_id'):
-                    o_zona = zona.get('zona_id')[1]
+                    tmp_zona = zona.get('zona_id')[1]
+                    o_zona = ZONA[tmp_zona]
                 else:
                     o_zona = ""
 
