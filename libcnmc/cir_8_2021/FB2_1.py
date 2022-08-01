@@ -25,7 +25,7 @@ class FB2_1(MultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'CTS'
-        self.report_name = 'Formulario B2.1: Centros de Transformación'
+        self.report_name = 'Formulario B2.1: Máquinas en Centros de Transformación'
         self.compare_field = ""
         self.extended = kwargs.get("extended", False)
 
