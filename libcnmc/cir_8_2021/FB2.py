@@ -299,7 +299,10 @@ class FB2(MultiprocessBased):
 
                 im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
                 im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
-                im_construccion = float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
+                im_construccion = str(
+                    float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
+                ).replace(".",",")
+
 
                 im_trabajos = format_f_6181(linia['im_trabajos'] or 0.0, float_type='euro')
 
@@ -364,7 +367,7 @@ class FB2(MultiprocessBased):
                     data_ip,                            # FECHA IP
                     tipo_inversion,                     # TIPO INVERSION
                     im_ingenieria,                      # IM_TRAMITES
-                    im_construccion.replace(".", ","),  # IM_CONSTRUCCION
+                    im_construccion,                    # IM_CONSTRUCCION
                     im_trabajos,                        # IM_TRABAJOS
                     subvenciones_europeas,              # SUBVENCIONES EUROPEAS
                     subvenciones_nacionales,            # SUBVENCIONES NACIONALES
