@@ -72,9 +72,7 @@ class FB3(MultiprocessBased):
     def consumer(self):
         o_codi_r1 = 'R1-%s' % self.codi_r1[-3:]
         o = self.connection
-
-        cur = o.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-
+        
         fields_to_read = [
             'name', 'cini', 'propietari', 'id_municipi', 'id_provincia',
             'ct_id', 'descripcio', "x", "y"
