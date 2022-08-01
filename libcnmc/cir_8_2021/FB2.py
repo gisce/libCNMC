@@ -139,6 +139,8 @@ class FB2(MultiprocessBased):
             'im_trabajos',
             'subvenciones_europeas',
             'subvenciones_nacionales',
+            #'subvenciones_prtr',
+            #'avifauna',
             'valor_auditado',
             'valor_contabilidad',
             'cuenta_contable',
@@ -298,6 +300,7 @@ class FB2(MultiprocessBased):
                 im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
                 im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
                 im_construccion = float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
+
                 im_trabajos = format_f_6181(linia['im_trabajos'] or 0.0, float_type='euro')
 
                 subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
@@ -308,9 +311,34 @@ class FB2(MultiprocessBased):
                 motivacion = get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]) if not \
                     linia['fecha_baja'] else ''
 
+                if 'id_provincia' in ct:
+                    provincia = O.ResCountryState.read(
+                        ct['id_provincia'][0], ['name']
+                    )
+                    provincia_name = provincia.get('name', "")
+                else:
+                    provincia_name = ""
 
-               # modelo = ct['modelo']
+                if 'id_municipi' in ct:
+                    municipi = O.ResMunicipi.read(
+                        ct['id_municipi'][0], ['name']
+                    )
+                    municipi_name = municipi.get('name', "")
+                else:
+                    municipi_name = ""
+
+                if 'zona_id' in ct:
+                    zona = O.GiscedataCtsZona.read(
+                        ct['zona_id'][0], ['name']
+                    )
+                    zona_name = zona.get('name', "")
+                else:
+                    zona_name = ""
+
+                # modelo = ct['modelo']
                # punto_frontera = ct['punto_frontera']
+               # avifauna = linia['avifauna']
+               # subvenciones_prtr = format_f_6181(linia['subvenciones_prtr'] or 0.0, float_type='euro')
 
 
                 output = [
@@ -324,7 +352,10 @@ class FB2(MultiprocessBased):
                     format_f(res_srid[0], decimals=3),  # X
                     format_f(res_srid[1], decimals=3),  # Y
                     z,                                  # Z
+                    municipi_name,                      # MUNICIPIO
+                    provincia_name,                     # PROVINCIA
                     comunitat_codi or '',               # CODIGO_CCAA
+                    zona_name,                          # ZONA
                     estado,                             # ESTADO
                     #modelo,                            # MODELO
                     #punto_frontera                     # PUNTO_FRONTERA
@@ -333,45 +364,21 @@ class FB2(MultiprocessBased):
                     data_ip,                            # FECHA IP
                     tipo_inversion,                     # TIPO INVERSION
                     im_ingenieria,                      # IM_TRAMITES
-                    im_construccion,                    # IM_CONSTRUCCION
+                    im_construccion.replace(".", ","),  # IM_CONSTRUCCION
                     im_trabajos,                        # IM_TRABAJOS
                     subvenciones_europeas,              # SUBVENCIONES EUROPEAS
                     subvenciones_nacionales,            # SUBVENCIONES NACIONALES
+                    #subvenciones_prtr,                 # SUBVENCIONES PRTR
                     valor_auditado,                     # VALOR AUDITADO
                     format_f(
                         100.0 - ct.get('perc_financament', 0.0), 2
                     ),                                  # FINANCIADO
                     linia['cuenta_contable'],           # CUENTA CONTABLE
                     motivacion,                         # MOTIVACION
+                    #avifauna,                           # AVIFAUNA
                     identificador_baja                  # ID_BAJA
 
                 ]
-                if self.extended:
-
-                    if 'id_provincia' in ct:
-                        provincia = O.ResCountryState.read(
-                            ct['id_provincia'][0], ['name']
-                        )
-                        output.append(provincia.get('name', ""))
-                    else:
-                        output.append("")
-
-                    if 'id_municipi' in ct:
-                        municipi = O.ResMunicipi.read(
-                            ct['id_municipi'][0], ['name']
-                        )
-                        output.append(municipi.get('name', ""))
-                    else:
-                        output.append("")
-
-                    if 'zona_id' in ct:
-                        zona = O.GiscedataCtsZona.read(
-                            ct['zona_id'][0], ['name']
-                        )
-                        output.append(zona.get('name', ""))
-                    else:
-                        output.append("")
-
                 self.output_q.put(output)
             except Exception:
                 traceback.print_exc()
