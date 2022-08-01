@@ -107,13 +107,10 @@ class FB3(MultiprocessBased):
                 if vertex:
                     res_srid = convert_srid(get_srid(o), vertex)
 
-                zona = self.get_zona_id(sub['ct_id'][0])
+                zona = self.get_zona_id(sub['ct_id'][0])[0]
 
-                print(zona)
-                if zona['zona_id']:
-
-                    zona_def = zona['zona_id']
-                    o_zona = zona_def[1]
+                if zona.get('zona_id'):
+                    o_zona = zona.get('zona_id')[1]
                 else:
                     o_zona = ""
 
