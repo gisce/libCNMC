@@ -86,7 +86,8 @@ class FB2_1(MultiprocessBased):
                     trafo['data_pm'], '%Y-%m-%d')
                 o_any = tmp_date.strftime('%d/%m/%Y')
 
-                if trafo['id_estat'] == 1:
+                print(trafo['id_estat'])
+                if int(trafo['id_estat']) == 1:
                     o_operacion = 1
                 else:
                     o_operacion = 0
