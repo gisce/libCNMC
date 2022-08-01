@@ -75,7 +75,7 @@ class FB3(MultiprocessBased):
 
         fields_to_read = [
             'name', 'cini', 'propietari', 'id_municipi', 'id_provincia',
-            'ct_id', 'descripcio', "x", "y"
+            'ct_id', 'descripcio', "x", "y" #punto_frontera
         ]
         while True:
             try:
@@ -101,13 +101,12 @@ class FB3(MultiprocessBased):
                 o_municipi = ines['ine_municipi']
                 o_provincia = ines['ine_provincia']
                 o_prop = int(sub['propietari'])
-                o_any = self.year
                 res_srid = ['', '']
                 if vertex:
                     res_srid = convert_srid(get_srid(o), vertex)
 
                 ct = self.get_zona_id(sub['ct_id'][0])
-
+                print(ct)
                 if 'zona_id' in ct:
                     zona = o.GiscedataCtsZona.read(
                         ct['zona_id'][0], ['name']
@@ -116,10 +115,13 @@ class FB3(MultiprocessBased):
                 else:
                     o_zona = ""
 
+                #o_puntfrontera = sub['punto_frontera']
+
                 self.output_q.put([
                     o_subestacio,                       # SUBESTACION
                     o_cini,                             # CINI
                     o_denominacio,                      # DENOMINACION
+                    #o_puntfrontera,                     # PUNTO FRONTERA
                     format_f(res_srid[0], decimals=3),  # X
                     format_f(res_srid[1], decimals=3),  # Y
                     z,                                  # Z
@@ -127,7 +129,6 @@ class FB3(MultiprocessBased):
                     o_provincia,                        # PROVINCIA
                     o_zona,                             # ZONA
                     o_prop,                             # PROPIEDAD
-                    o_any                               # AÑO INFORMACION
                 ])
             except Exception:
                 traceback.print_exc()
