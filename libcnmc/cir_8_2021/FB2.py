@@ -201,7 +201,7 @@ class FB2(MultiprocessBased):
 
                 identificador_baja = (
                     get_inst_name(linia['identificador_baja'][0]) if linia['identificador_baja'] else ''
-                ),
+                )
 
                 if ct['data_baixa']:
                     if ct['data_baixa'] < data_pm_limit:
@@ -291,21 +291,22 @@ class FB2(MultiprocessBased):
                 if vertex:
                     res_srid = convert_srid(get_srid(O), vertex)
 
-                tipo_inversion = (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1',
+                tipo_inversion = (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1'
 
                 im_ingenieria = format_f_6181(linia['im_ingenieria'] or 0.0, float_type='euro')
-                im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro'),
-                im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro'),
+
+                im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
+                im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
                 im_construccion = im_materiales + im_obracivil
                 im_trabajos = format_f_6181(linia['im_trabajos'] or 0.0, float_type='euro')
 
-                subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro'),
-                subvenciones_nacionales = format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro'),
+                subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
+                subvenciones_nacionales = format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro')
 
-                valor_auditado = format_f_6181(linia['valor_auditado'] or 0.0, float_type='euro'),
+                valor_auditado = format_f_6181(linia['valor_auditado'] or 0.0, float_type='euro')
 
                 motivacion = get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]) if not \
-                    linia['fecha_baja'] else '',
+                    linia['fecha_baja'] else ''
 
 
                # modelo = ct['modelo']
