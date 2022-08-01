@@ -159,7 +159,7 @@ class FB2(MultiprocessBased):
                 ct = O.GiscedataCts.read(item, fields_to_read)
 
                 installations_ids = self.connection.GiscedataProjecteObra.get_audit_installations_by_year(
-                    [], self.year, [8]
+                    [], 2020, [8]
                 )
 
                 print(installations_ids)
