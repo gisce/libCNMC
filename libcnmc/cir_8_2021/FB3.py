@@ -108,12 +108,10 @@ class FB3(MultiprocessBased):
                     res_srid = convert_srid(get_srid(o), vertex)
 
                 zona = self.get_zona_id(sub['ct_id'][0])
-                print(zona)
-                if zona:
-                    zona = o.GiscedataCtsZona.read(
-                        zona[0], ['name']
-                    )
-                    o_zona = zona.get('name', "")
+                print(zona['zona_id'][1])
+                if zona['zona_id']:
+
+                    o_zona = zona.get('zona_id')[1]
 
                 else:
                     o_zona = ""
