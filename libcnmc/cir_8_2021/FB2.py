@@ -297,7 +297,7 @@ class FB2(MultiprocessBased):
 
                 im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
                 im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
-                im_construccion = im_materiales + im_obracivil
+                im_construccion = float(im_materiales) + float(im_obracivil)
                 im_trabajos = format_f_6181(linia['im_trabajos'] or 0.0, float_type='euro')
 
                 subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
