@@ -164,7 +164,7 @@ class FB2(MultiprocessBased):
 
                 linia = O.GiscedataProjecteObraTiCts.read(installations_ids[8], fields_to_read_obra)[0]
 
-                #print(linia)
+                print(linia)
 
                 data_ip = convert_spanish_date(
                     linia['fecha_aps'] if not linia['fecha_baja']
@@ -200,8 +200,7 @@ class FB2(MultiprocessBased):
                         comunitat_codi = comunitat_vals['codi']
 
                 identificador_baja = (
-                    get_inst_name(linia['identificador_baja'][0])
-                    if linia['identificador_baja'] else ''
+                    get_inst_name(linia['identificador_baja'][0]) if linia['identificador_baja'] else ''
                 ),
 
                 if ct['data_baixa']:
@@ -292,16 +291,12 @@ class FB2(MultiprocessBased):
                 if vertex:
                     res_srid = convert_srid(get_srid(O), vertex)
 
-                tipo_inversion = (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1', get_name_ti(
-                    O, linia['ccuu'] and linia['ccuu'][0])
+                tipo_inversion = (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1',
 
                 im_ingenieria = format_f_6181(linia['im_ingenieria'] or 0.0, float_type='euro')
-
                 im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro'),
                 im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro'),
-
                 im_construccion = im_materiales + im_obracivil
-
                 im_trabajos = format_f_6181(linia['im_trabajos'] or 0.0, float_type='euro')
 
                 subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro'),
