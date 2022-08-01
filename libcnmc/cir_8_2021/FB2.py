@@ -118,7 +118,8 @@ class FB2(MultiprocessBased):
         fields_to_read = [
             'name', 'cini', 'data_pm', 'tipus_instalacio_cnmc_id', 'tensio_p',
             'id_municipi', 'perc_financament', 'descripcio', 'data_baixa',
-            self.compare_field, 'id_provincia', 'zona_id', 'node_id', 'potencia'
+            self.compare_field, 'id_provincia', 'zona_id', 'node_id', 'potencia',
+            #'modelo', 'punto_frontera'
         ]
 
         fields_to_read_obra = [
@@ -157,8 +158,13 @@ class FB2(MultiprocessBased):
 
                 ct = O.GiscedataCts.read(item, fields_to_read)
 
+                installations_ids = self.connection.GiscedataProjecteObra.get_audit_installations_by_year(
+                    [], self.year, [8]
+                )
 
-                #linia = O.GiscedataProjecteObraTiCts.read([item_obra], fields_to_read_obra)[0]
+                print(installations_ids)
+
+                #linia = O.GiscedataProjecteObraTiCts.read([installation_ids[8]], fields_to_read_obra)[0]
 
                 #print(linia)
 
@@ -311,6 +317,10 @@ class FB2(MultiprocessBased):
                #     linia['fecha_baja'] else '',
 
 
+               # modelo = ct['modelo']
+               # punto_frontera = ct['punto_frontera']
+
+
                 output = [
                     '{0}'.format(ct['name']),           # IDENTIFICADOR
                     ct['cini'] or '',                   # CINI
@@ -324,6 +334,8 @@ class FB2(MultiprocessBased):
                     z,                                  # Z
                     comunitat_codi or '',               # CODIGO_CCAA
                     estado,                             # ESTADO
+                    #modelo,                            # MODELO
+                    #punto_frontera                     # PUNTO_FRONTERA
                     data_pm,                            # FECHA APS
                     causa_baja,                         # CAUSA BAJA
                     data_ip,                            # FECHA IP
