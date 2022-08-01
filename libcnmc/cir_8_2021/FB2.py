@@ -162,11 +162,9 @@ class FB2(MultiprocessBased):
                     [], 2020, [8]
                 )
 
-                print(installations_ids)
+                linia = O.GiscedataProjecteObraTiCts.read([installations_ids[8]], fields_to_read_obra)[0]
 
-                #linia = O.GiscedataProjecteObraTiCts.read([installation_ids[8]], fields_to_read_obra)[0]
-
-                #print(linia)
+                print(linia)
 
                 #data_ip = convert_spanish_date(
                 #    linia['fecha_aps'] if not linia['fech_baja']
