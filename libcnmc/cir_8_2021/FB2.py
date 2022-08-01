@@ -162,7 +162,7 @@ class FB2(MultiprocessBased):
                     [], 2020, [8]
                 )
 
-                linia = O.GiscedataProjecteObraTiCts.read([installations_ids[8]], fields_to_read_obra)[0]
+                linia = O.GiscedataProjecteObraTiCts.read(installations_ids[8], fields_to_read_obra)[0]
 
                 print(linia)
 
