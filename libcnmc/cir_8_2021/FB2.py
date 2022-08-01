@@ -167,7 +167,7 @@ class FB2(MultiprocessBased):
                 #print(linia)
 
                 data_ip = convert_spanish_date(
-                    linia['fecha_aps'] if not linia['fech_baja']
+                    linia['fecha_aps'] if not linia['fecha_baja']
                                           and linia['tipo_inversion'] != '1' else ''
                 )
 
