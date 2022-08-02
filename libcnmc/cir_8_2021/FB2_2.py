@@ -11,6 +11,18 @@ import traceback
 from libcnmc.utils import format_f
 from libcnmc.core import MultiprocessBased
 
+TIPUS_INST = {
+    'TI-174': 1,
+    'TI-187': 1,
+    'TI-182': 1,
+    'TI-183': 1,
+    'TI-187A': 1,
+    'TI-179': 0,
+    'TI-177': 0,
+    'TI-181': 2
+
+}
+
 class FB2_2(MultiprocessBased):
     """
     Class that generates the CT file of the 4666
@@ -102,6 +114,12 @@ class FB2_2(MultiprocessBased):
             res = codi_maquina['name']
         return res
 
+    def get_tipus_inst(self, ti_cnmc_id):
+        o = self.connection
+        ti_cnmc = o.GiscedataTipusInstallacio.read(
+            ti_cnmc_id, ['name'])['name']
+        return ti_cnmc
+
     def consumer(self):
         o = self.connection
         fields_to_read = [
@@ -125,13 +143,16 @@ class FB2_2(MultiprocessBased):
                     o_data = datetime.strptime(celles['data_pm'], "%Y-%m-%d")
                     o_data = int(o_data.year)
 
+                o_interruptor = self.get_tipus_inst(celles['tipus_instalacio_cnmc_id'])
+                o_interruptor_val = TIPUS_INST[o_interruptor]
+
                 self.output_q.put([
-                    o_ct,            # CT
-                    o_id_cella,      # IDENTIFICADOR_CELDA
-                    o_cini,          # CINI
-                    #o_interruptor,   # INTERRUPTOR
-                    o_propietari,    # PROPIEDAD
-                    o_data,          # FECHA PUESTA EN SERVICIO
+                    o_ct,                # CT
+                    o_id_cella,          # IDENTIFICADOR_CELDA
+                    o_cini,              # CINI
+                    o_interruptor_val,   # INTERRUPTOR
+                    o_propietari,        # PROPIEDAD
+                    o_data,              # FECHA PUESTA EN SERVICIO
                 ])
             except Exception:
                 traceback.print_exc()
