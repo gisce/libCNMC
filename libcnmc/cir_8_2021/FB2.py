@@ -16,6 +16,12 @@ from libcnmc.utils import (
 from libcnmc.models import F8Res4666
 from shapely import wkt
 
+ZONA = {
+    'RURAL CONCENTRADA': 'RC',
+    'RURAL DISPERSA': 'RD',
+    'URBANA': 'U',
+    'SEMIURBANA': 'SU'
+}
 
 class FB2(MultiprocessBased):
     """
@@ -103,6 +109,20 @@ class FB2(MultiprocessBased):
                     res += trafo['potencia_nominal']
         return res
 
+    def get_node_trafos(self, id_ct):
+        o = self.connection
+        res = 0
+        ids_trafos = o.GiscedataTransformadorTrafo.search([
+            ('ct', '=', id_ct)])
+
+        if ids_trafos:
+            for elem in ids_trafos:
+                trafo = o.GiscedataTransformadorTrafo.read(
+                    elem, ['node_id'])
+                if trafo:
+                    return trafo['node_id']
+        return 0
+
     def consumer(self):
         """
         Method that generates the csb file
@@ -116,7 +136,7 @@ class FB2(MultiprocessBased):
             return vals['name']
 
         fields_to_read = [
-            'name', 'cini', 'data_pm', 'tipus_instalacio_cnmc_id', 'tensio_p',
+            'id', 'name', 'cini', 'data_pm', 'tipus_instalacio_cnmc_id', 'tensio_p',
             'id_municipi', 'perc_financament', 'descripcio', 'data_baixa',
             self.compare_field, 'id_provincia', 'zona_id', 'node_id', 'potencia',
             #'modelo', 'punto_frontera'
@@ -280,6 +300,10 @@ class FB2(MultiprocessBased):
                     o_node, vertex = self.get_node_vertex(item)
                 o_node = o_node.replace('*', '')
 
+                o_node_baixa = self.get_node_trafos(ct['id'])
+                if o_node_baixa == 0:
+                    o_node_baixa = '';
+
                 try:
                     o_tensio_p = format_f(
                         float(ct['tensio_p']) / 1000.0, decimals=3) or ''
@@ -334,7 +358,8 @@ class FB2(MultiprocessBased):
                     zona = O.GiscedataCtsZona.read(
                         ct['zona_id'][0], ['name']
                     )
-                    zona_name = zona.get('name', "")
+                    tmp_zona = zona.get('name', "")
+                    zona_name = ZONA[tmp_zona]
                 else:
                     zona_name = ""
 
@@ -350,6 +375,7 @@ class FB2(MultiprocessBased):
                     ct['descripcio'] or '',             # DENOMINACION
                     str(ti),                            # CODIGO_CCUU
                     o_node,                             # NUDO_ALTA
+                    o_node_baixa,                       # NUDO_BAJA
                     o_tensio_p,                         # NIVEL TENSION
                     o_potencia,                         # POTENCIA
                     format_f(res_srid[0], decimals=3),  # X
@@ -363,6 +389,7 @@ class FB2(MultiprocessBased):
                     #modelo,                            # MODELO
                     #punto_frontera                     # PUNTO_FRONTERA
                     data_pm,                            # FECHA APS
+                    fecha_baja,                         # FECHA BAJA
                     causa_baja,                         # CAUSA BAJA
                     data_ip,                            # FECHA IP
                     tipo_inversion,                     # TIPO INVERSION
