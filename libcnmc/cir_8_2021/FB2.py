@@ -387,8 +387,8 @@ class FB2(MultiprocessBased):
                     #modelo,                            # MODELO
                     #punto_frontera                     # PUNTO_FRONTERA
                     data_pm,                            # FECHA APS
-                    fecha_baja,                         # FECHA BAJA
                     causa_baja,                         # CAUSA BAJA
+                    fecha_baja,                         # FECHA BAJA
                     data_ip,                            # FECHA IP
                     tipo_inversion,                     # TIPO INVERSION
                     im_ingenieria,                      # IM_TRAMITES
@@ -403,8 +403,8 @@ class FB2(MultiprocessBased):
                     ),                                  # FINANCIADO
                     linia['cuenta_contable'],           # CUENTA CONTABLE
                     motivacion,                         # MOTIVACION
-                    #avifauna,                           # AVIFAUNA
-                    identificador_baja                  # ID_BAJA
+                    #avifauna,                          # AVIFAUNA
+                    identificador_baja,                 # ID_BAJA
 
                 ]
                 self.output_q.put(output)
