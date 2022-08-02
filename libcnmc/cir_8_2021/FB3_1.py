@@ -93,7 +93,7 @@ class FB3_1(MultiprocessBased):
                 if "x" in subestacio and "y" in subestacio:
                     vertex = (subestacio["x"], subestacio["y"])
                 else:
-                    vertex = self.get_vertex(subestacio['ct_id'][0])
+                    vertex = self.get_vertex(subestacio['ct_id'])
 
                 res_srid = ['', '']
                 if vertex:
