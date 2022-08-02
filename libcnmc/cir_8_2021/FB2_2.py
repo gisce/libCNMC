@@ -123,7 +123,7 @@ class FB2_2(MultiprocessBased):
     def consumer(self):
         o = self.connection
         fields_to_read = [
-            'installacio', 'name', 'propietari', 'data_pm', 'cini'
+            'installacio', 'name', 'propietari', 'data_pm', 'cini', 'tipus_instalacio_cnmc_id'
         ]
         while True:
             try:
