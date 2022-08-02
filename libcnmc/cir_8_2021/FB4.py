@@ -139,7 +139,8 @@ class FB4(MultiprocessBased):
 
                 linia = O.GiscedataProjecteObraTiPosicio.read([item], fields_to_read)[0]
 
-
+                print("denominacion")
+                print(linia['denominacion'])
                 propietari = self.get_cts_propietari(linia['denominacion'])
 
                 print("propietari")
