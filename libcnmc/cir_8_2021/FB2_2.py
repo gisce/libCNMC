@@ -35,7 +35,7 @@ class FB2_2(MultiprocessBased):
         """
         super(FB2_2, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.report_name = 'F12 Bis - Cel·les'
+        self.report_name = 'FB2_2 Bis - Cel·les'
         self.base_object = 'Cel·les'
         self.fiabilitat = kwargs.get("fiabilitat")
         self.doslmesp = kwargs.get("doslmesp")
@@ -48,7 +48,7 @@ class FB2_2(MultiprocessBased):
         """
 
         search_params = [
-            ("installacio", "like", "giscedata.cts"),
+            ("installacio", "like", "%giscedata.cts%"),
             ("tipus_element.codi", "!=", "FUS_AT")
         ]
 
