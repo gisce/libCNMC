@@ -117,7 +117,7 @@ class FB2_2(MultiprocessBased):
     def get_tipus_inst(self, ti_cnmc_id):
         o = self.connection
         ti_cnmc = o.GiscedataTipusInstallacio.read(
-            ti_cnmc_id, ['name'])['name']
+            ti_cnmc_id)['name']
         return ti_cnmc
 
     def consumer(self):
