@@ -120,7 +120,7 @@ class FB2(MultiprocessBased):
                 trafo = o.GiscedataTransformadorTrafo.read(
                     elem, ['node_id'])
                 if trafo:
-                    return trafo['node_id']
+                    return trafo['node_id'][1]
         return 0
 
     def consumer(self):
@@ -185,8 +185,6 @@ class FB2(MultiprocessBased):
                 )
 
                 linia = O.GiscedataProjecteObraTiCts.read(installations_ids[8], fields_to_read_obra)[0]
-
-                print(linia)
 
                 data_ip = convert_spanish_date(
                     linia['fecha_aps'] if not linia['fecha_baja']
