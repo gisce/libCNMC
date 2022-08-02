@@ -119,7 +119,7 @@ class FB2(MultiprocessBased):
             for elem in ids_trafos:
                 trafo = o.GiscedataTransformadorTrafo.read(
                     elem, ['node_id'])
-                if trafo:
+                if trafo['node_id']:
                     return trafo['node_id'][1]
         return 0
 
