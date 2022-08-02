@@ -125,6 +125,7 @@ class FB2_2(MultiprocessBased):
                 )
                 o_ct_id = int(celles['installacio'].split(',')[1])
                 o_ct = self.get_codi_ct(o_ct_id)
+                o_maquina = self.get_codi_maquina(o_ct_id)
                 o_id_cella = celles['name']
                 o_cini = celles['cini'] or ''
                 o_propietari = int(celles['propietari'])
@@ -139,6 +140,7 @@ class FB2_2(MultiprocessBased):
                 self.output_q.put([
                     o_ct,                # CT
                     o_id_cella,          # IDENTIFICADOR_CELDA
+                    o_maquina,           # IDENTIFICADOR_MAQUINA
                     o_cini,              # CINI
                     o_interruptor_val,   # INTERRUPTOR
                     o_propietari,        # PROPIEDAD
