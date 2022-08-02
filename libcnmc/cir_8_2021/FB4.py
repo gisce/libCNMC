@@ -80,10 +80,10 @@ class FB4(MultiprocessBased):
 
     def get_cts_propietari(self, sub_name):
         o = self.connection
-        sub = o.GiscedataCtsSubestacions.read(sub_name, ['ct_id'])
+        sub = o.GiscedataCts.search('name', '=', sub_name)
         res = ''
         if sub:
-            res = sub['ct_id'][1]
+            res = sub['id'][0]
             cts = o.GiscedataCts.read(res, ['propietari'])
             res = cts['propietari'][1]
             print("res")
