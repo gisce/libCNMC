@@ -19,8 +19,8 @@ TIPUS_INST = {
     'TI-187A': 1,
     'TI-179': 0,
     'TI-177': 0,
-    'TI-181': 2
-
+    'TI-181': 2,
+    'TI-102V': 2,
 }
 
 class FB2_2(MultiprocessBased):
@@ -52,16 +52,6 @@ class FB2_2(MultiprocessBased):
             ("tipus_element.codi", "!=", "FUS_AT")
         ]
 
-        #if self.fiabilitat and self.doslmesp:
-        #    search_params.append(("inventari", "in", ('fiabilitat', 'l2+p')))
-        #elif self.fiabilitat:
-        #    search_params.append(("inventari", "=", "fiabilitat"))
-        #elif self.doslmesp:
-        #    search_params.append(("inventari", "=", 'l2+p'))
-        #else:
-        #    search_params.append(
-        #        ("inventari", "not in", ('fiabilitat', 'l2+p'))
-        #    )
 
         data_pm = '{}-01-01'.format(self.year + 1)
         data_baixa = '{}-12-31'.format(self.year)
