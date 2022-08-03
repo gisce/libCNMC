@@ -182,16 +182,51 @@ class FB2(MultiprocessBased):
 
                 obra_id = O.GiscedataProjecteObraTiCts.search([('element_ti_id', '=', ct['id'])])
 
-                print(obra_id)
                 if obra_id:
                     linia = O.GiscedataProjecteObraTiCts.read(obra_id, fields_to_read_obra)[0]
+                else:
+                    linia = ''
 
-                print(linia)
+                if linia != '':
+                    data_ip = convert_spanish_date(
+                            linia['fecha_aps'] if not linia['fecha_baja'] and linia['tipo_inversion'] != '1' else ''
+                    )
+                    identificador_baja = (
+                        get_inst_name(linia['identificador_baja'][0]) if linia['identificador_baja'] else ''
+                    )
+                    tipo_inversion = (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1'
 
-                data_ip = convert_spanish_date(
-                    linia['fecha_aps'] if not linia['fecha_baja']
-                                          and linia['tipo_inversion'] != '1' else ''
-                )
+                    im_ingenieria = format_f_6181(linia['im_ingenieria'] or 0.0, float_type='euro')
+
+                    im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
+                    im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
+                    im_construccion = str(
+                        float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
+                    ).replace(".", ",")
+
+                    im_trabajos = format_f_6181(linia['im_trabajos'] or 0.0, float_type='euro')
+
+                    subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
+                    subvenciones_nacionales = format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro')
+
+                    valor_auditado = format_f_6181(linia['valor_auditado'] or 0.0, float_type='euro')
+
+                    motivacion = get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]) if not \
+                        linia['fecha_baja'] else ''
+
+                    linia['cuenta_contable']
+                else:
+                    data_ip = ''
+                    identificador_baja = ''
+                    tipo_inversion = ''
+                    im_ingenieria = ''
+                    im_construccion = ''
+                    im_trabajos = ''
+                    subvenciones_europeas = ''
+                    subvenciones_nacionales = ''
+                    valor_auditado = ''
+                    motivacion = ''
+                    cuenta_contable = ''
 
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data APS sortirà en blanc
@@ -221,9 +256,7 @@ class FB2(MultiprocessBased):
                     if comunitat_vals:
                         comunitat_codi = comunitat_vals['codi']
 
-                identificador_baja = (
-                    get_inst_name(linia['identificador_baja'][0]) if linia['identificador_baja'] else ''
-                )
+
 
                 if ct['data_baixa']:
                     if ct['data_baixa'] < data_pm_limit:
@@ -317,26 +350,7 @@ class FB2(MultiprocessBased):
                 if vertex:
                     res_srid = convert_srid(get_srid(O), vertex)
 
-                tipo_inversion = (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1'
 
-                im_ingenieria = format_f_6181(linia['im_ingenieria'] or 0.0, float_type='euro')
-
-                im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
-                im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
-                im_construccion = str(
-                    float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
-                ).replace(".",",")
-
-
-                im_trabajos = format_f_6181(linia['im_trabajos'] or 0.0, float_type='euro')
-
-                subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
-                subvenciones_nacionales = format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro')
-
-                valor_auditado = format_f_6181(linia['valor_auditado'] or 0.0, float_type='euro')
-
-                motivacion = get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]) if not \
-                    linia['fecha_baja'] else ''
 
                 if 'id_provincia' in ct:
                     provincia = O.ResCountryState.read(
@@ -403,7 +417,7 @@ class FB2(MultiprocessBased):
                     format_f(
                         100.0 - ct.get('perc_financament', 0.0), 2
                     ),                                  # FINANCIADO
-                    linia['cuenta_contable'],           # CUENTA CONTABLE
+                    cuenta_contable,           # CUENTA CONTABLE
                     motivacion,                         # MOTIVACION
                     #avifauna,                          # AVIFAUNA
                     identificador_baja,                 # ID_BAJA
