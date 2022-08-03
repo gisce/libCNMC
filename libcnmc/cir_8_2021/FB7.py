@@ -44,7 +44,7 @@ class FB7(MultiprocessBased):
 
             if tram_voltatge:
                 print(tram_voltatge)
-                res = self.connection.GiscedataTensionsTensio.read(tram_voltatge, ['tensio'])
+                res = self.connection.GiscedataTensionsTensio.read(tram_voltatge[0], ['tensio'])
                 print(res)
                 return res
 
