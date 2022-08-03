@@ -48,7 +48,7 @@ class FB7(MultiprocessBased):
 
     def get_node_vertex(self, vertex_id):
 
-        v = self.connection.GiscegisVertex.read(vertex_id, ['x', 'y'])
+        v = self.connection.GiscegisVertex.read(vertex_id[0], ['x', 'y'])
         vertex = (round(v['x'], 3), round(v['y'], 3))
         return vertex
 
