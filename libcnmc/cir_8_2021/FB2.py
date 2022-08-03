@@ -214,7 +214,7 @@ class FB2(MultiprocessBased):
                     motivacion = get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]) if not \
                         linia['fecha_baja'] else ''
 
-                    linia['cuenta_contable']
+                    cuenta_contable = linia['cuenta_contable']
                 else:
                     data_ip = ''
                     identificador_baja = ''
