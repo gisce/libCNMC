@@ -36,12 +36,12 @@ class FB7(MultiprocessBased):
             edge = self.connection.GiscegisEdge.search([('end_node', '=', node_id)])[0]
         if edge:
             print(edge)
-            tram = self.connection.GiscedataAtTram.search([('edge_id', '=', edge['id'][0])])
+            tram = self.connection.GiscedataAtTram.search([('edge_id', '=', edge['id'])])[0]
             if not tram:
-                tram = self.connection.GiscedataBtElement.search([('edge_id', '=', edge['id'][0])])
+                tram = self.connection.GiscedataBtElement.search([('edge_id', '=', edge['id'])])[0]
             if tram:
                 print(tram)
-                tensio_obj = self.connection.GiscedataTensionsTensio.read(tram['tensio_id'][0])
+                tensio_obj = self.connection.GiscedataTensionsTensio.read(tram['tensio_id'])
                 res = tensio_obj['tensio']
                 print(res)
                 return res
