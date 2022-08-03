@@ -180,11 +180,13 @@ class FB2(MultiprocessBased):
 
                 ct = O.GiscedataCts.read(item, fields_to_read)
 
-                installations_ids = self.connection.GiscedataProjecteObra.get_audit_installations_by_year(
-                    [], self.year, [8]
-                )
+                obra_id = O.GiscedataProjecteObraTiCts.search([('element_ti_id', '=', item['id'])])[0]
 
-                linia = O.GiscedataProjecteObraTiCts.read(installations_ids[8], fields_to_read_obra)[0]
+                if obra_id:
+                    linia = O.GiscedataProjecteObraTiCts.read(obra_id, fields_to_read_obra)[0]
+
+                print(obra_id)
+                print(linia)
 
                 data_ip = convert_spanish_date(
                     linia['fecha_aps'] if not linia['fecha_baja']
