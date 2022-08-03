@@ -43,9 +43,7 @@ class FB7(MultiprocessBased):
                 tram_voltatge = self.connection.GiscedataAtTram.read(tram[0], ['tensio_id'])
 
             if tram_voltatge:
-                print(tram_voltatge)
                 res = self.connection.GiscedataTensionsTensio.read(tram_voltatge['id'], ['tensio'])
-                print(res)
                 return res
 
     def get_node_vertex(self, vertex_id):
@@ -89,7 +87,7 @@ class FB7(MultiprocessBased):
                     format_f(res_srid[0], decimals=3),  # X
                     format_f(res_srid[1], decimals=3),  # Y
                     z,                                  # Z
-                    #TENSION
+                    voltatge,                            #TENSION
                     # o_municipi,                         # MUNICIPIO
                     #o_provincia,                        # PROVINCIA
                 ])
