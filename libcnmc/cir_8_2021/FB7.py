@@ -67,7 +67,7 @@ class FB7(MultiprocessBased):
                     item, fields_to_read
                 )
 
-                vertex = self.get_vertex(node['vertex'])
+                vertex = self.get_node_vertex(node['vertex'])
 
                 voltatge = self.get_voltatge_node(node['id'])
 
