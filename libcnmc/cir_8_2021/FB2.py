@@ -180,12 +180,12 @@ class FB2(MultiprocessBased):
 
                 ct = O.GiscedataCts.read(item, fields_to_read)
 
-                obra_id = O.GiscedataProjecteObraTiCts.search([('element_ti_id', '=', ct['id'])])[0]
+                obra_id = O.GiscedataProjecteObraTiCts.search([('element_ti_id', '=', ct['id'])])
 
+                print(obra_id)
                 if obra_id:
                     linia = O.GiscedataProjecteObraTiCts.read(obra_id, fields_to_read_obra)[0]
 
-                print(obra_id)
                 print(linia)
 
                 data_ip = convert_spanish_date(
