@@ -26,7 +26,7 @@ class FB7(MultiprocessBased):
 
     def get_sequence(self):
 
-        return self.connection.GiscegisNodes.search(
+        return self.connection.GiscegisNodes.search([]
         )
 
     def get_voltatge_node(self, node_id):
