@@ -31,9 +31,9 @@ class FB7(MultiprocessBased):
 
     def get_voltatge_node(self, node_id):
 
-        edge = self.connection.GiscegisEdge.search([('start_node', '=', node_id)])
+        edge = self.connection.GiscegisEdge.search([('start_node', '=', node_id)])[0]
         if not edge:
-            edge = self.connection.GiscegisEdge.search([('end_node', '=', node_id)])
+            edge = self.connection.GiscegisEdge.search([('end_node', '=', node_id)])[0]
         if edge:
             print(edge)
             tram = self.connection.GiscedataAtTram.search([('edge_id', '=', edge['id'][0])])
