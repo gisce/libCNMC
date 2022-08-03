@@ -20,7 +20,7 @@ TIPUS_INST = {
     'TI-179': 0,
     'TI-177': 0,
     'TI-181': 2,
-    'TI-102V': 2,
+    'TI-102V': 0,
 }
 
 class FB2_2(MultiprocessBased):

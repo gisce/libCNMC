@@ -86,10 +86,10 @@ class FB2_1(MultiprocessBased):
                     trafo['data_pm'], '%Y-%m-%d')
                 o_any = tmp_date.strftime('%d/%m/%Y')
 
-                if trafo['id_estat'][0] == 1:
-                    o_operacion = 1
-                else:
-                    o_operacion = 0
+                #if trafo['id_estat'][0] == 1:
+                #    o_operacion = 1
+                #else:
+                #    o_operacion = 0
 
                 self.output_q.put([
                     o_ct,           # CT
@@ -97,7 +97,7 @@ class FB2_1(MultiprocessBased):
                     o_cini,         # CINI
                     o_pot,          # POT MAQUINA
                     o_any,          # AÑO INFORMACION
-                    o_operacion     # OPERACION
+                    #o_operacion     # OPERACION
                 ])
             except Exception:
                 traceback.print_exc()

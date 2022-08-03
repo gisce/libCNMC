@@ -124,6 +124,7 @@ class FB3(MultiprocessBased):
 
                 #o_puntfrontera = sub['punto_frontera']
 
+
                 self.output_q.put([
                     o_subestacio,                       # SUBESTACION
                     o_cini,                             # CINI
