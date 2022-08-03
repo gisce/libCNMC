@@ -34,6 +34,8 @@ class FB6(MultiprocessBased):
         self.report_name = 'FB6 - Elements de millora de fiabilitat'
         self.base_object = 'Elements de millora de fiabilitat'
         self.cod_dis = 'R1-{}'.format(self.codi_r1[-3:])
+        self.compare_field = "4666_entregada"
+
 
     def get_sequence(self):
         """
