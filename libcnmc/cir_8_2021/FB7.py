@@ -38,10 +38,13 @@ class FB7(MultiprocessBased):
             tram = self.connection.GiscedataAtTram.search([('edge_id', '=', edge)])
             if not tram:
                 tram = self.connection.GiscedataBtElement.search([('edge_id', '=', edge)])
-            if tram:
-                print(tram)
-                print(tram[1])
-                res = self.connection.GiscedataTensionsTensio.read(tram[1])['tensio_id']
+                tram_voltatge = self.connection.GiscedataBtElement.read(tram[0], ['tensio_id'])
+            else:
+                tram_voltatge = self.connection.GiscedataAtTram.read(tram[0], ['tensio_id'])
+
+            if tram_voltatge:
+                print(tram_voltatge)
+                res = self.connection.GiscedataTensionsTensio.read(tram_voltatge, ['tensio'])
                 print(res)
                 return res
 
