@@ -202,8 +202,9 @@ class FB4(MultiprocessBased):
 
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data APS sortirà en blanc
-                fecha_ip = '' if fecha_aps and int(fecha_aps.split('/')[2]) != self.year \
-                    else fecha_aps
+
+                #fecha_ip = '' if fecha_aps and int(fecha_aps.split('/')[2]) != self.year \
+                #    else fecha_aps
 
 
 
@@ -232,7 +233,7 @@ class FB4(MultiprocessBased):
                     #convert_spanish_date(linia['fecha_baja']),  #FECHA_BAJA
                     #linia['causa_baja'],        #CAUSA_BAJA
 
-                    fecha_ip,    #fecha IP
+                    #fecha_ip,    #fecha IP
                     tipo_inversion,  # TIPO_INVERSION
 
                     im_ingenieria,    #IM_TRAMITES
