@@ -100,12 +100,8 @@ class FB4(MultiprocessBased):
     def get_cts_propietari(self, sub_id):
         o = self.connection
         cts_id = o.GiscedataCtsSubestacions.read(sub_id, ['ct_id'])
-        print("cts_id")
-        print(cts_id['id'])
         if cts_id:
             cts_data = o.GiscedataCts.read(cts_id['id'], ['propietari', 'node_id'])
-            print("cts_prop")
-            print(cts_data)
         return cts_data
 
     def get_parc_name(self, parc_id):
@@ -238,15 +234,24 @@ class FB4(MultiprocessBased):
                     identificador_emplazamiento = "SUBESTACIO_NAME"
 
 
-                propietari = self.get_cts_propietari(pos['subestacio_id'][0])
+                cts_data = self.get_cts_propietari(pos['subestacio_id'][0])
+
+                print("propietari")
+                print(cts_data['propietari'])
+                if cts_data['propietari']:
+                    ajena = 0
+                else:
+                    ajena = 1
+
+                node = cts_data['node_id'][1]
 
                 output = [
                     pos['name'],  #IDENTIFICADOR_POSICION
                     pos['cini'],  #CINI
-                    #NUDO
+                    node,    #NUDO
                     #CODIGO_CCUU
                     identificador_emplazamiento, #PARC_ID a PARC_NAME,  #IDENTIFICADOR EMPLAZAMIENTO
-                    #AJENA
+                    ajena,  #AJENA
                     #EQUIPADA
                     #ESTADO
                     #MODELO
