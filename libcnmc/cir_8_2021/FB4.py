@@ -97,12 +97,10 @@ class FB4(MultiprocessBased):
         return self.connection.GiscedataCtsSubestacionsPosicio.search(
             search_params, 0, 0, False, {'active_test': False})
 
-    def get_cts_data(self, sub_id):
+    def get_cts_propietari(self, sub_id):
         o = self.connection
         sub = o.GiscedataCtsSubestacions.search('id', '=', sub_id)
         cts_id = o.GiscedataCtsSubestacions.read(sub['id'][0], ['ct_id'])
-        print("cts_id")
-        print(cts_id)
         if cts_id:
             cts = o.GiscedataCts.search('id', '=', cts_id)
             cts_data = o.GiscedataCts.read(cts, ['node_id', 'propietari'])
@@ -213,7 +211,7 @@ class FB4(MultiprocessBased):
                     motivacion = ''
                     cuenta_contable = ''
                     financiado = ''
-                    
+
 
                 #    fecha_aps = convert_spanish_date(
                 #        linia['fecha_aps'] if not linia['fecha_baja']
@@ -239,7 +237,8 @@ class FB4(MultiprocessBased):
 
                     identificador_emplazamiento = "SUBESTACIO_NAME"
 
-
+                print("sub_id:")
+                print(pos['subestacio_id'])
 
                 output = [
                     pos['name'],  #IDENTIFICADOR_POSICION
