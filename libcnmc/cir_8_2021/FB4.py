@@ -71,24 +71,41 @@ class FB4(MultiprocessBased):
         :return: List of ids
         :rtype: list
         """
+        if self.all_int:
+            search_params = [
+                ("interruptor", "in", ('2', '3'))
+            ]
+        else:
+            search_params = [
+                ("interruptor", "=", '2')
+            ]
 
-        installations_ids = self.connection.GiscedataProjecteObra.get_audit_installations_by_year(
-            [], self.year, [4]
-        )
+        data_pm = '%s-01-01' % (self.year + 1)
+        data_baixa = '%s-12-31' % self.year
+        search_params += ['|', ('data_pm', '=', False),
+                          ('data_pm', '<', data_pm),
+                          '|', ('data_baixa', '>', data_baixa),
+                          ('data_baixa', '=', False),
+                          ]
+        # Revisem que si està de baixa ha de tenir la data informada.
+        search_params += ['|',
+                          '&', ('active', '=', False),
+                          ('data_baixa', '!=', False),
+                          ('active', '=', True)]
+        return self.connection.GiscedataCtsSubestacionsPosicio.search(
+            search_params, 0, 0, False, {'active_test': False})
 
-        return installations_ids[4]
-
-    def get_cts_propietari(self, sub_name):
+    def get_cts_data(self, sub_id):
         o = self.connection
-        sub = o.GiscedataCts.search('name', '=', sub_name)
+        sub = o.GiscedataCts.search('id', '=', sub_id)
         res = ''
         if sub:
             res = sub['id'][0]
-            cts = o.GiscedataCts.read(res, ['propietari'])
-            res = cts['propietari'][1]
-            print("res")
-            print(res)
-        return res
+            cts = o.GiscedataCts.read(res, ['node_id', 'propietari'])
+
+            print("cts")
+            print(cts)
+        return cts
 
     def consumer(self):
         """
@@ -98,14 +115,14 @@ class FB4(MultiprocessBased):
         """
 
         O = self.connection
+
         fields_to_read = [
-            'name',
-            'cini',
-            'tipo_inversion',
-            'denominacion',
-            'ccuu',
-            'codigo_ccaa',
-            'identificador_parque',
+            'name', 'cini', 'node_id', 'propietari', 'subestacio_id', 'data_pm', 'tensio',
+            'parc_id'
+        ]
+
+        fields_to_read_obra = [
+            'name', 'cini', 'tipo_inversion', 'denominacion', 'ccuu', 'codigo_ccaa', 'identificador_parque',
             'nivel_tension_explotacion',
             'financiado',
             'planificacion',
@@ -136,15 +153,19 @@ class FB4(MultiprocessBased):
             try:
                 item = self.input_q.get()
                 self.progress_q.put(item)
+                pos = O.GiscedataCtsSubestacionsPosicio.read(
+                    item, fields_to_read
+                )
 
-                linia = O.GiscedataProjecteObraTiPosicio.read([item], fields_to_read)[0]
+                obra_id = O.GiscedataProjecteObraTiCts.search([('element_ti_id', '=', ct['id'])])
+                if obra_id:
+                    linia = O.GiscedataProjecteObraTiPosicio.read(obra_id, fields_to_read_obra)[0]
+                else:
+                    linia = ''
 
                 print("denominacion")
                 print(linia['denominacion'])
-                propietari = self.get_cts_propietari(linia['denominacion'])
 
-                print("propietari")
-                print(propietari)
 
                 fecha_aps = convert_spanish_date(
                     linia['fecha_aps'] if not linia['fecha_baja']
@@ -161,12 +182,23 @@ class FB4(MultiprocessBased):
                     float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
                 ).replace(".", ",")
 
+                cts = get_cts_data(pos['subestacio_id'])
+
+                if pos['parc_id']:
+                    o_parc = pos['parc_id'][1]
+                else:
+                    o_parc = pos['subestacio_id'][1] + "-"\
+                        + str(self.get_tensio(pos))
+
+
+
                 output = [
-                    linia['name'],  #IDENTIFICADOR_POSICION
-                    linia['cini'],  #CINI
-                    get_name_ti(O, linia['ccuu'] and linia['ccuu'][0]), #CODIGO_CCUU
-                    linia['denominacion'],  #IDENTIFICADOR EMPLAZAMIENTO
-                    propietari,     #AJENA
+                    pos['name'],  #IDENTIFICADOR_POSICION
+                    pos['cini'],  #CINI
+                    #NUDO
+                    #CODIGO_CCUU
+                    o_parc, #PARC_ID a PARC_NAME,  #IDENTIFICADOR EMPLAZAMIENTO
+                    #AJENA
                     #EQUIPADA
                     #ESTADO
                     #MODELO
