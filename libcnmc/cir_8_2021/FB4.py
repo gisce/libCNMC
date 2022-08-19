@@ -164,6 +164,9 @@ class FB4(MultiprocessBased):
                     item, fields_to_read
                 )
 
+                print(posid)
+                print(pos['id'])
+
                 obra_id = O.GiscedataProjecteObraTiPosicio.search([('element_ti_id', '=', pos['id'])])
                 if obra_id:
                     linia = O.GiscedataProjecteObraTiPosicio.read(obra_id, fields_to_read_obra)[0]
@@ -267,6 +270,9 @@ class FB4(MultiprocessBased):
 
 
                 cts_data = self.get_cts_propietari(pos['subestacio_id'][0])
+
+                print("cts_data")
+                print(cts_data)
 
                 if cts_data['propietari']:
                     ajena = 0
