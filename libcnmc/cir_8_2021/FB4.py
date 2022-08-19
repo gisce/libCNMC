@@ -102,10 +102,8 @@ class FB4(MultiprocessBased):
         cts_id = o.GiscedataCtsSubestacions.read(sub_id, ['ct_id'])
         print("cts_id")
         print(cts_id['id'])
-        print(cts_id['id'][0])
         if cts_id:
-            cts = o.GiscedataCts.search('id', '=', cts_id['id'])
-            cts_data = o.GiscedataCts.read(cts, ['propietari'])
+            cts_data = o.GiscedataCts.read(cts_id['id'], ['propietari'])
             print("cts_prop")
             print(cts_data)
         return cts_data
