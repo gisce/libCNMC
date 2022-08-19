@@ -103,7 +103,7 @@ class FB4(MultiprocessBased):
         print("cts_id")
         print(cts_id['id'])
         if cts_id:
-            cts_data = o.GiscedataCts.read(cts_id['id'], ['propietari'])
+            cts_data = o.GiscedataCts.read(cts_id['id'], ['propietari', 'node_id'])
             print("cts_prop")
             print(cts_data)
         return cts_data
