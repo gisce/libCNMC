@@ -159,7 +159,7 @@ class FB4(MultiprocessBased):
                     item, fields_to_read
                 )
 
-                obra_id = O.GiscedataProjecteObraTiCts.search([('element_ti_id', '=', ct['id'])])
+                obra_id = O.GiscedataProjecteObraTiPosicio.search([('element_ti_id', '=', pos['id'])])
                 if obra_id:
                     linia = O.GiscedataProjecteObraTiPosicio.read(obra_id, fields_to_read_obra)[0]
                 else:
