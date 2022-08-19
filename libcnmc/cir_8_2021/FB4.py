@@ -110,6 +110,13 @@ class FB4(MultiprocessBased):
             print(cts_data)
         return cts_data
 
+    def get_parc_name(self, parc_id):
+        o = self.connection
+        parc = o.GiscedataParcs.search('id', '=', parc_id)
+        if parc:
+            parc_name = o.GiscedataParcs.read(parc, ['name'])
+        return parc_name
+
     def consumer(self):
         """
         Generates the line of the file
@@ -208,13 +215,17 @@ class FB4(MultiprocessBased):
 
 
 
-                cts = self.get_cts_data(pos['subestacio_id'])
+                #cts = self.get_cts_data(pos['subestacio_id'])
 
                 if pos['parc_id']:
                     o_parc = pos['parc_id'][1]
+
+                    identificador_emplazamiento = self.get_parc_name(o_parc)
                 else:
                     o_parc = pos['subestacio_id'][1] + "-"\
                         + str(self.get_tensio(pos))
+
+                    identificador_emplazamiento = "SUBESTACIO_NAME"
 
 
 
@@ -223,7 +234,7 @@ class FB4(MultiprocessBased):
                     pos['cini'],  #CINI
                     #NUDO
                     #CODIGO_CCUU
-                    o_parc, #PARC_ID a PARC_NAME,  #IDENTIFICADOR EMPLAZAMIENTO
+                    identificador_emplazamiento, #PARC_ID a PARC_NAME,  #IDENTIFICADOR EMPLAZAMIENTO
                     #AJENA
                     #EQUIPADA
                     #ESTADO
