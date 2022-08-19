@@ -164,7 +164,7 @@ class FB4(MultiprocessBased):
                     item, fields_to_read
                 )
 
-                print(posid)
+                print("posid")
                 print(pos['id'])
 
                 obra_id = O.GiscedataProjecteObraTiPosicio.search([('element_ti_id', '=', pos['id'])])
