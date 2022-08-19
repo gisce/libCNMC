@@ -99,16 +99,16 @@ class FB4(MultiprocessBased):
 
     def get_cts_data(self, sub_id):
         o = self.connection
-        sub = o.GiscedataCts.search('id', '=', sub_id)
-        print("sub")
-        print(sub)
-        if sub:
-            res = sub['id'][0]
-            cts = o.GiscedataCts.read(res, ['node_id', 'propietari'])
-
+        sub = o.GiscedataCtsSubestacions.search('id', '=', sub_id)
+        cts_id = o.GiscedataCtsSubestacions.read(sub['id'][0], ['ct_id'])
+        print("cts_id")
+        print(cts_id)
+        if cts_id:
+            cts = o.GiscedataCts.search('id', '=', cts_id)
+            cts_data = o.GiscedataCts.read(cts, ['node_id', 'propietari'])
             print("cts")
-            print(cts)
-        return cts
+            print(cts_data)
+        return cts_data
 
     def consumer(self):
         """
