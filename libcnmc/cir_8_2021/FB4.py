@@ -101,9 +101,11 @@ class FB4(MultiprocessBased):
         o = self.connection
         sub = o.GiscedataCtsSubestacions.search('id', '=', sub_id)
         cts_id = o.GiscedataCtsSubestacions.read(sub['id'][0], ['ct_id'])
+        print("cts_id")
+        print(cts_id)
         if cts_id:
             cts = o.GiscedataCts.search('id', '=', cts_id)
-            cts_data = o.GiscedataCts.read(cts, ['node_id', 'propietari'])
+            cts_data = o.GiscedataCts.read(cts, ['propietari'])
             print("cts")
             print(cts_data)
         return cts_data
@@ -237,8 +239,7 @@ class FB4(MultiprocessBased):
 
                     identificador_emplazamiento = "SUBESTACIO_NAME"
 
-                print("sub_id:")
-                print(pos['subestacio_id'])
+                propietari = self.get_cts_propietari(pos['subestacio_id'][0])
 
                 output = [
                     pos['name'],  #IDENTIFICADOR_POSICION
