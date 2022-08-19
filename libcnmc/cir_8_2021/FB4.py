@@ -218,10 +218,7 @@ class FB4(MultiprocessBased):
                 #cts = self.get_cts_data(pos['subestacio_id'])
 
                 if pos['parc_id']:
-                    o_parc = pos['parc_id'][1]
-                    print("id_parc:")
-                    print(o_parc)
-                    identificador_emplazamiento = self.get_parc_name(o_parc)
+                    identificador_emplazamiento = pos['parc_id'][1]
                 else:
                     o_parc = pos['subestacio_id'][1] + "-"\
                         + str(self.get_tensio(pos))
