@@ -165,8 +165,8 @@ class FB4(MultiprocessBased):
                 else:
                     linia = ''
 
-                print("denominacion")
-                print(linia['denominacion'])
+                #print("denominacion")
+                #print(linia['denominacion'])
 
 
                 fecha_aps = convert_spanish_date(
@@ -184,7 +184,7 @@ class FB4(MultiprocessBased):
                     float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
                 ).replace(".", ",")
 
-                cts = get_cts_data(pos['subestacio_id'])
+                cts = self.get_cts_data(pos['subestacio_id'])
 
                 if pos['parc_id']:
                     o_parc = pos['parc_id'][1]
