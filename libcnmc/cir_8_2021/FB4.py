@@ -239,7 +239,10 @@ class FB4(MultiprocessBased):
 
                     identificador_emplazamiento = "SUBESTACIO_NAME"
 
-                propietari = self.get_cts_propietari(pos['subestacio_id'][0])
+                print("subestacio_id")
+                print(pos['subestacio_id'])
+                print(pos['subestacio_id'][0])
+                #propietari = self.get_cts_propietari(pos['subestacio_id'][0])
 
                 output = [
                     pos['name'],  #IDENTIFICADOR_POSICION
