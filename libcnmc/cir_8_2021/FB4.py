@@ -31,6 +31,8 @@ class FB4(MultiprocessBased):
             self.include_obres = True
         if kwargs.get("include_header", False):
             self.file_header = self.get_header()
+        self.all_int = kwargs.get('all_int', True)
+
 
     def get_header(self):
         header = [

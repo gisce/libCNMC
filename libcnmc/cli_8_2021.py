@@ -462,6 +462,7 @@ def cir_8_2021_fb3_3(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('--all_int', default=True)
 def cir_8_2021_fb4(**kwargs):
     """
     Click entry to generate the B3_2: POSICIONES
@@ -482,6 +483,7 @@ def cir_8_2021_fb4(**kwargs):
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
+        all_int=kwargs['all_int'],
     )
     proc.calc()
 
