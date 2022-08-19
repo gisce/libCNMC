@@ -11,6 +11,11 @@ from libcnmc.core import MultiprocessBased
 from libcnmc.utils import format_f_6181, get_name_ti, get_codi_actuacio, \
     format_ccaa_code, convert_spanish_date
 
+INTERRUPTOR = {
+    '1': '0', #PARQUE
+    '2': '1', #INTERRUPTOR AUTOMÁTICO
+    '3': '2'  #SIN INTERRUPTOR
+}
 
 class FB4(MultiprocessBased):
 
@@ -125,7 +130,7 @@ class FB4(MultiprocessBased):
 
         fields_to_read = [
             'name', 'cini', 'node_id', 'propietari', 'subestacio_id', 'data_pm', 'tensio',
-            'parc_id', 'data_baixa'
+            'parc_id', 'data_baixa', 'interruptor'
         ]
 
         fields_to_read_obra = [
@@ -281,6 +286,10 @@ class FB4(MultiprocessBased):
 
                 node = cts_data['node_id'][1]
 
+                id_interruptor = pos['interruptor']
+                if id_interruptor:
+                    equipada = INTERRUPTOR[id_interruptor]
+
                 output = [
                     pos['name'],  #IDENTIFICADOR_POSICION
                     pos['cini'],  #CINI
@@ -288,7 +297,7 @@ class FB4(MultiprocessBased):
                     #CODIGO_CCUU
                     identificador_emplazamiento, #PARC_ID a PARC_NAME,  #IDENTIFICADOR EMPLAZAMIENTO
                     ajena,  #AJENA
-                    #EQUIPADA
+                    equipada,   #EQUIPADA
                     #ESTADO
                     #MODELO
                     #PUNTO_FRONTERA
