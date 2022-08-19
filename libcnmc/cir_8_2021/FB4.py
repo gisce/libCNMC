@@ -120,9 +120,12 @@ class FB4(MultiprocessBased):
 
         O = self.connection
 
+        data_pm_limit = '{0}-01-01'.format(self.year + 1)
+        data_baixa_limit = '{0}-01-01'.format(self.year)
+
         fields_to_read = [
             'name', 'cini', 'node_id', 'propietari', 'subestacio_id', 'data_pm', 'tensio',
-            'parc_id'
+            'parc_id', 'data_baixa'
         ]
 
         fields_to_read_obra = [
@@ -169,8 +172,31 @@ class FB4(MultiprocessBased):
 
                 #print("denominacion")
                 #print(linia['denominacion'])
+                fecha_aps = pos['data_pm']
+
+                if pos['data_baixa']:
+                    if pos['data_baixa'] < data_pm_limit:
+                        tmp_date = datetime.strptime(
+                            pos['data_baixa'], '%Y-%m-%d %H:%M:%S')
+                        fecha_baja = tmp_date.strftime('%d/%m/%Y')
+
+                        if int(data_pm.split("/")[2]) - int(fecha_baja.split("/")[2]) >= 40:
+                            if identificador_baja != '':
+                                causa_baja = 1
+                            else:
+                                causa_baja = 2
+                    else:
+                        fecha_baja = ''
+                        causa_baja = 0;
+                else:
+                    fecha_baja = ''
+                    causa_baja = 0;
 
                 if linia != '':
+                    data_ip = convert_spanish_date(
+                        fecha_aps if not fecha_baja and linia['tipo_inversion'] != '1' else ''
+                    )
+
                     im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
                     im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
                     im_construccion = str(
@@ -213,7 +239,13 @@ class FB4(MultiprocessBased):
                 #        linia['fecha_aps'] if not linia['fecha_baja']
                 #                              and linia['tipo_inversion'] != '1' else ''
                 #    )
-                fecha_aps = pos['data_pm']
+
+
+                # Si la data IP es igual a l'any de la generació del fitxer,
+                # la data IP sortirà en blanc
+                data_ip = '' if data_ip and int(data_ip.split('/')[2]) != self.year \
+                    else data_ip
+
 
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data APS sortirà en blanc
@@ -236,8 +268,6 @@ class FB4(MultiprocessBased):
 
                 cts_data = self.get_cts_propietari(pos['subestacio_id'][0])
 
-                print("propietari")
-                print(cts_data['propietari'])
                 if cts_data['propietari']:
                     ajena = 0
                 else:
@@ -257,10 +287,10 @@ class FB4(MultiprocessBased):
                     #MODELO
                     #PUNTO_FRONTERA
                     fecha_aps,      #FECHA_APS
-                    #convert_spanish_date(linia['fecha_baja']),  #FECHA_BAJA
-                    #linia['causa_baja'],        #CAUSA_BAJA
+                    fecha_baja,     #FECHA_BAJA
+                    causa_baja,     #CAUSA_BAJA
 
-                    #fecha_ip,    #fecha IP
+                    data_ip,    #fecha IP
                     tipo_inversion,  # TIPO_INVERSION
 
                     im_ingenieria,    #IM_TRAMITES
