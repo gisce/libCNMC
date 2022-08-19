@@ -200,6 +200,20 @@ class FB4(MultiprocessBased):
                         get_inst_name(linia['identificador_baja'][0])  # IDENTIFICADOR_BAJA
                         if linia['identificador_baja'] else ''
                     )
+                else:
+                    data_ip = ''
+                    identificador_baja = ''
+                    tipo_inversion = ''
+                    im_ingenieria = ''
+                    im_construccion = ''
+                    im_trabajos = ''
+                    subvenciones_europeas = ''
+                    subvenciones_nacionales = ''
+                    valor_auditado = ''
+                    motivacion = ''
+                    cuenta_contable = ''
+                    financiado = ''
+                    
 
                 #    fecha_aps = convert_spanish_date(
                 #        linia['fecha_aps'] if not linia['fecha_baja']
