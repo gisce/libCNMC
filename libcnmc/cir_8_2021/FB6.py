@@ -305,15 +305,14 @@ class FB6(MultiprocessBased):
                     fecha_baja = ''
                     causa_baja = 0;
 
+                id_ti = cella['tipus_instalacio_cnmc_id'][0]
+                ti = O.GiscedataTipusInstallacio.read(
+                    id_ti,
+                    ['name'])['name']
 
                 if cella[self.compare_field]:
                     last_data = cella[self.compare_field]
                     entregada = F8Res4666(**last_data)
-
-                    id_ti = cella['tipus_instalacio_cnmc_id'][0]
-                    ti = O.GiscedataTipusInstallacio.read(
-                        id_ti,
-                        ['name'])['name']
 
                     actual = F8Res4666(
                         cella['name'],
