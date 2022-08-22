@@ -31,7 +31,7 @@ class FB8(MultiprocessBased):
         data_pm = '{0}-01-01'.format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
 
-        search_params += ['|', ('data_pm', '=', False),
+        search_params = ['|', ('data_pm', '=', False),
                           ('data_pm', '<', data_pm),
                           '|', ('data_baixa', '>', data_baixa),
                           ('data_baixa', '=', False),
@@ -41,7 +41,7 @@ class FB8(MultiprocessBased):
                           '&', ('active', '=', False),
                                ('data_baixa', '!=', False),
                           ('active', '=', True)]
-        return self.connection.GiscedataDespatx.search([]
+        return self.connection.GiscedataDespatx.search(search_params, 0, 0, False, {'active_test': False}
         )
 
     def consumer(self):
