@@ -110,7 +110,7 @@ class FB8(MultiprocessBased):
                 if despatx['data_baixa']:
                     if despatx['data_baixa'] < data_pm_limit:
                         tmp_date = datetime.strptime(
-                            despatx['data_baixa'], '%Y-%m-%d %H:%M:%S')
+                            despatx['data_baixa'], '%Y-%m-%d')
                         fecha_baja = tmp_date.strftime('%d/%m/%Y')
 
                         if int(data_pm.split("/")[2]) - int(fecha_baja.split("/")[2]) >= 40:
@@ -128,7 +128,7 @@ class FB8(MultiprocessBased):
                 #funció per trobar la ccaa desde el municipi
                 fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
                 if despatx['municipi']:
-                    id_municipi = despatx['id_municipi'][0]
+                    id_municipi = despatx['municipi'][0]
                 else:
                     id_municipi = get_id_municipi_from_company(O)
 
