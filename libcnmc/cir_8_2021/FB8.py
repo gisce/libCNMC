@@ -93,7 +93,7 @@ class FB8(MultiprocessBased):
                     cuenta_contable = linia['cuenta_contable']
                     financiado =format_f(
                         100.0 - linia.get('financiado', 0.0), 2
-                    ),
+                    )
                 else:
                     subvenciones_europeas = ''
                     subvenciones_nacionales = ''
