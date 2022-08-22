@@ -89,7 +89,7 @@ class FB6(MultiprocessBased):
 
         return node, vertex
 
-    def obtenir_camps_linia(self, installacio):
+    def obtenir_camps_linia_at(self, installacio):
         """
         Gets the data of the line where the cel·la is placed
 
@@ -112,6 +112,43 @@ class FB6(MultiprocessBased):
         id_municipi = linia['municipi'][0]
         id_provincia = linia['provincia'][0]
         tensio = format_f(float(linia['tensio']) / 1000.0, decimals=3)
+
+        if id_municipi and id_provincia:
+            provincia = o.ResCountryState.read(id_provincia, ['code'])['code']
+            municipi_dict = o.ResMunicipi.read(id_municipi, ['ine', 'dc'])
+            municipi = '{0}{1}'.format(municipi_dict['ine'][-3:],
+                                       municipi_dict['dc'])
+
+        res = {
+            'municipi': municipi,
+            'provincia': provincia,
+            'tensio': tensio
+        }
+
+        return res
+
+    def obtenir_camps_linia_cts(self, installacio):
+        """
+        Gets the data of the line where the cel·la is placed
+
+        :param installacio: Cel·la placement
+        :return: Municipi, provincia, tensio of the line
+        :rtype: dict
+        """
+
+        o = self.connection
+        id_cts = int(installacio.split(',')[1])
+        fields_to_read = [
+            'id_municipi', 'id_provincia', 'tensio_max'
+        ]
+
+        cts = o.GiscedataCts.read(id_cts, fields_to_read)
+
+        municipi = ''
+        provincia = ''
+        id_municipi = cts['id_municipi'][0]
+        id_provincia = cts['id_provincia'][0]
+        tensio = format_f(float(cts['tensio_max']) / 1000.0, decimals=3)
 
         if id_municipi and id_provincia:
             provincia = o.ResCountryState.read(id_provincia, ['code'])['code']
@@ -349,7 +386,13 @@ class FB6(MultiprocessBased):
                     o_node, vertex = self.get_node_vertex(o_fiabilitat)
                 o_node = o_node.replace('*', '')
 
-                dict_linia = self.obtenir_camps_linia(cella['installacio'])
+                element =  cella['installacio'].split(',')[0]
+
+                if element == 'giscedata.at.suport':
+                    dict_linia = self.obtenir_camps_linia_at(cella['installacio'])
+                else:
+                    dict_linia = self.obtenir_camps_linia_cts(cella['installacio'])
+
                 o_municipi = dict_linia.get('municipi')
                 o_provincia = dict_linia.get('provincia')
 
@@ -360,9 +403,9 @@ class FB6(MultiprocessBased):
                 else:
                     id_municipi = get_id_municipi_from_company(O)
 
+                print("id_muni")
+                print(id_municipi)
                 if id_municipi:
-                    print("id_muni")
-                    print(id_municipi)
                     id_comunitat = fun_ccaa(id_municipi)
                     comunitat_vals = O.ResComunitat_autonoma.read(
                         id_comunitat[0], ['codi'])
