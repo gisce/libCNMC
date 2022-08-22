@@ -171,7 +171,7 @@ class FB6(MultiprocessBased):
         :return: None
         """
 
-        o = self.connection
+        O = self.connection
 
         def get_inst_name(element_id):
             vals = self.connection.GiscedataCellesCella.read(
