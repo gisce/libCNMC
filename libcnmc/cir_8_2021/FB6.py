@@ -387,12 +387,11 @@ class FB6(MultiprocessBased):
                 o_node = o_node.replace('*', '')
 
                 element =  cella['installacio'].split(',')[0]
-                print("element")
-                print(element)
-                if element == 'giscedata.at.suport':
-                    dict_linia = self.obtenir_camps_linia_at(cella['installacio'])
-                else:
-                    dict_linia = self.obtenir_camps_linia_cts(cella['installacio'])
+
+                #if element == 'giscedata.at.suport':
+                dict_linia = self.obtenir_camps_linia_at(cella['installacio'])
+                #else:
+                #    dict_linia = self.obtenir_camps_linia_cts(cella['installacio'])
 
                 o_municipi = dict_linia.get('municipi')
                 o_provincia = dict_linia.get('provincia')
@@ -404,8 +403,6 @@ class FB6(MultiprocessBased):
                 else:
                     id_municipi = get_id_municipi_from_company(O)
 
-                print("id_muni")
-                print(id_municipi)
                 if id_municipi:
                     id_comunitat = fun_ccaa(id_municipi)
                     comunitat_vals = O.ResComunitat_autonoma.read(
