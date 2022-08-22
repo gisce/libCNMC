@@ -217,14 +217,14 @@ class FB6(MultiprocessBased):
             try:
                 item = self.input_q.get()
                 self.progress_q.put(item)
-                cella = o.GiscedataCellesCella.read(
+                cella = O.GiscedataCellesCella.read(
                     item, fields_to_read
                 )
 
-                obra_id = o.GiscedataProjecteObraTiCelles.search([('element_ti_id', '=', cella['id'])])
+                obra_id = O.GiscedataProjecteObraTiCelles.search([('element_ti_id', '=', cella['id'])])
 
                 if obra_id:
-                    linia = o.GiscedataProjecteObraTiCelles.read(obra_id, fields_to_read_obra)[0]
+                    linia = O.GiscedataProjecteObraTiCelles.read(obra_id, fields_to_read_obra)[0]
                 else:
                     linia = ''
 
@@ -273,7 +273,7 @@ class FB6(MultiprocessBased):
                 o_tram = ""
                 if cella['tram_id']:
                     o_tram = "A{0}".format(
-                        o.GiscedataAtTram.read(
+                        O.GiscedataAtTram.read(
                             cella['tram_id'][0], ['name']
                         )['name']
                     )
@@ -311,7 +311,7 @@ class FB6(MultiprocessBased):
                     entregada = F8Res4666(**last_data)
 
                     id_ti = cella['tipus_instalacio_cnmc_id'][0]
-                    ti = o.GiscedataTipusInstallacio.read(
+                    ti = O.GiscedataTipusInstallacio.read(
                         id_ti,
                         ['name'])['name']
 
@@ -369,7 +369,7 @@ class FB6(MultiprocessBased):
                         comunitat_codi = comunitat_vals['codi']
 
                 if cella['tensio']:
-                    tensio = o.GiscedataTensionsTensio.read(
+                    tensio = O.GiscedataTensionsTensio.read(
                         cella['tensio'][0], ['tensio']
                     )
                     o_tensio = format_f(int(tensio['tensio'])/1000.0, decimals=3)
