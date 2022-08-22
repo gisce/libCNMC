@@ -180,6 +180,7 @@ class FB6(MultiprocessBased):
 
         fields_to_read = [
             'installacio', 'cini', 'propietari', 'name', 'tensio', 'node_id', 'perc_financament',
+            'tipus_instalacio_cnmc_id',
             'geom', 'tram_id', 'id', 'data_pm', 'data_baixa', self.compare_field,
         ]
 
@@ -229,8 +230,6 @@ class FB6(MultiprocessBased):
 
                 if linia != '':
                     tipo_inversion = (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1'
-                    ccuu = get_name_ti(o, linia['ccuu'] and linia['ccuu'][0])
-                    ccaa = format_ccaa_code(linia['codigo_ccaa'])
                     im_ingenieria = format_f_6181(linia['im_ingenieria'] or 0.0, float_type='euro')
                     im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
                     im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
@@ -354,6 +353,21 @@ class FB6(MultiprocessBased):
                 dict_linia = self.obtenir_camps_linia(cella['installacio'])
                 o_municipi = dict_linia.get('municipi')
                 o_provincia = dict_linia.get('provincia')
+
+                # funció per trobar la ccaa desde el municipi
+                fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
+                if o_municipi:
+                    id_municipi = o_municipi
+                else:
+                    id_municipi = get_id_municipi_from_company(O)
+
+                if id_municipi:
+                    id_comunitat = fun_ccaa(id_municipi)
+                    comunitat_vals = O.ResComunitat_autonoma.read(
+                        id_comunitat[0], ['codi'])
+                    if comunitat_vals:
+                        comunitat_codi = comunitat_vals['codi']
+
                 if cella['tensio']:
                     tensio = o.GiscedataTensionsTensio.read(
                         cella['tensio'][0], ['tensio']
@@ -373,15 +387,15 @@ class FB6(MultiprocessBased):
                 self.output_q.put([
                     o_fiabilitat,   # ELEMENTO FIABILIDAD
                     o_cini,  # CINI
-                    cella['name'],  #IDENTIFICADOR_ELEMENTO
+                    o_tram,  #IDENTIFICADOR_ELEMENTO
                     o_node,  # NUDO
                     x,              # X
                     y,              # Y
                     z,              # Z
                     o_municipi,     # MUNICIPIO
                     o_provincia,    # PROVINCIA
-                    ccaa,     #CCAA
-                    ccuu,     #CCUU
+                    comunitat_codi,     #CCAA
+                    str(ti),     #CCUU
                     o_tensio,       # NIVEL TENSION EXPLOTACION
                     '',             # TENSION CONST
                     data_pm,        #FECHA_APS
