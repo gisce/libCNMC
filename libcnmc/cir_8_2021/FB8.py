@@ -102,10 +102,10 @@ class FB8(MultiprocessBased):
                     cuenta_contable = ''
                     financiado = ''
 
-                if despatx['data_pm']:
-                    data_pm_ct = datetime.strptime(str(despatx['data_pm']),
+                if despatx['data_apm']:
+                    data_pm_despatx = datetime.strptime(str(despatx['data_apm']),
                                                    '%Y-%m-%d')
-                    data_pm = data_pm_ct.strftime('%d/%m/%Y')
+                    data_pm = data_pm_despatx.strftime('%d/%m/%Y')
 
                 if despatx['data_baixa']:
                     if despatx['data_baixa'] < data_pm_limit:
