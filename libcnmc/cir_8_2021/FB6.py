@@ -381,7 +381,7 @@ class FB6(MultiprocessBased):
                 y = ''
                 z = ''
                 if vertex:
-                    res_srid = convert_srid(get_srid(o), vertex)
+                    res_srid = convert_srid(get_srid(O), vertex)
                     x = format_f(res_srid[0], decimals=3)
                     y = format_f(res_srid[1], decimals=3)
                 self.output_q.put([
