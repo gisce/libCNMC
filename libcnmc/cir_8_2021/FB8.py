@@ -31,8 +31,8 @@ class FB8(MultiprocessBased):
         data_pm = '{0}-01-01'.format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
 
-        search_params = ['|', ('data_pm', '=', False),
-                          ('data_pm', '<', data_pm),
+        search_params = ['|', ('data_apm', '=', False),
+                          ('data_apm', '<', data_pm),
                           '|', ('data_baixa', '>', data_baixa),
                           ('data_baixa', '=', False),
                           ]
