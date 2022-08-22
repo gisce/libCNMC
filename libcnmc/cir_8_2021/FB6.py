@@ -387,7 +387,8 @@ class FB6(MultiprocessBased):
                 o_node = o_node.replace('*', '')
 
                 element =  cella['installacio'].split(',')[0]
-
+                print("element")
+                print(element)
                 if element == 'giscedata.at.suport':
                     dict_linia = self.obtenir_camps_linia_at(cella['installacio'])
                 else:
