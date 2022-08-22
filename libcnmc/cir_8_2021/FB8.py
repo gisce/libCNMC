@@ -125,6 +125,8 @@ class FB8(MultiprocessBased):
                     fecha_baja = ''
                     causa_baja = 0;
 
+                #funció per trobar la ccaa desde el municipi
+                fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
                 if despatx['municipi']:
                     id_municipi = despatx['id_municipi'][0]
                 else:
