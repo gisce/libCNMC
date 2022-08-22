@@ -361,6 +361,8 @@ class FB6(MultiprocessBased):
                     id_municipi = get_id_municipi_from_company(O)
 
                 if id_municipi:
+                    print("id_muni")
+                    print(id_municipi)
                     id_comunitat = fun_ccaa(id_municipi)
                     comunitat_vals = O.ResComunitat_autonoma.read(
                         id_comunitat[0], ['codi'])
