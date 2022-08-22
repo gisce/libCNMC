@@ -28,7 +28,19 @@ class FB8(MultiprocessBased):
         self.base_object = 'Despatxos'
 
     def get_sequence(self):
+        data_pm = '{0}-01-01'.format(self.year + 1)
+        data_baixa = '{0}-01-01'.format(self.year)
 
+        search_params += ['|', ('data_pm', '=', False),
+                          ('data_pm', '<', data_pm),
+                          '|', ('data_baixa', '>', data_baixa),
+                          ('data_baixa', '=', False),
+                          ]
+        # Revisem que si està de baixa ha de tenir la data informada.
+        search_params += ['|',
+                          '&', ('active', '=', False),
+                               ('data_baixa', '!=', False),
+                          ('active', '=', True)]
         return self.connection.GiscedataDespatx.search([]
         )
 
@@ -66,7 +78,8 @@ class FB8(MultiprocessBased):
                 if linia != '':
                     subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
                     subvenciones_nacionales = format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro')
-                    subvenciones_prtr = format_f_6181(linia['subvenciones_prtr'] or 0.0, float_type='euro')
+                    #subvenciones_prtr = format_f_6181(linia['subvenciones_prtr'] or 0.0, float_type='euro')
+                    subvenciones_prtr = ''
                     im_ingenieria = format_f_6181(linia['im_ingenieria'] or 0.0, float_type='euro')
                     im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
                     im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
