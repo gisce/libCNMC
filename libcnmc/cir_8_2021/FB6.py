@@ -247,6 +247,9 @@ class FB6(MultiprocessBased):
                     valor_auditado = format_f_6181(linia['valor_auditado'] or 0.0, float_type='euro')
                     valor_contabilidad = format_f_6181(linia['valor_contabilidad'] or 0.0, float_type='euro')
                     cuenta_contable = linia['cuenta_contable']
+                    financiado =format_f(
+                        100.0 - linia.get('financiado', 0.0), 2
+                    )
 
                 else:
                     tipo_inversion = ''
@@ -263,6 +266,7 @@ class FB6(MultiprocessBased):
                     valor_contabilidad = ''
                     cuenta_contable = ''
                     identificador_baja = ''
+                    financiado = ''
 
                 o_fiabilitat = cella['name']
                 o_cini = cella['cini']
@@ -394,9 +398,7 @@ class FB6(MultiprocessBased):
                     subvenciones_nacionales,     #SUBVENCIONES_NACIONALES
                     #SUBVENCIONES_PRTR
                     valor_auditado,    #VALOR_AUDITADO
-                    format_f(
-                        100.0 - cella.get('perc_financament', 0.0), 2
-                    ),                  #FINANCIADO
+                    financiado,                 #FINANCIADO
                     cuenta_contable,    #CUENTA
                     #AVIFAUNA
                     identificador_baja,     #IDENTIFICADOR_BAJA
