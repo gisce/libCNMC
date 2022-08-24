@@ -23,6 +23,14 @@ ZONA = {
     'SEMIURBANA': 'SU'
 }
 
+MODELO = {
+    '1': 'I',
+    '2': 'M',
+    '3': 'D',
+    '4': 'E'
+}
+
+
 class FB2(MultiprocessBased):
     """
     Class that generates the CT file of the 4666
@@ -137,9 +145,10 @@ class FB2(MultiprocessBased):
 
         fields_to_read = [
             'id', 'name', 'cini', 'data_pm', 'tipus_instalacio_cnmc_id', 'tensio_p',
-            'id_municipi', 'perc_financament', 'descripcio', 'data_baixa',
+            'id_municipi', 'perc_financament', 'descripcio', 'data_baixa', 'tensio_const',
             self.compare_field, 'id_provincia', 'zona_id', 'node_id', 'potencia',
-            #'modelo', 'punto_frontera'
+            'id_model',
+            'punt_frontera',
         ]
 
         fields_to_read_obra = [
@@ -153,14 +162,15 @@ class FB2(MultiprocessBased):
             'fecha_aps',
             'fecha_baja',
             'causa_baja',
+            'financiado',
             'im_ingenieria',
             'im_materiales',
             'im_obracivil',
             'im_trabajos',
             'subvenciones_europeas',
             'subvenciones_nacionales',
-            #'subvenciones_prtr',
-            #'avifauna',
+            'subvenciones_prtr',
+            'avifauna',
             'valor_auditado',
             'valor_contabilidad',
             'cuenta_contable',
@@ -192,7 +202,7 @@ class FB2(MultiprocessBased):
                             linia['fecha_aps'] if not linia['fecha_baja'] and linia['tipo_inversion'] != '1' else ''
                     )
                     identificador_baja = (
-                        get_inst_name(linia['identificador_baja'][0]) if linia['identificador_baja'] else ''
+                        get_inst_name(linia['identificador_baja']) if linia['identificador_baja'] else ''
                     )
                     tipo_inversion = (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1'
 
@@ -208,6 +218,7 @@ class FB2(MultiprocessBased):
 
                     subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
                     subvenciones_nacionales = format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro')
+                    subvenciones_prtr = format_f_6181(linia['subvenciones_prtr'] or 0.0, float_type='euro')
 
                     valor_auditado = format_f_6181(linia['valor_auditado'] or 0.0, float_type='euro')
 
@@ -215,6 +226,10 @@ class FB2(MultiprocessBased):
                         linia['fecha_baja'] else ''
 
                     cuenta_contable = linia['cuenta_contable']
+
+                    financiado =format_f(
+                        100.0 - linia.get('financiado', 0.0), 2
+                    ),
                 else:
                     data_ip = ''
                     identificador_baja = ''
@@ -224,6 +239,7 @@ class FB2(MultiprocessBased):
                     im_trabajos = ''
                     subvenciones_europeas = ''
                     subvenciones_nacionales = ''
+                    subvenciones_prtr = ''
                     valor_auditado = ''
                     motivacion = ''
                     cuenta_contable = ''
@@ -343,7 +359,14 @@ class FB2(MultiprocessBased):
                 except:
                     o_tensio_p = ''
 
-                o_potencia = float(self.get_potencia_trafos(item))
+                if ct['tensio_const']:
+                    try:
+                        o_tensio_const = format_f(
+                            float(ct['tensio_const']) / 1000.0, decimals=3) or ''
+                    except:
+                        o_tensio_const = ''
+
+                o_potencia = str(float(self.get_potencia_trafos(item), decimals=3)).replace('.',',')
 
                 z = ''
                 res_srid = ['', '']
@@ -354,17 +377,17 @@ class FB2(MultiprocessBased):
 
                 if 'id_provincia' in ct:
                     provincia = O.ResCountryState.read(
-                        ct['id_provincia'][0], ['name']
+                        ct['id_provincia'][0], ['code']
                     )
-                    provincia_name = provincia.get('name', "")
+                    provincia_name = provincia.get('code', "")
                 else:
                     provincia_name = ""
 
                 if 'id_municipi' in ct:
                     municipi = O.ResMunicipi.read(
-                        ct['id_municipi'][0], ['name']
+                        ct['id_municipi'][0], ['ine']
                     )
-                    municipi_name = municipi.get('name', "")
+                    municipi_name = municipi.get('ine', "")
                 else:
                     municipi_name = ""
 
@@ -377,10 +400,14 @@ class FB2(MultiprocessBased):
                 else:
                     zona_name = ""
 
-                # modelo = ct['modelo']
-               # punto_frontera = ct['punto_frontera']
-               # avifauna = linia['avifauna']
-               # subvenciones_prtr = format_f_6181(linia['subvenciones_prtr'] or 0.0, float_type='euro')
+                id_modelo = ct['id_model']
+                if id_modelo:
+                    modelo = MODELO[id_modelo]
+                else:
+                    modelo = ''
+
+                punto_frontera = ct['punt_frontera']
+                avifauna = linia['avifauna']
 
 
                 output = [
@@ -391,6 +418,7 @@ class FB2(MultiprocessBased):
                     o_node,                             # NUDO_ALTA
                     o_node_baixa,                       # NUDO_BAJA
                     o_tensio_p,                         # NIVEL TENSION
+                    o_tensio_const,                     # TENSION CONSTRUCCION
                     o_potencia,                         # POTENCIA
                     format_f(res_srid[0], decimals=3),  # X
                     format_f(res_srid[1], decimals=3),  # Y
@@ -400,8 +428,8 @@ class FB2(MultiprocessBased):
                     comunitat_codi or '',               # CODIGO_CCAA
                     zona_name,                          # ZONA
                     estado,                             # ESTADO
-                    #modelo,                            # MODELO
-                    #punto_frontera                     # PUNTO_FRONTERA
+                    modelo,                             # MODELO
+                    punto_frontera,                     # PUNTO_FRONTERA
                     data_pm,                            # FECHA APS
                     causa_baja,                         # CAUSA BAJA
                     fecha_baja,                         # FECHA BAJA
@@ -412,14 +440,12 @@ class FB2(MultiprocessBased):
                     im_trabajos,                        # IM_TRABAJOS
                     subvenciones_europeas,              # SUBVENCIONES EUROPEAS
                     subvenciones_nacionales,            # SUBVENCIONES NACIONALES
-                    #subvenciones_prtr,                 # SUBVENCIONES PRTR
+                    subvenciones_prtr,                 # SUBVENCIONES PRTR
                     valor_auditado,                     # VALOR AUDITADO
-                    format_f(
-                        100.0 - ct.get('perc_financament', 0.0), 2
-                    ),                                  # FINANCIADO
+                    financiado,                         # FINANCIADO
                     cuenta_contable,           # CUENTA CONTABLE
                     motivacion,                         # MOTIVACION
-                    #avifauna,                          # AVIFAUNA
+                    avifauna,                          # AVIFAUNA
                     identificador_baja,                 # ID_BAJA
 
                 ]
