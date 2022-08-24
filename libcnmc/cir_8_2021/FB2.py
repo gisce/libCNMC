@@ -366,7 +366,7 @@ class FB2(MultiprocessBased):
                     except:
                         o_tensio_const = ''
 
-                o_potencia = str(float(self.get_potencia_trafos(item), decimals=3)).replace('.',',')
+                #o_potencia = str(float(self.get_potencia_trafos(item), decimals=3)).replace('.',',')
 
                 z = ''
                 res_srid = ['', '']
@@ -419,7 +419,7 @@ class FB2(MultiprocessBased):
                     o_node_baixa,                       # NUDO_BAJA
                     o_tensio_p,                         # NIVEL TENSION
                     o_tensio_const,                     # TENSION CONSTRUCCION
-                    o_potencia,                         # POTENCIA
+                    #o_potencia,                         # POTENCIA
                     format_f(res_srid[0], decimals=3),  # X
                     format_f(res_srid[1], decimals=3),  # Y
                     z,                                  # Z
