@@ -162,7 +162,6 @@ class FB2(MultiprocessBased):
             'fecha_aps',
             'fecha_baja',
             'causa_baja',
-            'financiado',
             'im_ingenieria',
             'im_materiales',
             'im_obracivil',
@@ -247,6 +246,7 @@ class FB2(MultiprocessBased):
                     motivacion = ''
                     cuenta_contable = ''
                     avifauna = ''
+                    financiado = ''
 
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data APS sortirà en blanc
