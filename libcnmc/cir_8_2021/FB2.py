@@ -230,6 +230,9 @@ class FB2(MultiprocessBased):
                     financiado =format_f(
                         100.0 - linia.get('financiado', 0.0), 2
                     ),
+
+                    avifauna = linia['avifauna']
+
                 else:
                     data_ip = ''
                     identificador_baja = ''
@@ -243,6 +246,7 @@ class FB2(MultiprocessBased):
                     valor_auditado = ''
                     motivacion = ''
                     cuenta_contable = ''
+                    avifauna = ''
 
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data APS sortirà en blanc
@@ -407,7 +411,6 @@ class FB2(MultiprocessBased):
                     modelo = ''
 
                 punto_frontera = ct['punt_frontera']
-                avifauna = ct['avifauna']
 
 
                 output = [
