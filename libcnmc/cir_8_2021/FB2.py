@@ -407,7 +407,7 @@ class FB2(MultiprocessBased):
                     modelo = ''
 
                 punto_frontera = ct['punt_frontera']
-                avifauna = linia['avifauna']
+                avifauna = ct['avifauna']
 
 
                 output = [
