@@ -369,7 +369,8 @@ class FB2(MultiprocessBased):
                             float(ct['tensio_const']) / 1000.0, decimals=3) or ''
                     except:
                         o_tensio_const = ''
-
+                else:
+                    o_tensio_const = ''
                 #o_potencia = str(float(self.get_potencia_trafos(item), decimals=3)).replace('.',',')
 
                 z = ''
