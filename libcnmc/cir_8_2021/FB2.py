@@ -93,7 +93,8 @@ class FB2(MultiprocessBased):
         vertex = None
         if bloc:
             bloc = O.GiscegisBlocsCtat.read(bloc[0], ['node', 'vertex'])
-            if bloc:
+            if bloc['node']:
+                print(bloc['node'])
                 node = bloc['node'][1]
                 if bloc['vertex']:
                     v = O.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
