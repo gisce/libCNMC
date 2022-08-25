@@ -390,9 +390,9 @@ class FB6(MultiprocessBased):
                         self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(cella["name"]))
                         estado = '1'
 
-                if cella.get("node_id"):
-                    o_node = cella["node_id"][1]
-                    vertex = wkt.loads(cella["geom"]).coords[0]
+                if cella.get('node_id'):
+                    o_node = cella['node_id'][1]
+                    vertex = wkt.loads(cella['geom']).coords[0]
                 else:
                     o_node, vertex = self.get_node_vertex(o_fiabilitat)
                 o_node = o_node.replace('*', '')
