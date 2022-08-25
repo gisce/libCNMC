@@ -408,7 +408,7 @@ class FB2(MultiprocessBased):
                 else:
                     modelo = ''
 
-                punto_frontera = ct['punt_frontera']
+                punto_frontera = int(ct['punt_frontera'] == True)
 
 
                 output = [
