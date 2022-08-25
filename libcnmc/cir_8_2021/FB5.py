@@ -149,6 +149,8 @@ class FB5(MultiprocessBased):
                     cuenta_contable = ''
                     avifauna = ''
                     financiado = ''
+                    valor_residual = ''
+                    
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data APS sortirà en blanc
                 if data_ip:
