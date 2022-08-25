@@ -116,6 +116,7 @@ class FB6(MultiprocessBased):
         provincia = ''
         id_municipi = linia['municipi'][0]
         id_provincia = linia['provincia'][0]
+        name = linia['name']
         tensio = format_f(float(linia['tensio']) / 1000.0, decimals=3)
 
         if id_municipi and id_provincia:
