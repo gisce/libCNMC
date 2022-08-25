@@ -62,13 +62,6 @@ class FB3_1(MultiprocessBased):
             parc_id, ['tensio_id'])['tensio_id'][0]
         return o.GiscedataTensionsTensio.read(tensio_id, ['tensio'])['tensio']
 
-    def get_tensio_const(self, parc_id):
-        o = self.connection
-        tensio_const_id = o.GiscedataParcs.read(
-            parc_id, ['tensio_id_const'])['tensio_id_const'][0]
-        return o.GiscedataTensionsTensio.read(tensio_const_id, ['tensio'])['tensio']
-
-
     def get_vertex(self, ct_id):
         o = self.connection
         bloc = o.GiscegisBlocsCtat.search([('ct', '=', ct_id)])
@@ -84,7 +77,7 @@ class FB3_1(MultiprocessBased):
     def consumer(self):
         o = self.connection
         fields_to_read = [
-            'id', 'subestacio_id', 'name', 'propietari', 'cini'
+            'id', 'subestacio_id', 'name', 'propietari', 'cini', 'tensio_const'
         ]
         while True:
             try:
@@ -115,12 +108,14 @@ class FB3_1(MultiprocessBased):
                 o_tensio = format_f(
                     float(tensio) / 1000.0, decimals=3)
 
-                tensio_const = self.get_tensio_const(parc['id'])
+                o_tensio_const = parc['tensio_const']
 
-                if tensio != tensio_const:
-                    o_tensio_const = format_f(
-                        float(tensio_const) / 1000.0, decimals=3)
-
+                if o_tensio_const:
+                    if tensio != o_tensio_const:
+                        o_tensio_const = format_f(
+                            float(o_tensio_const) / 1000.0, decimals=3)
+                    else:
+                        o_tensio_const = ''
 
                 o_prop = int(parc['propietari'])
                 insert = True
