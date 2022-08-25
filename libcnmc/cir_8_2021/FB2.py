@@ -229,7 +229,7 @@ class FB2(MultiprocessBased):
 
                     financiado =format_f(
                         100.0 - linia.get('financiado', 0.0), 2
-                    ),
+                    )
 
                     avifauna = linia['avifauna']
 
