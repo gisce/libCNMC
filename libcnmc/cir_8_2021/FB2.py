@@ -93,10 +93,11 @@ class FB2(MultiprocessBased):
         vertex = None
         if bloc:
             bloc = O.GiscegisBlocsCtat.read(bloc[0], ['node', 'vertex'])
-            node = bloc['node'][1]
-            if bloc['vertex']:
-                v = O.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
-                vertex = (round(v['x'], 3), round(v['y'], 3))
+            if bloc:
+                node = bloc['node'][1]
+                if bloc['vertex']:
+                    v = O.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
+                    vertex = (round(v['x'], 3), round(v['y'], 3))
         return node, vertex
 
     def get_ine(self, municipi_id):
@@ -139,7 +140,6 @@ class FB2(MultiprocessBased):
         O = self.connection
 
         def get_inst_name(element_id):
-            print(element_id)
             vals = self.connection.GiscedataCts.read(
                 element_id[0], ['name'])
             return vals['name']
