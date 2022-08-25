@@ -108,6 +108,9 @@ class FB5(MultiprocessBased):
                     data_ip = convert_spanish_date(
                             linia['fecha_aps'] if not linia['fecha_baja'] and linia['tipo_inversion'] != '1' else ''
                     )
+                    identificador_baja = (
+                        get_inst_name(linia['identificador_baja']) if linia['identificador_baja'] else ''
+                    )
                     subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
                     subvenciones_nacionales = format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro')
                     subvenciones_prtr = format_f_6181(linia['subvenciones_prtr'] or 0.0, float_type='euro')
@@ -133,16 +136,19 @@ class FB5(MultiprocessBased):
                     motivacion = linia['motivacion']
                 else:
                     data_ip = ''
+                    identificador_baja = ''
+                    tipo_inversion = ''
+                    im_ingenieria = ''
+                    im_construccion = ''
+                    im_trabajos = ''
                     subvenciones_europeas = ''
                     subvenciones_nacionales = ''
                     subvenciones_prtr = ''
                     valor_auditado = ''
-                    cuenta_contable = ''
-                    financiado = ''
                     motivacion = ''
-                    valor_residual = ''
-                    tipo_inversion = ''
-
+                    cuenta_contable = ''
+                    avifauna = ''
+                    financiado = ''
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data APS sortirà en blanc
                 if data_ip:
