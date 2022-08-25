@@ -156,8 +156,8 @@ class FB5(MultiprocessBased):
                 o_pot_maquina = format_f(
                     float(trafo['potencia_nominal']) / 1000.0, decimals=3)
 
-                if trafo['data_apm']:
-                    data_pm_trafo = datetime.strptime(str(trafo['data_apm']),
+                if trafo['data_pm']:
+                    data_pm_trafo = datetime.strptime(str(trafo['data_pm']),
                                                         '%Y-%m-%d')
                     data_pm = data_pm_trafo.strftime('%d/%m/%Y')
 
