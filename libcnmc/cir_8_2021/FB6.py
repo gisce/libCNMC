@@ -11,7 +11,12 @@ from libcnmc.core import MultiprocessBased
 from libcnmc.models import F8Res4666
 from shapely import wkt
 
-
+MODELO = {
+    '1': 'I',
+    '2': 'M',
+    '3': 'D',
+    '4': 'E'
+}
 
 class FB6(MultiprocessBased):
 
@@ -217,7 +222,7 @@ class FB6(MultiprocessBased):
 
         fields_to_read = [
             'installacio', 'cini', 'propietari', 'name', 'tensio', 'node_id', 'perc_financament',
-            'tipus_instalacio_cnmc_id',
+            'tipus_instalacio_cnmc_id', 'id_model', 'punt_frontera'
             'geom', 'tram_id', 'id', 'data_pm', 'data_baixa', self.compare_field,
         ]
 
@@ -239,6 +244,8 @@ class FB6(MultiprocessBased):
             'im_trabajos',
             'subvenciones_europeas',
             'subvenciones_nacionales',
+            'subvenciones_prtr',
+            'avifauna',
             'valor_auditado',
             'valor_contabilidad',
             'cuenta_contable',
@@ -280,9 +287,11 @@ class FB6(MultiprocessBased):
 
                     subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
                     subvenciones_nacionales = format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro')
+                    subvenciones_prtr = format_f_6181(linia['subvenciones_prtr'] or 0.0, float_type='euro')
                     valor_auditado = format_f_6181(linia['valor_auditado'] or 0.0, float_type='euro')
                     valor_contabilidad = format_f_6181(linia['valor_contabilidad'] or 0.0, float_type='euro')
                     cuenta_contable = linia['cuenta_contable']
+                    avifauna = linia['avifauna']
                     financiado =format_f(
                         100.0 - linia.get('financiado', 0.0), 2
                     )
@@ -303,6 +312,8 @@ class FB6(MultiprocessBased):
                     cuenta_contable = ''
                     identificador_baja = ''
                     financiado = ''
+                    avifauna = ''
+                    subvenciones_prtr = ''
 
                 o_fiabilitat = cella['name']
                 o_cini = cella['cini']
@@ -420,6 +431,14 @@ class FB6(MultiprocessBased):
                 else:
                     o_tensio = dict_linia.get('tensio')
 
+                id_modelo = cella['id_model']
+                if id_modelo:
+                    modelo = MODELO[id_modelo]
+                else:
+                    modelo = ''
+
+                punto_frontera = int(cella['punt_frontera'] == True)
+
                 o_any = self.year
                 x = ''
                 y = ''
@@ -446,19 +465,19 @@ class FB6(MultiprocessBased):
                     fecha_baja,     #FECHA_BAJA
                     causa_baja,     #CAUSA_BAJA
                     estado,     #ESTADO
-                    #MODELO
-                    #PUNT_FRONTERA
+                    model,      #MODELO
+                    punto_frontera,  #PUNT_FRONTERA
                     tipo_inversion,     #TIPO_INVERSION
                     im_ingenieria,    #IM_TRAMITES
                     im_construccion,    #IM_CONSTRUCCION
                     im_trabajos,    #IM_TRABAJOS
                     subvenciones_europeas,      #SUBVENCIONES_EUROPEAS
                     subvenciones_nacionales,     #SUBVENCIONES_NACIONALES
-                    #SUBVENCIONES_PRTR
+                    subvenciones_prtr,  #SUBVENCIONES_PRTR
                     valor_auditado,    #VALOR_AUDITADO
                     financiado,                 #FINANCIADO
                     cuenta_contable,    #CUENTA
-                    #AVIFAUNA
+                    avifauna,   #AVIFAUNA
                     identificador_baja,     #IDENTIFICADOR_BAJA
                 ])
             except Exception:
