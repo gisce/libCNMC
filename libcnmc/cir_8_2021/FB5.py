@@ -206,8 +206,6 @@ class FB5(MultiprocessBased):
                 o_costat_baixa = self.get_costat_baixa(trafo)
                 o_pot_maquina = format_f(
                     float(trafo['potencia_nominal']) / 1000.0, decimals=3)
-
-                print(trafo['ct'])
                 o_node = self.get_nodes(trafo['ct'][0])
                 o_node_baixa = self.get_node_trafos(trafo['ct'][0])
                 if o_node_baixa == 0:
@@ -246,7 +244,6 @@ class FB5(MultiprocessBased):
                 self.output_q.put([
                     o_maquina,              # IDENTIFICADOR_MAQUINA
                     o_cini,                 # CINI
-                    o_subestacio,           # DENOMINACION
                     ti,                     # CCUU
                     o_node,             #NUDO_ALTA
                     o_node_baixa,       #NUDO_BAJA
