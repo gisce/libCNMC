@@ -109,7 +109,7 @@ class FB6(MultiprocessBased):
         tram = o.GiscedataAtSuport.read(id_tram, ['linia'])
         linia_id = tram['linia']
         fields_to_read = [
-            'municipi', 'provincia', 'tensio'
+            'municipi', 'provincia', 'tensio', 'name'
         ]
         linia = o.GiscedataAtLinia.read(int(linia_id[0]), fields_to_read)
         municipi = ''
@@ -127,7 +127,8 @@ class FB6(MultiprocessBased):
         res = {
             'municipi': municipi,
             'provincia': provincia,
-            'tensio': tensio
+            'tensio': tensio,
+            'name': name
         }
 
         return res
@@ -144,7 +145,7 @@ class FB6(MultiprocessBased):
         o = self.connection
         id_cts = int(installacio.split(',')[1])
         fields_to_read = [
-            'id_municipi', 'id_provincia', 'tensio_max'
+            'id_municipi', 'id_provincia', 'tensio_max', 'name'
         ]
 
         cts = o.GiscedataCts.read(id_cts, fields_to_read)
@@ -164,7 +165,8 @@ class FB6(MultiprocessBased):
         res = {
             'municipi': municipi,
             'provincia': provincia,
-            'tensio': tensio
+            'tensio': tensio,
+            'name': name
         }
 
         return res
@@ -291,7 +293,7 @@ class FB6(MultiprocessBased):
                     valor_auditado = format_f_6181(linia['valor_auditado'] or 0.0, float_type='euro')
                     valor_contabilidad = format_f_6181(linia['valor_contabilidad'] or 0.0, float_type='euro')
                     cuenta_contable = linia['cuenta_contable']
-                    avifauna = linia['avifauna']
+                    avifauna = int(linia['avifauna'] == True)
                     financiado =format_f(
                         100.0 - linia.get('financiado', 0.0), 2
                     )
@@ -401,6 +403,7 @@ class FB6(MultiprocessBased):
                 dict_linia = self.obtenir_camps_linia_at(cella['installacio'])
                 o_municipi = dict_linia.get('municipi')
                 o_provincia = dict_linia.get('provincia')
+                o_name = dict_linia.get('name')
 
                 # funció per trobar la ccaa desde el municipi
                 fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
@@ -448,7 +451,7 @@ class FB6(MultiprocessBased):
                 self.output_q.put([
                     o_fiabilitat,   # ELEMENTO FIABILIDAD
                     o_cini,  # CINI
-                    o_tram,  #IDENTIFICADOR_ELEMENTO
+                    o_name,  #IDENTIFICADOR_ELEMENTO
                     o_node,  # NUDO
                     x,              # X
                     y,              # Y
