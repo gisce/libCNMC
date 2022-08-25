@@ -75,6 +75,47 @@ class FB5(MultiprocessBased):
                 res = o.GiscedataParcs.read(parc_id[0], ['name'])['name']
         return res
 
+    def get_node_vertex(self, ct_id):
+        O = self.connection
+        bloc = O.GiscegisBlocsCtat.search([('ct', '=', ct_id)])
+        node = ''
+        vertex = None
+        if bloc:
+            bloc = O.GiscegisBlocsCtat.read(bloc[0], ['node', 'vertex'])
+            if bloc['node']:
+                node = bloc['node'][1]
+                if bloc['vertex']:
+                    v = O.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
+                    vertex = (round(v['x'], 3), round(v['y'], 3))
+        return node, vertex
+
+
+    def get_node_trafos(self, id_ct):
+        o = self.connection
+        res = 0
+        ids_trafos = o.GiscedataTransformadorTrafo.search([
+            ('ct', '=', id_ct)])
+
+        if ids_trafos:
+            for elem in ids_trafos:
+                trafo = o.GiscedataTransformadorTrafo.read(
+                    elem, ['node_id'])
+                if trafo['node_id']:
+                    return trafo['node_id'][1]
+        return 0
+
+    def get_nodes(self, ct_id):
+        o = self.connection
+        ct = o.GiscedataCts.read(ct_id, ['node_id'])
+        if ct.get("node_id"):
+            o_node = ct["node_id"][1]
+            node = O.GiscegisNodes.read(ct["node_id"][0], ["geom"])
+            coords = wkt.loads(node["geom"]).coords[0]
+            vertex = [coords[0], coords[1]]
+        else:
+            o_node, vertex = self.get_node_vertex(item)
+        o_node = o_node.replace('*', '')
+        return o_node
 
     def consumer(self):
         o = self.connection
@@ -150,7 +191,7 @@ class FB5(MultiprocessBased):
                     avifauna = ''
                     financiado = ''
                     valor_residual = ''
-                    
+
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data APS sortirà en blanc
                 if data_ip:
@@ -164,6 +205,12 @@ class FB5(MultiprocessBased):
                 o_costat_baixa = self.get_costat_baixa(trafo)
                 o_pot_maquina = format_f(
                     float(trafo['potencia_nominal']) / 1000.0, decimals=3)
+
+                print(trafo['ct'])
+                o_node = self.get_nodes(trafo['ct'][0])
+                o_node_baixa = self.get_node_trafos(trafo['ct'][0])
+                if o_node_baixa == 0:
+                    o_node_baixa = '';
 
                 if trafo['data_pm']:
                     data_pm_trafo = datetime.strptime(str(trafo['data_pm']),
