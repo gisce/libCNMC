@@ -231,7 +231,7 @@ class FB2(MultiprocessBased):
                         100.0 - linia.get('financiado', 0.0), 2
                     )
 
-                    avifauna = linia['avifauna']
+                    avifauna = int(linia['avifauna'] == True)
 
                 else:
                     data_ip = ''
