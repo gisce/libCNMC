@@ -71,6 +71,11 @@ class FB3(MultiprocessBased):
                 vertex = (round(v['x'], 3), round(v['y'], 3))
         return vertex
 
+    def get_ct(self, ct_id):
+        o = self.connection
+        ct = o.GiscedataCts.search([('id', '=', ct_id)])
+        return ct
+
     def get_zona_id(self, ct_id):
         o = self.connection
         ct = o.GiscedataCts.search([('id', '=', ct_id)])
@@ -78,13 +83,21 @@ class FB3(MultiprocessBased):
             zona = o.GiscedataCts.read(ct, ['zona_id'])
         return zona
 
+    def get_punt_frontera(self, ct_id):
+        o = self.connection
+        ct = o.GiscedataCts.search([('id', '=', ct_id)])
+        if ct:
+            punt_frontera = o.GiscedataCts.read(ct, ['punt_frontera'])
+        return punt_frontera
+
+
     def consumer(self):
         o_codi_r1 = 'R1-%s' % self.codi_r1[-3:]
         o = self.connection
 
         fields_to_read = [
             'name', 'cini', 'propietari', 'id_municipi', 'id_provincia',
-            'ct_id', 'descripcio', "x", "y" #punto_frontera
+            'ct_id', 'descripcio', "x", "y"
         ]
         while True:
             try:
@@ -114,7 +127,9 @@ class FB3(MultiprocessBased):
                 if vertex:
                     res_srid = convert_srid(get_srid(o), vertex)
 
-                zona = self.get_zona_id(sub['ct_id'][0])[0]
+                ct = self.get_ct(sub['ct_id'][0])[0]
+                zona = data_ct[0]['zona_id']
+                o_punt_frontera = o.GiscedataCts.read(ct, ['punt_frontera'])
 
                 if zona.get('zona_id'):
                     tmp_zona = zona.get('zona_id')[1]
@@ -122,14 +137,11 @@ class FB3(MultiprocessBased):
                 else:
                     o_zona = ""
 
-                #o_puntfrontera = sub['punto_frontera']
-
-
                 self.output_q.put([
                     o_subestacio,                       # SUBESTACION
                     o_cini,                             # CINI
                     o_denominacio,                      # DENOMINACION
-                    #o_puntfrontera,                     # PUNTO FRONTERA
+                    o_punt_frontera,                    # PUNTO FRONTERA
                     format_f(res_srid[0], decimals=3),  # X
                     format_f(res_srid[1], decimals=3),  # Y
                     z,                                  # Z
