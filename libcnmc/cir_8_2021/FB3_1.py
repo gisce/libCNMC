@@ -116,6 +116,8 @@ class FB3_1(MultiprocessBased):
                             float(o_tensio_const) / 1000.0, decimals=3)
                     else:
                         o_tensio_const = ''
+                else:
+                    o_tensio_const = ''
 
                 o_prop = int(parc['propietari'])
                 insert = True
