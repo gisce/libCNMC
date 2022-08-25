@@ -464,7 +464,7 @@ class FB6(MultiprocessBased):
                     data_pm,        #FECHA_APS
                     fecha_baja,     #FECHA_BAJA
                     causa_baja,     #CAUSA_BAJA
-                    estado,     #ESTADO
+                    '',     #ESTADO
                     model,      #MODELO
                     punto_frontera,  #PUNT_FRONTERA
                     tipo_inversion,     #TIPO_INVERSION
