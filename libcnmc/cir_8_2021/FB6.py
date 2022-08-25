@@ -222,7 +222,7 @@ class FB6(MultiprocessBased):
 
         fields_to_read = [
             'installacio', 'cini', 'propietari', 'name', 'tensio', 'node_id', 'perc_financament',
-            'tipus_instalacio_cnmc_id', 'id_model', 'punt_frontera'
+            'tipus_instalacio_cnmc_id', 'id_model', 'punt_frontera',
             'geom', 'tram_id', 'id', 'data_pm', 'data_baixa', self.compare_field,
         ]
 
