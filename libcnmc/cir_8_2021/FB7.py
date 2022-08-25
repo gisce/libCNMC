@@ -29,22 +29,11 @@ class FB7(MultiprocessBased):
         return self.connection.GiscegisNodes.search([]
         )
 
-    def get_voltatge_node(self, node_id):
 
-        edge = self.connection.GiscegisEdge.search([('start_node', '=', node_id)])
-        if not edge:
-            edge = self.connection.GiscegisEdge.search([('end_node', '=', node_id)])
-        if edge:
-            tram = self.connection.GiscedataAtTram.search([('edge_id', '=', edge[0])])
-            if not tram:
-                tram = self.connection.GiscedataBtElement.search([('edge_id', '=', edge[0])])
-                tram_voltatge = self.connection.GiscedataBtElement.read(tram[0], ['tensio_id'])
-            else:
-                tram_voltatge = self.connection.GiscedataAtTram.read(tram[0], ['tensio_id'])
-
-            if tram_voltatge:
-                res = self.connection.GiscedataTensionsTensio.read(tram_voltatge['id'], ['tensio'])
-                return res
+    def get_ine_state(self, municipi_id):
+        O = self.connection
+        data = O.ResMunicipi.read(municipi_id, ['ine', 'dc', 'state'])
+        return data
 
     def get_node_vertex(self, vertex_id):
 
@@ -56,7 +45,7 @@ class FB7(MultiprocessBased):
         O = self.connection
 
         fields_to_read = [
-            'id', 'name', 'geom', 'vertex'
+            'id', 'name', 'geom', 'vertex', 'id_municipi', 'tensio'
         ]
         while True:
             try:
@@ -69,27 +58,34 @@ class FB7(MultiprocessBased):
 
                 vertex = self.get_node_vertex(node['vertex'])
 
-                voltatge = self.get_voltatge_node(node['id'])
+                if node['id_municipi']:
+                    data = self.get_ine_state(node['id_municipi'][0])
+                    o_municipi = data['ine']
+                    o_provincia = data['state']
+                else:
+                    o_municipi = ''
+                    o_provincia = ''
 
-                #ines = self.get_ines(ids_sub)
 
                 z = ''
-                #o_municipi = ines['ine_municipi']
-                #o_provincia = ines['ine_provincia']
                 res_srid = ['', '']
                 if vertex:
                     res_srid = convert_srid(get_srid(O), vertex)
 
-
+                try:
+                    o_tensio = format_f(
+                        float(ct['tensio']) / 1000.0, decimals=3) or ''
+                except:
+                    o_tensio = ''
 
                 self.output_q.put([
                     node['name'],                       # SUBESTACION
                     format_f(res_srid[0], decimals=3),  # X
                     format_f(res_srid[1], decimals=3),  # Y
                     z,                                  # Z
-                    voltatge,                            #TENSION
-                    # o_municipi,                         # MUNICIPIO
-                    #o_provincia,                        # PROVINCIA
+                    o_tensio,                           # TENSION
+                    o_municipi,                         # MUNICIPIO
+                    o_provincia,                        # PROVINCIA
                 ])
             except Exception:
                 traceback.print_exc()
