@@ -276,8 +276,6 @@ class FB2(MultiprocessBased):
                     if comunitat_vals:
                         comunitat_codi = comunitat_vals['codi']
 
-
-
                 if ct['data_baixa']:
                     if ct['data_baixa'] < data_pm_limit:
                         tmp_date = datetime.strptime(
@@ -295,8 +293,6 @@ class FB2(MultiprocessBased):
                 else:
                     fecha_baja = ''
                     causa_baja = 0;
-
-
 
                 if ct[self.compare_field]:
                     last_data = ct[self.compare_field]
@@ -340,7 +336,6 @@ class FB2(MultiprocessBased):
                     ti = O.GiscedataTipusInstallacio.read(
                         id_ti,
                         ['name'])['name']
-
                 else:
                     ti = ''
 
@@ -371,7 +366,8 @@ class FB2(MultiprocessBased):
                         o_tensio_const = ''
                 else:
                     o_tensio_const = ''
-                #o_potencia = str(float(self.get_potencia_trafos(item), decimals=3)).replace('.',',')
+                o_potencia = str(format_f(
+                    float(self.get_potencia_trafos(item)), decimals=3)).replace('.',',')
 
                 z = ''
                 res_srid = ['', '']
