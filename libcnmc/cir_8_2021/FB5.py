@@ -15,6 +15,13 @@ from libcnmc.utils import (
 )
 from shapely import wkt
 
+MODELO = {
+    '1': 'I',
+    '2': 'M',
+    '3': 'D',
+    '4': 'E'
+}
+
 class FB5(MultiprocessBased):
     def __init__(self, **kwargs):
         super(FB5, self).__init__(**kwargs)
@@ -241,6 +248,12 @@ class FB5(MultiprocessBased):
                     id_ti,
                     ['name'])['name']
 
+                id_model = o.GiscedataCts.read(ct_id, ['id_model'])['id_model']
+                if id_modelo:
+                    modelo = MODELO[id_modelo]
+                else:
+                    modelo = ''
+
                 self.output_q.put([
                     o_maquina,              # IDENTIFICADOR_MAQUINA
                     o_cini,                 # CINI
@@ -249,7 +262,7 @@ class FB5(MultiprocessBased):
                     o_node_baixa,       #NUDO_BAJA
                     o_pot_maquina,  # POTENCIA MAQUINA
                     #o_estat,  # ESTADO
-                    #modelo,     #MODELO
+                    modelo,             #MODELO
                     data_pm,               #FECHA_APS
                     fecha_baja,            #FECHA_BAJA
                     causa_baja,            #CAUSA_BAJA
