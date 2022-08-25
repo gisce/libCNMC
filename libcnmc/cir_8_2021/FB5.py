@@ -109,7 +109,7 @@ class FB5(MultiprocessBased):
         ct = o.GiscedataCts.read(ct_id, ['node_id'])
         if ct.get("node_id"):
             o_node = ct["node_id"][1]
-            node = O.GiscegisNodes.read(ct["node_id"][0], ["geom"])
+            node = o.GiscegisNodes.read(ct["node_id"][0], ["geom"])
             coords = wkt.loads(node["geom"]).coords[0]
             vertex = [coords[0], coords[1]]
         else:
