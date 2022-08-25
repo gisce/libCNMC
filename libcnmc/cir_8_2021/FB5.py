@@ -141,6 +141,7 @@ class FB5(MultiprocessBased):
                     financiado = ''
                     motivacion = ''
                     valor_residual = ''
+                    tipo_inversion = ''
 
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data APS sortirà en blanc
