@@ -128,13 +128,13 @@ class FB3(MultiprocessBased):
 
                 ct = self.get_ct(sub['ct_id'][0])[0]
                 data_ct = o.GiscedataCts.read(ct, ['zona_id', 'punt_frontera'])
-                print(data_ct)
                 zona = data_ct['zona_id'][1]
                 o_punt_frontera = int(data_ct['punt_frontera'] == True)
 
-                if zona.get('zona_id'):
-                    tmp_zona = zona.get('zona_id')[1]
-                    o_zona = ZONA[tmp_zona]
+                print(zona)
+                if zona:
+                    #tmp_zona = zona.get('zona_id')[1]
+                    o_zona = ZONA[zona]
                 else:
                     o_zona = ""
 
