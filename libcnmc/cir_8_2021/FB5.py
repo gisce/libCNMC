@@ -97,10 +97,10 @@ class FB5(MultiprocessBased):
                     item, fields_to_read
                 )
 
-                obra_id = O.GiscedataProjecteObraTiTransformador.search([('element_ti_id', '=', trafo['id'])])
+                obra_id = o.GiscedataProjecteObraTiTransformador.search([('element_ti_id', '=', trafo['id'])])
 
                 if obra_id:
-                    linia = O.GiscedataProjecteObraTiTransformador.read(obra_id, fields_to_read_obra)[0]
+                    linia = o.GiscedataProjecteObraTiTransformador.read(obra_id, fields_to_read_obra)[0]
                 else:
                     linia = ''
 
@@ -182,7 +182,7 @@ class FB5(MultiprocessBased):
                 o_estat = self.get_estat(trafo['id_estat'][0])
 
                 id_ti = ct['tipus_instalacio_cnmc_id'][0]
-                ti = O.GiscedataTipusInstallacio.read(
+                ti = o.GiscedataTipusInstallacio.read(
                     id_ti,
                     ['name'])['name']
 
