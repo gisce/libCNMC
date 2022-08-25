@@ -56,7 +56,7 @@ class FB8(MultiprocessBased):
         ]
 
         fields_to_read_obra = [
-            'subvenciones_europeas', 'subvenciones_nacionales', 'subvenciones_prtr', 'financiado',
+            'subvenciones_europeas', 'subvenciones_nacionales', 'subvenciones_prtr', 'financiado', 'fecha_baja',
             'cuenta_contable', 'im_ingenieria', 'im_materiales', 'im_obracivil', 'im_trabajos', 'motivacion'
         ]
 
@@ -163,7 +163,7 @@ class FB8(MultiprocessBased):
                     causa_baja,                         # CAUSA_BAJA
                     fecha_baja,                         # FECHA_BAJA
                     data_baixa_parcial,                 # FECHA_BAJA_PARCIAL
-                    valor_baja_parcial,                 #VALOR_BAJA_PARCIAL
+                    valor_baixa_parcial,                 #VALOR_BAJA_PARCIAL
                     subvenciones_europeas,              # SUBVENCIONES_EUROPEAS
                     subvenciones_nacionales,            # SUBVENCIONES_NACIONALES
                     subvenciones_prtr,                  # SUBVENCIONES_PRTR
