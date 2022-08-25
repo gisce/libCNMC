@@ -7,7 +7,7 @@ INVENTARI DE CNMC Centres Transformadors
 from __future__ import absolute_import
 from datetime import datetime
 import traceback, psycopg2.extras
-from libcnmc.utils import format_f, convert_srid, get_srid
+from libcnmc.utils import format_f, convert_srid, get_srid, get_norm_tension
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import (
     format_f, get_id_municipi_from_company, get_forced_elements, adapt_diff, convert_srid, get_srid, format_f,
