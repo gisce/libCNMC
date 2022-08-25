@@ -131,9 +131,7 @@ class FB3(MultiprocessBased):
                 zona = data_ct['zona_id'][1]
                 o_punt_frontera = int(data_ct['punt_frontera'] == True)
 
-                print(zona)
                 if zona:
-                    #tmp_zona = zona.get('zona_id')[1]
                     o_zona = ZONA[zona]
                 else:
                     o_zona = ""
