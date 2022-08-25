@@ -80,7 +80,7 @@ class FB5(MultiprocessBased):
         o = self.connection
         fields_to_read = [
             'ct', 'name', 'cini', 'potencia_nominal', 'id_estat',
-            'conexions', 'data_pm', 'data_baixa'
+            'conexions', 'data_pm', 'data_baixa', 'tipus_instalacio_cnmc_id'
         ]
 
         fields_to_read_obra = [
@@ -181,7 +181,7 @@ class FB5(MultiprocessBased):
 
                 o_estat = self.get_estat(trafo['id_estat'][0])
 
-                id_ti = ct['tipus_instalacio_cnmc_id'][0]
+                id_ti = trafo['tipus_instalacio_cnmc_id'][0]
                 ti = o.GiscedataTipusInstallacio.read(
                     id_ti,
                     ['name'])['name']
