@@ -94,7 +94,6 @@ class FB2(MultiprocessBased):
         if bloc:
             bloc = O.GiscegisBlocsCtat.read(bloc[0], ['node', 'vertex'])
             if bloc['node']:
-                print(bloc['node'])
                 node = bloc['node'][1]
                 if bloc['vertex']:
                     v = O.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
@@ -421,7 +420,7 @@ class FB2(MultiprocessBased):
                     o_node_baixa,                       # NUDO_BAJA
                     o_tensio_p,                         # NIVEL TENSION
                     o_tensio_const,                     # TENSION CONSTRUCCION
-                    #o_potencia,                         # POTENCIA
+                    o_potencia,                         # POTENCIA
                     format_f(res_srid[0], decimals=3),  # X
                     format_f(res_srid[1], decimals=3),  # Y
                     z,                                  # Z
