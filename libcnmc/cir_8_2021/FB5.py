@@ -13,6 +13,7 @@ from libcnmc.utils import (
     format_f, get_id_municipi_from_company, get_forced_elements, adapt_diff, convert_srid, get_srid, format_f,
     convert_spanish_date, get_name_ti, format_f_6181, get_codi_actuacio, get_ine
 )
+from shapely import wkt
 
 class FB5(MultiprocessBased):
     def __init__(self, **kwargs):
