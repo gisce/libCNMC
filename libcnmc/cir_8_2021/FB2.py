@@ -139,6 +139,7 @@ class FB2(MultiprocessBased):
         O = self.connection
 
         def get_inst_name(element_id):
+            print(element_id)
             vals = self.connection.GiscedataCts.read(
                 element_id, ['name'])
             return vals['name']
