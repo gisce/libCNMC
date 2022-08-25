@@ -90,13 +90,12 @@ class FB3(MultiprocessBased):
             punt_frontera = o.GiscedataCts.read(ct, ['punt_frontera'])
         return punt_frontera
 
-
     def consumer(self):
         o_codi_r1 = 'R1-%s' % self.codi_r1[-3:]
         o = self.connection
 
         fields_to_read = [
-            'name', 'cini', 'propietari', 'id_municipi', 'id_provincia',
+            'name', 'cini', 'propietari', 'id_municipi', 'id_provincia', 'punt_frontera'
             'ct_id', 'descripcio', "x", "y"
         ]
         while True:
@@ -128,8 +127,9 @@ class FB3(MultiprocessBased):
                     res_srid = convert_srid(get_srid(o), vertex)
 
                 ct = self.get_ct(sub['ct_id'][0])[0]
+                data_ct = o.GiscedataCts.read(ct, ['zona_id', 'punt_frontera'])
                 zona = data_ct[0]['zona_id']
-                o_punt_frontera = o.GiscedataCts.read(ct, ['punt_frontera'])
+                o_punt_frontera = data_ct[0]['punt_frontera']
 
                 if zona.get('zona_id'):
                     tmp_zona = zona.get('zona_id')[1]
