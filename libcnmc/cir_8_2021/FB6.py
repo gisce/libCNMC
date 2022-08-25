@@ -222,7 +222,7 @@ class FB6(MultiprocessBased):
 
         fields_to_read = [
             'installacio', 'cini', 'propietari', 'name', 'tensio', 'node_id', 'perc_financament',
-            'tipus_instalacio_cnmc_id', 'id_model', 'punt_frontera',
+            'tipus_instalacio_cnmc_id', 'id_model', 'punt_frontera', 'tensio_const',
             'geom', 'tram_id', 'id', 'data_pm', 'data_baixa', self.compare_field,
         ]
 
@@ -398,12 +398,7 @@ class FB6(MultiprocessBased):
                 o_node = o_node.replace('*', '')
 
                 element =  cella['installacio'].split(',')[0]
-
-                #if element == 'giscedata.at.suport':
                 dict_linia = self.obtenir_camps_linia_at(cella['installacio'])
-                #else:
-                #    dict_linia = self.obtenir_camps_linia_cts(cella['installacio'])
-
                 o_municipi = dict_linia.get('municipi')
                 o_provincia = dict_linia.get('provincia')
 
@@ -430,6 +425,11 @@ class FB6(MultiprocessBased):
                     o_tensio = format_f(int(tensio['tensio'])/1000.0, decimals=3)
                 else:
                     o_tensio = dict_linia.get('tensio')
+
+                if cella['tensio_const']:
+                    o_tensio_const = cella['tensio_const']
+                else:
+                    o_tensio_const = ''
 
                 id_modelo = cella['id_model']
                 if id_modelo:
@@ -460,7 +460,7 @@ class FB6(MultiprocessBased):
                     comunitat_codi,     #CCAA
                     str(ti),     #CCUU
                     o_tensio,       # NIVEL TENSION EXPLOTACION
-                    '',             # TENSION CONST
+                    o_tensio_const,             # TENSION CONST
                     data_pm,        #FECHA_APS
                     fecha_baja,     #FECHA_BAJA
                     causa_baja,     #CAUSA_BAJA
