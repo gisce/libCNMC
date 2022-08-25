@@ -246,6 +246,7 @@ class FB5(MultiprocessBased):
                 self.output_q.put([
                     o_maquina,              # IDENTIFICADOR_MAQUINA
                     o_cini,                 # CINI
+                    o_subestacio,           # DENOMINACION
                     ti,                     # CCUU
                     o_node,             #NUDO_ALTA
                     o_node_baixa,       #NUDO_BAJA
