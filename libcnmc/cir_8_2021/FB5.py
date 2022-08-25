@@ -246,8 +246,8 @@ class FB5(MultiprocessBased):
                     o_maquina,              # IDENTIFICADOR_MAQUINA
                     o_cini,                 # CINI
                     ti,                     # CCUU
-                    #NUDO_ALTA
-                    #NUDO_BAJA
+                    o_node,             #NUDO_ALTA
+                    o_node_baixa,       #NUDO_BAJA
                     o_pot_maquina,  # POTENCIA MAQUINA
                     #o_estat,  # ESTADO
                     #modelo,     #MODELO
