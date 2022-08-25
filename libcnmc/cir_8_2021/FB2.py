@@ -249,11 +249,6 @@ class FB2(MultiprocessBased):
                     avifauna = ''
                     financiado = ''
 
-                # Si la data APS es igual a l'any de la generació del fitxer,
-                # la data APS sortirà en blanc
-                data_ip = '' if data_ip and int(data_ip.split('/')[2]) != self.year \
-                    else data_ip
-
                 comunitat_codi = ''
                 data_pm = ''
 
@@ -261,6 +256,11 @@ class FB2(MultiprocessBased):
                     data_pm_ct = datetime.strptime(str(ct['data_pm']),
                                                    '%Y-%m-%d')
                     data_pm = data_pm_ct.strftime('%d/%m/%Y')
+
+                # Si la data APS es igual a l'any de la generació del fitxer,
+                # la data APS sortirà en blanc
+                data_ip = '' if data_pm and int(data_pm.split('/')[2]) != self.year \
+                    else data_ip
 
                 #funció per trobar la ccaa desde el municipi
                 fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
