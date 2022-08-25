@@ -259,7 +259,8 @@ class FB2(MultiprocessBased):
 
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data IP sortirà en blanc
-                data_ip = '' if data_pm and int(data_pm.split('/')[2]) == self.year \
+                if data_ip:
+                    data_ip = '' if data_pm and int(data_pm.split('/')[2]) == int(data_ip.split('/')[2]) \
                     else data_ip
 
                 #funció per trobar la ccaa desde el municipi
