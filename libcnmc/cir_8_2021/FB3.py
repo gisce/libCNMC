@@ -95,7 +95,7 @@ class FB3(MultiprocessBased):
         o = self.connection
 
         fields_to_read = [
-            'name', 'cini', 'propietari', 'id_municipi', 'id_provincia', 'punt_frontera'
+            'name', 'cini', 'propietari', 'id_municipi', 'id_provincia', 'punt_frontera',
             'ct_id', 'descripcio', "x", "y"
         ]
         while True:
