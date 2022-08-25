@@ -51,12 +51,13 @@ class FB8(MultiprocessBased):
         data_baixa_limit = '{0}-01-01'.format(self.year)
 
         fields_to_read = [
-            'id', 'cini', 'name', 'geom', 'vertex', 'data_apm', 'data_baixa', 'municipi'
+            'id', 'cini', 'name', 'geom', 'vertex', 'data_apm', 'data_baixa', 'municipi', 'data_baixa_parcial',
+            'valor_baixa_parcial'
         ]
 
         fields_to_read_obra = [
             'subvenciones_europeas', 'subvenciones_nacionales', 'subvenciones_prtr', 'financiado',
-            'cuenta_contable', 'im_ingenieria', 'im_materiales', 'im_obracivil', 'im_trabajos'
+            'cuenta_contable', 'im_ingenieria', 'im_materiales', 'im_obracivil', 'im_trabajos', 'motivacion'
         ]
 
         while True:
@@ -78,8 +79,7 @@ class FB8(MultiprocessBased):
                 if linia != '':
                     subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
                     subvenciones_nacionales = format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro')
-                    #subvenciones_prtr = format_f_6181(linia['subvenciones_prtr'] or 0.0, float_type='euro')
-                    subvenciones_prtr = ''
+                    subvenciones_prtr = format_f_6181(linia['subvenciones_prtr'] or 0.0, float_type='euro')
                     im_ingenieria = format_f_6181(linia['im_ingenieria'] or 0.0, float_type='euro')
                     im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
                     im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
@@ -94,6 +94,9 @@ class FB8(MultiprocessBased):
                     financiado =format_f(
                         100.0 - linia.get('financiado', 0.0), 2
                     )
+
+                    motivacion = get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]) if not \
+                        linia['fecha_baja'] else ''
                 else:
                     subvenciones_europeas = ''
                     subvenciones_nacionales = ''
@@ -101,11 +104,21 @@ class FB8(MultiprocessBased):
                     valor_auditado = ''
                     cuenta_contable = ''
                     financiado = ''
+                    motivacion = ''
 
                 if despatx['data_apm']:
                     data_pm_despatx = datetime.strptime(str(despatx['data_apm']),
                                                    '%Y-%m-%d')
                     data_pm = data_pm_despatx.strftime('%d/%m/%Y')
+
+                if despatx['data_baixa_parcial']:
+                    data_baixa_parcial = datetime.strptime(str(ct['data_pm']),
+                                                   '%Y-%m-%d')
+                    data_baixa_parcial = data_pm_ct.strftime('%d/%m/%Y')
+                    valor_baixa_parcial = despatx['valor_baixa_parcial']
+                else :
+                    data_baixa_parcial = ''
+                    valor_baixa_parcial = ''
 
                 if despatx['data_baixa']:
                     if despatx['data_baixa'] < data_pm_limit:
@@ -142,15 +155,15 @@ class FB8(MultiprocessBased):
                 self.output_q.put([
                     despatx['id'],                      # IDENTIFICADOR
                     despatx['cini'],                    # CINI
-                    #MOTIVACION
+                    motivacion,                         #MOTIVACION
                     #ESTADO
                     #DESCRIPCION
                     comunitat_codi,                     # CCAA
                     data_pm,                            # FECHA_APS
                     causa_baja,                         # CAUSA_BAJA
                     fecha_baja,                         # FECHA_BAJA
-                    #FECHA_BAJA_PARCIAL
-                    #VALOR_BAJA_PARCIAL
+                    data_baixa_parcial,                 # FECHA_BAJA_PARCIAL
+                    valor_baja_parcial,                 #VALOR_BAJA_PARCIAL
                     subvenciones_europeas,              # SUBVENCIONES_EUROPEAS
                     subvenciones_nacionales,            # SUBVENCIONES_NACIONALES
                     subvenciones_prtr,                  # SUBVENCIONES_PRTR

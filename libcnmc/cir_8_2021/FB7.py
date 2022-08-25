@@ -79,7 +79,7 @@ class FB7(MultiprocessBased):
                     o_tensio = ''
 
                 self.output_q.put([
-                    node['name'],                       # SUBESTACION
+                    node['name'],                       # NODE
                     format_f(res_srid[0], decimals=3),  # X
                     format_f(res_srid[1], decimals=3),  # Y
                     z,                                  # Z
