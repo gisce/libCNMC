@@ -248,7 +248,7 @@ class FB5(MultiprocessBased):
                     id_ti,
                     ['name'])['name']
 
-                id_model = o.GiscedataCts.read(ct_id, ['id_model'])['id_model']
+                id_model = o.GiscedataCts.read(trafo['ct'][0], ['id_model'])['id_model']
                 if id_modelo:
                     modelo = MODELO[id_modelo]
                 else:
