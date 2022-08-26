@@ -166,8 +166,6 @@ class FB4(MultiprocessBased):
                 else:
                     linia = ''
 
-                data_pm = pos['data_pm']
-
                 if pos['data_baixa']:
                     if pos['data_baixa'] < data_pm_limit:
                         tmp_date = datetime.strptime(
@@ -229,6 +227,12 @@ class FB4(MultiprocessBased):
                     cuenta_contable = ''
                     financiado = ''
 
+                data_pm = ''
+                if pos['data_pm']:
+                    data_pm_ct = datetime.strptime(str(pos['data_pm']),
+                                                   '%Y-%m-%d')
+                    data_pm = data_pm_ct.strftime('%d/%m/%Y')
+
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data IP sortirà en blanc
                 if data_ip:
@@ -251,6 +255,8 @@ class FB4(MultiprocessBased):
                 else:
                     ti = ''
 
+                print("subestacio_id")
+                print(pos['subestacio_id'])
                 cts_data = self.get_cts_data(pos['subestacio_id'][0])
 
                 print("cts_data")
@@ -265,7 +271,7 @@ class FB4(MultiprocessBased):
                     node = cts_data['node_id'][1]
 
                     if cts_data['punt_frontera']:
-                        punt_frontera = cts_data['punt_frontera']
+                        punt_frontera = int(cts_data['punt_frontera'] == True)
                     else:
                         punt_frontera = ''
 
