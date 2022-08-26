@@ -111,10 +111,8 @@ class FB4(MultiprocessBased):
     def get_cts_data(self, sub_id):
         o = self.connection
         cts_id = o.GiscedataCtsSubestacions.read(sub_id, ['ct_id'])
-        print("cts_id")
-        print(cts_id)
         if cts_id:
-            cts_data = o.GiscedataCts.read(cts_id['id'], ['propietari', 'node_id', 'punt_frontera', 'id_model'])
+            cts_data = o.GiscedataCts.read(cts_id['ct_id'][0], ['propietari', 'node_id', 'punt_frontera', 'id_model'])
         return cts_data
 
     def get_parc_name(self, parc_id):
