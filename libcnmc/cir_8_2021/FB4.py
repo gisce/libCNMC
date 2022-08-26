@@ -111,6 +111,8 @@ class FB4(MultiprocessBased):
     def get_cts_data(self, sub_id):
         o = self.connection
         cts_id = o.GiscedataCtsSubestacions.read(sub_id, ['ct_id'])
+        print("cts_id")
+        print(cts_id)
         if cts_id:
             cts_data = o.GiscedataCts.read(cts_id['id'], ['propietari', 'node_id', 'punt_frontera', 'id_model'])
         return cts_data
@@ -165,6 +167,13 @@ class FB4(MultiprocessBased):
                     linia = O.GiscedataProjecteObraTiPosicio.read(obra_id, fields_to_read_obra)[0]
                 else:
                     linia = ''
+
+
+                data_pm = ''
+                if pos['data_pm']:
+                    data_pm_ct = datetime.strptime(str(pos['data_pm']),
+                                                   '%Y-%m-%d')
+                    data_pm = data_pm_ct.strftime('%d/%m/%Y')
 
                 if pos['data_baixa']:
                     if pos['data_baixa'] < data_pm_limit:
@@ -227,11 +236,6 @@ class FB4(MultiprocessBased):
                     cuenta_contable = ''
                     financiado = ''
 
-                data_pm = ''
-                if pos['data_pm']:
-                    data_pm_ct = datetime.strptime(str(pos['data_pm']),
-                                                   '%Y-%m-%d')
-                    data_pm = data_pm_ct.strftime('%d/%m/%Y')
 
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data IP sortirà en blanc
@@ -255,8 +259,6 @@ class FB4(MultiprocessBased):
                 else:
                     ti = ''
 
-                print("subestacio_id")
-                print(pos['subestacio_id'])
                 cts_data = self.get_cts_data(pos['subestacio_id'][0])
 
                 print("cts_data")
