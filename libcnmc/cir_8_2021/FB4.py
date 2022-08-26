@@ -242,7 +242,7 @@ class FB4(MultiprocessBased):
                         + str(self.get_tensio(pos))
 
                     identificador_emplazamiento = "SUBESTACIO_NAME"
-                    
+
                 if pos['tipus_instalacio_cnmc_id']:
                     id_ti = pos['tipus_instalacio_cnmc_id'][0]
                     ti = O.GiscedataTipusInstallacio.read(
@@ -256,19 +256,27 @@ class FB4(MultiprocessBased):
                 print("cts_data")
                 print(cts_data)
 
-                if cts_data['propietari']:
-                    ajena = 0
-                else:
-                    ajena = 1
+                if cts_data:
+                    if cts_data['propietari']:
+                        ajena = 0
+                    else:
+                        ajena = 1
 
-                node = cts_data['node_id'][1]
+                    node = cts_data['node_id'][1]
 
-                if cts_data['punt_frontera']:
-                    punt_frontera = cts_data['punt_frontera']
+                    if cts_data['punt_frontera']:
+                        punt_frontera = cts_data['punt_frontera']
+                    else:
+                        punt_frontera = ''
 
-                if cts_data['id_model']:
-                    modelo = MODELO[id_modelo]
+                    if cts_data['id_model']:
+                        modelo = MODELO[id_modelo]
+                    else :
+                        modelo = ''
                 else :
+                    ajena = ''
+                    node = ''
+                    punt_frontera = ''
                     modelo = ''
 
                 id_interruptor = pos['interruptor']
@@ -279,7 +287,7 @@ class FB4(MultiprocessBased):
                     pos['name'],  #IDENTIFICADOR_POSICION
                     pos['cini'],  #CINI
                     node,    #NUDO
-                     #CODIGO_CCUU
+                    str(ti),      #CODIGO_CCUU
                     identificador_emplazamiento, #PARC_ID a PARC_NAME,  #IDENTIFICADOR EMPLAZAMIENTO
                     ajena,  #AJENA
                     equipada,   #EQUIPADA
