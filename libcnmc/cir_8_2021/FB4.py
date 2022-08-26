@@ -166,7 +166,7 @@ class FB4(MultiprocessBased):
                 else:
                     linia = ''
 
-                fecha_aps = pos['data_pm']
+                data_pm = pos['data_pm']
 
                 if pos['data_baixa']:
                     if pos['data_baixa'] < data_pm_limit:
@@ -188,7 +188,7 @@ class FB4(MultiprocessBased):
 
                 if linia != '':
                     data_ip = convert_spanish_date(
-                        fecha_aps if not fecha_baja and linia['tipo_inversion'] != '1' else ''
+                        data_pm if not fecha_baja and linia['tipo_inversion'] != '1' else ''
                     )
 
                     im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
@@ -294,7 +294,7 @@ class FB4(MultiprocessBased):
                     #ESTADO
                     modelo,         #MODELO
                     punt_frontera,  #PUNTO_FRONTERA
-                    fecha_aps,      #FECHA_APS
+                    data_pm,      #FECHA_APS
                     fecha_baja,     #FECHA_BAJA
                     causa_baja,     #CAUSA_BAJA
                     data_ip,    #fecha IP
