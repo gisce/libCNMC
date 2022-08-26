@@ -11,6 +11,11 @@ import traceback
 from libcnmc.utils import format_f
 from libcnmc.core import MultiprocessBased
 
+OPERACIO = {
+    'Reserva': '0',
+    'Operativo': '1',
+}
+
 class FB2_1(MultiprocessBased):
     """
     Class that generates the CT file of the 4666
@@ -55,6 +60,15 @@ class FB2_1(MultiprocessBased):
         return self.connection.GiscedataTransformadorTrafo.search(
             search_params, 0, 0, False, {'active_test': False})
 
+    def get_operacio(self, id_operacio):
+
+        o = self.connection
+        operacio = o.GiscedataTransformadorOperacio.read(
+            id_operacio, ['descripcio']
+        )[1]
+        return operacio
+
+
     def consumer(self):
         """
         Method that generates the csb file
@@ -63,7 +77,7 @@ class FB2_1(MultiprocessBased):
         o = self.connection
         fields_to_read = [
             'ct', 'name', 'cini', 'potencia_nominal',
-            'data_pm', 'id_estat'
+            'data_pm', 'id_estat', 'id_operacio'
         ]
         while True:
             try:
@@ -84,12 +98,15 @@ class FB2_1(MultiprocessBased):
 
                 tmp_date = datetime.strptime(
                     trafo['data_pm'], '%Y-%m-%d')
-                o_any = tmp_date.strftime('%d/%m/%Y')
+                o_any = tmp_date.strftime('%Y')
 
-                #if trafo['id_estat'][0] == 1:
-                #    o_operacion = 1
-                #else:
-                #    o_operacion = 0
+                id_operacio = trafo['id_operacio']
+                if id_operacio:
+                    desc_operacio = self.get_operacio(id_operacio)
+                    if desc_operacio:
+                        o_operacio = OPERACIO[desc_operacio]
+                else:
+                    o_operacio = ''
 
                 self.output_q.put([
                     o_ct,           # CT
@@ -97,7 +114,7 @@ class FB2_1(MultiprocessBased):
                     o_cini,         # CINI
                     o_pot,          # POT MAQUINA
                     o_any,          # AÑO INFORMACION
-                    #o_operacion     # OPERACION
+                    o_operacion     # OPERACION
                 ])
             except Exception:
                 traceback.print_exc()
