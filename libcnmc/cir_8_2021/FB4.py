@@ -17,6 +17,12 @@ INTERRUPTOR = {
     '3': '2'  #SIN INTERRUPTOR
 }
 
+MODELO = {
+    '1': 'I',
+    '2': 'M',
+    '3': 'D',
+    '4': 'E'
+}
 class FB4(MultiprocessBased):
 
     """
@@ -102,11 +108,11 @@ class FB4(MultiprocessBased):
         return self.connection.GiscedataCtsSubestacionsPosicio.search(
             search_params, 0, 0, False, {'active_test': False})
 
-    def get_cts_propietari(self, sub_id):
+    def get_cts_data(self, sub_id):
         o = self.connection
         cts_id = o.GiscedataCtsSubestacions.read(sub_id, ['ct_id'])
         if cts_id:
-            cts_data = o.GiscedataCts.read(cts_id['id'], ['propietari', 'node_id'])
+            cts_data = o.GiscedataCts.read(cts_id['id'], ['propietari', 'node_id', 'punt_frontera', 'id_model'])
         return cts_data
 
     def get_parc_name(self, parc_id):
@@ -130,30 +136,15 @@ class FB4(MultiprocessBased):
 
         fields_to_read = [
             'name', 'cini', 'node_id', 'propietari', 'subestacio_id', 'data_pm', 'tensio',
-            'parc_id', 'data_baixa', 'interruptor'
+            'parc_id', 'data_baixa', 'interruptor', 'tipus_instalacio_cnmc_id'
         ]
 
         fields_to_read_obra = [
             'name', 'cini', 'tipo_inversion', 'denominacion', 'ccuu', 'codigo_ccaa', 'identificador_parque',
-            'nivel_tension_explotacion',
-            'financiado',
-            'planificacion',
-            'fecha_aps',
-            'fecha_baja',
-            'causa_baja',
-            'im_ingenieria',
-            'im_materiales',
-            'im_obracivil',
-            'im_trabajos',
-            'subvenciones_europeas',
-            'subvenciones_nacionales',
-            'valor_auditado',
-            'valor_contabilidad',
-            'cuenta_contable',
-            'porcentaje_modificacion',
-            'motivacion',
-            'obra_id',
-            'identificador_baja',
+            'nivel_tension_explotacion', 'financiado','planificacion','fecha_aps','fecha_baja','causa_baja',
+            'im_ingenieria','im_materiales','im_obracivil','im_trabajos','subvenciones_europeas',
+            'subvenciones_nacionales','subvenciones_prtr','valor_auditado','valor_contabilidad','cuenta_contable',
+            'porcentaje_modificacion','motivacion','obra_id','identificador_baja',
         ]
 
         def get_inst_name(element_id):
@@ -169,17 +160,12 @@ class FB4(MultiprocessBased):
                     item, fields_to_read
                 )
 
-                print("posid")
-                print(pos['id'])
-
                 obra_id = O.GiscedataProjecteObraTiPosicio.search([('element_ti_id', '=', pos['id'])])
                 if obra_id:
                     linia = O.GiscedataProjecteObraTiPosicio.read(obra_id, fields_to_read_obra)[0]
                 else:
                     linia = ''
 
-                #print("denominacion")
-                #print(linia['denominacion'])
                 fecha_aps = pos['data_pm']
 
                 if pos['data_baixa']:
@@ -219,7 +205,7 @@ class FB4(MultiprocessBased):
                     valor_auditado = format_f_6181(linia['valor_auditado'] or 0.0, float_type='euro')
                     subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
                     subvenciones_nacionales = format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro')
-
+                    subvenciones_prtr = format_f_6181(linia['subvenciones_prtr'] or 0.0, float_type='euro')
                     cuenta_contable = linia['cuenta_contable']
                     financiado = format_f_6181(linia['financiado'], float_type='decimal')
                     motivacion = get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0])
@@ -237,33 +223,17 @@ class FB4(MultiprocessBased):
                     im_trabajos = ''
                     subvenciones_europeas = ''
                     subvenciones_nacionales = ''
+                    subvenciones_prtr = ''
                     valor_auditado = ''
                     motivacion = ''
                     cuenta_contable = ''
                     financiado = ''
 
-
-                #    fecha_aps = convert_spanish_date(
-                #        linia['fecha_aps'] if not linia['fecha_baja']
-                #                              and linia['tipo_inversion'] != '1' else ''
-                #    )
-
-
-                # Si la data IP es igual a l'any de la generació del fitxer,
-                # la data IP sortirà en blanc
-                data_ip = '' if data_ip and int(data_ip.split('/')[2]) != self.year \
-                    else data_ip
-
-
                 # Si la data APS es igual a l'any de la generació del fitxer,
-                # la data APS sortirà en blanc
-
-                #fecha_ip = '' if fecha_aps and int(fecha_aps.split('/')[2]) != self.year \
-                #    else fecha_aps
-
-
-
-                #cts = self.get_cts_data(pos['subestacio_id'])
+                # la data IP sortirà en blanc
+                if data_ip:
+                    data_ip = '' if data_pm and int(data_pm.split('/')[2]) == int(data_ip.split('/')[2]) \
+                    else data_ip
 
                 if pos['parc_id']:
                     identificador_emplazamiento = pos['parc_id'][1]
@@ -272,9 +242,16 @@ class FB4(MultiprocessBased):
                         + str(self.get_tensio(pos))
 
                     identificador_emplazamiento = "SUBESTACIO_NAME"
+                    
+                if pos['tipus_instalacio_cnmc_id']:
+                    id_ti = pos['tipus_instalacio_cnmc_id'][0]
+                    ti = O.GiscedataTipusInstallacio.read(
+                        id_ti,
+                        ['name'])['name']
+                else:
+                    ti = ''
 
-
-                cts_data = self.get_cts_propietari(pos['subestacio_id'][0])
+                cts_data = self.get_cts_data(pos['subestacio_id'][0])
 
                 print("cts_data")
                 print(cts_data)
@@ -286,6 +263,14 @@ class FB4(MultiprocessBased):
 
                 node = cts_data['node_id'][1]
 
+                if cts_data['punt_frontera']:
+                    punt_frontera = cts_data['punt_frontera']
+
+                if cts_data['id_model']:
+                    modelo = MODELO[id_modelo]
+                else :
+                    modelo = ''
+
                 id_interruptor = pos['interruptor']
                 if id_interruptor:
                     equipada = INTERRUPTOR[id_interruptor]
@@ -294,30 +279,26 @@ class FB4(MultiprocessBased):
                     pos['name'],  #IDENTIFICADOR_POSICION
                     pos['cini'],  #CINI
                     node,    #NUDO
-                    #CODIGO_CCUU
+                     #CODIGO_CCUU
                     identificador_emplazamiento, #PARC_ID a PARC_NAME,  #IDENTIFICADOR EMPLAZAMIENTO
                     ajena,  #AJENA
                     equipada,   #EQUIPADA
                     #ESTADO
-                    #MODELO
-                    #PUNTO_FRONTERA
+                    modelo,         #MODELO
+                    punt_frontera,  #PUNTO_FRONTERA
                     fecha_aps,      #FECHA_APS
                     fecha_baja,     #FECHA_BAJA
                     causa_baja,     #CAUSA_BAJA
-
                     data_ip,    #fecha IP
                     tipo_inversion,  # TIPO_INVERSION
-
                     im_ingenieria,    #IM_TRAMITES
                     im_construccion,    #IM_CONSTRUCCION
                     im_trabajos,      #IM_TRABAJOS
-
                     valor_auditado,   #VALOR_AUDITADO
                     #VALOR RESIDUAL
-
                     subvenciones_europeas,    #SUBVENCIONES EUROPEAS
                     subvenciones_nacionales,  #SUBVECIONES NACIONALES
-                    #SUBVENCIONES_PRTR
+                    subvenciones_prtr,  #SUBVENCIONES_PRTR
                     cuenta_contable,   #CUENTA
                     financiado,   #FINANCIADO
                     motivacion,    #MOTIVACION
