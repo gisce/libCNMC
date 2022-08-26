@@ -10,6 +10,10 @@ import traceback
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import format_f, get_norm_tension
 
+OPERACIO = {
+    'Reserva': '0',
+    'Operativo': '1',
+}
 
 class FB3_3(MultiprocessBased):
 
@@ -75,12 +79,19 @@ class FB3_3(MultiprocessBased):
                 res = o.GiscedataParcs.read(parc_id[0], ['name'])['name']
         return res
 
+    def get_operacio(self, id_operacio):
+
+        o = self.connection
+        operacio = o.GiscedataTransformadorOperacio.read(
+            id_operacio, ['descripcio']
+        )[1]
+        return operacio
+
     def consumer(self):
         o = self.connection
         fields_to_read = [
-            'ct', 'name', 'cini', 'potencia_nominal', 'propietari', 'id_estat',
-            'conexions', 'energia_anual', 'potencia_activa',
-            'potencia_reactiva', 'perdues_buit', 'perdues_curtcircuit_nominal'
+            'ct', 'name', 'cini', 'propietari', 'id_estat',
+            'conexions', 'id_operacio'
         ]
         while True:
             try:
@@ -95,23 +106,17 @@ class FB3_3(MultiprocessBased):
                 o_cini = trafo['cini']
                 o_costat_alta = self.get_costat_alta(trafo)
                 o_costat_baixa = self.get_costat_baixa(trafo)
-                o_pot_maquina = format_f(
-                    float(trafo['potencia_nominal']) / 1000.0, decimals=3)
-                o_pot_activa = format_f(
-                    float(trafo['potencia_activa']), decimals=3)
-                o_pot_reactiva = format_f(
-                    float(trafo['potencia_reactiva']), decimals=3)
-                o_energia_anual = format_f(
-                    float(trafo['energia_anual']), decimals=3)
-                o_perdues = format_f(
-                    float(trafo['perdues_buit']), decimals=3)
-                o_perdues_nominal = format_f(
-                    float(
-                        trafo['perdues_curtcircuit_nominal']
-                    ), decimals=3)
                 o_propietat = int(trafo['propietari'])
                 o_estat = self.get_estat(trafo['id_estat'][0])
                 o_any = self.year
+
+                id_operacio = trafo['id_operacio']
+                if id_operacio:
+                    desc_operacio = self.get_operacio(id_operacio)
+                    if desc_operacio:
+                        o_operacio = OPERACIO[desc_operacio]
+                else:
+                    o_operacio = ''
 
                 self.output_q.put([
                     o_subestacio,  # SUBESTACION
@@ -119,8 +124,8 @@ class FB3_3(MultiprocessBased):
                     o_cini,  # CINI
                     o_costat_alta,  # PARQUE ALTA
                     o_costat_baixa,  # PARQUE BAJA
-                    o_any  # AÑO INFORMACION
-                    #o_operacion # OPERACION
+                    o_any,  # AÑO INFORMACION
+                    o_operacio # OPERACION
                 ])
             except Exception:
                 traceback.print_exc()
