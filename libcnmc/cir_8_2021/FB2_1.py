@@ -114,7 +114,7 @@ class FB2_1(MultiprocessBased):
                     o_cini,         # CINI
                     o_pot,          # POT MAQUINA
                     o_any,          # AÑO INFORMACION
-                    o_operacion     # OPERACION
+                    o_operacio     # OPERACION
                 ])
             except Exception:
                 traceback.print_exc()
