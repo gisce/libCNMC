@@ -118,6 +118,7 @@ class FB3_3(MultiprocessBased):
                 else:
                     o_operacio = ''
 
+
                 # TODO: Treure aquesta linia
                 desc_operacio = 'Operativo'
                 o_operacio = OPERACIO[desc_operacio]
