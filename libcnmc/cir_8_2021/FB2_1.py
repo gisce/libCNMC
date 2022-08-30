@@ -101,12 +101,17 @@ class FB2_1(MultiprocessBased):
                 o_any = tmp_date.strftime('%Y')
 
                 id_operacio = trafo['id_operacio']
+
                 if id_operacio:
                     desc_operacio = self.get_operacio(id_operacio)
                     if desc_operacio:
                         o_operacio = OPERACIO[desc_operacio]
                 else:
                     o_operacio = ''
+
+                # TODO: Treure aquesta linia
+                desc_operacio = 'Operativo'
+                o_operacio = OPERACIO[desc_operacio]
 
                 self.output_q.put([
                     o_ct,           # CT
