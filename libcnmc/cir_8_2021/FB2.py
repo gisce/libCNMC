@@ -23,14 +23,6 @@ ZONA = {
     'SEMIURBANA': 'SU'
 }
 
-MODELO = {
-    '1': 'I',
-    '2': 'M',
-    '3': 'D',
-    '4': 'E'
-}
-
-
 class FB2(MultiprocessBased):
     """
     Class that generates the CT file of the 4666
@@ -394,13 +386,8 @@ class FB2(MultiprocessBased):
 
                 punto_frontera = int(ct['punt_frontera'] == True)
 
-                id_modelo = ct['model']
-                print("modelo")
-                print(id_modelo)
-                if id_modelo:
-                    modelo = MODELO[id_modelo]
-                else:
-                    modelo = ''
+                modelo = ct['model']
+
 
                 output = [
                     '{0}'.format(ct['name']),           # IDENTIFICADOR
