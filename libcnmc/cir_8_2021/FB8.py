@@ -117,6 +117,10 @@ class FB8(MultiprocessBased):
                     valor_baixa_parcial = despatx['valor_baixa_parcial']
                     causa_baja = 4
                 elif despatx['data_baixa']:
+                    print ("data_baixa")
+                    print (despatx['data_baixa'])
+                    print ("data_pm_limit")
+                    print (data_pm_limit)
                     if despatx['data_baixa'] < data_pm_limit:
                         tmp_date = datetime.strptime(
                             despatx['data_baixa'], '%Y-%m-%d')
