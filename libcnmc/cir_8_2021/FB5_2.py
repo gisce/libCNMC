@@ -156,10 +156,10 @@ class FB5_2(MultiprocessBased):
 
                 ##obra_id = o.GiscedataProjecteObraTiTransformador.search([('element_ti_id', '=', cond['id'])])
 
-                if obra_id:
-                    linia = o.GiscedataProjecteObraTiTransformador.read(obra_id, fields_to_read_obra)[0]
-                else:
-                    linia = ''
+                #if obra_id:
+                #   linia = o.GiscedataProjecteObraTiTransformador.read(obra_id, fields_to_read_obra)[0]
+                #else:
+                linia = ''
 
                 if linia != '':
                     data_ip = convert_spanish_date(
