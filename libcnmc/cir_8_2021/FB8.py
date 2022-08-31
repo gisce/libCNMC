@@ -46,18 +46,15 @@ class FB8(MultiprocessBased):
 
     def consumer(self):
         O = self.connection
-
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         data_baixa_limit = '{0}-01-01'.format(self.year)
-
         fields_to_read = [
             'id', 'cini', 'name', 'geom', 'vertex', 'data_apm', 'data_baixa', 'municipi', 'data_baixa_parcial',
-            'valor_baixa_parcial'
+            'valor_baixa_parcial', 'motivacion'
         ]
-
         fields_to_read_obra = [
             'subvenciones_europeas', 'subvenciones_nacionales', 'subvenciones_prtr', 'financiado', 'fecha_baja',
-            'cuenta_contable', 'im_ingenieria', 'im_materiales', 'im_obracivil', 'im_trabajos', 'motivacion'
+            'cuenta_contable', 'im_ingenieria', 'im_materiales', 'im_obracivil', 'im_trabajos'
         ]
 
         while True:
@@ -84,7 +81,6 @@ class FB8(MultiprocessBased):
                     im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
                     im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
                     im_trabajos = format_f_6181(linia['im_trabajos'] or 0.0, float_type='euro')
-
                     valor_auditado = str(
                         float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", ".")) +
                         float(im_ingenieria.replace(",", ".")) + float(im_trabajos.replace(",", "."))
@@ -94,9 +90,6 @@ class FB8(MultiprocessBased):
                     financiado =format_f(
                         100.0 - linia.get('financiado', 0.0), 2
                     )
-
-                    motivacion = get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]) if not \
-                        linia['fecha_baja'] else ''
                 else:
                     subvenciones_europeas = ''
                     subvenciones_nacionales = ''
@@ -104,23 +97,26 @@ class FB8(MultiprocessBased):
                     valor_auditado = ''
                     cuenta_contable = ''
                     financiado = ''
-                    motivacion = ''
 
                 if despatx['data_apm']:
                     data_pm_despatx = datetime.strptime(str(despatx['data_apm']),
                                                    '%Y-%m-%d')
                     data_pm = data_pm_despatx.strftime('%d/%m/%Y')
 
+                if despatx['motivacion']:
+                    motivacion = get_codi_actuacio(O, despatx['motivacion'] and despatx['motivacion'][0])
+                else:
+                    motivacion = ''
+
+                data_baixa_parcial = ''
+                valor_baixa_parcial = ''
                 if despatx['data_baixa_parcial']:
                     data_baixa_parcial = datetime.strptime(str(ct['data_pm']),
                                                    '%Y-%m-%d')
                     data_baixa_parcial = data_pm_ct.strftime('%d/%m/%Y')
                     valor_baixa_parcial = despatx['valor_baixa_parcial']
-                else :
-                    data_baixa_parcial = ''
-                    valor_baixa_parcial = ''
-
-                if despatx['data_baixa']:
+                    causa_baja = 4
+                elif despatx['data_baixa']:
                     if despatx['data_baixa'] < data_pm_limit:
                         tmp_date = datetime.strptime(
                             despatx['data_baixa'], '%Y-%m-%d')
@@ -152,18 +148,23 @@ class FB8(MultiprocessBased):
                     if comunitat_vals:
                         comunitat_codi = comunitat_vals['codi']
 
+                # TODO: Temporal
+                estat = 0
+
+                descripcio = ''
+
                 self.output_q.put([
                     despatx['id'],                      # IDENTIFICADOR
                     despatx['cini'],                    # CINI
-                    motivacion,                         #MOTIVACION
-                    #ESTADO
-                    #DESCRIPCION
+                    motivacion,                         # MOTIVACION
+                    estat,                              # ESTADO
+                    descripcio,                         # DESCRIPCION
                     comunitat_codi,                     # CCAA
                     data_pm,                            # FECHA_APS
                     causa_baja,                         # CAUSA_BAJA
                     fecha_baja,                         # FECHA_BAJA
                     data_baixa_parcial,                 # FECHA_BAJA_PARCIAL
-                    valor_baixa_parcial,                 #VALOR_BAJA_PARCIAL
+                    valor_baixa_parcial,                # VALOR_BAJA_PARCIAL
                     subvenciones_europeas,              # SUBVENCIONES_EUROPEAS
                     subvenciones_nacionales,            # SUBVENCIONES_NACIONALES
                     subvenciones_prtr,                  # SUBVENCIONES_PRTR
