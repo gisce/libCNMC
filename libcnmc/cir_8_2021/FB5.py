@@ -65,22 +65,34 @@ class FB5(MultiprocessBased):
 
         return res
 
-    def get_costat_baixa(self, trafo):
+    def get_costat_baixa(self, node_id):
         o = self.connection
         res = ''
-        if trafo['conexions']:
-            con = o.GiscedataTransformadorConnexio.read(trafo['conexions'][0])
-            tensio = con['tensio_b1']
-            tensio_n = get_norm_tension(o, tensio)
-            se_id = trafo['ct'][1]
-            parc_id = o.GiscedataParcs.search(
-                [
-                    ('subestacio_id', '=', se_id),
-                    ('tensio_id.tensio', '=', tensio_n)
-                ]
+        if node_id:
+            edges = o.GiscegisEdge.search(
+                [('start_node', '=', node_id)]
             )
-            if parc_id:
-                res = o.GiscedataParcs.read(parc_id[0], ['name'])['name']
+            if edges:
+                for edge in edges:
+                    bloc_tensio = o.GiscegisBlocsTensio.search(
+                        [('node', '=', edge.end_node)]
+                    )
+                    if bloc_tensio:
+                        break
+            else:
+                edges = o.GiscegisEdge.search(
+                    [('end_node', '=', node_id)]
+                )
+                if edges:
+                    for edge in edges:
+                        bloc_tensio = o.GiscegisBlocsTensio.search(
+                            [('node', '=', edge.start_node)]
+                        )
+                        if bloc_tensio:
+                            break
+        if bloc_tensio:
+            res = bloc_tensio.node
+
         return res
 
     def get_node_vertex(self, ct_id):
@@ -128,8 +140,8 @@ class FB5(MultiprocessBased):
     def consumer(self):
         o = self.connection
         fields_to_read = [
-            'ct', 'name', 'cini', 'potencia_nominal', 'id_estat',
-            'conexions', 'data_pm', 'data_baixa', 'tipus_instalacio_cnmc_id'
+            'ct', 'name', 'cini', 'potencia_nominal', 'id_estat', 'node_id'
+            'data_pm', 'data_baixa', 'tipus_instalacio_cnmc_id'
         ]
 
         fields_to_read_obra = [
@@ -209,8 +221,8 @@ class FB5(MultiprocessBased):
                 o_subestacio = trafo['ct'][1]
                 o_maquina = trafo['name']
                 o_cini = trafo['cini']
-                o_costat_alta = self.get_costat_alta(trafo)
-                o_costat_baixa = self.get_costat_baixa(trafo)
+                o_costat_alta = trafo['node_id'][1]
+                o_costat_baixa = self.get_costat_baixa(trafo['node_id'][0])
                 o_pot_maquina = format_f(
                     float(trafo['potencia_nominal']) / 1000.0, decimals=3)
                 o_node = self.get_nodes(trafo['ct'][0])
@@ -254,6 +266,9 @@ class FB5(MultiprocessBased):
                 else:
                     modelo = ''
 
+                # TODO: Temporal
+                o_estat = 0
+
                 self.output_q.put([
                     o_maquina,              # IDENTIFICADOR_MAQUINA
                     o_cini,                 # CINI
@@ -261,7 +276,7 @@ class FB5(MultiprocessBased):
                     o_node,             #NUDO_ALTA
                     o_node_baixa,       #NUDO_BAJA
                     o_pot_maquina,  # POTENCIA MAQUINA
-                    #o_estat,  # ESTADO
+                    o_estat,  # ESTADO
                     modelo,             #MODELO
                     data_pm,               #FECHA_APS
                     fecha_baja,            #FECHA_BAJA
