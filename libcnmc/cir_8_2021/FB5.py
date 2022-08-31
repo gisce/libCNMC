@@ -68,10 +68,14 @@ class FB5(MultiprocessBased):
     def get_costat_baixa(self, node_id):
         o = self.connection
         res = ''
+        print('node_alta')
+        print(node_id)
         if node_id:
             edges = o.GiscegisEdge.search(
                 [('start_node', '=', node_id)]
             )
+            print('start_node')
+            print(edges)
             if edges:
                 for edge in edges:
                     bloc_tensio = o.GiscegisBlocsTensio.search(
@@ -83,6 +87,8 @@ class FB5(MultiprocessBased):
                 edges = o.GiscegisEdge.search(
                     [('end_node', '=', node_id)]
                 )
+                print('end_node')
+                print(edges)
                 if edges:
                     for edge in edges:
                         bloc_tensio = o.GiscegisBlocsTensio.search(
@@ -140,7 +146,7 @@ class FB5(MultiprocessBased):
     def consumer(self):
         o = self.connection
         fields_to_read = [
-            'ct', 'name', 'cini', 'potencia_nominal', 'id_estat', 'node_id'
+            'ct', 'name', 'cini', 'potencia_nominal', 'id_estat', 'node_id',
             'data_pm', 'data_baixa', 'tipus_instalacio_cnmc_id'
         ]
 
