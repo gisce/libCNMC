@@ -24,7 +24,7 @@ MODELO = {
 
 class FB5_2(MultiprocessBased):
     def __init__(self, **kwargs):
-        super(FB5, self).__init__(**kwargs)
+        super(FB5_2, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.report_name = 'FB5 - CONDENSADORS'
         self.base_object = 'CONDENSADORS'
