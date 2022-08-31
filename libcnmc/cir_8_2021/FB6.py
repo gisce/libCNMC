@@ -344,11 +344,13 @@ class FB6(MultiprocessBased):
                             cella['data_baixa'], '%Y-%m-%d %H:%M:%S')
                         fecha_baja = tmp_date.strftime('%d/%m/%Y')
 
-                        if int(data_pm.split("/")[2]) - int(fecha_baja.split("/")[2]) >= 40:
+                        if int(fecha_baja.split("/")[2]) - int(data_pm.split("/")[2]) >= 40:
                             if identificador_baja != '':
                                 causa_baja = 1
                             else:
                                 causa_baja = 2
+                        else:
+                            causa_baja = 3
                     else:
                         fecha_baja = ''
                         causa_baja = 0;
@@ -449,6 +451,10 @@ class FB6(MultiprocessBased):
                     res_srid = convert_srid(get_srid(O), vertex)
                     x = format_f(res_srid[0], decimals=3)
                     y = format_f(res_srid[1], decimals=3)
+
+                # TODO: Temporal
+                o_estat = 0
+
                 self.output_q.put([
                     o_fiabilitat,   # ELEMENTO FIABILIDAD
                     o_cini,  # CINI
@@ -466,7 +472,7 @@ class FB6(MultiprocessBased):
                     data_pm,        #FECHA_APS
                     fecha_baja,     #FECHA_BAJA
                     causa_baja,     #CAUSA_BAJA
-                    '',     #ESTADO
+                    o_estat,     #ESTADO
                     modelo,      #MODELO
                     punto_frontera,  #PUNT_FRONTERA
                     tipo_inversion,     #TIPO_INVERSION

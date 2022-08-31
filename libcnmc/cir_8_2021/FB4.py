@@ -143,7 +143,7 @@ class FB4(MultiprocessBased):
             'name', 'cini', 'tipo_inversion', 'denominacion', 'ccuu', 'codigo_ccaa', 'identificador_parque',
             'nivel_tension_explotacion', 'financiado','planificacion','fecha_aps','fecha_baja','causa_baja',
             'im_ingenieria','im_materiales','im_obracivil','im_trabajos','subvenciones_europeas',
-            'subvenciones_nacionales','subvenciones_prtr','valor_auditado','valor_contabilidad','cuenta_contable',
+            'subvenciones_nacionales','subvenciones_prtr','valor_auditado','valor_residual','valor_contabilidad','cuenta_contable',
             'porcentaje_modificacion','motivacion','obra_id','identificador_baja',
         ]
 
@@ -208,11 +208,14 @@ class FB4(MultiprocessBased):
                     tipo_inversion = (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1'
 
                     valor_auditado = format_f_6181(linia['valor_auditado'] or 0.0, float_type='euro')
+                    valor_residual = format_f_6181(linia['valor_residual'] or 0.0, float_type='euro')
                     subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
                     subvenciones_nacionales = format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro')
                     subvenciones_prtr = format_f_6181(linia['subvenciones_prtr'] or 0.0, float_type='euro')
                     cuenta_contable = linia['cuenta_contable']
-                    financiado = format_f_6181(linia['financiado'], float_type='decimal')
+                    financiado =format_f(
+                        100.0 - linia.get('financiado', 0.0), 2
+                    )
                     motivacion = get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0])
 
                     identificador_baja = (
@@ -230,6 +233,7 @@ class FB4(MultiprocessBased):
                     subvenciones_nacionales = ''
                     subvenciones_prtr = ''
                     valor_auditado = ''
+                    valor_residual = ''
                     motivacion = ''
                     cuenta_contable = ''
                     financiado = ''
@@ -289,15 +293,18 @@ class FB4(MultiprocessBased):
                 if id_interruptor:
                     equipada = INTERRUPTOR[id_interruptor]
 
+                #TODO: Temporal
+                estado = 0;
+
                 output = [
                     pos['name'],  #IDENTIFICADOR_POSICION
                     pos['cini'],  #CINI
                     node,    #NUDO
                     str(ti),      #CODIGO_CCUU
-                    identificador_emplazamiento, #PARC_ID a PARC_NAME,  #IDENTIFICADOR EMPLAZAMIENTO
+                    identificador_emplazamiento, #IDENTIFICADOR EMPLAZAMIENTO
                     ajena,  #AJENA
                     equipada,   #EQUIPADA
-                    #ESTADO
+                    estado,     #ESTADO
                     modelo,         #MODELO
                     punt_frontera,  #PUNTO_FRONTERA
                     data_pm,      #FECHA_APS
@@ -309,7 +316,7 @@ class FB4(MultiprocessBased):
                     im_construccion,    #IM_CONSTRUCCION
                     im_trabajos,      #IM_TRABAJOS
                     valor_auditado,   #VALOR_AUDITADO
-                    #VALOR RESIDUAL
+                    valor_residual,     #VALOR RESIDUAL
                     subvenciones_europeas,    #SUBVENCIONES EUROPEAS
                     subvenciones_nacionales,  #SUBVECIONES NACIONALES
                     subvenciones_prtr,  #SUBVENCIONES_PRTR

@@ -205,34 +205,24 @@ class FB2(MultiprocessBased):
                         get_inst_name(linia['identificador_baja']) if linia['identificador_baja'] else ''
                     )
                     tipo_inversion = (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1'
-
                     im_ingenieria = format_f_6181(linia['im_ingenieria'] or 0.0, float_type='euro')
-
                     im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
                     im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
                     im_construccion = str(
                         float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
                     ).replace(".", ",")
-
                     im_trabajos = format_f_6181(linia['im_trabajos'] or 0.0, float_type='euro')
-
                     subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
                     subvenciones_nacionales = format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro')
                     subvenciones_prtr = format_f_6181(linia['subvenciones_prtr'] or 0.0, float_type='euro')
-
                     valor_auditado = format_f_6181(linia['valor_auditado'] or 0.0, float_type='euro')
-
                     motivacion = get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0]) if not \
                         linia['fecha_baja'] else ''
-
                     cuenta_contable = linia['cuenta_contable']
-
                     financiado =format_f(
                         100.0 - linia.get('financiado', 0.0), 2
                     )
-
                     avifauna = int(linia['avifauna'] == True)
-
                 else:
                     data_ip = ''
                     identificador_baja = ''
@@ -284,11 +274,13 @@ class FB2(MultiprocessBased):
                             ct['data_baixa'], '%Y-%m-%d %H:%M:%S')
                         fecha_baja = tmp_date.strftime('%d/%m/%Y')
 
-                        if int(data_pm.split("/")[2]) - int(fecha_baja.split("/")[2]) >= 40:
+                        if int(fecha_baja.split("/")[2]) - int(data_pm.split("/")[2]) >= 40:
                             if identificador_baja != '':
                                 causa_baja = 1
                             else:
                                 causa_baja = 2
+                        else:
+                            causa_baja = 3
                     else:
                         fecha_baja = ''
                         causa_baja = 0;
@@ -376,8 +368,6 @@ class FB2(MultiprocessBased):
                 if vertex:
                     res_srid = convert_srid(get_srid(O), vertex)
 
-
-
                 if 'id_provincia' in ct:
                     provincia = O.ResCountryState.read(
                         ct['id_provincia'][0], ['code']
@@ -403,14 +393,13 @@ class FB2(MultiprocessBased):
                 else:
                     zona_name = ""
 
+                punto_frontera = int(ct['punt_frontera'] == True)
+
                 id_modelo = ct['id_model']
                 if id_modelo:
                     modelo = MODELO[id_modelo]
                 else:
                     modelo = ''
-
-                punto_frontera = int(ct['punt_frontera'] == True)
-
 
                 output = [
                     '{0}'.format(ct['name']),           # IDENTIFICADOR
@@ -442,12 +431,12 @@ class FB2(MultiprocessBased):
                     im_trabajos,                        # IM_TRABAJOS
                     subvenciones_europeas,              # SUBVENCIONES EUROPEAS
                     subvenciones_nacionales,            # SUBVENCIONES NACIONALES
-                    subvenciones_prtr,                 # SUBVENCIONES PRTR
+                    subvenciones_prtr,                  # SUBVENCIONES PRTR
                     valor_auditado,                     # VALOR AUDITADO
                     financiado,                         # FINANCIADO
-                    cuenta_contable,           # CUENTA CONTABLE
+                    cuenta_contable,                    # CUENTA CONTABLE
                     motivacion,                         # MOTIVACION
-                    avifauna,                          # AVIFAUNA
+                    avifauna,                           # AVIFAUNA
                     identificador_baja,                 # ID_BAJA
 
                 ]
