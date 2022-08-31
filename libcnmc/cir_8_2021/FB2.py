@@ -148,8 +148,7 @@ class FB2(MultiprocessBased):
             'id', 'name', 'cini', 'data_pm', 'tipus_instalacio_cnmc_id', 'tensio_p',
             'id_municipi', 'perc_financament', 'descripcio', 'data_baixa', 'tensio_const',
             self.compare_field, 'id_provincia', 'zona_id', 'node_id', 'potencia',
-            'id_model',
-            'punt_frontera',
+            'model','punt_frontera',
         ]
 
         fields_to_read_obra = [
@@ -395,7 +394,9 @@ class FB2(MultiprocessBased):
 
                 punto_frontera = int(ct['punt_frontera'] == True)
 
-                id_modelo = ct['id_model']
+                id_modelo = ct['model']
+                print("modelo")
+                print(id_modelo)
                 if id_modelo:
                     modelo = MODELO[id_modelo]
                 else:
