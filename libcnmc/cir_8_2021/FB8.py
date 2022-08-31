@@ -54,7 +54,7 @@ class FB8(MultiprocessBased):
         ]
         fields_to_read_obra = [
             'subvenciones_europeas', 'subvenciones_nacionales', 'subvenciones_prtr', 'financiado', 'fecha_baja',
-            'cuenta_contable', 'im_ingenieria', 'im_materiales', 'im_obracivil', 'im_trabajos', 'identificador_baja'
+            'cuenta_contable', 'im_ingenieria', 'im_materiales', 'im_obracivil', 'im_trabajos'
         ]
 
         while True:
@@ -77,9 +77,6 @@ class FB8(MultiprocessBased):
                     subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
                     subvenciones_nacionales = format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro')
                     subvenciones_prtr = format_f_6181(linia['subvenciones_prtr'] or 0.0, float_type='euro')
-                    identificador_baja = (
-                        get_inst_name(linia['identificador_baja']) if linia['identificador_baja'] else ''
-                    )
                     im_ingenieria = format_f_6181(linia['im_ingenieria'] or 0.0, float_type='euro')
                     im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
                     im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
@@ -100,7 +97,6 @@ class FB8(MultiprocessBased):
                     valor_auditado = ''
                     cuenta_contable = ''
                     financiado = ''
-                    identificador_baja = ''
 
                 if despatx['data_apm']:
                     data_pm_despatx = datetime.strptime(str(despatx['data_apm']),
