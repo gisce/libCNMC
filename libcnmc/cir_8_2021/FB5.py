@@ -104,6 +104,8 @@ class FB5(MultiprocessBased):
                         bloc_tensio = o.GiscegisBlocsTensio.search(
                             [('node', '=', edge_m['start_node'][0])]
                         )
+                        print('bloc_tensio')
+                        print(bloc_tensio)
                         if bloc_tensio:
                             break
         if bloc_tensio:
