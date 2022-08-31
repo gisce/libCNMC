@@ -228,9 +228,7 @@ class FB5_2(MultiprocessBased):
                 o_pot_maquina = format_f(
                     float(cond['potencia_instalada']) / 1000.0, decimals=3)
                 o_node = self.get_nodes(cond['ct_id'][0])
-                o_node_baixa = self.get_node_conds(cond['ct_id'][0])
-                if o_node_baixa == 0:
-                    o_node_baixa = '';
+                o_node_baixa = self.get_nodes(cond['ct_id'][0])
 
                 if cond['data_baixa']:
                     if cond['data_baixa'] < data_pm_limit:
