@@ -78,8 +78,9 @@ class FB5(MultiprocessBased):
             print(edges)
             if edges:
                 for edge in edges:
+                    edge_m = o.GiscegisEdge.read(edge, ['end_node'])
                     bloc_tensio = o.GiscegisBlocsTensio.search(
-                        [('node', '=', edge.end_node)]
+                        [('node', '=', edge_m['end_node'])]
                     )
                     if bloc_tensio:
                         break
@@ -91,8 +92,9 @@ class FB5(MultiprocessBased):
                 print(edges)
                 if edges:
                     for edge in edges:
+                        edge_m = o.GiscegisEdge.read(edge, ['start_node'])
                         bloc_tensio = o.GiscegisBlocsTensio.search(
-                            [('node', '=', edge.start_node)]
+                            [('node', '=', edge_m['start_node'])]
                         )
                         if bloc_tensio:
                             break
