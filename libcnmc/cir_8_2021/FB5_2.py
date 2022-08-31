@@ -250,7 +250,7 @@ class FB5_2(MultiprocessBased):
                     fecha_baja = ''
                     causa_baja = 0;
 
-                o_estat = self.get_estat(cond['id_estat'][0])
+                #o_estat = self.get_estat(cond['id_estat'][0])
 
                 id_ti = cond['tipus_instalacio_cnmc_id'][0]
                 ti = o.GiscedataTipusInstallacio.read(
