@@ -22,7 +22,7 @@ MODELO = {
     '4': 'E'
 }
 
-class FB5(MultiprocessBased):
+class FB5_2(MultiprocessBased):
     def __init__(self, **kwargs):
         super(FB5, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
