@@ -127,10 +127,9 @@ class FB8(MultiprocessBased):
                         fecha_baja = tmp_date.strftime('%d/%m/%Y')
 
                         if int(fecha_baja.split("/")[2]) - int(data_pm.split("/")[2]) >= 40:
-                            if identificador_baja != '':
-                                causa_baja = 1
-                            else:
-                                causa_baja = 2
+                            causa_baja = 2
+                        else:
+                            causa_baja = 3
                     else:
                         fecha_baja = ''
                         causa_baja = 0;
