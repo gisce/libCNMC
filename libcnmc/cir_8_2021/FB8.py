@@ -117,15 +117,14 @@ class FB8(MultiprocessBased):
                     valor_baixa_parcial = despatx['valor_baixa_parcial']
                     causa_baja = 4
                 elif despatx['data_baixa']:
-                    print ("data_baixa")
-                    print (despatx['data_baixa'])
-                    print ("data_pm_limit")
-                    print (data_pm_limit)
                     if despatx['data_baixa'] < data_pm_limit:
                         tmp_date = datetime.strptime(
                             despatx['data_baixa'], '%Y-%m-%d')
                         fecha_baja = tmp_date.strftime('%d/%m/%Y')
-
+                        print ("data_pm")
+                        print (data_pm.split("/")[2])
+                        print ("fecha_baja")
+                        print (fecha_baja.split("/")[2])
                         if int(data_pm.split("/")[2]) - int(fecha_baja.split("/")[2]) >= 40:
                             if identificador_baja != '':
                                 causa_baja = 1
