@@ -85,7 +85,7 @@ class FB7(MultiprocessBased):
                     z,                                  # Z
                     o_tensio,                           # TENSION
                     #o_municipi,                         # MUNICIPIO
-                    o_provincia,                        # PROVINCIA
+                    #o_provincia,                        # PROVINCIA
                 ])
             except Exception:
                 traceback.print_exc()
