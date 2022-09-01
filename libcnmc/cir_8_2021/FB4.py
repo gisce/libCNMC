@@ -270,10 +270,9 @@ class FB4(MultiprocessBased):
 
                     node = cts_data['node_id'][1]
 
-                    if cts_data['punt_frontera']:
-                        punt_frontera = int(cts_data['punt_frontera'] == True)
-                    else:
-                        punt_frontera = '0'
+
+                    punt_frontera = int(cts_data['punt_frontera'] == True)
+
 
                     if cts_data['model']:
                         modelo = cts_data['model']
