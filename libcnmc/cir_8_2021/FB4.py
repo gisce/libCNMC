@@ -178,11 +178,13 @@ class FB4(MultiprocessBased):
                             pos['data_baixa'], '%Y-%m-%d %H:%M:%S')
                         fecha_baja = tmp_date.strftime('%d/%m/%Y')
 
-                        if int(data_pm.split("/")[2]) - int(fecha_baja.split("/")[2]) >= 40:
+                        if int(fecha_baja.split("/")[2]) - int(data_pm.split("/")[2]) >= 40:
                             if identificador_baja != '':
                                 causa_baja = 1
                             else:
                                 causa_baja = 2
+                        else:
+                            causa_baja = 3
                     else:
                         fecha_baja = ''
                         causa_baja = 0;
