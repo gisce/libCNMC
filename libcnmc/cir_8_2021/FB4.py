@@ -9,7 +9,7 @@ from datetime import datetime
 import traceback
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import format_f_6181, get_name_ti, get_codi_actuacio, \
-    format_ccaa_code, convert_spanish_date
+    format_ccaa_code, convert_spanish_date, format_f
 
 INTERRUPTOR = {
     '1': '0', #PARQUE
