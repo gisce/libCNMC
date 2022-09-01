@@ -198,9 +198,9 @@ class FB4(MultiprocessBased):
                     )
                     im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
                     im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
-                    im_construccion = format_f_6181(str(
+                    im_construccion = str(format_f(
                         float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
-                    ).replace(".", ","), float_type='euro')
+                    ), 2).replace(".", ",")
                     im_ingenieria = format_f_6181(linia['im_ingenieria'] or 0.0, float_type='euro')
                     im_trabajos = format_f_6181(linia['im_trabajos'] or 0.0, float_type='euro')
                     tipo_inversion = (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1'
