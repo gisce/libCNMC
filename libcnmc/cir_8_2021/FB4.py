@@ -198,9 +198,9 @@ class FB4(MultiprocessBased):
                     )
                     im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
                     im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
-                    im_construccion = str(
+                    im_construccion = format_f_6181(str(
                         float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
-                    ).replace(".", ",")
+                    ).replace(".", ","), float_type='euro')
                     im_ingenieria = format_f_6181(linia['im_ingenieria'] or 0.0, float_type='euro')
                     im_trabajos = format_f_6181(linia['im_trabajos'] or 0.0, float_type='euro')
                     tipo_inversion = (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1'
@@ -261,6 +261,8 @@ class FB4(MultiprocessBased):
                 cts_data = self.get_cts_data(pos['subestacio_id'][0])
 
                 if cts_data:
+                    print("cts")
+                    print(cts_data)
                     if cts_data['propietari']:
                         ajena = 0
                     else:
@@ -271,7 +273,7 @@ class FB4(MultiprocessBased):
                     if cts_data['punt_frontera']:
                         punt_frontera = int(cts_data['punt_frontera'] == True)
                     else:
-                        punt_frontera = ''
+                        punt_frontera = '0'
 
                     if cts_data['model']:
                         modelo = cts_data['model']
