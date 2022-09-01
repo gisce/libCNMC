@@ -112,7 +112,7 @@ class FB4(MultiprocessBased):
         o = self.connection
         cts_id = o.GiscedataCtsSubestacions.read(sub_id, ['ct_id'])
         if cts_id:
-            cts_data = o.GiscedataCts.read(cts_id['ct_id'][0], ['propietari', 'node_id', 'punt_frontera', 'id_model'])
+            cts_data = o.GiscedataCts.read(cts_id['ct_id'][0], ['propietari', 'node_id', 'punt_frontera', 'model'])
         return cts_data
 
     def get_parc_name(self, parc_id):
@@ -166,7 +166,6 @@ class FB4(MultiprocessBased):
                 else:
                     linia = ''
 
-
                 data_pm = ''
                 if pos['data_pm']:
                     data_pm_ct = datetime.strptime(str(pos['data_pm']),
@@ -195,18 +194,14 @@ class FB4(MultiprocessBased):
                     data_ip = convert_spanish_date(
                         data_pm if not fecha_baja and linia['tipo_inversion'] != '1' else ''
                     )
-
                     im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
                     im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
                     im_construccion = str(
                         float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
                     ).replace(".", ",")
-
                     im_ingenieria = format_f_6181(linia['im_ingenieria'] or 0.0, float_type='euro')
                     im_trabajos = format_f_6181(linia['im_trabajos'] or 0.0, float_type='euro')
-
                     tipo_inversion = (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1'
-
                     valor_auditado = format_f_6181(linia['valor_auditado'] or 0.0, float_type='euro')
                     valor_residual = format_f_6181(linia['valor_residual'] or 0.0, float_type='euro')
                     subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
@@ -263,9 +258,6 @@ class FB4(MultiprocessBased):
 
                 cts_data = self.get_cts_data(pos['subestacio_id'][0])
 
-                print("cts_data")
-                print(cts_data)
-
                 if cts_data:
                     if cts_data['propietari']:
                         ajena = 0
@@ -279,8 +271,8 @@ class FB4(MultiprocessBased):
                     else:
                         punt_frontera = ''
 
-                    if cts_data['id_model']:
-                        modelo = MODELO[id_modelo]
+                    if cts_data['model']:
+                        modelo = cts_data['model']
                     else :
                         modelo = ''
                 else :
