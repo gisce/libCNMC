@@ -175,9 +175,9 @@ class FB5_2(MultiprocessBased):
                     im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
                     im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
                     im_trabajos = format_f_6181(linia['im_trabajos'] or 0.0, float_type='euro')
-                    im_construccion = str(
+                    im_construccion = str(format_f(
                         float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
-                    ).replace(".", ",")
+                    , 2)).replace(".", ",")
                     tipo_inversion = (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1'
                     valor_auditado = str(
                         float(im_construccion.replace(",", ".")) +
@@ -257,11 +257,11 @@ class FB5_2(MultiprocessBased):
                     id_ti,
                     ['name'])['name']
 
-                id_model = o.GiscedataCts.read(cond['ct_id'][0], ['id_model'])['id_model']
-                if id_model:
-                    modelo = MODELO[id_model]
+                model = o.GiscedataCts.read(cond['ct_id'][0], ['model'])['model']
+                if model:
+                    o_model = model
                 else:
-                    modelo = ''
+                    o_model = ''
 
                 # TODO: Temporal
                 o_estat = 0
@@ -274,7 +274,7 @@ class FB5_2(MultiprocessBased):
                     o_node_baixa,       #NUDO_BAJA
                     o_pot_maquina,  # POTENCIA MAQUINA
                     o_estat,            # ESTADO
-                    modelo,             #MODELO
+                    o_model,             #MODELO
                     data_pm,               #FECHA_APS
                     fecha_baja,            #FECHA_BAJA
                     causa_baja,            #CAUSA_BAJA
