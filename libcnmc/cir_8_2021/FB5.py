@@ -198,17 +198,15 @@ class FB5(MultiprocessBased):
                     im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
                     im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
                     im_trabajos = format_f_6181(linia['im_trabajos'] or 0.0, float_type='euro')
-                    im_construccion = str(
+                    im_construccion = str(format_f(
                         float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
-                    ).replace(".", ",")
+                    , 2)).replace(".", ",")
                     tipo_inversion = (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1'
                     valor_auditado = str(
                         float(im_construccion.replace(",", ".")) +
                         float(im_ingenieria.replace(",", ".")) + float(im_trabajos.replace(",", "."))
                     ).replace(".", ",")
-
                     valor_residual = linia['valor_residual']
-
                     cuenta_contable = linia['cuenta_contable']
                     financiado = format_f(
                         100.0 - linia.get('financiado', 0.0), 2
@@ -240,12 +238,10 @@ class FB5(MultiprocessBased):
                 o_subestacio = trafo['ct'][1]
                 o_maquina = trafo['name']
                 o_cini = trafo['cini']
-                o_costat_alta = trafo['node_id'][1]
-                o_costat_baixa = self.get_costat_baixa(trafo['node_id'][0])
                 o_pot_maquina = format_f(
                     float(trafo['potencia_nominal']) / 1000.0, decimals=3)
                 o_node = self.get_nodes(trafo['ct'][0])
-                o_node_baixa = self.get_node_trafos(trafo['ct'][0])
+                o_node_baixa = self.get_nodes(trafo['ct'][0])
                 if o_node_baixa == 0:
                     o_node_baixa = '';
 
@@ -253,13 +249,11 @@ class FB5(MultiprocessBased):
                     data_pm_trafo = datetime.strptime(str(trafo['data_pm']),
                                                         '%Y-%m-%d')
                     data_pm = data_pm_trafo.strftime('%d/%m/%Y')
-
                 if trafo['data_baixa']:
                     if trafo['data_baixa'] < data_pm_limit:
                         tmp_date = datetime.strptime(
                             trafo['data_baixa'], '%Y-%m-%d')
                         fecha_baja = tmp_date.strftime('%d/%m/%Y')
-
                         if int(fecha_baja.split("/")[2]) - int(data_pm.split("/")[2]) >= 40:
                             if identificador_baja != '':
                                 causa_baja = 1
@@ -275,18 +269,15 @@ class FB5(MultiprocessBased):
                     causa_baja = 0;
 
                 o_estat = self.get_estat(trafo['id_estat'][0])
-
                 id_ti = trafo['tipus_instalacio_cnmc_id'][0]
                 ti = o.GiscedataTipusInstallacio.read(
                     id_ti,
                     ['name'])['name']
-
-                id_model = o.GiscedataCts.read(trafo['ct'][0], ['id_model'])['id_model']
-                if id_model:
-                    modelo = MODELO[id_model]
+                model = o.GiscedataCts.read(trafo['ct'][0], ['model'])['model']
+                if model:
+                    o_modelo = model
                 else:
-                    modelo = ''
-
+                    o_modelo = ''
                 # TODO: Temporal
                 o_estat = 0
 
@@ -296,9 +287,9 @@ class FB5(MultiprocessBased):
                     ti,                     # CCUU
                     o_node,             #NUDO_ALTA
                     o_node_baixa,       #NUDO_BAJA
-                    o_pot_maquina,  # POTENCIA MAQUINA
-                    o_estat,  # ESTADO
-                    modelo,             #MODELO
+                    o_pot_maquina,       # POTENCIA MAQUINA
+                    o_estat,                 # ESTADO
+                    o_modelo,             #MODELO
                     data_pm,               #FECHA_APS
                     fecha_baja,            #FECHA_BAJA
                     causa_baja,            #CAUSA_BAJA
