@@ -74,7 +74,7 @@ class FB7(MultiprocessBased):
 
                 try:
                     o_tensio = format_f(
-                        float(ct['tensio']) / 1000.0, decimals=3) or ''
+                        float(node['tensio']) / 1000.0, decimals=3) or ''
                 except:
                     o_tensio = ''
 
