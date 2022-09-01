@@ -261,19 +261,12 @@ class FB4(MultiprocessBased):
                 cts_data = self.get_cts_data(pos['subestacio_id'][0])
 
                 if cts_data:
-                    print("cts")
-                    print(cts_data)
                     if cts_data['propietari']:
                         ajena = 0
                     else:
                         ajena = 1
-
                     node = cts_data['node_id'][1]
-
-
                     punt_frontera = int(cts_data['punt_frontera'] == True)
-
-
                     if cts_data['model']:
                         modelo = cts_data['model']
                     else :
