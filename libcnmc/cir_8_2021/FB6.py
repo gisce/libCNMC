@@ -225,7 +225,7 @@ class FB6(MultiprocessBased):
 
         fields_to_read = [
             'installacio', 'cini', 'propietari', 'name', 'tensio', 'node_id', 'perc_financament',
-            'tipus_instalacio_cnmc_id', 'id_model', 'punt_frontera', 'tensio_const',
+            'tipus_instalacio_cnmc_id', 'punt_frontera', 'tensio_const',
             'geom', 'tram_id', 'id', 'data_pm', 'data_baixa', self.compare_field,
         ]
 
@@ -284,9 +284,9 @@ class FB6(MultiprocessBased):
                     identificador_baja = (
                         get_inst_name(linia['identificador_baja'][0]) if linia['identificador_baja'] else ''
                     )
-                    im_construccion = str(
+                    im_construccion = str(format_f(
                         float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
-                    ).replace(".", ",")
+                    , 2)).replace(".", ",")
 
                     subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
                     subvenciones_nacionales = format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro')
@@ -435,11 +435,11 @@ class FB6(MultiprocessBased):
                 else:
                     o_tensio_const = ''
 
-                id_modelo = cella['id_model']
-                if id_modelo:
-                    modelo = MODELO[id_modelo]
-                else:
-                    modelo = ''
+                #id_modelo = cella['id_model']
+                #if id_modelo:
+                #    modelo = MODELO[id_modelo]
+                #else:
+                #    modelo = ''
 
                 punto_frontera = int(cella['punt_frontera'] == True)
 
@@ -454,6 +454,7 @@ class FB6(MultiprocessBased):
 
                 # TODO: Temporal
                 o_estat = 0
+                modelo = 'I'
 
                 self.output_q.put([
                     o_fiabilitat,   # ELEMENTO FIABILIDAD
