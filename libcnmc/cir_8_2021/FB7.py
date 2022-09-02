@@ -45,7 +45,7 @@ class FB7(MultiprocessBased):
         O = self.connection
 
         fields_to_read = [
-            'id', 'name', 'geom', 'vertex', 'tensio'
+            'id', 'name', 'geom', 'vertex', 'tensio', 'id_municipi'
         ]
         while True:
             try:
@@ -58,13 +58,13 @@ class FB7(MultiprocessBased):
 
                 vertex = self.get_node_vertex(node['vertex'])
 
-                #if node['id_municipi']:
-                #    data = self.get_ine_state(node['id_municipi'][0])
-                #    o_municipi = data['ine']
-                #    o_provincia = data['state']
-                #else:
-                #    o_municipi = ''
-                #    o_provincia = ''
+                if node['id_municipi']:
+                   data = self.get_ine_state(node['id_municipi'][0])
+                   o_municipi = data['ine']
+                   o_provincia = data['state']
+                else:
+                   o_municipi = ''
+                   o_provincia = ''
 
 
                 z = ''
@@ -84,8 +84,8 @@ class FB7(MultiprocessBased):
                     format_f(res_srid[1], decimals=3),  # Y
                     z,                                  # Z
                     o_tensio,                           # TENSION
-                    #o_municipi,                         # MUNICIPIO
-                    #o_provincia,                        # PROVINCIA
+                    o_municipi,                         # MUNICIPIO
+                    o_provincia,                        # PROVINCIA
                 ])
             except Exception:
                 traceback.print_exc()
