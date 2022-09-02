@@ -258,23 +258,18 @@ class FB4(MultiprocessBased):
                 else:
                     ti = ''
 
-                cts_data = self.get_cts_data(pos['subestacio_id'][0])
+                if pos['propietari']:
+                    ajena = 0
+                else:
+                    ajena = 1
+                if pos['node_id']:
+                    node_id = pos['node_id'][1]
 
-                if cts_data:
-                    if cts_data['propietari']:
-                        ajena = 0
-                    else:
-                        ajena = 1
-                    node = cts_data['node_id'][1]
-                    punt_frontera = int(cts_data['punt_frontera'] == True)
-                    if cts_data['model']:
-                        modelo = cts_data['model']
-                    else :
-                        modelo = ''
+                punt_frontera = int(pos['punt_frontera'] == True)
+
+                if pos['model']:
+                    modelo = pos['model']
                 else :
-                    ajena = ''
-                    node = ''
-                    punt_frontera = ''
                     modelo = ''
 
                 id_interruptor = pos['interruptor']
