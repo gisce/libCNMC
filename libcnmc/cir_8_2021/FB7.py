@@ -45,7 +45,7 @@ class FB7(MultiprocessBased):
         O = self.connection
 
         fields_to_read = [
-            'id', 'name', 'geom', 'vertex', 'tensio', 'id_municipi'
+            'id', 'name', 'geom', 'vertex', 'tensio', 'municipi_id'
         ]
         while True:
             try:
@@ -58,8 +58,8 @@ class FB7(MultiprocessBased):
 
                 vertex = self.get_node_vertex(node['vertex'])
 
-                if node['id_municipi']:
-                   data = self.get_ine_state(node['id_municipi'][0])
+                if node['municipi_id']:
+                   data = self.get_ine_state(node['municipi_id'][0])
                    o_municipi = data['ine']
                    o_provincia = data['state']
                 else:
