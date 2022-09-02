@@ -79,12 +79,12 @@ class FB3_3(MultiprocessBased):
                 res = o.GiscedataParcs.read(parc_id[0], ['name'])['name']
         return res
 
-    def get_operacio(self, id_operacio):
+    def get_operacio(self, id_estat):
 
         o = self.connection
-        operacio = o.GiscedataTransformadorOperacio.read(
-            id_operacio, ['descripcio']
-        )[1]
+        operacio = o.GiscedataTransformadorEstat.read(
+            id_estat[0], ['operacio']
+        )['operacio']
         return operacio
 
     def consumer(self):
@@ -110,18 +110,13 @@ class FB3_3(MultiprocessBased):
                 o_estat = self.get_estat(trafo['id_estat'][0])
                 o_any = self.year
 
-                id_operacio = trafo['id_operacio']
-                if id_operacio:
-                    desc_operacio = self.get_operacio(id_operacio)
-                    if desc_operacio:
-                        o_operacio = OPERACIO[desc_operacio]
+                id_estat = trafo['id_estat']
+                if id_estat:
+                    operacio = self.get_operacio(id_estat)
+                    if operacio:
+                        o_operacio = OPERACIO[operacio]
                 else:
                     o_operacio = ''
-
-
-                # TODO: Treure aquesta linia
-                desc_operacio = 'Operativo'
-                o_operacio = OPERACIO[desc_operacio]
 
                 self.output_q.put([
                     o_subestacio,  # SUBESTACION
