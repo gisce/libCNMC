@@ -64,7 +64,7 @@ class FB2_1(MultiprocessBased):
 
         o = self.connection
         operacio = o.GiscedataTransformadorEstat.read(
-            id_estat, ['operacio']
+            id_estat[0], ['operacio']
         )[1]
         return operacio
 
