@@ -135,7 +135,7 @@ class FB4(MultiprocessBased):
         data_baixa_limit = '{0}-01-01'.format(self.year)
 
         fields_to_read = [
-            'name', 'cini', 'node_id', 'propietari', 'subestacio_id', 'data_pm', 'tensio',
+            'name', 'cini', 'node_id', 'propietari', 'subestacio_id', 'data_pm', 'tensio', 'model',
             'parc_id', 'data_baixa', 'interruptor', 'tipus_instalacio_cnmc_id', 'punt_frontera'
         ]
 
