@@ -263,7 +263,7 @@ class FB4(MultiprocessBased):
                 else:
                     ajena = 1
                 if pos['node_id']:
-                    node_id = pos['node_id'][1]
+                    node = pos['node_id'][1]
 
                 punt_frontera = int(pos['punt_frontera'] == True)
 
