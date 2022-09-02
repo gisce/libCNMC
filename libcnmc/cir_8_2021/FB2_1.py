@@ -77,7 +77,7 @@ class FB2_1(MultiprocessBased):
         o = self.connection
         fields_to_read = [
             'ct', 'name', 'cini', 'potencia_nominal',
-            'data_pm', 'id_estat', 'id_operacio'
+            'data_pm', 'id_estat'
         ]
         while True:
             try:
@@ -100,7 +100,7 @@ class FB2_1(MultiprocessBased):
                     trafo['data_pm'], '%Y-%m-%d')
                 o_any = tmp_date.strftime('%Y')
 
-                id_estat = trafo['id_operacio']
+                id_estat = trafo['id_estat']
 
                 if id_estat:
                     operacio = self.get_operacio(id_estat)
