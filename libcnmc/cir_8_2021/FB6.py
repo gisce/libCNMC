@@ -452,9 +452,11 @@ class FB6(MultiprocessBased):
                     x = format_f(res_srid[0], decimals=3)
                     y = format_f(res_srid[1], decimals=3)
 
+                modelo = cella['model']
+                
                 # TODO: Temporal
                 o_estat = 0
-                modelo = ct['model']
+
 
                 self.output_q.put([
                     o_fiabilitat,   # ELEMENTO FIABILIDAD
