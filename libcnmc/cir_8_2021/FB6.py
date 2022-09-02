@@ -225,7 +225,7 @@ class FB6(MultiprocessBased):
 
         fields_to_read = [
             'installacio', 'cini', 'propietari', 'name', 'tensio', 'node_id', 'perc_financament',
-            'tipus_instalacio_cnmc_id', 'punt_frontera', 'tensio_const',
+            'tipus_instalacio_cnmc_id', 'punt_frontera', 'tensio_const', 'model',
             'geom', 'tram_id', 'id', 'data_pm', 'data_baixa', self.compare_field,
         ]
 
@@ -454,7 +454,7 @@ class FB6(MultiprocessBased):
 
                 # TODO: Temporal
                 o_estat = 0
-                modelo = 'I'
+                modelo = ct['model']
 
                 self.output_q.put([
                     o_fiabilitat,   # ELEMENTO FIABILIDAD
