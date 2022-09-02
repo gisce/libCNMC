@@ -60,11 +60,11 @@ class FB2_1(MultiprocessBased):
         return self.connection.GiscedataTransformadorTrafo.search(
             search_params, 0, 0, False, {'active_test': False})
 
-    def get_operacio(self, id_operacio):
+    def get_operacio(self, id_estat):
 
         o = self.connection
-        operacio = o.GiscedataTransformadorOperacio.read(
-            id_operacio, ['descripcio']
+        operacio = o.GiscedataTransformadorEstat.read(
+            id_estat, ['operacio']
         )[1]
         return operacio
 
@@ -100,12 +100,12 @@ class FB2_1(MultiprocessBased):
                     trafo['data_pm'], '%Y-%m-%d')
                 o_any = tmp_date.strftime('%Y')
 
-                id_operacio = trafo['id_operacio']
+                id_estat = trafo['id_operacio']
 
-                if id_operacio:
-                    desc_operacio = self.get_operacio(id_operacio)
-                    if desc_operacio:
-                        o_operacio = OPERACIO[desc_operacio]
+                if id_estat:
+                    operacio = self.get_operacio(id_estat)
+                    if operacio:
+                        o_operacio = OPERACIO[operacio]
                 else:
                     o_operacio = ''
 
