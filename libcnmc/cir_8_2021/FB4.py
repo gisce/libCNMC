@@ -136,7 +136,7 @@ class FB4(MultiprocessBased):
 
         fields_to_read = [
             'name', 'cini', 'node_id', 'propietari', 'subestacio_id', 'data_pm', 'tensio',
-            'parc_id', 'data_baixa', 'interruptor', 'tipus_instalacio_cnmc_id'
+            'parc_id', 'data_baixa', 'interruptor', 'tipus_instalacio_cnmc_id', 'punt_frontera'
         ]
 
         fields_to_read_obra = [
