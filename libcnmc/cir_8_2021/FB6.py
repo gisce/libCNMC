@@ -164,6 +164,7 @@ class FB6(MultiprocessBased):
                                        municipi_dict['dc'])
 
         res = {
+            'id_municipi': cts['id_municipi'][0],
             'municipi': municipi,
             'provincia': provincia,
             'tensio': tensio,
@@ -406,15 +407,11 @@ class FB6(MultiprocessBased):
                 dict_linia = self.obtenir_camps_linia_at(cella['installacio'])
                 o_municipi = dict_linia.get('municipi')
                 o_provincia = dict_linia.get('provincia')
+                id_municipi = dict_linia.get('id_municipi')
                 o_name = dict_linia.get('name')
 
                 # funció per trobar la ccaa desde el municipi
                 fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
-                if o_municipi:
-                    id_municipi = o_municipi
-                else:
-                    id_municipi = get_id_municipi_from_company(O)
-
                 if id_municipi:
                     id_comunitat = fun_ccaa(id_municipi)
                     comunitat_vals = O.ResComunitat_autonoma.read(
@@ -435,14 +432,7 @@ class FB6(MultiprocessBased):
                 else:
                     o_tensio_const = ''
 
-                #id_modelo = cella['id_model']
-                #if id_modelo:
-                #    modelo = MODELO[id_modelo]
-                #else:
-                #    modelo = ''
-
                 punto_frontera = int(cella['punt_frontera'] == True)
-
                 o_any = self.year
                 x = ''
                 y = ''
@@ -453,7 +443,7 @@ class FB6(MultiprocessBased):
                     y = format_f(res_srid[1], decimals=3)
 
                 modelo = cella['model']
-                
+
                 # TODO: Temporal
                 o_estat = 0
 
