@@ -393,13 +393,12 @@ class FB6(MultiprocessBased):
 
                 # funció per trobar la ccaa desde el municipi
                 fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
-                print("id_municipi")
-                print(id_municipi)
                 if id_municipi:
                     id_comunitat = fun_ccaa(id_municipi)
                     comunitat_vals = O.ResComunitat_autonoma.read(
                         id_comunitat[0], ['codi'])
                     if comunitat_vals:
+                        print(comunitat_vals)
                         comunitat_codi = comunitat_vals['codi']
 
                 if cella['tensio']:
