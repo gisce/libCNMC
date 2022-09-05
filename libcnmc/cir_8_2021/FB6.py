@@ -126,6 +126,7 @@ class FB6(MultiprocessBased):
                                        municipi_dict['dc'])
 
         res = {
+            'id_municipi': id_municipi,
             'municipi': municipi,
             'provincia': provincia,
             'tensio': tensio,
@@ -385,9 +386,6 @@ class FB6(MultiprocessBased):
 
                 element =  cella['installacio'].split(',')[0]
                 dict_linia = self.obtenir_camps_linia_at(cella['installacio'])
-                print("dict_linia")
-                print(dict_linia)
-
                 o_municipi = dict_linia.get('municipi')
                 o_provincia = dict_linia.get('provincia')
                 id_municipi = dict_linia.get('id_municipi')
