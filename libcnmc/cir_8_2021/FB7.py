@@ -9,7 +9,7 @@ from datetime import datetime
 import traceback, psycopg2.extras
 from libcnmc.utils import format_f, convert_srid, get_srid
 from libcnmc.core import MultiprocessBased
-
+from shapely import wkt
 
 
 class FB7(MultiprocessBased):
@@ -56,7 +56,10 @@ class FB7(MultiprocessBased):
                     item, fields_to_read
                 )
 
-                vertex = self.get_node_vertex(node['vertex'])
+                #vertex = self.get_node_vertex(node['vertex'])
+
+                coords = wkt.loads(node["geom"]).coords[0]
+                vertex = [coords[0], coords[1]]
 
                 if node['municipi_id']:
                    data = self.get_ine_state(node['municipi_id'][0])
