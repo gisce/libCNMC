@@ -365,25 +365,6 @@ class FB6(MultiprocessBased):
 
                 if cella[self.compare_field]:
                     last_data = cella[self.compare_field]
-                    #entregada = F8Res4666(**last_data)
-
-                    #actual = F8Res4666(
-                    #    cella['name'],
-                    #    cella['cini'],
-                    #    cella['descripcio'],
-                    #    ti,
-                    #    format_f(
-                    #        100.0 - cella.get('perc_financament', 0.0), 2
-                    #    ),
-                    #    data_pm,
-                    #    fecha_baja,
-                    #    0
-                    #)
-                    #if entregada == actual and fecha_baja == '':
-                    #    estado = '0'
-                    #else:
-                    #    self.output_m.put("{} {}".format(cella["name"], adapt_diff(actual.diff(entregada))))
-                    #    estado = '1'
                 else:
                     if cella['data_pm']:
                         if cella['data_pm'][:4] != str(self.year):
@@ -404,6 +385,9 @@ class FB6(MultiprocessBased):
 
                 element =  cella['installacio'].split(',')[0]
                 dict_linia = self.obtenir_camps_linia_at(cella['installacio'])
+                print("dict_linia")
+                print(dict_linia)
+
                 o_municipi = dict_linia.get('municipi')
                 o_provincia = dict_linia.get('provincia')
                 id_municipi = dict_linia.get('id_municipi')
