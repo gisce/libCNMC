@@ -162,9 +162,8 @@ class FB6(MultiprocessBased):
             municipi_dict = o.ResMunicipi.read(id_municipi, ['ine', 'dc'])
             municipi = '{0}{1}'.format(municipi_dict['ine'][-3:],
                                        municipi_dict['dc'])
-
         res = {
-            'id_municipi': cts['id_municipi'][0],
+            'id_municipi': id_municipi,
             'municipi': municipi,
             'provincia': provincia,
             'tensio': tensio,
@@ -412,6 +411,8 @@ class FB6(MultiprocessBased):
 
                 # funció per trobar la ccaa desde el municipi
                 fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
+                print("id_municipi")
+                print(id_municipi)
                 if id_municipi:
                     id_comunitat = fun_ccaa(id_municipi)
                     comunitat_vals = O.ResComunitat_autonoma.read(
