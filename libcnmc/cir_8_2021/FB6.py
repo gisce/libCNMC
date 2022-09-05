@@ -398,7 +398,7 @@ class FB6(MultiprocessBased):
                     comunitat_vals = O.ResComunitat_autonoma.read(
                         id_comunitat[0], ['codi'])
                     if comunitat_vals:
-                        comunitat_codi = comunitat_vals[0]['codi']
+                        comunitat_codi = comunitat_vals['codi']
 
                 if cella['tensio']:
                     tensio = O.GiscedataTensionsTensio.read(
