@@ -61,7 +61,7 @@ class FB7(MultiprocessBased):
                 if node['municipi_id']:
                    data = self.get_ine_state(node['municipi_id'][0])
                    o_municipi = data['ine']
-                   o_provincia = data['state']
+                   o_provincia = data['state'][0]
                 else:
                    o_municipi = ''
                    o_provincia = ''
