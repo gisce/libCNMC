@@ -140,35 +140,15 @@ class FB2(MultiprocessBased):
             'id', 'name', 'cini', 'data_pm', 'tipus_instalacio_cnmc_id', 'tensio_p',
             'id_municipi', 'perc_financament', 'descripcio', 'data_baixa', 'tensio_const',
             self.compare_field, 'id_provincia', 'zona_id', 'node_id', 'potencia',
-            'model','punt_frontera',
+            'model','punt_frontera', 'node_baixa'
         ]
 
         fields_to_read_obra = [
-            'name',
-            'cini',
-            'tipo_inversion',
-            'ccuu',
-            'codigo_ccaa',
-            'nivel_tension_explotacion',
-            'financiado',
-            'fecha_aps',
-            'fecha_baja',
-            'causa_baja',
-            'im_ingenieria',
-            'im_materiales',
-            'im_obracivil',
-            'im_trabajos',
-            'subvenciones_europeas',
-            'subvenciones_nacionales',
-            'subvenciones_prtr',
-            'avifauna',
-            'valor_auditado',
-            'valor_contabilidad',
-            'cuenta_contable',
-            'porcentaje_modificacion',
-            'motivacion',
-            'obra_id',
-            'identificador_baja',
+            'name', 'cini', 'tipo_inversion', 'ccuu', 'codigo_ccaa', 'nivel_tension_explotacion', 'financiado',
+            'fecha_aps', 'fecha_baja', 'causa_baja', 'im_ingenieria', 'im_materiales', 'im_obracivil',
+            'im_trabajos', 'subvenciones_europeas', 'subvenciones_nacionales', 'subvenciones_prtr', 'avifauna',
+            'valor_auditado', 'valor_contabilidad', 'cuenta_contable', 'porcentaje_modificacion',
+            'motivacion', 'obra_id', 'identificador_baja',
         ]
 
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
@@ -232,7 +212,6 @@ class FB2(MultiprocessBased):
 
                 comunitat_codi = ''
                 data_pm = ''
-
                 if ct['data_pm']:
                     data_pm_ct = datetime.strptime(str(ct['data_pm']),
                                                    '%Y-%m-%d')
@@ -246,7 +225,6 @@ class FB2(MultiprocessBased):
 
                 #funció per trobar la ccaa desde el municipi
                 fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
-
                 if ct['id_municipi']:
                     id_municipi = ct['id_municipi'][0]
                 else:
@@ -333,7 +311,7 @@ class FB2(MultiprocessBased):
                     o_node, vertex = self.get_node_vertex(item)
                 o_node = o_node.replace('*', '')
 
-                o_node_baixa = self.get_node_trafos(ct['id'])
+                o_node_baixa = ct["node_baixa"][1]
                 if o_node_baixa == 0:
                     o_node_baixa = '';
 
@@ -385,9 +363,7 @@ class FB2(MultiprocessBased):
                     zona_name = ""
 
                 punto_frontera = int(ct['punt_frontera'] == True)
-
                 modelo = ct['model']
-
 
                 output = [
                     '{0}'.format(ct['name']),           # IDENTIFICADOR
@@ -426,7 +402,6 @@ class FB2(MultiprocessBased):
                     motivacion,                         # MOTIVACION
                     avifauna,                           # AVIFAUNA
                     identificador_baja,                 # ID_BAJA
-
                 ]
                 self.output_q.put(output)
             except Exception:
