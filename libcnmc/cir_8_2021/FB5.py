@@ -15,13 +15,6 @@ from libcnmc.utils import (
 )
 from shapely import wkt
 
-MODELO = {
-    '1': 'I',
-    '2': 'M',
-    '3': 'D',
-    '4': 'E'
-}
-
 class FB5(MultiprocessBased):
     def __init__(self, **kwargs):
         super(FB5, self).__init__(**kwargs)
@@ -178,7 +171,6 @@ class FB5(MultiprocessBased):
                 )
 
                 obra_id = o.GiscedataProjecteObraTiTransformador.search([('element_ti_id', '=', trafo['id'])])
-
                 if obra_id:
                     linia = o.GiscedataProjecteObraTiTransformador.read(obra_id, fields_to_read_obra)[0]
                 else:
@@ -241,9 +233,7 @@ class FB5(MultiprocessBased):
                 o_pot_maquina = format_f(
                     float(trafo['potencia_nominal']) / 1000.0, decimals=3)
                 o_node = self.get_nodes(trafo['ct'][0])
-                o_node_baixa = self.get_nodes(trafo['ct'][0])
-                if o_node_baixa == 0:
-                    o_node_baixa = '';
+                o_node_baixa = o.GiscedataCts.read(trafo['ct'][0], ['node_baixa'])['node_baixa']
 
                 if trafo['data_pm']:
                     data_pm_trafo = datetime.strptime(str(trafo['data_pm']),
@@ -278,6 +268,7 @@ class FB5(MultiprocessBased):
                     o_modelo = model
                 else:
                     o_modelo = ''
+
                 # TODO: Temporal
                 o_estat = 0
 
