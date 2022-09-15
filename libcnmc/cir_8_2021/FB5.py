@@ -153,7 +153,7 @@ class FB5(MultiprocessBased):
         o = self.connection
         fields_to_read = [
             'ct', 'name', 'cini', 'potencia_nominal', 'id_estat', 'node_id',
-            'data_pm', 'data_baixa', 'tipus_instalacio_cnmc_id'
+            'data_pm', 'data_baixa', 'tipus_instalacio_cnmc_id', 'node_baixa'
         ]
 
         fields_to_read_obra = [
@@ -232,8 +232,8 @@ class FB5(MultiprocessBased):
                 o_cini = trafo['cini']
                 o_pot_maquina = format_f(
                     float(trafo['potencia_nominal']) / 1000.0, decimals=3)
-                o_node = self.get_nodes(trafo['ct'][0])
-                o_node_baixa = o.GiscedataCts.read(trafo['ct'][0], ['node_baixa'])['node_baixa']
+                o_node = trafo['node_id']
+                o_node_baixa = trafo['node_baixa']
 
                 if trafo['data_pm']:
                     data_pm_trafo = datetime.strptime(str(trafo['data_pm']),
