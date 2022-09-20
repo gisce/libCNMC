@@ -110,20 +110,6 @@ class FB2(MultiprocessBased):
                     res += trafo['potencia_nominal']
         return res
 
-    def get_node_trafos(self, id_ct):
-        o = self.connection
-        res = 0
-        ids_trafos = o.GiscedataTransformadorTrafo.search([
-            ('ct', '=', id_ct)])
-
-        if ids_trafos:
-            for elem in ids_trafos:
-                trafo = o.GiscedataTransformadorTrafo.read(
-                    elem, ['node_id'])
-                if trafo['node_id']:
-                    return trafo['node_id'][1]
-        return 0
-
     def consumer(self):
         """
         Method that generates the csb file
@@ -168,6 +154,7 @@ class FB2(MultiprocessBased):
                 else:
                     linia = ''
 
+                #CAMPS OBRA
                 if linia != '':
                     data_ip = convert_spanish_date(
                             linia['fecha_aps'] if not linia['fecha_baja'] and linia['tipo_inversion'] != '1' else ''
@@ -210,7 +197,7 @@ class FB2(MultiprocessBased):
                     avifauna = ''
                     financiado = ''
 
-                comunitat_codi = ''
+                #DATA_PM
                 data_pm = ''
                 if ct['data_pm']:
                     data_pm_ct = datetime.strptime(str(ct['data_pm']),
@@ -223,13 +210,14 @@ class FB2(MultiprocessBased):
                     data_ip = '' if data_pm and int(data_pm.split('/')[2]) == int(data_ip.split('/')[2]) \
                     else data_ip
 
+                #CCAA
                 #funció per trobar la ccaa desde el municipi
                 fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
                 if ct['id_municipi']:
                     id_municipi = ct['id_municipi'][0]
                 else:
                     id_municipi = get_id_municipi_from_company(O)
-
+                comunitat_codi = ''
                 if id_municipi:
                     id_comunitat = fun_ccaa(id_municipi)
                     comunitat_vals = O.ResComunitat_autonoma.read(
@@ -237,6 +225,7 @@ class FB2(MultiprocessBased):
                     if comunitat_vals:
                         comunitat_codi = comunitat_vals['codi']
 
+                #DATA_BAIXA, CAUSA_BAJA
                 if ct['data_baixa']:
                     if ct['data_baixa'] < data_pm_limit:
                         tmp_date = datetime.strptime(
@@ -257,6 +246,7 @@ class FB2(MultiprocessBased):
                     fecha_baja = ''
                     causa_baja = 0;
 
+                #ESTADO
                 if ct[self.compare_field]:
                     last_data = ct[self.compare_field]
                     entregada = F8Res4666(**last_data)
@@ -294,6 +284,8 @@ class FB2(MultiprocessBased):
                     else:
                         self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(ct["name"]))
                         estado = '1'
+
+                #CCUU
                 if ct['tipus_instalacio_cnmc_id']:
                     id_ti = ct['tipus_instalacio_cnmc_id'][0]
                     ti = O.GiscedataTipusInstallacio.read(
@@ -302,6 +294,7 @@ class FB2(MultiprocessBased):
                 else:
                     ti = ''
 
+                #NODE ALTA
                 if ct.get("node_id"):
                     o_node = ct["node_id"][1]
                     node = O.GiscegisNodes.read(ct["node_id"][0], ["geom"])
@@ -311,16 +304,19 @@ class FB2(MultiprocessBased):
                     o_node, vertex = self.get_node_vertex(item)
                 o_node = o_node.replace('*', '')
 
+                #NODE BAIXA
                 o_node_baixa = ct["node_baixa"][1]
                 if o_node_baixa == 0:
                     o_node_baixa = '';
 
+                #TENSIO
                 try:
                     o_tensio_p = format_f(
                         float(ct['tensio_p']) / 1000.0, decimals=3) or ''
                 except:
                     o_tensio_p = ''
 
+                #TENSIO_CONST
                 if ct['tensio_const']:
                     try:
                         o_tensio_const = format_f(
@@ -329,14 +325,18 @@ class FB2(MultiprocessBased):
                         o_tensio_const = ''
                 else:
                     o_tensio_const = ''
+
+                #POTENCIA
                 o_potencia = str(format_f(
                     float(self.get_potencia_trafos(item)), decimals=3)).replace('.',',')
 
+                #X,Y,Z
                 z = ''
                 res_srid = ['', '']
                 if vertex:
                     res_srid = convert_srid(get_srid(O), vertex)
 
+                #PROVINCIA
                 if 'id_provincia' in ct:
                     provincia = O.ResCountryState.read(
                         ct['id_provincia'][0], ['code']
@@ -345,6 +345,7 @@ class FB2(MultiprocessBased):
                 else:
                     provincia_name = ""
 
+                #MUNICIPI
                 if 'id_municipi' in ct:
                     municipi = O.ResMunicipi.read(
                         ct['id_municipi'][0], ['ine']
@@ -353,6 +354,7 @@ class FB2(MultiprocessBased):
                 else:
                     municipi_name = ""
 
+                #ZONA
                 if 'zona_id' in ct:
                     zona = O.GiscedataCtsZona.read(
                         ct['zona_id'][0], ['name']
@@ -362,7 +364,10 @@ class FB2(MultiprocessBased):
                 else:
                     zona_name = ""
 
+                #PUNT_FRONTERA
                 punto_frontera = int(ct['punt_frontera'] == True)
+
+                #MODELO
                 modelo = ct['model']
 
                 output = [

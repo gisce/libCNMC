@@ -76,20 +76,6 @@ class FB3(MultiprocessBased):
         ct = o.GiscedataCts.search([('id', '=', ct_id)])
         return ct
 
-    def get_zona_id(self, ct_id):
-        o = self.connection
-        ct = o.GiscedataCts.search([('id', '=', ct_id)])
-        if ct:
-            zona = o.GiscedataCts.read(ct, ['zona_id'])
-        return zona
-
-    def get_punt_frontera(self, ct_id):
-        o = self.connection
-        ct = o.GiscedataCts.search([('id', '=', ct_id)])
-        if ct:
-            punt_frontera = o.GiscedataCts.read(ct, ['punt_frontera'])
-        return punt_frontera
-
     def consumer(self):
         o_codi_r1 = 'R1-%s' % self.codi_r1[-3:]
         o = self.connection
@@ -106,6 +92,12 @@ class FB3(MultiprocessBased):
                 sub = o.GiscedataCtsSubestacions.read(
                     item, fields_to_read
                 )
+
+                o_subestacio = sub['name']
+                o_cini = sub['cini']
+                o_denominacio = sub['descripcio']
+                o_prop = int(sub['propietari'])
+
                 ids_sub = {
                     'id_municipi': sub['id_municipi'],
                     'id_provincia': sub['id_provincia']
@@ -115,22 +107,18 @@ class FB3(MultiprocessBased):
                 else:
                     vertex = self.get_vertex(sub['ct_id'][0])
                 ines = self.get_ines(ids_sub)
-                o_subestacio = sub['name']
-                o_cini = sub['cini']
-                o_denominacio = sub['descripcio']
-                z = ''
                 o_municipi = ines['ine_municipi']
                 o_provincia = ines['ine_provincia']
-                o_prop = int(sub['propietari'])
+
+                z = ''
                 res_srid = ['', '']
                 if vertex:
                     res_srid = convert_srid(get_srid(o), vertex)
 
                 ct = self.get_ct(sub['ct_id'][0])[0]
                 data_ct = o.GiscedataCts.read(ct, ['zona_id', 'punt_frontera'])
-                zona = data_ct['zona_id'][1]
                 o_punt_frontera = int(data_ct['punt_frontera'] == True)
-
+                zona = data_ct['zona_id'][1]
                 if zona:
                     o_zona = ZONA[zona]
                 else:

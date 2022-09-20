@@ -82,6 +82,7 @@ class FB3_2(MultiprocessBased):
                 else:
                     o_parc = sub['subestacio_id'][1] + "-"\
                         + str(self.get_tensio(sub))
+
                 o_pos = sub['name']
                 o_cini = sub['cini']
                 o_prop = int(sub['propietari'])

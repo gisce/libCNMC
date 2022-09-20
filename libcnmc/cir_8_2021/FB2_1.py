@@ -87,8 +87,8 @@ class FB2_1(MultiprocessBased):
                 trafo = o.GiscedataTransformadorTrafo.read(
                     item, fields_to_read
                 )
-                o_ct = trafo['ct'] and trafo['ct'][1] or ''
 
+                o_ct = trafo['ct'] and trafo['ct'][1] or ''
                 o_cini = trafo['cini'] or ''
                 o_maquina = trafo['name']
                 o_pot = format_f(

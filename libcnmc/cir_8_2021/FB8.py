@@ -73,6 +73,13 @@ class FB8(MultiprocessBased):
                 else:
                     linia = ''
 
+                #DATA_PM
+                if despatx['data_apm']:
+                    data_pm_despatx = datetime.strptime(str(despatx['data_apm']),
+                                                   '%Y-%m-%d')
+                    data_pm = data_pm_despatx.strftime('%d/%m/%Y')
+
+                #CAMPS OBRES
                 if linia != '':
                     subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
                     subvenciones_nacionales = format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro')
@@ -98,10 +105,6 @@ class FB8(MultiprocessBased):
                     cuenta_contable = ''
                     financiado = ''
 
-                if despatx['data_apm']:
-                    data_pm_despatx = datetime.strptime(str(despatx['data_apm']),
-                                                   '%Y-%m-%d')
-                    data_pm = data_pm_despatx.strftime('%d/%m/%Y')
 
                 if despatx['motivacion']:
                     motivacion = get_codi_actuacio(O, despatx['motivacion'] and despatx['motivacion'][0])

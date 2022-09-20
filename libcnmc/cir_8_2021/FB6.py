@@ -32,7 +32,6 @@ class FB6(MultiprocessBased):
         :param codi_r1:
         :type codi_r1:str
         """
-
         super(FB6, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
@@ -41,11 +40,9 @@ class FB6(MultiprocessBased):
         self.cod_dis = 'R1-{}'.format(self.codi_r1[-3:])
         self.compare_field = "4666_entregada"
 
-
     def get_sequence(self):
         """
                 Generates the sequence of ids to pass to the consume function
-
                 :return: List of ids to generate the
                 :rtype: list(int)
                 """
@@ -124,7 +121,6 @@ class FB6(MultiprocessBased):
             municipi_dict = o.ResMunicipi.read(id_municipi, ['ine', 'dc'])
             municipi = '{0}{1}'.format(municipi_dict['ine'][-3:],
                                        municipi_dict['dc'])
-
         res = {
             'id_municipi': id_municipi,
             'municipi': municipi,
@@ -132,45 +128,6 @@ class FB6(MultiprocessBased):
             'tensio': tensio,
             'name': name
         }
-
-        return res
-
-    def obtenir_camps_linia_cts(self, installacio):
-        """
-        Gets the data of the line where the cel·la is placed
-
-        :param installacio: Cel·la placement
-        :return: Municipi, provincia, tensio of the line
-        :rtype: dict
-        """
-
-        o = self.connection
-        id_cts = int(installacio.split(',')[1])
-        fields_to_read = [
-            'id_municipi', 'id_provincia', 'tensio_max', 'name'
-        ]
-
-        cts = o.GiscedataCts.read(id_cts, fields_to_read)
-
-        municipi = ''
-        provincia = ''
-        id_municipi = cts['id_municipi'][0]
-        id_provincia = cts['id_provincia'][0]
-        tensio = format_f(float(cts['tensio_max']) / 1000.0, decimals=3)
-
-        if id_municipi and id_provincia:
-            provincia = o.ResCountryState.read(id_provincia, ['code'])['code']
-            municipi_dict = o.ResMunicipi.read(id_municipi, ['ine', 'dc'])
-            municipi = '{0}{1}'.format(municipi_dict['ine'][-3:],
-                                       municipi_dict['dc'])
-        res = {
-            'id_municipi': id_municipi,
-            'municipi': municipi,
-            'provincia': provincia,
-            'tensio': tensio,
-            'name': name
-        }
-
         return res
 
     def get_node_vertex_tram(self, element_name):
@@ -229,38 +186,15 @@ class FB6(MultiprocessBased):
             'tipus_instalacio_cnmc_id', 'punt_frontera', 'tensio_const', 'model',
             'geom', 'tram_id', 'id', 'data_pm', 'data_baixa', self.compare_field,
         ]
-
         fields_to_read_obra = [
-            'name',
-            'cini',
-            'tipo_inversion',
-            'ccuu',
-            'codigo_ccaa',
-            'nivel_tension_explotacion',
-            'elemento_act',
-            'financiado',
-            'fecha_aps',
-            'fecha_baja',
-            'causa_baja',
-            'im_ingenieria',
-            'im_materiales',
-            'im_obracivil',
-            'im_trabajos',
-            'subvenciones_europeas',
-            'subvenciones_nacionales',
-            'subvenciones_prtr',
-            'avifauna',
-            'valor_auditado',
-            'valor_contabilidad',
-            'cuenta_contable',
-            'porcentaje_modificacion',
-            'motivacion',
-            'obra_id',
-            'identificador_baja',
+            'name', 'cini', 'tipo_inversion', 'ccuu', 'codigo_ccaa', 'nivel_tension_explotacion', 'elemento_act',
+            'financiado', 'fecha_aps', 'fecha_baja', 'causa_baja', 'im_ingenieria', 'im_materiales', 'im_obracivil',
+            'im_trabajos', 'subvenciones_europeas', 'subvenciones_nacionales', 'subvenciones_prtr', 'avifauna',
+            'valor_auditado', 'valor_contabilidad', 'cuenta_contable', 'porcentaje_modificacion', 'motivacion',
+            'obra_id', 'identificador_baja',
         ]
 
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
-
         while True:
             try:
                 item = self.input_q.get()
@@ -270,12 +204,19 @@ class FB6(MultiprocessBased):
                 )
 
                 obra_id = O.GiscedataProjecteObraTiCelles.search([('element_ti_id', '=', cella['id'])])
-
                 if obra_id:
                     linia = O.GiscedataProjecteObraTiCelles.read(obra_id, fields_to_read_obra)[0]
                 else:
                     linia = ''
 
+                #DATA PM
+                data_pm = ''
+                if cella['data_pm']:
+                    data_pm_ct = datetime.strptime(str(cella['data_pm']),
+                                                   '%Y-%m-%d')
+                    data_pm = data_pm_ct.strftime('%d/%m/%Y')
+
+                #CAMPS OBRA
                 if linia != '':
                     tipo_inversion = (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1'
                     im_ingenieria = format_f_6181(linia['im_ingenieria'] or 0.0, float_type='euro')
@@ -288,7 +229,6 @@ class FB6(MultiprocessBased):
                     im_construccion = str(format_f(
                         float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
                     , 2)).replace(".", ",")
-
                     subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
                     subvenciones_nacionales = format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro')
                     subvenciones_prtr = format_f_6181(linia['subvenciones_prtr'] or 0.0, float_type='euro')
@@ -299,7 +239,6 @@ class FB6(MultiprocessBased):
                     financiado =format_f(
                         100.0 - linia.get('financiado', 0.0), 2
                     )
-
                 else:
                     tipo_inversion = ''
                     ccuu = ''
@@ -322,6 +261,8 @@ class FB6(MultiprocessBased):
                 o_fiabilitat = cella['name']
                 o_cini = cella['cini']
                 o_prop = int(cella['propietari'])
+
+                #TRAM
                 o_tram = ""
                 if cella['tram_id']:
                     o_tram = "A{0}".format(
@@ -332,19 +273,12 @@ class FB6(MultiprocessBased):
                 else:
                     o_tram = self.get_node_vertex_tram(o_fiabilitat)
 
-                data_pm = ''
-
-                if cella['data_pm']:
-                    data_pm_ct = datetime.strptime(str(cella['data_pm']),
-                                                   '%Y-%m-%d')
-                    data_pm = data_pm_ct.strftime('%d/%m/%Y')
-
+                #FECHA BAJA, CAUSA_BAJA
                 if cella['data_baixa']:
                     if cella['data_baixa'] < data_pm_limit:
                         tmp_date = datetime.strptime(
                             cella['data_baixa'], '%Y-%m-%d %H:%M:%S')
                         fecha_baja = tmp_date.strftime('%d/%m/%Y')
-
                         if int(fecha_baja.split("/")[2]) - int(data_pm.split("/")[2]) >= 40:
                             if identificador_baja != '':
                                 causa_baja = 1
@@ -359,24 +293,13 @@ class FB6(MultiprocessBased):
                     fecha_baja = ''
                     causa_baja = 0;
 
+                #CODIGO CCUU
                 id_ti = cella['tipus_instalacio_cnmc_id'][0]
                 ti = O.GiscedataTipusInstallacio.read(
                     id_ti,
                     ['name'])['name']
 
-                if cella[self.compare_field]:
-                    last_data = cella[self.compare_field]
-                else:
-                    if cella['data_pm']:
-                        if cella['data_pm'][:4] != str(self.year):
-                            self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(cella["name"]))
-                            estado = '1'
-                        else:
-                            estado = '2'
-                    else:
-                        self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(cella["name"]))
-                        estado = '1'
-
+                #NODE
                 if cella.get('node_id'):
                     o_node = cella['node_id'][1]
                     vertex = wkt.loads(cella['geom']).coords[0]
@@ -427,7 +350,6 @@ class FB6(MultiprocessBased):
 
                 # TODO: Temporal
                 o_estat = 0
-
 
                 self.output_q.put([
                     o_fiabilitat,   # ELEMENTO FIABILIDAD

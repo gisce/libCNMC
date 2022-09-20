@@ -45,52 +45,6 @@ class FB5_2(MultiprocessBased):
             search_params, 0, 0, False, {'active_test': False}
         )
 
-
-    def get_estat(self, estat_id):
-        o = self.connection
-        estat = o.GiscedataTransformadorEstat.read(estat_id, ['codi'])
-        if estat['codi'] != 1:
-            return 0
-        else:
-            return 1
-
-    def get_costat_alta(self, cond):
-        o = self.connection
-        res = ''
-        if cond['conexions']:
-            con = o.GiscedataTransformadorConnexio.read(cond['conexions'][0])
-            tensio = con['tensio_primari']
-            tensio_n = get_norm_tension(o, tensio)
-            se_id = cond['ct'][1]
-            parc_id = o.GiscedataParcs.search(
-                [
-                    ('subestacio_id', '=', se_id),
-                    ('tensio_id.tensio', '=', tensio_n)
-                ]
-            )
-            if parc_id:
-                res = o.GiscedataParcs.read(parc_id[0], ['subestacio_id'])['subestacio_id']
-
-        return res
-
-    def get_costat_baixa(self, cond):
-        o = self.connection
-        res = ''
-        if cond['conexions']:
-            con = o.GiscedataTransformadorConnexio.read(cond['conexions'][0])
-            tensio = con['tensio_b1']
-            tensio_n = get_norm_tension(o, tensio)
-            se_id = cond['ct'][1]
-            parc_id = o.GiscedataParcs.search(
-                [
-                    ('subestacio_id', '=', se_id),
-                    ('tensio_id.tensio', '=', tensio_n)
-                ]
-            )
-            if parc_id:
-                res = o.GiscedataParcs.read(parc_id[0], ['name'])['name']
-        return res
-
     def get_node_vertex(self, ct_id):
         O = self.connection
         bloc = O.GiscegisBlocsCtat.search([('ct', '=', ct_id)])
@@ -104,21 +58,6 @@ class FB5_2(MultiprocessBased):
                     v = O.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
                     vertex = (round(v['x'], 3), round(v['y'], 3))
         return node, vertex
-
-
-    def get_node_conds(self, id_ct):
-        o = self.connection
-        res = 0
-        ids_conds = o.GiscedataTransformadorcond.search([
-            ('ct', '=', id_ct)])
-
-        if ids_conds:
-            for elem in ids_conds:
-                cond = o.GiscedataTransformadorcond.read(
-                    elem, ['node_id'])
-                if cond['node_id']:
-                    return cond['node_id'][1]
-        return 0
 
     def get_nodes(self, ct_id):
         o = self.connection
@@ -160,6 +99,12 @@ class FB5_2(MultiprocessBased):
                 #   linia = o.GiscedataProjecteObraTiTransformador.read(obra_id, fields_to_read_obra)[0]
                 #else:
                 linia = ''
+
+                #DATA_PM
+                if cond['data_pm']:
+                    data_pm_cond = datetime.strptime(str(cond['data_pm']),
+                                                     '%Y-%m-%d')
+                    data_pm = data_pm_cond.strftime('%d/%m/%Y')
 
                 if linia != '':
                     data_ip = convert_spanish_date(
@@ -208,12 +153,6 @@ class FB5_2(MultiprocessBased):
                     financiado = ''
                     valor_residual = ''
 
-
-                if cond['data_pm']:
-                    data_pm_cond= datetime.strptime(str(cond['data_pm']),
-                                                        '%Y-%m-%d')
-                    data_pm = data_pm_cond.strftime('%d/%m/%Y')
-
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data APS sortirà en blanc
                 if data_ip:
@@ -235,7 +174,6 @@ class FB5_2(MultiprocessBased):
                         tmp_date = datetime.strptime(
                             cond['data_baixa'], '%Y-%m-%d')
                         fecha_baja = tmp_date.strftime('%d/%m/%Y')
-
                         if int(fecha_baja.split("/")[2]) - int(data_pm.split("/")[2]) >= 40:
                             if identificador_baja != '':
                                 causa_baja = 1
@@ -249,8 +187,6 @@ class FB5_2(MultiprocessBased):
                 else:
                     fecha_baja = ''
                     causa_baja = 0;
-
-                #o_estat = self.get_estat(cond['id_estat'][0])
 
                 id_ti = cond['tipus_instalacio_cnmc_id'][0]
                 ti = o.GiscedataTipusInstallacio.read(

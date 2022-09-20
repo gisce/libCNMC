@@ -31,82 +31,6 @@ class FB5(MultiprocessBased):
             search_params
         )
 
-    def get_estat(self, estat_id):
-        o = self.connection
-        estat = o.GiscedataTransformadorEstat.read(estat_id, ['codi'])
-        if estat['codi'] != 1:
-            return 0
-        else:
-            return 1
-
-    def get_costat_alta(self, trafo):
-        o = self.connection
-        res = ''
-        if trafo['conexions']:
-            con = o.GiscedataTransformadorConnexio.read(trafo['conexions'][0])
-            tensio = con['tensio_primari']
-            tensio_n = get_norm_tension(o, tensio)
-            se_id = trafo['ct'][1]
-            parc_id = o.GiscedataParcs.search(
-                [
-                    ('subestacio_id', '=', se_id),
-                    ('tensio_id.tensio', '=', tensio_n)
-                ]
-            )
-            if parc_id:
-                res = o.GiscedataParcs.read(parc_id[0], ['subestacio_id'])['subestacio_id']
-
-        return res
-
-    def get_costat_baixa(self, node_id):
-        o = self.connection
-        res = ''
-        print('node_alta')
-        print(node_id)
-        if node_id:
-            edges = o.GiscegisEdge.search(
-                [('start_node', '=', node_id)]
-            )
-            print('start_node')
-            print(edges)
-            if edges:
-                for edge in edges:
-                    print('edge in bucle end')
-                    print(edge)
-                    edge_m = o.GiscegisEdge.read(edge, ['end_node'])
-                    print('edge model in bucle end')
-                    print(edge_m)
-                    bloc_tensio = o.GiscegisBlocsTensio.search(
-                        [('node', '=', edge_m['end_node'][0])]
-                    )
-                    if bloc_tensio:
-                        break
-            else:
-                edges = o.GiscegisEdge.search(
-                    [('end_node', '=', node_id)]
-                )
-                print('end_node')
-                print(edges)
-                if edges:
-                    for edge in edges:
-                        print('edge in bucle start')
-                        print(edge)
-                        edge_m = o.GiscegisEdge.read(edge, ['start_node'])
-                        print('edge model in bucle start')
-                        print(edge_m)
-                        bloc_tensio = o.GiscegisBlocsTensio.search(
-                            [('node', '=', edge_m['start_node'][0])]
-                        )
-                        print('bloc_tensio')
-                        print(bloc_tensio)
-                        if bloc_tensio:
-                            break
-        if bloc_tensio:
-            res = bloc_tensio.node
-            print('res')
-            print(res)
-        return res
-
     def get_node_vertex(self, ct_id):
         O = self.connection
         bloc = O.GiscegisBlocsCtat.search([('ct', '=', ct_id)])
@@ -120,21 +44,6 @@ class FB5(MultiprocessBased):
                     v = O.GiscegisVertex.read(bloc['vertex'][0], ['x', 'y'])
                     vertex = (round(v['x'], 3), round(v['y'], 3))
         return node, vertex
-
-
-    def get_node_trafos(self, id_ct):
-        o = self.connection
-        res = 0
-        ids_trafos = o.GiscedataTransformadorTrafo.search([
-            ('ct', '=', id_ct)])
-
-        if ids_trafos:
-            for elem in ids_trafos:
-                trafo = o.GiscedataTransformadorTrafo.read(
-                    elem, ['node_id'])
-                if trafo['node_id']:
-                    return trafo['node_id'][1]
-        return 0
 
     def get_nodes(self, ct_id):
         o = self.connection
@@ -155,7 +64,6 @@ class FB5(MultiprocessBased):
             'ct', 'name', 'cini', 'potencia_nominal', 'id_estat', 'node_id',
             'data_pm', 'data_baixa', 'tipus_instalacio_cnmc_id', 'node_baixa'
         ]
-
         fields_to_read_obra = [
             'subvenciones_europeas', 'subvenciones_nacionales', 'subvenciones_prtr', 'financiado',
             'fecha_aps', 'fecha_baja', 'causa_baja', 'cuenta_contable', 'im_ingenieria', 'im_materiales',
@@ -176,6 +84,13 @@ class FB5(MultiprocessBased):
                 else:
                     linia = ''
 
+                #DATA_PM
+                if trafo['data_pm']:
+                    data_pm_trafo = datetime.strptime(str(trafo['data_pm']),
+                                                      '%Y-%m-%d')
+                    data_pm = data_pm_trafo.strftime('%d/%m/%Y')
+
+                #CAMPS OBRES
                 if linia != '':
                     data_ip = convert_spanish_date(
                             linia['fecha_aps'] if not linia['fecha_baja'] and linia['tipo_inversion'] != '1' else ''
@@ -235,10 +150,8 @@ class FB5(MultiprocessBased):
                 o_node = trafo['node_id']
                 o_node_baixa = trafo['node_baixa']
 
-                if trafo['data_pm']:
-                    data_pm_trafo = datetime.strptime(str(trafo['data_pm']),
-                                                        '%Y-%m-%d')
-                    data_pm = data_pm_trafo.strftime('%d/%m/%Y')
+                #FECHA_BAJA, CAUSA_BAJA
+
                 if trafo['data_baixa']:
                     if trafo['data_baixa'] < data_pm_limit:
                         tmp_date = datetime.strptime(
@@ -258,11 +171,13 @@ class FB5(MultiprocessBased):
                     fecha_baja = ''
                     causa_baja = 0;
 
-                o_estat = self.get_estat(trafo['id_estat'][0])
+                #CODIGO CCUU
                 id_ti = trafo['tipus_instalacio_cnmc_id'][0]
                 ti = o.GiscedataTipusInstallacio.read(
                     id_ti,
                     ['name'])['name']
+
+                #MODEL
                 model = o.GiscedataCts.read(trafo['ct'][0], ['model'])['model']
                 if model:
                     o_modelo = model

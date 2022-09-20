@@ -68,21 +68,6 @@ class FB2_2(MultiprocessBased):
         return self.connection.GiscedataCellesCella.search(
             search_params, 0, 0, False, {'active_test': False})
 
-    def obtenir_ct(self, ct):
-        i = 0
-        res = 'a'
-        es_ct = False
-        if ct:
-            while i < len(ct):
-                if str(ct[i]) == "'" and not es_ct:
-                    es_ct = True
-                elif str(ct[i]) == "'" and es_ct:
-                    es_ct = False
-                if es_ct and str(ct[i]) != "'":
-                    res += str(ct[i])
-                i += 1
-        return res
-
     def get_codi_ct(self, ct_id):
         o = self.connection
         ct = o.GiscedataCts.read(ct_id, ['name'])
@@ -123,19 +108,23 @@ class FB2_2(MultiprocessBased):
                 celles = o.GiscedataCellesCella.read(
                     item, fields_to_read
                 )
+
                 o_ct_id = int(celles['installacio'].split(',')[1])
                 o_ct = self.get_codi_ct(o_ct_id)
+
                 o_maquina = self.get_codi_maquina(o_ct_id)
                 o_id_cella = celles['name']
                 o_cini = celles['cini'] or ''
                 o_propietari = int(celles['propietari'])
+
+                o_interruptor = self.get_tipus_inst(celles['tipus_instalacio_cnmc_id'])
+                o_interruptor_val = TIPUS_INST[o_interruptor]
+
                 o_data = ''
                 if celles['data_pm']:
                     o_data = datetime.strptime(celles['data_pm'], "%Y-%m-%d")
                     o_data = int(o_data.year)
 
-                o_interruptor = self.get_tipus_inst(celles['tipus_instalacio_cnmc_id'])
-                o_interruptor_val = TIPUS_INST[o_interruptor]
 
                 self.output_q.put([
                     o_ct,                # CT

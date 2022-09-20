@@ -87,6 +87,7 @@ class FB3_1(MultiprocessBased):
                 parc = o.GiscedataParcs.read(
                     item, fields_to_read
                 )
+
                 subestacio = self.get_subestacio(parc['subestacio_id'][0])
                 o_subestacio = subestacio['name']
 
@@ -94,7 +95,6 @@ class FB3_1(MultiprocessBased):
                     vertex = (subestacio["x"], subestacio["y"])
                 else:
                     vertex = self.get_vertex(subestacio['ct_id'])
-
                 res_srid = ['', '']
                 if vertex:
                     res_srid = convert_srid(get_srid(o), vertex)
@@ -107,7 +107,7 @@ class FB3_1(MultiprocessBased):
                 tensio = self.get_tensio(parc['id'])
                 o_tensio = format_f(
                     float(tensio) / 1000.0, decimals=3)
-
+                o_prop = int(parc['propietari'])
                 o_tensio_const = parc['tensio_const']
 
                 if o_tensio_const:
@@ -119,21 +119,19 @@ class FB3_1(MultiprocessBased):
                 else:
                     o_tensio_const = ''
 
-                o_prop = int(parc['propietari'])
-                insert = True
-                if insert:
-                    self.output_q.put([
-                        o_subestacio,  # SUBESTACION
-                        o_parc,  # PARQUE
-                        o_node,  # NUDO
-                        format_f(res_srid[0], decimals=3),  # X
-                        format_f(res_srid[1], decimals=3),  # Y
-                        z,  # Z
-                        o_cini,  # CINI
-                        o_tensio,  # TENSION DEL PARQUE
-                        o_tensio_const, #TENSION DE CONSTRUCCION DEL PARQUE
-                        o_prop,  # PROPIEDAD
-                    ])
+
+                self.output_q.put([
+                    o_subestacio,  # SUBESTACION
+                    o_parc,  # PARQUE
+                    o_node,  # NUDO
+                    format_f(res_srid[0], decimals=3),  # X
+                    format_f(res_srid[1], decimals=3),  # Y
+                    z,  # Z
+                    o_cini,  # CINI
+                    o_tensio,  # TENSION DEL PARQUE
+                    o_tensio_const, #TENSION DE CONSTRUCCION DEL PARQUE
+                    o_prop,  # PROPIEDAD
+                ])
             except Exception as e:
                 traceback.print_exc()
                 if self.raven:

@@ -47,31 +47,11 @@ class FB4(MultiprocessBased):
 
     def get_header(self):
         header = [
-            'IDENTIFICADOR',
-            'CINI',
-            'TIPO_INVERSION',
-            'DENOMINACION',
-            'CODIGO_CCUU',
-            'CODIGO_CCAA',
-            'IDENTIFICADOR_PARQUE',
-            'NIVEL_TENSION_EXPLOTACION',
-            'FINANCIADO',
-            'PLANIFICACION',
-            'FECHA_APS',
-            'FECHA_BAJA',
-            'CAUSA_BAJA',
-            'IM_INGENIERIA',
-            'IM_MATERIALES',
-            'IM_OBRACIVIL',
-            'IM_TRABAJOS',
-            'SUBVENCIONES_EUROPEAS',
-            'SUBVENCIONES_NACIONALES',
-            'VALOR_AUDITADO',
-            'VALOR_CONTABLE',
-            'CUENTA_CONTABLE',
-            'PORCENTAJE_MODIFICACION',
-            'MOTIVACION',
-            'IDENTIFICADOR_BAJA',
+            'IDENTIFICADOR', 'CINI', 'TIPO_INVERSION', 'DENOMINACION', 'CODIGO_CCUU', 'CODIGO_CCAA',
+            'IDENTIFICADOR_PARQUE', 'NIVEL_TENSION_EXPLOTACION', 'FINANCIADO', 'PLANIFICACION', 'FECHA_APS',
+            'FECHA_BAJA', 'CAUSA_BAJA', 'IM_INGENIERIA', 'IM_MATERIALES', 'IM_OBRACIVIL', 'IM_TRABAJOS',
+            'SUBVENCIONES_EUROPEAS', 'SUBVENCIONES_NACIONALES', 'VALOR_AUDITADO', 'VALOR_CONTABLE', 'CUENTA_CONTABLE',
+            'PORCENTAJE_MODIFICACION', 'MOTIVACION', 'IDENTIFICADOR_BAJA',
         ]
         if self.include_obres:
             header.insert(0, 'IDENTIFICADOR_OBRA')
@@ -115,20 +95,12 @@ class FB4(MultiprocessBased):
             cts_data = o.GiscedataCts.read(cts_id['ct_id'][0], ['propietari', 'node_id', 'punt_frontera', 'model'])
         return cts_data
 
-    def get_parc_name(self, parc_id):
-        o = self.connection
-        parc = o.GiscedataParcs.search('id', '=', parc_id)
-        if parc:
-            parc_name = o.GiscedataParcs.read(parc, ['name'])
-        return parc_name
-
     def consumer(self):
         """
         Generates the line of the file
         :return: Line
         :rtype: str
         """
-
         O = self.connection
 
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
@@ -138,7 +110,6 @@ class FB4(MultiprocessBased):
             'name', 'cini', 'node_id', 'propietari', 'subestacio_id', 'data_pm', 'tensio', 'model',
             'parc_id', 'data_baixa', 'interruptor', 'tipus_instalacio_cnmc_id', 'punt_frontera'
         ]
-
         fields_to_read_obra = [
             'name', 'cini', 'tipo_inversion', 'denominacion', 'ccuu', 'codigo_ccaa', 'identificador_parque',
             'nivel_tension_explotacion', 'financiado','planificacion','fecha_aps','fecha_baja','causa_baja',
@@ -166,12 +137,14 @@ class FB4(MultiprocessBased):
                 else:
                     linia = ''
 
+                #DATA_PM
                 data_pm = ''
                 if pos['data_pm']:
                     data_pm_ct = datetime.strptime(str(pos['data_pm']),
                                                    '%Y-%m-%d')
                     data_pm = data_pm_ct.strftime('%d/%m/%Y')
 
+                #FECHA_BAJA, CAUSA_BAJA
                 if pos['data_baixa']:
                     if pos['data_baixa'] < data_pm_limit:
                         tmp_date = datetime.strptime(
@@ -192,6 +165,7 @@ class FB4(MultiprocessBased):
                     fecha_baja = ''
                     causa_baja = 0;
 
+                #CAMPS OBRES
                 if linia != '':
                     data_ip = convert_spanish_date(
                         data_pm if not fecha_baja and linia['tipo_inversion'] != '1' else ''
@@ -235,21 +209,21 @@ class FB4(MultiprocessBased):
                     cuenta_contable = ''
                     financiado = ''
 
-
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data IP sortirà en blanc
                 if data_ip:
                     data_ip = '' if data_pm and int(data_pm.split('/')[2]) == int(data_ip.split('/')[2]) \
                     else data_ip
 
+                #IDENTIFICADOR_EMPLAZAMIENTO
                 if pos['parc_id']:
                     identificador_emplazamiento = pos['parc_id'][1]
                 else:
                     o_parc = pos['subestacio_id'][1] + "-"\
                         + str(self.get_tensio(pos))
-
                     identificador_emplazamiento = "SUBESTACIO_NAME"
 
+                #CODIGO CCUU
                 if pos['tipus_instalacio_cnmc_id']:
                     id_ti = pos['tipus_instalacio_cnmc_id'][0]
                     ti = O.GiscedataTipusInstallacio.read(
@@ -258,20 +232,26 @@ class FB4(MultiprocessBased):
                 else:
                     ti = ''
 
+                #AJENA
                 if pos['propietari']:
                     ajena = 0
                 else:
                     ajena = 1
+
+                #NODE
                 if pos['node_id']:
                     node = pos['node_id'][1]
 
+                #PUNT_FRONTERA
                 punt_frontera = int(pos['punt_frontera'] == True)
 
+                #MODEL
                 if pos['model']:
                     modelo = pos['model']
                 else :
                     modelo = ''
 
+                #EQUIPADA
                 id_interruptor = pos['interruptor']
                 if id_interruptor:
                     equipada = INTERRUPTOR[id_interruptor]

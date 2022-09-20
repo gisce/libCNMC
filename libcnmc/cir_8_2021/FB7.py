@@ -29,21 +29,13 @@ class FB7(MultiprocessBased):
         return self.connection.GiscegisNodes.search([]
         )
 
-
     def get_ine_state(self, municipi_id):
         O = self.connection
         data = O.ResMunicipi.read(municipi_id, ['ine', 'dc', 'state'])
         return data
 
-    def get_node_vertex(self, vertex_id):
-
-        v = self.connection.GiscegisVertex.read(vertex_id[0], ['x', 'y'])
-        vertex = (round(v['x'], 3), round(v['y'], 3))
-        return vertex
-
     def consumer(self):
         O = self.connection
-
         fields_to_read = [
             'id', 'name', 'geom', 'vertex', 'tensio', 'municipi_id'
         ]
@@ -56,8 +48,6 @@ class FB7(MultiprocessBased):
                     item, fields_to_read
                 )
 
-                #vertex = self.get_node_vertex(node['vertex'])
-
                 coords = wkt.loads(node["geom"]).coords[0]
                 vertex = [coords[0], coords[1]]
 
@@ -68,7 +58,6 @@ class FB7(MultiprocessBased):
                 else:
                    o_municipi = ''
                    o_provincia = ''
-
 
                 z = ''
                 res_srid = ['', '']
