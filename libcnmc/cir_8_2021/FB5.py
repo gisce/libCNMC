@@ -147,8 +147,12 @@ class FB5(MultiprocessBased):
                 o_cini = trafo['cini']
                 o_pot_maquina = format_f(
                     float(trafo['potencia_nominal']) / 1000.0, decimals=3)
-                o_node = trafo['node_id']
-                o_node_baixa = trafo['node_baixa']
+                o_node = trafo['node_id'][1]
+
+                if trafo['node_baixa']:
+                    o_node_baixa = trafo['node_baixa'][1]
+                else:
+                    o_node_baixa = o_node
 
                 #FECHA_BAJA, CAUSA_BAJA
 
