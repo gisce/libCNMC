@@ -305,8 +305,11 @@ class FB2(MultiprocessBased):
                 o_node = o_node.replace('*', '')
 
                 #NODE BAIXA
-                o_node_baixa = ct["node_baixa"][1]
-                if o_node_baixa == 0:
+                if ct["node_baixa"]:
+                    o_node_baixa = ct["node_baixa"][1]
+                    if o_node_baixa == 0:
+                        o_node_baixa = '';
+                else:
                     o_node_baixa = '';
 
                 #TENSIO
