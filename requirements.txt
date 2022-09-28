@@ -2,7 +2,7 @@ progressbar<=2.3
 click<7.0
 libcomxml
 chardet
-pyproj<2.0.0
+pyproj
 osconf
 cerberus>=1.0
 python-dateutil
