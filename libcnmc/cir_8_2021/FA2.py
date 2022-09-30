@@ -31,7 +31,7 @@ class FA2(MultiprocessBased):
         municipi_name = ''
         municipi = o.GiscedataCupsPs.read(cups[0], ['id_municipi'])['id_municipi']
         if municipi:
-            municipi_name = municipi[1]
+            municipi_name = municipi[0]
         return municipi_name
 
     def get_tension(self, cups):
@@ -77,7 +77,6 @@ class FA2(MultiprocessBased):
             cups[0], ['cne_anual_reactiva'])['cne_anual_reactiva']
         if energia_reactiva_cons_data:
             res['energia_reactiva_consumida'] = energia_reactiva_cons_data
-
         return res
 
     def get_autoconsum(self, cups):
@@ -92,7 +91,6 @@ class FA2(MultiprocessBased):
             cau_data = o.GiscedataAutoconsum.read(autoconsum_data[0], ['cau'])
             if cau_data:
                 res['cau'] = cau_data[1]
-
         return res
 
     def get_node_geom(self, cups):
