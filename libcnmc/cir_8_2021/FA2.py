@@ -10,6 +10,13 @@ import traceback
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import parse_geom
 
+ZONA = {
+    'RURAL CONCENTRADA': 'RC',
+    'RURAL DISPERSA': 'RD',
+    'URBANA': 'U',
+    'SEMIURBANA': 'SU'
+}
+
 
 class FA2(MultiprocessBased):
 
@@ -21,7 +28,7 @@ class FA2(MultiprocessBased):
 
     def get_municipi(self, cups):
         o = self.connection
-        municipi_name = False
+        municipi_name = ''
         municipi = o.GiscedataCupsPs.read(cups[0], ['id_municipi'])['id_municipi']
         if municipi:
             municipi_name = municipi[1]
@@ -29,7 +36,7 @@ class FA2(MultiprocessBased):
 
     def get_tension(self, cups):
         o = self.connection
-        tensio = False
+        tensio = ''
         polissa = o.GiscedataCupsPs.read(cups[0], ['polissa_polissa'])['polissa_polissa']
         if polissa:
             polissa_id = polissa[0]
@@ -42,10 +49,10 @@ class FA2(MultiprocessBased):
     def get_energies(self, cups):
         o = self.connection
         res = {
-            'energia_activa_producida': False,
-            'energia_activa_consumida': False,
-            'energia_reactiva_producida': False,
-            'energia_reactiva_consumida': False,
+            'energia_activa_producida': '',
+            'energia_activa_consumida': '',
+            'energia_reactiva_producida': '',
+            'energia_reactiva_consumida': '',
         }
         # Energia activa producida
         energia_activa_prod_data = o.GiscedataCupsPs.read(
@@ -77,7 +84,7 @@ class FA2(MultiprocessBased):
         o = self.connection
         res = {
             'autoconsum': '0',
-            'cau': False,
+            'cau': '',
         }
         autoconsum_data = o.GiscedataCupsPs.read(cups[0], ['autoconsum_id'])['autoconsum_id']
         if autoconsum_data:
@@ -91,9 +98,9 @@ class FA2(MultiprocessBased):
     def get_node_geom(self, cups):
         o = self.connection
         res = {
-            'node': False,
-            'x': False,
-            'y': False,
+            'node': '',
+            'x': '',
+            'y': '',
         }
         escomesa_data = o.GiscedataCupsPs.read(cups[0], ['id_escomesa'])['id_escomesa']
         if escomesa_data:
@@ -102,13 +109,13 @@ class FA2(MultiprocessBased):
                 res['node'] = node_data[1]
             geom_data = o.GiscedataCupsEscomesa.read(escomesa_data[0], ['geom'])['geom']
             if geom_data:
-                res['x'] = parse_geom(geom_data)[0]['x']
-                res['y'] = parse_geom(geom_data)[0]['y']
+                res['x'] = '{:.3f}'.format(parse_geom(geom_data)[0]['x'])
+                res['y'] = '{:.3f}'.format(parse_geom(geom_data)[0]['y'])
         return res
 
     def get_serveis_aux(self, cups):
         o = self.connection
-        serveis_aux = False
+        serveis_aux = ''
         cups_20 = cups[0:20]
         cups_id = o.GiscedataCupsPs.search([('name', 'ilike', cups_20), ('name', '!=', cups)])
         cups_name = o.GiscedataCupsPs.read(cups_id, ['name'])['name']
@@ -118,8 +125,46 @@ class FA2(MultiprocessBased):
 
     def get_zona(self, cups):
         o = self.connection
-        zona = False
+        zona = ''
         ct_name = o.GiscedataCupsPs.read(cups[0], ['et'])['et']
+        if ct_name:
+            ct_id = o.GiscedataCts.search([('name', '=', ct_name)])
+            if ct_id:
+                zona_id = o.GiscedataCts.read(ct_id, ['zona_id'])['zona_id']
+                if zona_id:
+                    zona_data = zona_id[1].upper()
+                    zona = ZONA[zona_data]
+        return zona
+
+    def get_connexio(self, cups):
+        o = self.connection
+        connexio = ''
+        escomesa_data = o.GiscedataCupsPs.read(cups[0], ['id_escomesa'])['id_escomesa']
+        if escomesa_data:
+            bloc = o.GiscegisBlocsEscomeses.search([('escomesa', '=', escomesa_data[0])])
+            if bloc:
+                bloc = o.GiscegisBlocsEscomeses.read(bloc[0], ['node'])
+                if bloc['node']:
+                    node = bloc['node'][0]
+                    edge = o.GiscegisEdge.search(
+                        ['|', ('start_node', '=', node), ('end_node', '=', node)]
+                    )
+                    if edge:
+                        edge = o.GiscegisEdge.read(edge[0], ['id_linktemplate'])
+                        if edge['id_linktemplate']:
+                            bt = o.GiscedataBtElement.search(
+                                [('id', '=', edge['id_linktemplate'])]
+                            )
+                            if bt:
+                                bt = o.GiscedataBtElement.read(
+                                    bt[0], ['tipus_linia']
+                                )
+                                if bt['tipus_linia']:
+                                    if bt['tipus_linia'][0] == 1:
+                                        connexio = 'A'
+                                    else:
+                                        connexio = 'S'
+        return connexio
 
     def consumer(self):
         o = self.connection
@@ -136,9 +181,11 @@ class FA2(MultiprocessBased):
                 o_coordenadas_x = node_geom['x']
                 o_coordenadas_y = node_geom['y']
                 o_coordenadas_z = ''
-                o_provincia = recore['provincia']
                 o_cini = recore['cini']
                 o_municipio = self.get_municipi(cups)
+                o_provincia = recore['provincia']
+                o_zona = self.get_zona(cups)
+                o_connexio = self.get_connexio(cups)
                 o_tension = self.get_tension(cups)
                 o_potencia_instalada = recore['potencia_nominal']
                 energies = self.get_energies(cups)
@@ -150,6 +197,7 @@ class FA2(MultiprocessBased):
                 o_autoconsum = autoconsum['autoconsum']
                 o_cau = autoconsum['cau']
                 o_cups_servicios_auxiliares = self.get_serveis_aux(cups)
+
             except Exception:
                 traceback.print_exc()
                 if self.raven:
