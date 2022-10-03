@@ -484,3 +484,55 @@ def parse_geom(geom):
         points = []
 
     return points
+
+
+def get_ines(o, ids):
+    """
+    Gets de INE code of 'provincia' and 'municipi' by its ids
+    :param o: OpenERP connection
+    :param ids: A single 'provincia' id and 'municipi' id
+    :type ids: dict
+    :return: The INE code of each id
+    :rtype: dict
+    """
+    res = {'ine_municipi': 0, 'ine_provincia': 0}
+    if ids.get('id_municipi', False):
+        municipi_dict = o.ResMunicipi.read(ids['id_municipi'][0],
+                                           ['ine', 'dc'])
+        res['ine_municipi'] = '{0}{1}'.format(municipi_dict['ine'][-3:],
+                                              municipi_dict['dc'])
+    if ids.get('id_provincia', False):
+        res['ine_provincia'] = o.ResCountryState.read(
+            ids['id_provincia'][0], ['code']
+        )['code']
+    return res
+
+
+def get_tipus_connexio(o, id_escomesa):
+    bloc = o.GiscegisBlocsEscomeses.search(
+        [('escomesa', '=', id_escomesa)]
+    )
+    tipus = ''
+    if bloc:
+        bloc = o.GiscegisBlocsEscomeses.read(bloc[0], ['node'])
+        if bloc['node']:
+            node = bloc['node'][0]
+            edge = o.GiscegisEdge.search(
+                ['|', ('start_node', '=', node), ('end_node', '=', node)]
+            )
+            if edge:
+                edge = o.GiscegisEdge.read(edge[0], ['id_linktemplate'])
+                if edge['id_linktemplate']:
+                    bt = o.GiscedataBtElement.search(
+                        [('id', '=', edge['id_linktemplate'])]
+                    )
+                    if bt:
+                        bt = o.GiscedataBtElement.read(
+                            bt[0], ['tipus_linia']
+                        )
+                        if bt['tipus_linia']:
+                            if bt['tipus_linia'][0] == 1:
+                                tipus = 'A'
+                            else:
+                                tipus = 'S'
+    return tipus

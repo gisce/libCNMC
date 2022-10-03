@@ -8,7 +8,7 @@ from __future__ import absolute_import
 from datetime import datetime
 import traceback
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import parse_geom
+from libcnmc.utils import parse_geom, get_ines, get_tipus_connexio
 
 ZONA = {
     'RURAL CONCENTRADA': 'RC',
@@ -26,13 +26,18 @@ class FA2(MultiprocessBased):
         self.report_name = 'FB5 - TRAFOS-SE'
         self.base_object = 'TRAFOS'
 
-    def get_municipi(self, cups):
+    def get_municipi_provincia(self, cups):
         o = self.connection
-        municipi_name = ''
-        municipi = o.GiscedataCupsPs.read(cups[0], ['id_municipi'])['id_municipi']
-        if municipi:
-            municipi_name = municipi[0]
-        return municipi_name
+        res = {
+            'id_municipi': '',
+            'id_provincia': '',
+        }
+        municipi_provincia_data = o.GiscedataCupsPs.read(cups[0], ['id_municipi', 'id_provincia'])
+        if municipi_provincia_data.get('id_municipi', False):
+            res['id_municipi'] = municipi_provincia_data['id_municipi']
+        if municipi_provincia_data.get('id_provincia', False):
+            res['id_provincia'] = municipi_provincia_data['id_provincia']
+        return res
 
     def get_tension(self, cups):
         o = self.connection
@@ -133,36 +138,6 @@ class FA2(MultiprocessBased):
                     zona_data = zona_id[1].upper()
                     zona = ZONA[zona_data]
         return zona
-
-    def get_connexio(self, cups):
-        o = self.connection
-        connexio = ''
-        escomesa_data = o.GiscedataCupsPs.read(cups[0], ['id_escomesa'])['id_escomesa']
-        if escomesa_data:
-            bloc = o.GiscegisBlocsEscomeses.search([('escomesa', '=', escomesa_data[0])])
-            if bloc:
-                bloc = o.GiscegisBlocsEscomeses.read(bloc[0], ['node'])
-                if bloc['node']:
-                    node = bloc['node'][0]
-                    edge = o.GiscegisEdge.search(
-                        ['|', ('start_node', '=', node), ('end_node', '=', node)]
-                    )
-                    if edge:
-                        edge = o.GiscegisEdge.read(edge[0], ['id_linktemplate'])
-                        if edge['id_linktemplate']:
-                            bt = o.GiscedataBtElement.search(
-                                [('id', '=', edge['id_linktemplate'])]
-                            )
-                            if bt:
-                                bt = o.GiscedataBtElement.read(
-                                    bt[0], ['tipus_linia']
-                                )
-                                if bt['tipus_linia']:
-                                    if bt['tipus_linia'][0] == 1:
-                                        connexio = 'A'
-                                    else:
-                                        connexio = 'S'
-        return connexio
 
     def consumer(self):
         o = self.connection

@@ -7,7 +7,7 @@ INVENTARI DE CNMC Centres Transformadors
 from __future__ import absolute_import
 from datetime import datetime
 import traceback, psycopg2.extras
-from libcnmc.utils import format_f, convert_srid, get_srid
+from libcnmc.utils import format_f, convert_srid, get_srid, get_ines
 from libcnmc.core import MultiprocessBased
 
 ZONA = {
@@ -45,20 +45,6 @@ class FB3(MultiprocessBased):
                           ('ct_id.active', '=', True)]
         return self.connection.GiscedataCtsSubestacions.search(
             search_params, 0, 0, False, {'active_test': False})
-
-    def get_ines(self, ids):
-        o = self.connection
-        res = {'ine_municipi': 0, 'ine_provincia': 0}
-        if ids.get('id_municipi', False):
-            municipi_dict = o.ResMunicipi.read(ids['id_municipi'][0],
-                                               ['ine', 'dc'])
-            res['ine_municipi'] = '{0}{1}'.format(municipi_dict['ine'][-3:],
-                                                  municipi_dict['dc'])
-        if ids.get('id_provincia', False):
-            res['ine_provincia'] = o.ResCountryState.read(
-                ids['id_provincia'][0], ['code']
-            )['code']
-        return res
 
     def get_vertex(self, ct_id):
         o = self.connection
@@ -106,7 +92,7 @@ class FB3(MultiprocessBased):
                     vertex = (sub["x"], sub["y"])
                 else:
                     vertex = self.get_vertex(sub['ct_id'][0])
-                ines = self.get_ines(ids_sub)
+                ines = get_ines(o, ids_sub)
                 o_municipi = ines['ine_municipi']
                 o_provincia = ines['ine_provincia']
 
