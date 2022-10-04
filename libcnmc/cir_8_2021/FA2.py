@@ -23,8 +23,12 @@ class FA2(MultiprocessBased):
     def __init__(self, **kwargs):
         super(FA2, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.report_name = 'FB5 - TRAFOS-SE'
-        self.base_object = 'TRAFOS'
+        self.codi_r1 = kwargs.pop('codi_r1')
+        self.report_name = 'Formulario A2: Información relativa a la generación conectada a sus redes de distribución'
+        self.base_object = 'RE'
+
+    def get_sequence(self):
+        return self.connection.GiscedataRe.search([('active', '=', True)])
 
     def get_municipi_provincia(self, cups):
         o = self.connection
@@ -48,7 +52,7 @@ class FA2(MultiprocessBased):
             tensio = o.GiscedataPolissa.read(polissa_id, ['tensio_normalitzada'])['tensio_normalitzada']
             if tensio:
                 tensio_id = tensio[0]
-                tensio = o.GiscedataTensionsTensio.read(tensio_id, ['tensio'])['tensio']
+                tensio = '{:.3f}'.format(o.GiscedataTensionsTensio.read(tensio_id, ['tensio'])['tensio'])
         return tensio
 
     def get_energies(self, cups):
@@ -149,26 +153,49 @@ class FA2(MultiprocessBased):
                 recore = o.GiscedataRe.read(item, fields_to_read)
                 cups = recore['cups']
 
+                # Node
                 node_geom = self.get_node_geom(cups)
                 o_nudo = node_geom['node']
+
+                # Coordenades
                 o_coordenadas_x = node_geom['x']
                 o_coordenadas_y = node_geom['y']
                 o_coordenadas_z = ''
+
+                # CINI
                 o_cini = recore['cini']
-                o_municipio = self.get_municipi(cups)
-                o_provincia = recore['provincia']
+
+                # Municipi + Provincia
+                municipi_provincia_data = self.get_municipi_provincia(o, cups)
+                o_municipio = get_ines(municipi_provincia_data)['ine_municipi']
+                o_provincia = get_ines(municipi_provincia_data)['ine_provincia']
+
+                # Zona
                 o_zona = self.get_zona(cups)
-                o_connexio = self.get_connexio(cups)
+
+                # Connexió
+                id_escomesa = o.GiscedataCupsPs.read(cups[0], ['id_escomesa'])['id_escomesa']
+                o_connexion = get_tipus_connexio(o, id_escomesa)
+
+                # Tensió
                 o_tension = self.get_tension(cups)
-                o_potencia_instalada = recore['potencia_nominal']
+
+                # Potència instalada
+                o_potencia_instalada = '{:.3f}'.format(recore['potencia_nominal'])
+
+                # Energia produïda/consumida
                 energies = self.get_energies(cups)
-                o_energia_activa_producida = energies['energia_activa_producida']
-                o_energia_activa_consumida = energies['energia_activa_consumida']
-                o_energia_reactiva_producida = energies['energia_reactiva_producida']
-                o_energia_reactiva_consumida = energies['energia_reactiva_consumida']
+                o_energia_activa_producida = '{:.3f}'.format(energies['energia_activa_producida'])
+                o_energia_activa_consumida = '{:.3f}'.format(energies['energia_activa_consumida'])
+                o_energia_reactiva_producida = '{:.3f}'.format(energies['energia_reactiva_producida'])
+                o_energia_reactiva_consumida = '{:.3f}'.format(energies['energia_reactiva_consumida'])
+
+                # Autoconsum + CAU
                 autoconsum = self.get_autoconsum(cups)
                 o_autoconsum = autoconsum['autoconsum']
                 o_cau = autoconsum['cau']
+
+                # Serveis auxiliars
                 o_cups_servicios_auxiliares = self.get_serveis_aux(cups)
 
             except Exception:
@@ -177,4 +204,3 @@ class FA2(MultiprocessBased):
                     self.raven.captureException()
             finally:
                 self.input_q.task_done()
-
