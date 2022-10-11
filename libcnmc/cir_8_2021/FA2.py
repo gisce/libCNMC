@@ -65,27 +65,27 @@ class FA2(MultiprocessBased):
         }
         # Energia activa producida
         energia_activa_prod_data = o.GiscedataCupsPs.read(
-            cups[0], ['cne_anual_activa_generada'])['cne_anual_activa_generada']
-        if energia_activa_prod_data:
-            res['energia_activa_producida'] = energia_activa_prod_data
+            cups[0], ['cne_anual_activa_generada'])
+        if energia_activa_prod_data.get('cne_anual_activa_generada', False):
+            res['energia_activa_producida'] = '{:.3f}'.format(energia_activa_prod_data['cne_anual_activa_generada'])
 
         # Energia activa consumida
         energia_activa_consumida_data = o.GiscedataCupsPs.read(
-            cups[0], ['cne_anual_activa'])['cne_anual_activa']
-        if energia_activa_consumida_data:
-            res['energia_activa_consumida'] = energia_activa_consumida_data
+            cups[0], ['cne_anual_activa'])
+        if energia_activa_consumida_data.get('cne_anual_activa', False):
+            res['energia_activa_consumida'] = '{:.3f}'.format(energia_activa_consumida_data['cne_anual_activa'])
 
         # Energia reactiva producida
         energia_reactiva_prod_data = o.GiscedataCupsPs.read(
-            cups[0], ['cne_anual_reactiva_generada'])['cne_anual_reactiva_generada']
-        if energia_reactiva_prod_data:
-            res['energia_reactiva_producida'] = energia_reactiva_prod_data
+            cups[0], ['cne_anual_reactiva_generada'])
+        if energia_reactiva_prod_data.get('cne_anual_reactiva_generada', False):
+            res['energia_reactiva_producida'] = '{:.3f}'.format(energia_reactiva_prod_data['cne_anual_reactiva_generada'])
 
         # Energia reactiva consumida
         energia_reactiva_cons_data = o.GiscedataCupsPs.read(
-            cups[0], ['cne_anual_reactiva'])['cne_anual_reactiva']
-        if energia_reactiva_cons_data:
-            res['energia_reactiva_consumida'] = energia_reactiva_cons_data
+            cups[0], ['cne_anual_reactiva'])
+        if energia_reactiva_cons_data.get('cne_anual_reactiva', False):
+            res['energia_reactiva_consumida'] = '{:.3f}'.format(energia_reactiva_cons_data['cne_anual_reactiva'])
         return res
 
     def get_autoconsum(self, cups):
@@ -125,9 +125,10 @@ class FA2(MultiprocessBased):
         serveis_aux = ''
         cups_20 = cups[0:20]
         cups_id = o.GiscedataCupsPs.search([('name', 'ilike', cups_20), ('name', '!=', cups)])
-        cups_name = o.GiscedataCupsPs.read(cups_id, ['name'])['name']
+        cups_name = o.GiscedataCupsPs.read(cups_id, ['name'])
         if cups_name:
-            serveis_aux = cups_name
+            if cups_name[0].get('name', False):
+                serveis_aux = cups_name[0]['name']
         return serveis_aux
 
     def get_zona(self, cups):
@@ -137,7 +138,7 @@ class FA2(MultiprocessBased):
         if ct_name:
             ct_id = o.GiscedataCts.search([('name', '=', ct_name)])
             if ct_id:
-                zona_id = o.GiscedataCts.read(ct_id, ['zona_id'])['zona_id']
+                zona_id = o.GiscedataCts.read(ct_id, ['zona_id'])[0]['zona_id']
                 if zona_id:
                     zona_data = zona_id[1].upper()
                     zona = ZONA[zona_data]
@@ -163,19 +164,23 @@ class FA2(MultiprocessBased):
                 o_coordenadas_z = ''
 
                 # CINI
-                o_cini = recore['cini']
+                o_cini = ''
+                if recore.get('cini', False):
+                    o_cini = recore['cini']
 
                 # Municipi + Provincia
-                municipi_provincia_data = self.get_municipi_provincia(o, cups)
-                o_municipio = get_ines(municipi_provincia_data)['ine_municipi']
-                o_provincia = get_ines(municipi_provincia_data)['ine_provincia']
+                municipi_provincia_data = self.get_municipi_provincia(cups)
+                o_municipio = get_ines(o, municipi_provincia_data)['ine_municipi']
+                o_provincia = get_ines(o, municipi_provincia_data)['ine_provincia']
 
                 # Zona
                 o_zona = self.get_zona(cups)
 
                 # Connexió
-                id_escomesa = o.GiscedataCupsPs.read(cups[0], ['id_escomesa'])['id_escomesa']
-                o_connexion = get_tipus_connexio(o, id_escomesa)
+                o_connexion = ''
+                id_escomesa = o.GiscedataCupsPs.read(cups[0], ['id_escomesa'])
+                if id_escomesa.get('id_escomesa', False):
+                    o_connexion = get_tipus_connexio(o, id_escomesa['id_escomesa'][0])
 
                 # Tensió
                 o_tension = self.get_tension(cups)
@@ -185,10 +190,10 @@ class FA2(MultiprocessBased):
 
                 # Energia produïda/consumida
                 energies = self.get_energies(cups)
-                o_energia_activa_producida = '{:.3f}'.format(energies['energia_activa_producida'])
-                o_energia_activa_consumida = '{:.3f}'.format(energies['energia_activa_consumida'])
-                o_energia_reactiva_producida = '{:.3f}'.format(energies['energia_reactiva_producida'])
-                o_energia_reactiva_consumida = '{:.3f}'.format(energies['energia_reactiva_consumida'])
+                o_energia_activa_producida = energies['energia_activa_producida']
+                o_energia_activa_consumida = energies['energia_activa_consumida']
+                o_energia_reactiva_producida = energies['energia_reactiva_producida']
+                o_energia_reactiva_consumida = energies['energia_reactiva_consumida']
 
                 # Autoconsum + CAU
                 autoconsum = self.get_autoconsum(cups)
