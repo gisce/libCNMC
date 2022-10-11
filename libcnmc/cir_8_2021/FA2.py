@@ -203,6 +203,26 @@ class FA2(MultiprocessBased):
                 # Serveis auxiliars
                 o_cups_servicios_auxiliares = self.get_serveis_aux(cups)
 
+                self.output_q.put([
+                    o_nudo,  # Node
+                    o_coordenadas_x,  # Coordenada x
+                    o_coordenadas_y,  # Coordenada y
+                    o_coordenadas_z,  # Coordenada z
+                    o_cini,  # CINI
+                    o_municipio,  # Municipi
+                    o_provincia,  # Provincia
+                    o_zona,  # Zona
+                    o_connexion,  # Connexió
+                    o_tension,  # Tensió
+                    o_potencia_instalada,  # Potència instalada
+                    o_energia_activa_producida,  # Energia activa produida
+                    o_energia_activa_consumida,  # Energia activa consumida
+                    o_energia_reactiva_producida,  # Energia reactiva produida
+                    o_energia_reactiva_consumida,  # Energia reactiva consumida
+                    o_autoconsum,  # Autoconsum
+                    o_cau,  # CAU
+                    o_cups_servicios_auxiliares  # Serveis auxiliars
+                ])
             except Exception:
                 traceback.print_exc()
                 if self.raven:
