@@ -149,7 +149,11 @@ class FB2(MultiprocessBased):
 
                 obra_id = O.GiscedataProjecteObraTiCts.search([('element_ti_id', '=', ct['id'])])
 
-                if obra_id:
+                # Filtre d'obres finalitzades
+                data_finalització = O.GiscedataProjecteObra.read(obra_id, ['data_finalitzacio'])
+                inici_any = '{}-01-01'.format(self.year)
+
+                if obra_id and data_finalització >= inici_any:
                     linia = O.GiscedataProjecteObraTiCts.read(obra_id, fields_to_read_obra)[0]
                 else:
                     linia = ''
