@@ -410,7 +410,8 @@ def convert_srid(srid_source, point):
     if srid_source != '25830':
         source = Proj(init='epsg:{0}'.format(srid_source))
         dest = Proj(init='epsg:25830')
-        point = transform(source, dest, point[0], point[1])
+        if point[0] and point[1]:
+            point = transform(source, dest, point[0], point[1])
     return point
 
 

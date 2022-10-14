@@ -358,12 +358,12 @@ class FB2(MultiprocessBased):
                     municipi_name = ""
 
                 #ZONA
-                if 'zona_id' in ct:
+                if 'zona_id' in ct and ct['zona_id']:
                     zona = O.GiscedataCtsZona.read(
                         ct['zona_id'][0], ['name']
                     )
                     tmp_zona = zona.get('name', "")
-                    zona_name = ZONA[tmp_zona]
+                    zona_name = ZONA[tmp_zona.upper()]
                 else:
                     zona_name = ""
 

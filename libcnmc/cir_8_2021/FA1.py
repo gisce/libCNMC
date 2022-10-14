@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
+from datetime import datetime, timedelta
 from multiprocessing import Manager
 import re
 import traceback
@@ -713,7 +713,7 @@ class FA1(MultiprocessBased):
                     o_tensio,           # Tension de alimentacion
                     o_estat_contracte,  # Estado de contrato
                     format_f(o_potencia or '0,000', decimals=3),    # Potencia contratada
-                    format_f(o_potencia_facturada, decimals=3),     # Potencia facturada
+                    #format_f(o_potencia_facturada, decimals=3),     # Potencia facturada
                     format_f(o_pot_ads, decimals=3),        # Potencia adscrita a la instalacion
                     format_f(o_anual_activa, decimals=3),   # Energia activa anual consumida
                     format_f(o_anual_reactiva, decimals=3), # Energia reactiva anual consumida
@@ -723,8 +723,14 @@ class FA1(MultiprocessBased):
                     o_num_lectures,  # NUMERO LECTURAS
                     o_baixa,  # BAJA SUMINISTRO
                     o_titular,  # CAMBIO TITULARIDAD
-                    #o_facturas_estimadas,
-                    #o_facturas_total
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
                 ])
             except Exception:
                 traceback.print_exc()

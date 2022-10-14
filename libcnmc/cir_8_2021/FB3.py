@@ -24,10 +24,8 @@ class FB3(MultiprocessBased):
     """
     def __init__(self, **kwargs):
         super(FB3, self).__init__(**kwargs)
-        self.codi_r1 = kwargs.pop('codi_r1')
+        self.codi_r1 = kwargs.pop('codi_r1') or ''
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.report_name = 'FB3 - SE'
-        self.base_object = 'SE'
 
     def get_sequence(self):
         data_pm = '%s-01-01' % (self.year + 1)
@@ -104,9 +102,9 @@ class FB3(MultiprocessBased):
                 ct = self.get_ct(sub['ct_id'][0])[0]
                 data_ct = o.GiscedataCts.read(ct, ['zona_id', 'punt_frontera'])
                 o_punt_frontera = int(data_ct['punt_frontera'] == True)
-                zona = data_ct['zona_id'][1]
+                zona = data_ct['zona_id'] and data_ct['zona_id'][1] or ''
                 if zona:
-                    o_zona = ZONA[zona]
+                    o_zona = ZONA[zona.upper()]
                 else:
                     o_zona = ""
 

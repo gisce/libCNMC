@@ -208,6 +208,7 @@ class FA2(MultiprocessBased):
                     o_coordenadas_x,  # Coordenada x
                     o_coordenadas_y,  # Coordenada y
                     o_coordenadas_z,  # Coordenada z
+                    '', # CIL
                     o_cini,  # CINI
                     o_municipio,  # Municipi
                     o_provincia,  # Provincia

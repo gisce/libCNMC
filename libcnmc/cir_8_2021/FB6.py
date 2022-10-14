@@ -34,7 +34,7 @@ class FB6(MultiprocessBased):
         """
         super(FB6, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.codi_r1 = kwargs.pop('codi_r1')
+        self.codi_r1 = kwargs.pop('codi_r1') or ''
         self.report_name = 'FB6 - Elements de millora de fiabilitat'
         self.base_object = 'Elements de millora de fiabilitat'
         self.cod_dis = 'R1-{}'.format(self.codi_r1[-3:])

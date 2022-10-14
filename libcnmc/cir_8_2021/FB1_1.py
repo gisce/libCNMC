@@ -2,7 +2,7 @@
 from datetime import datetime
 import traceback
 from libcnmc.core import MultiprocessBased
-
+from libcnmc.utils import parse_geom
 
 class FB1_1(MultiprocessBased):
     def __init__(self, **kwargs):
@@ -63,13 +63,15 @@ class FB1_1(MultiprocessBased):
                         if dest:
                             o_inicio = '{} 0'.format(p)
                             o_final = '{} 0'.format(dest)
+                            o_inicio_x, o_inicio_y, o_inicio_z = o_inicio.split(' ')
+                            o_final_x, o_final_y, o_final_z = o_final.split(' ')
                             self.output_q.put([
                                 '{}_{}'.format(o_segmento, o_position + 1),  # CÓDIGO SEGMENTO
                                 o_identificador,  # IDENTIFICADOR DE TRAMO
                                 o_position + 1,  # ORDEN EN LA LISTA DE SEGMENTOS
                                 o_nsegmento,  # TOTAL SEGMENTOS
-                                o_inicio,  # PUNTO INICIAL
-                                o_final  # PUNTO FINAL
+                                o_inicio_x, o_inicio_y, o_inicio_z,  # PUNTO INICIAL
+                                o_final_x, o_final_y, o_final_z  # PUNTO FINAL
                             ])
                     except:
                         pass

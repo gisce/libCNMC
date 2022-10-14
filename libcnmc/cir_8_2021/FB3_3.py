@@ -115,6 +115,8 @@ class FB3_3(MultiprocessBased):
                     operacio = self.get_operacio(id_estat)
                     if operacio:
                         o_operacio = OPERACIO[operacio]
+                    else:
+                        o_operacio = ''
                 else:
                     o_operacio = ''
 
