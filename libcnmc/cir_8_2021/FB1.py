@@ -15,9 +15,9 @@ from libcnmc.utils import (format_f, tallar_text, get_forced_elements, adapt_dif
 from libcnmc.models import F1Res4666
 
 
-class LAT(MultiprocessBased):
+class FB1(MultiprocessBased):
     """
-    Class that generates the LAT(1) file of  4666
+    Class that generates the FB1(1) file of  4666
     """
     def __init__(self, **kwargs):
         """
@@ -25,7 +25,7 @@ class LAT(MultiprocessBased):
         :param kwargs: year(generation year), codi_r1 R1 code
         :return: CT
         """
-        super(LAT, self).__init__(**kwargs)
+        super(FB1, self).__init__(**kwargs)
         self.extended = kwargs.get("extended", False)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
