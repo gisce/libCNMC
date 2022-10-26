@@ -8,7 +8,7 @@ from __future__ import absolute_import
 from datetime import datetime
 import traceback
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import parse_geom, get_ines, get_tipus_connexio
+from libcnmc.utils import parse_geom, get_ines, get_tipus_connexio, format_f
 
 ZONA = {
     'RURAL CONCENTRADA': 'RC',
@@ -208,13 +208,13 @@ class FA2(MultiprocessBased):
                     o_coordenadas_x,  # Coordenada x
                     o_coordenadas_y,  # Coordenada y
                     o_coordenadas_z,  # Coordenada z
-                    '', # CIL
+                    '',  # CIL
                     o_cini,  # CINI
                     o_municipio,  # Municipi
                     o_provincia,  # Provincia
                     o_zona,  # Zona
                     o_connexion,  # Connexió
-                    o_tension,  # Tensió
+                    ('{}'.format(o_tension)).replace('.', ','),  # Tensió
                     o_potencia_instalada,  # Potència instalada
                     o_energia_activa_producida,  # Energia activa produida
                     o_energia_activa_consumida,  # Energia activa consumida
