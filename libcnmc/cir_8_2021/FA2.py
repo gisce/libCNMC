@@ -52,7 +52,7 @@ class FA2(MultiprocessBased):
             tensio = o.GiscedataPolissa.read(polissa_id, ['tensio_normalitzada'])['tensio_normalitzada']
             if tensio:
                 tensio_id = tensio[0]
-                tensio = '{:.3f}'.format(o.GiscedataTensionsTensio.read(tensio_id, ['tensio'])['tensio'])
+                tensio = format_f(float(o.GiscedataTensionsTensio.read(tensio_id, ['tensio'])['tensio'])/1000, decimals=3)
         return tensio
 
     def get_energies(self, cups):
@@ -67,25 +67,25 @@ class FA2(MultiprocessBased):
         energia_activa_prod_data = o.GiscedataCupsPs.read(
             cups[0], ['cne_anual_activa_generada'])
         if energia_activa_prod_data.get('cne_anual_activa_generada', False):
-            res['energia_activa_producida'] = '{:.3f}'.format(energia_activa_prod_data['cne_anual_activa_generada'])
+            res['energia_activa_producida'] = format_f(energia_activa_prod_data['cne_anual_activa_generada'], decimals=3)
 
         # Energia activa consumida
         energia_activa_consumida_data = o.GiscedataCupsPs.read(
             cups[0], ['cne_anual_activa'])
         if energia_activa_consumida_data.get('cne_anual_activa', False):
-            res['energia_activa_consumida'] = '{:.3f}'.format(energia_activa_consumida_data['cne_anual_activa'])
+            res['energia_activa_consumida'] = format_f(energia_activa_consumida_data['cne_anual_activa'], decimals=3)
 
         # Energia reactiva producida
         energia_reactiva_prod_data = o.GiscedataCupsPs.read(
             cups[0], ['cne_anual_reactiva_generada'])
         if energia_reactiva_prod_data.get('cne_anual_reactiva_generada', False):
-            res['energia_reactiva_producida'] = '{:.3f}'.format(energia_reactiva_prod_data['cne_anual_reactiva_generada'])
+            res['energia_reactiva_producida'] = format_f(energia_reactiva_prod_data['cne_anual_reactiva_generada'], decimals=3)
 
         # Energia reactiva consumida
         energia_reactiva_cons_data = o.GiscedataCupsPs.read(
             cups[0], ['cne_anual_reactiva'])
         if energia_reactiva_cons_data.get('cne_anual_reactiva', False):
-            res['energia_reactiva_consumida'] = '{:.3f}'.format(energia_reactiva_cons_data['cne_anual_reactiva'])
+            res['energia_reactiva_consumida'] = format_f(energia_reactiva_cons_data['cne_anual_reactiva'], decimals=3)
         return res
 
     def get_autoconsum(self, cups):
@@ -116,8 +116,8 @@ class FA2(MultiprocessBased):
                 res['node'] = node_data[1]
             geom_data = o.GiscedataCupsEscomesa.read(escomesa_data[0], ['geom'])['geom']
             if geom_data:
-                res['x'] = '{:.3f}'.format(parse_geom(geom_data)[0]['x'])
-                res['y'] = '{:.3f}'.format(parse_geom(geom_data)[0]['y'])
+                res['x'] = format_f(parse_geom(geom_data)[0]['x'], decimals=3)
+                res['y'] = format_f(parse_geom(geom_data)[0]['y'], decimals=3)
         return res
 
     def get_serveis_aux(self, cups):
@@ -186,7 +186,7 @@ class FA2(MultiprocessBased):
                 o_tension = self.get_tension(cups)
 
                 # Potència instalada
-                o_potencia_instalada = '{:.3f}'.format(recore['potencia_nominal'])
+                o_potencia_instalada = format_f(recore['potencia_nominal'], decimals=3)
 
                 # Energia produïda/consumida
                 energies = self.get_energies(cups)
