@@ -28,7 +28,14 @@ class FA2(MultiprocessBased):
         self.base_object = 'RE'
 
     def get_sequence(self):
-        return self.connection.GiscedataRe.search([('active', '=', True)])
+        re_ids = self.connection.GiscedataRe.search([('active', '=', True)])
+        for elem in range(0, len(re_ids)):
+            re_ids[elem] = 're.{}'.format(re_ids[elem])
+
+        autoconsum_ids = self.connection.GiscedataAutoconsum.search([('subseccio', '=', )])
+        for elem in range(0, len(autoconsum_ids)):
+            autoconsum_ids[elem] = 'au.{}'.format(autoconsum_ids[elem])
+        return ids
 
     def get_municipi_provincia(self, cups):
         o = self.connection
@@ -152,8 +159,11 @@ class FA2(MultiprocessBased):
             try:
                 item = self.input_q.get()
                 self.progress_q.put(item)
-                recore = o.GiscedataRe.read(item, fields_to_read)
-                cups = recore['cups']
+                model = item.split('.')[0]
+                id_ = item.split('.')[1]
+                if model == 're':
+                    recore = o.GiscedataRe.read(id_, fields_to_read)[0]
+                    cups = recore['cups']
 
                 # Node
                 node_geom = self.get_node_geom(cups)

@@ -99,7 +99,7 @@ class FB1(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-		tram = O.GiscedataAtTram.read(item, fields_to_read)
+                tram = O.GiscedataAtTram.read(item, fields_to_read)
 
                 # Comprovar el tipus del cable
                 if 'cable' in tram:
