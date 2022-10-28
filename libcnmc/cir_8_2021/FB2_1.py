@@ -103,11 +103,7 @@ class FB2_1(MultiprocessBased):
                 id_estat = trafo['id_estat']
 
                 if id_estat:
-                    operacio = self.get_operacio(id_estat)
-                    if operacio:
-                        o_operacio = OPERACIO[operacio]
-                    else:
-                        o_operacio = ''
+                    o_operacio = self.get_operacio(id_estat)
                 else:
                     o_operacio = ''
 

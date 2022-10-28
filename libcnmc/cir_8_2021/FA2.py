@@ -94,12 +94,13 @@ class FA2(MultiprocessBased):
             'autoconsum': '0',
             'cau': '',
         }
-        autoconsum_data = o.GiscedataCupsPs.read(cups[0], ['autoconsum_id'])['autoconsum_id']
-        if autoconsum_data:
+        autoconsum_data = o.GiscedataCupsPs.read(cups[0], ['autoconsum_id'])
+        if autoconsum_data.get('autoconsum_id', False):
             res['autoconsum'] = '1'
-            cau_data = o.GiscedataAutoconsum.read(autoconsum_data[0], ['cau'])
-            if cau_data:
-                res['cau'] = cau_data[1]
+            autoconsum_id = autoconsum_data['autoconsum_id']
+            cau_data = o.GiscedataAutoconsum.read(autoconsum_id, ['cau'])
+            if cau_data.get('cau', False):
+                res['cau'] = cau_data['cau']
         return res
 
     def get_node_geom(self, cups):
@@ -123,7 +124,7 @@ class FA2(MultiprocessBased):
     def get_serveis_aux(self, cups):
         o = self.connection
         serveis_aux = ''
-        cups_20 = cups[0:20]
+        cups_20 = cups[1][0:20]
         cups_id = o.GiscedataCupsPs.search([('name', 'ilike', cups_20), ('name', '!=', cups)])
         cups_name = o.GiscedataCupsPs.read(cups_id, ['name'])
         if cups_name:
@@ -146,7 +147,7 @@ class FA2(MultiprocessBased):
 
     def consumer(self):
         o = self.connection
-        fields_to_read = ['provincia', 'cini', 'cups', 'potencia_nominal']
+        fields_to_read = ['provincia', 'cini', 'cups', 'potencia_nominal', 'cil']
         while True:
             try:
                 item = self.input_q.get()
@@ -162,6 +163,11 @@ class FA2(MultiprocessBased):
                 o_coordenadas_x = node_geom['x']
                 o_coordenadas_y = node_geom['y']
                 o_coordenadas_z = ''
+
+                # CIL
+                o_cil = ''
+                if recore.get('cil', False):
+                    o_cil = recore['cil'][1]
 
                 # CINI
                 o_cini = ''
@@ -208,7 +214,7 @@ class FA2(MultiprocessBased):
                     o_coordenadas_x,  # Coordenada x
                     o_coordenadas_y,  # Coordenada y
                     o_coordenadas_z,  # Coordenada z
-                    '',  # CIL
+                    o_cil,  # CIL
                     o_cini,  # CINI
                     o_municipio,  # Municipi
                     o_provincia,  # Provincia

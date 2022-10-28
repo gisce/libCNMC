@@ -557,7 +557,6 @@ class FA1(MultiprocessBased):
                     ]
                     o_comptador_cini = self.get_comptador_cini(polissa_id)
                     o_comptador_data = self.get_data_comptador(polissa_id)
-                    print(polissa_id)
                     polissa_id = polissa_id[0]
                     polissa = O.GiscedataPolissa.read(
                         polissa_id, fields_to_read, context_glob
