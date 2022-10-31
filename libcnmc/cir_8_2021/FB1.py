@@ -68,7 +68,7 @@ class FB1(MultiprocessBased):
         fields_to_read = [
             'baixa', 'data_pm', 'data_industria', 'coeficient', 'cini',
             'propietari', 'tensio_max_disseny_id', 'name', 'origen', 'final',
-            'perc_financament', 'longitud_cad', 'cable', 'linia',
+            'perc_financament', 'longitud_cad', 'cable', 'linia', 'model',
             'tipus_instalacio_cnmc_id', 'data_baixa',
             'baixa', 'data_baixa', 'longitud_cad', 'model', 'punt_frontera', 'data_pm'
         ]

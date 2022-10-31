@@ -529,7 +529,7 @@ def get_ines(o, ids):
     return res
 
 
-def get_tipus_connexio(id_escomesa):
+def get_tipus_connexio(o, id_escomesa):
     """
     Gets the tipus of connexio of an escomesa. If it's a BT escomesa we
     check the TramBT that suplies it to see if its aerial or underground.
@@ -542,7 +542,6 @@ def get_tipus_connexio(id_escomesa):
     :rtype: str
     """
 
-    o = self.connection
     tipus = 'A'
     if 'node_id' in o.GiscedataCupsEscomesa.fields_get().keys() and 'edge_id' in o.GiscedataBtElement.fields_get().keys():
         node_id = o.GiscedataCupsEscomesa.read(

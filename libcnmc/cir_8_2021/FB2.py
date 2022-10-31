@@ -125,7 +125,7 @@ class FB2(MultiprocessBased):
         fields_to_read = [
             'id', 'name', 'cini', 'data_pm', 'tipus_instalacio_cnmc_id', 'tensio_p',
             'id_municipi', 'perc_financament', 'descripcio', 'data_baixa', 'tensio_const',
-            self.compare_field, 'id_provincia', 'zona_id', 'node_id', 'potencia',
+            self.compare_field, 'id_municipi', 'zona_id', 'node_id', 'potencia',
             'model','punt_frontera', 'node_baixa'
         ]
 
@@ -344,23 +344,11 @@ class FB2(MultiprocessBased):
                 if vertex:
                     res_srid = convert_srid(get_srid(O), vertex)
 
-                #PROVINCIA
-                if 'id_provincia' in ct:
-                    provincia = O.ResCountryState.read(
-                        ct['id_provincia'][0], ['code']
-                    )
-                    provincia_name = provincia.get('code', "")
-                else:
-                    provincia_name = ""
-
-                #MUNICIPI
-                if 'id_municipi' in ct:
-                    municipi = O.ResMunicipi.read(
-                        ct['id_municipi'][0], ['ine']
-                    )
-                    municipi_name = municipi.get('ine', "")
-                else:
-                    municipi_name = ""
+                #MUNICIPI I PROVINCIA
+                municipio = ''
+                provincia = ''
+                if ct.get('id_municipi', False):
+                    provincia, municipi = self.get_ine(ct['id_municipi'][0])
 
                 #ZONA
                 if 'zona_id' in ct and ct['zona_id']:
@@ -391,8 +379,8 @@ class FB2(MultiprocessBased):
                     format_f(res_srid[0], decimals=3),  # X
                     format_f(res_srid[1], decimals=3),  # Y
                     z,                                  # Z
-                    municipi_name,                      # MUNICIPIO
-                    provincia_name,                     # PROVINCIA
+                    municipio,                      # MUNICIPIO
+                    provincia,                     # PROVINCIA
                     comunitat_codi or '',               # CODIGO_CCAA
                     zona_name,                          # ZONA
                     estado,                             # ESTADO

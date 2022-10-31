@@ -6,7 +6,7 @@ INVENTARI DE CNMC Centres Transformadors
 """
 from datetime import datetime
 import traceback
-from libcnmc.utils import format_f, convert_srid, get_srid, get_name_ti, format_f_6181, format_ccaa_code, adapt_diff
+from libcnmc.utils import format_f, convert_srid, get_srid, get_name_ti, format_f_6181, format_ccaa_code, get_ine
 from libcnmc.core import MultiprocessBased
 from libcnmc.models import F8Res4666
 from shapely import wkt
@@ -91,6 +91,18 @@ class FB6(MultiprocessBased):
 
         return node, vertex
 
+    def get_ine(self, municipi_id):
+        """
+        Returns the INE code of the given municipi
+        :param municipi_id: Id of the municipi
+        :type municipi_id: int
+        :return: state, ine municipi
+        :rtype:tuple
+        """
+        O = self.connection
+        muni = O.ResMunicipi.read(municipi_id, ['ine'])
+        return get_ine(O, muni['ine'])
+
     def obtenir_camps_linia_at(self, installacio):
         """
         Gets the data of the line where the cel·la is placed
@@ -110,21 +122,12 @@ class FB6(MultiprocessBased):
         ]
         linia = o.GiscedataAtLinia.read(int(linia_id[0]), fields_to_read)
         municipi = ''
-        provincia = ''
         id_municipi = linia['municipi'][0]
-        id_provincia = linia['provincia'][0]
         name = linia['name']
         tensio = format_f(float(linia['tensio']) / 1000.0, decimals=3)
 
-        if id_municipi and id_provincia:
-            provincia = o.ResCountryState.read(id_provincia, ['code'])['code']
-            municipi_dict = o.ResMunicipi.read(id_municipi, ['ine', 'dc'])
-            municipi = '{0}{1}'.format(municipi_dict['ine'][-3:],
-                                       municipi_dict['dc'])
         res = {
             'id_municipi': id_municipi,
-            'municipi': municipi,
-            'provincia': provincia,
             'tensio': tensio,
             'name': name
         }
@@ -309,9 +312,14 @@ class FB6(MultiprocessBased):
 
                 element =  cella['installacio'].split(',')[0]
                 dict_linia = self.obtenir_camps_linia_at(cella['installacio'])
-                o_municipi = dict_linia.get('municipi')
-                o_provincia = dict_linia.get('provincia')
-                id_municipi = dict_linia.get('id_municipi')
+
+                # MUNICIPI I PROVINCIA
+                o_municipi = ''
+                o_provincia = ''
+                if dict_linia.get('id_municipi', False):
+                    id_municipi = dict_linia['id_municipi'][0]
+                    o_provincia, o_municipi = self.get_ine(id_municipi)
+
                 o_name = dict_linia.get('name')
 
                 # funció per trobar la ccaa desde el municipi

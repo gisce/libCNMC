@@ -7,7 +7,7 @@ INVENTARI DE CNMC Centres Transformadors
 from __future__ import absolute_import
 from datetime import datetime
 import traceback, psycopg2.extras
-from libcnmc.utils import format_f, convert_srid, get_srid, get_ines
+from libcnmc.utils import format_f, convert_srid, get_srid, get_ine
 from libcnmc.core import MultiprocessBased
 
 ZONA = {
@@ -55,6 +55,18 @@ class FB3(MultiprocessBased):
                 vertex = (round(v['x'], 3), round(v['y'], 3))
         return vertex
 
+    def get_ine(self, municipi_id):
+        """
+        Returns the INE code of the given municipi
+        :param municipi_id: Id of the municipi
+        :type municipi_id: int
+        :return: state, ine municipi
+        :rtype:tuple
+        """
+        O = self.connection
+        muni = O.ResMunicipi.read(municipi_id, ['ine'])
+        return get_ine(O, muni['ine'])
+
     def get_ct(self, ct_id):
         o = self.connection
         ct = o.GiscedataCts.search([('id', '=', ct_id)])
@@ -90,9 +102,12 @@ class FB3(MultiprocessBased):
                     vertex = (sub["x"], sub["y"])
                 else:
                     vertex = self.get_vertex(sub['ct_id'][0])
-                ines = get_ines(o, ids_sub)
-                o_municipi = ines['ine_municipi']
-                o_provincia = ines['ine_provincia']
+
+                # MUNICIPI I PROVINCIA
+                o_municipi = ''
+                o_provincia = ''
+                if sub.get('id_municipi', False):
+                    o_provincia, o_municipi = self.get_ine(sub['id_municipi'][0])
 
                 z = ''
                 res_srid = ['', '']

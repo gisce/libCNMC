@@ -7,7 +7,7 @@ INVENTARI DE CNMC Centres Transformadors
 from __future__ import absolute_import
 from datetime import datetime
 import traceback, psycopg2.extras
-from libcnmc.utils import format_f, convert_srid, get_srid
+from libcnmc.utils import format_f, convert_srid, get_srid, get_ine
 from libcnmc.core import MultiprocessBased
 from shapely import wkt
 
@@ -29,10 +29,17 @@ class FB7(MultiprocessBased):
         return self.connection.GiscegisNodes.search([]
         )
 
-    def get_ine_state(self, municipi_id):
+    def get_ine(self, municipi_id):
+        """
+        Returns the INE code of the given municipi
+        :param municipi_id: Id of the municipi
+        :type municipi_id: int
+        :return: state, ine municipi
+        :rtype:tuple
+        """
         O = self.connection
-        data = O.ResMunicipi.read(municipi_id, ['ine', 'dc', 'state'])
-        return data
+        muni = O.ResMunicipi.read(municipi_id, ['ine'])
+        return get_ine(O, muni['ine'])
 
     def consumer(self):
         O = self.connection
@@ -51,13 +58,12 @@ class FB7(MultiprocessBased):
                 coords = wkt.loads(node["geom"]).coords[0]
                 vertex = [coords[0], coords[1]]
 
-                if node['municipi_id']:
-                   data = self.get_ine_state(node['municipi_id'][0])
-                   o_municipi = data['ine']
-                   o_provincia = data['state'][0]
-                else:
-                   o_municipi = ''
-                   o_provincia = ''
+                # MUNICIPI I PROVINCIA
+                o_municipi = ''
+                o_provincia = ''
+                if node.get('municipi_id', False):
+                    municipi_id = node['municipi_id'][0]
+                    o_provincia, o_municipi = self.get_ine(municipi_id)
 
                 z = ''
                 res_srid = ['', '']

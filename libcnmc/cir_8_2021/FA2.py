@@ -8,7 +8,7 @@ from __future__ import absolute_import
 from datetime import datetime
 import traceback
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import parse_geom, get_ines, get_tipus_connexio, format_f
+from libcnmc.utils import parse_geom, get_tipus_connexio, format_f, get_ine
 
 ZONA = {
     'RURAL CONCENTRADA': 'RC',
@@ -32,10 +32,22 @@ class FA2(MultiprocessBased):
         for elem in range(0, len(re_ids)):
             re_ids[elem] = 're.{}'.format(re_ids[elem])
 
-        autoconsum_ids = self.connection.GiscedataAutoconsum.search([('subseccio', '=', )])
-        for elem in range(0, len(autoconsum_ids)):
-            autoconsum_ids[elem] = 'au.{}'.format(autoconsum_ids[elem])
-        return ids
+        # autoconsum_ids = self.connection.GiscedataAutoconsum.search([('subseccio', '=', )])
+        # for elem in range(0, len(autoconsum_ids)):
+        #     autoconsum_ids[elem] = 'au.{}'.format(autoconsum_ids[elem])
+        return re_ids
+
+    def get_ine(self, municipi_id):
+        """
+        Returns the INE code of the given municipi
+        :param municipi_id: Id of the municipi
+        :type municipi_id: int
+        :return: state, ine municipi
+        :rtype:tuple
+        """
+        O = self.connection
+        muni = O.ResMunicipi.read(municipi_id, ['ine'])
+        return get_ine(O, muni['ine'])
 
     def get_municipi_provincia(self, cups):
         o = self.connection
@@ -185,9 +197,14 @@ class FA2(MultiprocessBased):
                     o_cini = recore['cini']
 
                 # Municipi + Provincia
-                municipi_provincia_data = self.get_municipi_provincia(cups)
-                o_municipio = get_ines(o, municipi_provincia_data)['ine_municipi']
-                o_provincia = get_ines(o, municipi_provincia_data)['ine_provincia']
+                o_municipio = ''
+                o_provincia = ''
+                cups_id = o.GiscedataCupsPs.search([('name', '=', cups[0])])
+                if cups_id:
+                    municipi_data = o.GiscedataCupsPs.read(cups_id, ['id_municipi'])
+                    if municipi_data.get('id_municipi', False):
+                        municipi_id = municipi_data['id_municipi']
+                        o_provincia, o_municipio = self.get_ine(municipi_id)
 
                 # Zona
                 o_zona = self.get_zona(cups)
