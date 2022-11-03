@@ -2,6 +2,7 @@
 from datetime import datetime
 import traceback
 from libcnmc.core import MultiprocessBased
+from libcnmc.utils import convert_srid, get_srid, format_f
 
 class FB1_1(MultiprocessBased):
     def __init__(self, **kwargs):
@@ -61,19 +62,37 @@ class FB1_1(MultiprocessBased):
                     try:
                         dest = points[o_position + 1]
                         if dest:
+                            # Vertex inici
                             o_inicio = '{} 0'.format(p)
-                            o_final = '{} 0'.format(dest)
-                            o_inicio_x, o_inicio_y, o_inicio_z = o_inicio.split(' ')
-                            o_final_x, o_final_y, o_final_z = o_final.split(' ')
+                            inicio = o_inicio.split(' ')
+                            vertex_inicio = {
+                                'x': inicio[0],
+                                'y': inicio[1]
+                            }
+                            res_srid_inicio = convert_srid(get_srid(o), (vertex_inicio['x'], vertex_inicio['y']))
                             o_inicio_z = ''
+
+                            # Vertex final
+                            o_final = '{} 0'.format(dest)
+                            final = o_final.split(' ')
+                            vertex_final = {
+                                'x': final[0],
+                                'y': final[1]
+                            }
+                            res_srid_final = convert_srid(get_srid(o), (vertex_final['x'], vertex_final['y']))
                             o_final_z = ''
+
                             self.output_q.put([
                                 '{}_{}'.format(o_segmento, o_position + 1),  # CÓDIGO SEGMENTO
-                                o_identificador,  # IDENTIFICADOR DE TRAMO
-                                o_position + 1,  # ORDEN EN LA LISTA DE SEGMENTOS
-                                o_nsegmento,  # TOTAL SEGMENTOS
-                                o_inicio_x, o_inicio_y, o_inicio_z,  # PUNTO INICIAL
-                                o_final_x, o_final_y, o_final_z  # PUNTO FINAL
+                                o_identificador,                             # IDENTIFICADOR DE TRAMO
+                                o_position + 1,                              # ORDEN EN LA LISTA DE SEGMENTOS
+                                o_nsegmento,                                 # TOTAL SEGMENTOS
+                                format_f(res_srid_inicio[0], decimals=3),    # COORDENADA X INICIO
+                                format_f(res_srid_inicio[1], decimals=3),    # COORDENADA Y INICIO
+                                o_inicio_z,                                  # COORDENADA Z INICIO
+                                format_f(res_srid_final[0], decimals=3),     # COORDENADA X FINAL
+                                format_f(res_srid_final[1], decimals=3),     # COORDENADA Y FINAL
+                                o_final_z                                    # COORDENADA Z FINAL
                             ])
                     except:
                         pass
