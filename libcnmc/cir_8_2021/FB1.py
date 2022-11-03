@@ -7,12 +7,10 @@ INVENTARI DE CNMC AT
 from __future__ import absolute_import
 from datetime import datetime
 import traceback
-import math
-
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import (format_f, tallar_text, get_forced_elements, adapt_diff, format_f_6181, get_codi_actuacio,
+from libcnmc.utils import (format_f, tallar_text, format_f_6181, get_codi_actuacio,
                            convert_spanish_date, )
-from libcnmc.models import F1Res4666
+
 
 
 class FB1(MultiprocessBased):
@@ -114,9 +112,6 @@ class FB1(MultiprocessBased):
                         # Si el tram tram es embarrat no l'afegim
                         if tipus['codi'] == 'E':
                             continue
-                else:
-                    cable = O.GiscedataAtCables.read(
-                        id_desconegut, ['tipus'])
 
                 # Calculem any posada en marxa
                 data_pm = ''
@@ -142,8 +137,19 @@ class FB1(MultiprocessBased):
                 else:
                     codi_ccuu = ''
 
-		# Comunitat
+                # Comunitat
                 comunitat = ''
+                fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
+                if tram.get('linia', False):
+                    linia_id = O.GiscedataAtLinia.search([('name', '=', tram['linia'][1])]) 
+                    if linia_id:
+                        municipi_data = O.GiscedataAtLinia.read(linia_id, ['municipi'])[0]
+                        if municipi_data.get('municipi', False):
+                            municipi_id = municipi_data['municipi'][0]
+                            id_comunitat = fun_ccaa(municipi_id)
+                            comunitat_vals = O.ResComunitat_autonoma.read(id_comunitat[0], ['codi'])
+                            if comunitat_vals:
+                                comunitat = comunitat_vals['codi']
 
                 # Propietari
                 if tram.get('propietari', False):
@@ -157,20 +163,20 @@ class FB1(MultiprocessBased):
                 # Tensión_explotación
 		tension_explotacion = ''
                 if tram.get('linia', False):
-		    linia_name = tram['linia'][1]
-	            linia_srch = O.GiscedataAtLinia.search([('name', '=', linia_name)])
-		    if linia_srch:
-			tensio_data = O.GiscedataAtLinia.read(linia_srch, ['tensio'])[0]
-			if tensio_data.get('tensio', False):
-			    tension_explotacion = tensio_data['tensio']
+                    linia_name = tram['linia'][1]
+                    linia_srch = O.GiscedataAtLinia.search([('name', '=', linia_name)])
+                    if linia_srch:
+                        tensio_data = O.GiscedataAtLinia.read(linia_srch, ['tensio'])[0]
+                        if tensio_data.get('tensio', False):
+                            tension_explotacion = tensio_data['tensio']
 
                 # Tensión_construcción
                 if tram.get('tensio_max_disseny_id', False):
                     tension_construccion = tram['tensio_max_disseny_id'][1]
-		    if str(tension_construccion) == str(tension_explotacion):
-			tension_construccion = ''
-                else:
-                    tension_construccion = ''
+                    if str(tension_construccion) == str(tension_explotacion):
+                        tension_construccion = ''
+                    else:
+                        tension_construccion = ''
 
                 # Resistencia, Reactancia, Intensitat
                 if tram.get('cable', False):

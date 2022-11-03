@@ -2,7 +2,6 @@
 from datetime import datetime
 import traceback
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import parse_geom
 
 class FB1_1(MultiprocessBased):
     def __init__(self, **kwargs):
@@ -11,6 +10,7 @@ class FB1_1(MultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.report_name = 'FB1.1 - Topología real'
         self.base_object = 'Topología'
+        self.prefix = kwargs.pop('prefix', 'A') or 'A'
 
     def get_sequence(self):
         data_pm = '%s-01-01' % (self.year + 1)
@@ -48,7 +48,7 @@ class FB1_1(MultiprocessBased):
                 elif item[1] == 'bt':
                     tramo = o.GiscedataBtElement.read(item[0], fields_to_read)
                 o_segmento = tramo['name']
-                o_identificador = tramo['id']
+                o_identificador = '{}{}'.format(self.prefix, tramo['name']) 
                 geom = tramo['geom']
                 points = geom.replace('LINESTRING(', '')
                 points = points.replace(')', '')
@@ -65,6 +65,8 @@ class FB1_1(MultiprocessBased):
                             o_final = '{} 0'.format(dest)
                             o_inicio_x, o_inicio_y, o_inicio_z = o_inicio.split(' ')
                             o_final_x, o_final_y, o_final_z = o_final.split(' ')
+                            o_inicio_z = ''
+                            o_final_z = ''
                             self.output_q.put([
                                 '{}_{}'.format(o_segmento, o_position + 1),  # CÓDIGO SEGMENTO
                                 o_identificador,  # IDENTIFICADOR DE TRAMO

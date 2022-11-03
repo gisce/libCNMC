@@ -291,10 +291,10 @@ class FB6(MultiprocessBased):
                             causa_baja = 3
                     else:
                         fecha_baja = ''
-                        causa_baja = 0;
+                        causa_baja = 0
                 else:
                     fecha_baja = ''
-                    causa_baja = 0;
+                    causa_baja = 0
 
                 #CODIGO CCUU
                 id_ti = cella['tipus_instalacio_cnmc_id'][0]
@@ -317,7 +317,7 @@ class FB6(MultiprocessBased):
                 o_municipi = ''
                 o_provincia = ''
                 if dict_linia.get('id_municipi', False):
-                    id_municipi = dict_linia['id_municipi'][0]
+                    id_municipi = dict_linia['id_municipi']
                     o_provincia, o_municipi = self.get_ine(id_municipi)
 
                 o_name = dict_linia.get('name')

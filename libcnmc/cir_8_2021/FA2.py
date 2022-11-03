@@ -8,7 +8,8 @@ from __future__ import absolute_import
 from datetime import datetime
 import traceback
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import parse_geom, get_tipus_connexio, format_f, get_ine
+from libcnmc.utils import parse_geom, get_tipus_connexio, format_f, get_ine, convert_srid, get_srid
+from shapely import wkt
 
 ZONA = {
     'RURAL CONCENTRADA': 'RC',
@@ -35,6 +36,7 @@ class FA2(MultiprocessBased):
         # autoconsum_ids = self.connection.GiscedataAutoconsum.search([('subseccio', '=', )])
         # for elem in range(0, len(autoconsum_ids)):
         #     autoconsum_ids[elem] = 'au.{}'.format(autoconsum_ids[elem])
+        print(re_ids)
         return re_ids
 
     def get_ine(self, municipi_id):
@@ -122,24 +124,6 @@ class FA2(MultiprocessBased):
                 res['cau'] = cau_data['cau']
         return res
 
-    def get_node_geom(self, cups):
-        o = self.connection
-        res = {
-            'node': '',
-            'x': '',
-            'y': '',
-        }
-        escomesa_data = o.GiscedataCupsPs.read(cups[0], ['id_escomesa'])['id_escomesa']
-        if escomesa_data:
-            node_data = o.GiscedataCupsEscomesa.read(escomesa_data[0], ['node_id'])['node_id']
-            if node_data:
-                res['node'] = node_data[1]
-            geom_data = o.GiscedataCupsEscomesa.read(escomesa_data[0], ['geom'])['geom']
-            if geom_data:
-                res['x'] = format_f(parse_geom(geom_data)[0]['x'], decimals=3)
-                res['y'] = format_f(parse_geom(geom_data)[0]['y'], decimals=3)
-        return res
-
     def get_serveis_aux(self, cups):
         o = self.connection
         serveis_aux = ''
@@ -177,14 +161,27 @@ class FA2(MultiprocessBased):
                     recore = o.GiscedataRe.read(id_, fields_to_read)[0]
                     cups = recore['cups']
 
-                # Node
-                node_geom = self.get_node_geom(cups)
-                o_nudo = node_geom['node']
-
-                # Coordenades
-                o_coordenadas_x = node_geom['x']
-                o_coordenadas_y = node_geom['y']
+                # Coordenades I Node
+                vertex = ''
+                o_nudo = ''
                 o_coordenadas_z = ''
+                res_srid = ['', '']
+
+                escomesa_data = o.GiscedataCupsPs.read(cups[0], ['id_escomesa'])['id_escomesa']
+                if escomesa_data:
+                    node_data = o.GiscedataCupsEscomesa.read(escomesa_data[0], ['node_id'])['node_id']
+                    if node_data:
+                        o_nudo = node_data[1]
+                    geom_data = o.GiscedataCupsEscomesa.read(escomesa_data[0], ['geom'])
+                    if geom_data.get('geom', False):
+                        geom = wkt.loads(geom_data['geom']).coords[0]
+                        vertex = {"x": geom[0], "y": geom[1]}
+
+                res_srid = ['', '']
+                if vertex:
+                    res_srid = convert_srid(
+                        get_srid(o), (vertex['x'], vertex['y'])
+                    )
 
                 # CIL
                 o_cil = ''
@@ -199,11 +196,11 @@ class FA2(MultiprocessBased):
                 # Municipi + Provincia
                 o_municipio = ''
                 o_provincia = ''
-                cups_id = o.GiscedataCupsPs.search([('name', '=', cups[0])])
+                cups_id = o.GiscedataCupsPs.search([('name', '=', cups[1])])
                 if cups_id:
-                    municipi_data = o.GiscedataCupsPs.read(cups_id, ['id_municipi'])
+                    municipi_data = o.GiscedataCupsPs.read(cups_id, ['id_municipi'])[0]
                     if municipi_data.get('id_municipi', False):
-                        municipi_id = municipi_data['id_municipi']
+                        municipi_id = municipi_data['id_municipi'][0]
                         o_provincia, o_municipio = self.get_ine(municipi_id)
 
                 # Zona
@@ -238,8 +235,8 @@ class FA2(MultiprocessBased):
 
                 self.output_q.put([
                     o_nudo,  # Node
-                    o_coordenadas_x,  # Coordenada x
-                    o_coordenadas_y,  # Coordenada y
+                    format_f(res_srid[0], decimals=3),  # Coordenada x
+                    format_f(res_srid[1], decimals=3),  # Coordenada y
                     o_coordenadas_z,  # Coordenada z
                     o_cil,  # CIL
                     o_cini,  # CINI

@@ -38,12 +38,14 @@ class FB3_1(MultiprocessBased):
 
         o = self.connection
         sub = o.GiscedataCtsSubestacions.read(
-            sub_id, ['ct_id', 'cini', 'name', 'node_id']
+            sub_id, ['ct_id', 'cini', 'name', 'node_id', 'x', 'y']
         )
         ret = {
             "ct_id": sub['ct_id'][0],
             "cini": sub['cini'],
-            "name": sub['name']
+            "name": sub['name'],
+            "x": sub['x'],
+            "y": sub['y'],
         }
         if 'node_id' in sub:
             ret["node"] = sub["node_id"][1]

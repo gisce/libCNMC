@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime, timedelta
 from multiprocessing import Manager
-import re
 import traceback
 
 from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP, \
@@ -438,7 +437,7 @@ class FA1(MultiprocessBased):
                 vertex = False
                 if cups and cups['id_escomesa'] and "node_id" not in cups:
                     o_connexio = get_tipus_connexio(
-                        cups['id_escomesa'][0]
+                        O, cups['id_escomesa'][0]
                     )
                     search_params = [('escomesa', '=', cups['id_escomesa'][0])]
                     bloc_escomesa_id = O.GiscegisBlocsEscomeses.search(
