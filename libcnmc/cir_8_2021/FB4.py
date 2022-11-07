@@ -268,7 +268,7 @@ class FB4(MultiprocessBased):
                     ajena,  #AJENA
                     equipada,   #EQUIPADA
                     estado,     #ESTADO
-                    'I',         #MODELO
+                    modelo,         #MODELO
                     punt_frontera,  #PUNTO_FRONTERA
                     data_pm,      #FECHA_APS
                     fecha_baja,     #FECHA_BAJA

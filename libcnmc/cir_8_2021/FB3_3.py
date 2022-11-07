@@ -91,7 +91,7 @@ class FB3_3(MultiprocessBased):
         o = self.connection
         fields_to_read = [
             'ct', 'name', 'cini', 'propietari', 'id_estat',
-            'conexions', 'id_operacio'
+            'conexions', 'id_operacio', 'data_pm'
         ]
         while True:
             try:
@@ -108,7 +108,11 @@ class FB3_3(MultiprocessBased):
                 o_costat_baixa = self.get_costat_baixa(trafo)
                 o_propietat = int(trafo['propietari'])
                 o_estat = self.get_estat(trafo['id_estat'][0])
-                o_any = self.year
+
+                # AÑO_PS
+                o_any_ps = ''
+                if trafo.get('data_pm', False):
+                    o_any_ps= trafo['data_pm']
 
                 id_estat = trafo['id_estat']
                 if id_estat:
@@ -126,7 +130,7 @@ class FB3_3(MultiprocessBased):
                     o_cini,  # CINI
                     o_costat_alta,  # PARQUE ALTA
                     o_costat_baixa,  # PARQUE BAJA
-                    o_any,  # AÑO INFORMACION
+                    o_any_ps,  # AÑO INFORMACION
                     o_operacio # OPERACION
                 ])
             except Exception:
