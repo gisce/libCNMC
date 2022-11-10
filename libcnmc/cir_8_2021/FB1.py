@@ -66,7 +66,6 @@ class FB1(MultiprocessBased):
         )
 
         for dt in data_tram:
-            print(dt)
             if dt["linia"][0] not in self.linia_tram_include:
                 self.linia_tram_include[dt["linia"][0]] = [dt["id"]]
             else:
@@ -112,7 +111,14 @@ class FB1(MultiprocessBased):
         for elem in range(0, len(bt_ids)):
             bt_ids[elem] = 'bt.{}'.format(bt_ids[elem])
 
+        bt_ids = bt_ids[0:100]
         at_bt_ids = at_ids + bt_ids
+        print('####################')
+        print('####################')
+        print('AT: {}'.format(len(at_ids)))
+        print('BT: {}'.format(len(bt_ids)))
+        print('####################')
+        print('####################')
         return at_bt_ids
 
     def consumer(self):
@@ -164,7 +170,6 @@ class FB1(MultiprocessBased):
                 item = int(item.split('.')[1])
 
                 if model == 'at':
-
                     linia = O.GiscedataAtLinia.read(
                         item,
                         ['trams', 'tensio', 'municipi', 'propietari', 'provincia']
@@ -366,8 +371,10 @@ class FB1(MultiprocessBased):
                         data_finalitzacio = O.GiscedataProjecteObra.read(obra_id, ['data_finalitzacio'])
                         inici_any = '{}-01-01'.format(self.year)
 
-                        if obra_id and data_finalitzacio >= inici_any:
+                        if obra_id:
                             tram_obra = O.GiscedataProjecteObraTiAt.read(obra_id, fields_to_read_obra)[0]
+                            if data_finalitzacio and data_finalitzacio <= inici_any:
+                                tram_obra = ''
                         else:
                             tram_obra = ''
 
@@ -497,7 +504,8 @@ class FB1(MultiprocessBased):
                 if model == 'bt':
                     fields_to_read = ['name', 'cini', 'coeficient', 'municipi', 'voltatge', 'tensio_const',
                                       'coeficient', 'longitud_cad', 'punto_frontera', 'model', 'operacion',
-                                      'propietari', 'edge_id', 'cable'
+                                      'propietari', 'edge_id', 'cable', 'tipus_instalacio_cnmc_id',
+                                      'data_pm'
                                       ]
 
                     linia = O.GiscedataBtElement.read(item, fields_to_read)
@@ -525,12 +533,12 @@ class FB1(MultiprocessBased):
                     nudo_inicial = ''
                     nudo_final = ''
                     if linia.get('edge_id', False):
-                        edge_id = linia['edge_id']
+                        edge_id = linia['edge_id'][0]
                         edge_data = O.GiscegisEdge.read(edge_id, ['start_node', 'end_node'])
                         if edge_data.get('start_node', False):
-                            nudo_inicial = edge_data['start_node']
+                            nudo_inicial = edge_data['start_node'][1]
                         if edge_data.get('end_node', False):
-                            nudo_final = edge_data['end_node']
+                            nudo_final = edge_data['end_node'][1]
 
                     # CCAA 1 / CCAA 2
                     ccaa_1 = ccaa_2 = ''
@@ -546,7 +554,10 @@ class FB1(MultiprocessBased):
                     # PROPIEDAD
                     propiedad = ''
                     if linia.get('propietari', False):
-                        propiedad = linia['propietari']
+                        if linia['propietari']:
+                            propiedad = '1'
+                        else:
+                            propiedad = '0'
 
                     # TENSION EXPLOTACION
                     tension_explotacion = ''
@@ -621,7 +632,10 @@ class FB1(MultiprocessBased):
                     # OPERACION
                     operacion = ''
                     if linia.get('operacion', False):
-                        operacion = linia['operacion']
+                        if linia['operacion']:
+                            operacion = '1'
+                        else:    
+                            operacion = '0'
 
                     # FECHA APS
                     fecha_aps = ''
@@ -667,8 +681,10 @@ class FB1(MultiprocessBased):
                     data_finalitzacio = O.GiscedataProjecteObra.read(obra_id, ['data_finalitzacio'])
                     inici_any = '{}-01-01'.format(self.year)
 
-                    if obra_id and data_finalitzacio >= inici_any:
+                    if obra_id:
                         linia_obra = O.GiscedataProjecteObraTiBt.read(obra_id, fields_to_read_obra)[0]
+                        if data_finalitzacio and data_finalitzacio <= inici_any:
+                            linia_obra = ''
                     else:
                         linia_obra = ''
 
