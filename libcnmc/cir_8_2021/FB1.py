@@ -161,6 +161,7 @@ class FB1(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
                 model = item.split('.')[0]
+                item = int(item.split('.')[1])
 
                 if model == 'at':
 
@@ -278,6 +279,7 @@ class FB1(MultiprocessBased):
                                     tension_explotacion = tensio_data['tensio']
 
                         # Tensión_construcción
+                        tension_construccion = ''
                         if tram.get('tensio_max_disseny_id', False):
                             tension_construccion = tram['tensio_max_disseny_id'][1]
                             if str(tension_construccion) == str(tension_explotacion):
@@ -493,8 +495,267 @@ class FB1(MultiprocessBased):
                         self.output_q.put(output)
 
                 if model == 'bt':
-                    pass
+                    fields_to_read = ['name', 'cini', 'coeficient', 'municipi', 'voltatge', 'tensio_const',
+                                      'coeficient', 'longitud_cad', 'punto_frontera', 'model', 'operacion',
+                                      'propietari', 'edge_id', 'cable'
+                                      ]
 
+                    linia = O.GiscedataBtElement.read(item, fields_to_read)
+
+                    # IDENTIFICADOR TRAMO
+                    identificador_tramo = ''
+                    if linia.get('name', False):
+                        identificador_tramo = linia['name']
+
+                    # CINI
+                    cini = ''
+                    if linia.get('cini', False):
+                        cini = linia['cini']
+
+                    # CODIGO CCUU
+                    if linia['tipus_instalacio_cnmc_id']:
+                        id_ti = linia.get('tipus_instalacio_cnmc_id')[0]
+                        codigo_ccuu = O.GiscedataTipusInstallacio.read(
+                            id_ti,
+                            ['name'])['name']
+                    else:
+                        codigo_ccuu = ''
+
+                    # NUDO INICIAL / NUDO FINAL
+                    nudo_inicial = ''
+                    nudo_final = ''
+                    if linia.get('edge_id', False):
+                        edge_id = linia['edge_id']
+                        edge_data = O.GiscegisEdge.read(edge_id, ['start_node', 'end_node'])
+                        if edge_data.get('start_node', False):
+                            nudo_inicial = edge_data['start_node']
+                        if edge_data.get('end_node', False):
+                            nudo_final = edge_data['end_node']
+
+                    # CCAA 1 / CCAA 2
+                    ccaa_1 = ccaa_2 = ''
+                    if linia['municipi']:
+                        ccaa_obj = O.ResComunitat_autonoma
+                        id_comunitat = ccaa_obj.get_ccaa_from_municipi(
+                            linia['municipi'][0])
+                        id_comunitat = id_comunitat[0]
+                        comunidad = ccaa_obj.read(id_comunitat, ['codi'])
+                        if comunidad:
+                            ccaa_1 = ccaa_2 = comunidad['codi']
+
+                    # PROPIEDAD
+                    propiedad = ''
+                    if linia.get('propietari', False):
+                        propiedad = linia['propietari']
+
+                    # TENSION EXPLOTACION
+                    tension_explotacion = ''
+                    if linia.get('voltatge', False):
+                        tension_explotacion = linia['voltatge']
+
+                    # TENSION CONSTRUCCION
+                    tension_construccion = ''
+                    if linia.get('tensio_const', False):
+                        tension_construccion = linia['tensio_max_disseny_id'][1]
+                        if str(tension_construccion) == str(tension_explotacion):
+                            tension_construccion = ''
+                        else:
+                            tension_construccion = ''
+
+                    # LONGITUD
+                    coeficient = linia.get('coeficient', 1.0)
+                    if 'longitud_cad' in linia:
+                        if self.dividir:
+                            long_tmp = linia['longitud_cad']/linia.get(
+                                'circuits', 1
+                            ) or 1
+                            longitud = round(
+                                long_tmp * coeficient/1000.0, 3
+                            ) or 0.001
+                        else:
+                            longitud = round(
+                                tram['longitud_cad'] * coeficient/1000.0, 3
+                            ) or 0.001
+                    else:
+                        longitud = 0
+
+                    # RESISTENCIA, REACTANCIA, INTENSITAT
+                    if tram.get('cable', False):
+                        cable_obj = O.GiscedataAtCables
+                        cable_id = tram['cable'][0]
+                        cable_data = cable_obj.read(cable_id, ['resistencia', 'reactancia', 'intensitat_admisible'])
+                        if tram.get('longitud_cad', False):
+                            longitud_en_km = tram['longitud_cad'] / 1000
+                            if cable_data.get('resistencia', False):
+                                resistencia_per_km = cable_data['resistencia']
+                                resistencia = resistencia_per_km * longitud_en_km
+                            else:
+                                resistencia = ''
+                            if cable_data.get('reactancia', False):
+                                reactancia_per_km = cable_data['reactancia']
+                                reactancia = reactancia_per_km * longitud_en_km
+                            else:
+                                reactancia = ''
+                        else:
+                            resistencia, reactancia = ['', '']
+                        if cable_data.get('intensitat_admisible', False):
+                            intensitat = cable_data['intensitat_admisible']
+                        else:
+                            intensitat = ''
+                    else:
+                        resistencia, reactancia, intensitat = ['', '', '']
+
+                    # ESTADO
+                    estado = ''
+
+                    # PUNTO FRONTERA
+                    punto_frontera = ''
+                    if linia.get('punto_frontera', False):
+                        punto_frontera = linia['punto_frontera']
+
+                    # MODELO
+                    modelo = ''
+                    if linia.get('model', False):
+                        modelo = linia['model']
+
+                    # OPERACION
+                    operacion = ''
+                    if linia.get('operacion', False):
+                        operacion = linia['operacion']
+
+                    # FECHA APS
+                    fecha_aps = ''
+                    if linia.get('data_pm', False):
+                        fecha_aps = linia['data_pm']
+
+                    # CAUSA BAJA
+                    if linia.get('obra_id', False):
+                        causa_baja = '0'
+                        obra_id = linia['obra_id']
+                        obra_at_obj = O.GiscedataProjecteObraTiAt
+                        causa_baja_data = obra_at_obj.read(obra_id, ['causa_baja'])
+                        if causa_baja_data.get('causa_baja', False):
+                            causa_baja = causa_baja_data['causa_baja']
+                    else:
+                        causa_baja = '0'
+
+                    # FECHA BAJA
+                    if tram.get('data_baixa'):
+                        if tram.get('data_baixa') > data_pm_limit:
+                            fecha_baja = ''
+                        else:
+                            tmp_date = datetime.strptime(
+                                tram.get('data_baixa'), '%Y-%m-%d')
+                            fecha_baja = tmp_date.strftime('%d/%m/%Y')
+                    else:
+                        fecha_baja = ''
+
+                    # OBRES
+                    fields_to_read_obra = [
+                        'name', 'cini', 'tipo_inversion', 'ccuu', 'codigo_ccaa', 'nivel_tension_explotacion',
+                        'financiado',
+                        'fecha_aps', 'fecha_baja', 'causa_baja', 'im_ingenieria', 'im_materiales', 'im_obracivil',
+                        'im_trabajos', 'subvenciones_europeas', 'subvenciones_nacionales', 'subvenciones_prtr',
+                        'avifauna',
+                        'valor_auditado', 'valor_contabilidad', 'cuenta_contable', 'porcentaje_modificacion',
+                        'motivacion', 'obra_id', 'identificador_baja',
+                    ]
+
+                    obra_id = O.GiscedataProjecteObraTiBt.search([('element_ti_id', '=', linia['id'])])
+
+                    # Filtre d'obres finalitzades
+                    data_finalitzacio = O.GiscedataProjecteObra.read(obra_id, ['data_finalitzacio'])
+                    inici_any = '{}-01-01'.format(self.year)
+
+                    if obra_id and data_finalitzacio >= inici_any:
+                        linia_obra = O.GiscedataProjecteObraTiBt.read(obra_id, fields_to_read_obra)[0]
+                    else:
+                        linia_obra = ''
+
+                    # CAMPS OBRA
+                    if linia_obra != '':
+                        data_ip = convert_spanish_date(
+                            linia_obra['fecha_aps'] if not linia_obra['fecha_baja'] and linia_obra[
+                                'tipo_inversion'] != '1' else ''
+                        )
+                        identificador_baja = (
+                            get_inst_name(linia_obra['identificador_baja']) if linia_obra['identificador_baja'] else ''
+                        )
+                        tipo_inversion = (linia_obra['tipo_inversion'] or '0') if not linia_obra['fecha_baja'] else '1'
+                        im_ingenieria = format_f_6181(linia_obra['im_ingenieria'] or 0.0, float_type='euro')
+                        im_materiales = format_f_6181(linia_obra['im_materiales'] or 0.0, float_type='euro')
+                        im_obracivil = format_f_6181(linia_obra['im_obracivil'] or 0.0, float_type='euro')
+                        im_construccion = str(format_f(
+                            float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
+                            , 2)).replace(".", ",")
+                        im_trabajos = format_f_6181(linia_obra['im_trabajos'] or 0.0, float_type='euro')
+                        subvenciones_europeas = format_f_6181(linia_obra['subvenciones_europeas'] or 0.0,
+                                                              float_type='euro')
+                        subvenciones_nacionales = format_f_6181(linia_obra['subvenciones_nacionales'] or 0.0,
+                                                                float_type='euro')
+                        subvenciones_prtr = format_f_6181(linia_obra['subvenciones_prtr'] or 0.0, float_type='euro')
+                        valor_auditado = format_f_6181(linia_obra['valor_auditado'] or 0.0, float_type='euro')
+                        motivacion = get_codi_actuacio(O, linia_obra['motivacion'] and linia_obra['motivacion'][0]) if not \
+                            linia_obra['fecha_baja'] else ''
+                        cuenta_contable = linia_obra['cuenta_contable']
+                        financiado = format_f(
+                            100.0 - linia_obra.get('financiado', 0.0), 2
+                        )
+                        avifauna = int(linia_obra['avifauna'] == True)
+                    else:
+                        data_ip = ''
+                        identificador_baja = ''
+                        tipo_inversion = ''
+                        im_ingenieria = ''
+                        im_construccion = ''
+                        im_trabajos = ''
+                        subvenciones_europeas = ''
+                        subvenciones_nacionales = ''
+                        subvenciones_prtr = ''
+                        valor_auditado = ''
+                        motivacion = ''
+                        cuenta_contable = ''
+                        avifauna = ''
+                        financiado = ''
+
+                    output = [
+                        '{}{}'.format(self.prefix, identificador_tramo),  # IDENTIFICADOR TRAMO
+                        tram.get('cini', '') or '',  # CINI
+                        codigo_ccuu or '',  # CODIGO_CCUU
+                        nudo_inicial,  # ORIGEN
+                        nudo_final,  # DESTINO
+                        ccaa_1,  # CODIGO_CCAA_1
+                        ccaa_2,  # CODIGO_CCAA_2
+                        propiedad,  # PROPIEDAD
+                        tension_explotacion,  # TENSION_EXPLOTACIÓN
+                        tension_construccion,  # TENSION_CONSTRUCCIÓN
+                        format_f(longitud, 3),  # LONGITUD
+                        resistencia,  # RESISTENCIA
+                        reactancia,  # REACTANCIA
+                        intensitat,  # INTENSIDAD
+                        punto_frontera,  # PUNTO_FRONTERA
+                        modelo,  # MODELO
+                        operacion,  # OPERACIÓN
+                        fecha_aps,  # FECHA APS
+                        causa_baja,  # CAUSA BAJA
+                        fecha_baja or '',  # FECHA BAJA
+                        data_ip,  # FECHA IP
+                        tipo_inversion,  # TIPO INVERSION
+                        im_ingenieria,  # IM_TRAMITES
+                        im_construccion,  # IM_CONSTRUCCION
+                        im_trabajos,  # IM_TRABAJOS
+                        subvenciones_europeas,  # SUBVENCIONES EUROPEAS
+                        subvenciones_nacionales,  # SUBVENCIONES NACIONALES
+                        subvenciones_prtr,  # SUBVENCIONES PRTR
+                        valor_auditado,  # VALOR AUDITADO
+                        financiado,  # FINANCIADO
+                        cuenta_contable,  # CUENTA CONTABLE
+                        motivacion,  # MOTIVACION
+                        avifauna,  # AVIFAUNA
+                        identificador_baja,  # ID_BAJA
+                    ]
+
+                    self.output_q.put(output)
 
             except Exception:
                 traceback.print_exc()
