@@ -513,8 +513,8 @@ class FB1(MultiprocessBased):
                         cini = linia['cini']
 
                     # CODIGO CCUU
-                    if linia['tipus_instalacio_cnmc_id']:
-                        id_ti = linia.get('tipus_instalacio_cnmc_id')[0]
+                    if linia.get('tipus_instalacio_cnmc_id', False):
+                        id_ti = linia['tipus_instalacio_cnmc_id'][0]
                         codigo_ccuu = O.GiscedataTipusInstallacio.read(
                             id_ti,
                             ['name'])['name']
