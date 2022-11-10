@@ -94,4 +94,3 @@ class FD2(MultiprocessBased):
             finally:
                 self.input_q.task_done()
 
-FD2()
