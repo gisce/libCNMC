@@ -407,7 +407,8 @@ class FA1(MultiprocessBased):
                     'name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
                     'cne_anual_reactiva', 'cnmc_potencia_facturada', 'et',
                     'polisses', 'potencia_conveni', 'potencia_adscrita',
-                    "node_id", 'autoconsum_id', 'cnmc_numero_lectures'
+                    "node_id", 'autoconsum_id', 'cnmc_numero_lectures',
+                    'cnmc_factures_estimades', 'cnmc_factures_total'
                 ]
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 if not cups or not cups.get('name'):
@@ -417,10 +418,48 @@ class FA1(MultiprocessBased):
                     o_name = cups['name'][:20]
                 else:
                     o_name = cups['name'][:22]
-                if cups.get('autoconsum_id'):
-                    o_autoconsum = 1
-                else:
-                    o_autoconsum = 0
+
+                # FACTURAS ESTIMADAS
+                o_facturas_estimadas = ''
+                if cups.get('cnmc_factures_estimades', False):
+                    o_facturas_estimadas = cups['cnmc_factures_estimades']
+
+                # FACTURAS TOTAL
+                o_facturas_total = ''
+                if cups.get('cnmc_factures_total', False):
+                    o_facturas_total = cups['cnmc_factures_total']
+
+                # AUTOCONSUMO, CAU, COD_AUTO, COD_GENERACION_AUTO I CONEXION_AUTOCONSUMO
+                o_autoconsumo = 0
+                o_cau = ''
+                o_cod_auto = ''
+                o_cod_generacio_auto = ''
+                o_conexion_autoconsumo = ''
+
+                if cups.get('autoconsum_id', False):
+                    # AUTOCONSUMO
+                    o_autoconsumo = 1
+                    autoconsum_id = cups['autoconsum_id']
+                    autoconsum_data = O.GiscedataAutoconsum.read(autoconsum_id, ['cau', 'tipus_autoconsum',
+                                                                                 'generador_id', 'codi_cnmc'])
+                    # CAU
+                    if autoconsum_data.get('cau', False):
+                        o_cau = autoconsum_data['cau']
+
+                    # COD_AUTO
+                    if autoconsum_data.get('codi_cnmc', False):
+                        o_cod_auto = autoconsum_data['codi_cnmc']
+
+                    # COD_GENERACION_AUTO
+                    if autoconsum_data.get('generador_id', False):
+                        generador_id = autoconsum_data['generador_id']
+                        generador_data = O.GiscedataAutoconsumGenerador.read(generador_id, ['cini'])
+                        if generador_data.get('cini', False):
+                            cini = generador_data['cini']
+                            o_cod_generacio_auto = cini[3]
+
+                    # CONEXION_AUTOCONSUMO
+
                 o_codi_ine_mun = ''
                 o_codi_ine_prov = ''
                 o_zona = ''
@@ -641,18 +680,18 @@ class FA1(MultiprocessBased):
                     format_f(o_pot_ads, decimals=3),        # Potencia adscrita a la instalacion
                     format_f(o_anual_activa, decimals=3),   # Energia activa anual consumida
                     format_f(o_anual_reactiva, decimals=3), # Energia reactiva anual consumida
-                    o_autoconsum,       #Autoconsumo si o no
+                    o_autoconsumo,       #Autoconsumo si o no
                     o_comptador_cini,  # CINI
                     o_comptador_data,  # INSTALACION
                     o_num_lectures,  # NUMERO LECTURAS
                     o_baixa,  # BAJA SUMINISTRO
                     o_titular,  # CAMBIO TITULARIDAD
-                    '',
-                    '',
-                    '',
-                    '',
-                    '',
-                    '',
+                    o_facturas_estimadas,
+                    o_facturas_total,
+                    o_cau,
+                    o_cod_auto,
+                    o_cod_generacio_auto,
+                    o_conexion_autoconsumo,
                     '',
                     '',
                 ])
