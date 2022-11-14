@@ -69,8 +69,8 @@ class FD2(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-                file_fields = {'totals': 0}
-                z8_fields = {'totals': 0}
+                file_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0 }
+                z8_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0 }
 
                 year_start = '01-01-' + str(self.year)
                 year_end = '12-31-' + str(self.year)
