@@ -30,7 +30,7 @@ class FD2(MultiprocessBased):
         """
 
         search_params_interns = [
-            [('name', 'like', '(intern)')]
+            ('name', 'like', '(intern)')
         ]
         intern_z = self.connection.GiscedataCodigosGestionCalidadZ.search(search_params_interns)
         search_params = [
@@ -52,26 +52,26 @@ class FD2(MultiprocessBased):
                 no_tramitadas = 0
                 totals = 0
                 year_start = '01-01-' + str(self.year)
-                year_end = '31-12-' + str(self.year)
+                year_end = '12-31-' + str(self.year)
                 search_params_atc = [
                     ('create_date', '>=', year_start),
                     ('create_date', '<=', year_end),
                     ('cod_gestion_id', '=', item)
                 ]
-                atc_ids = o.connection.GiscedataAtc.search(search_params_atc)
+                atc_ids = o.GiscedataAtc.search(search_params_atc)
                 totals = len(atc_ids)
                 for atc_id in atc_ids:
-                    crm_id = o.connection.GiscedataAtc.read(atc_id, ['crm_id'])
-                    crm_state = o.connection.CrmCase.read(crm_id, ['state'])
+                    crm_id = o.GiscedataAtc.read(atc_id, ['crm_id'])['crm_id'][0]
+                    crm_state = o.CrmCase.read(crm_id, ['state'])
                     if crm_state is 'done':
-                        history_logs = o.connection.CrmCase.read(['history_line'])
+                        history_logs = o.CrmCase.read(['history_line'])
                         total_ts = 0
                         for history_log in history_logs:
-                            tt_id = o.connection.CrmCaseHistory.read(history_log, ['time_tracking_id'])[1]
-                            if tt_id == 'Distribuidora':
-                                time_spent = o.connection.CrmCaseHistory.read(history_log, ['time_spent'])
+                            tt_id = o.CrmCaseHistory.read(history_log, ['time_tracking_id'])
+                            if tt_id and tt_id[1] == 'Distribuidora':
+                                time_spent = o.CrmCaseHistory.read(history_log, ['time_spent'])
                                 total_ts = total_ts + time_spent
-                        expected_time = o.connection.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit'])
+                        expected_time = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit'])
                         if total_ts > expected_time:
                             fuera_plazo = fuera_plazo + 1
                         else:
@@ -93,4 +93,3 @@ class FD2(MultiprocessBased):
                     self.raven.captureException()
             finally:
                 self.input_q.task_done()
-
