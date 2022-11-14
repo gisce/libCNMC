@@ -52,7 +52,7 @@ class FD2(MultiprocessBased):
                 no_tramitadas = 0
                 totals = 0
                 year_start = '01-01-' + str(self.year)
-                year_end = '31-12-' + str(self.year)
+                year_end = '12-31-' + str(self.year)
                 search_params_atc = [
                     ('create_date', '>=', year_start),
                     ('create_date', '<=', year_end),
