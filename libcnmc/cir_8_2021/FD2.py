@@ -81,7 +81,7 @@ class FD2(MultiprocessBased):
                         ('create_date', '>=', year_start),
                         ('create_date', '<=', year_end)
                     ]
-                    r1_ids = o.GiscedataSwitchingR102.search(search_params)
+                    r1_ids = o.model("giscedata.switching.r1.02").search(search_params)
                     if '03' in z_subtype:
 
                         for r1_id in r1_ids:
