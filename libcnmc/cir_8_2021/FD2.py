@@ -92,8 +92,8 @@ class FD2(MultiprocessBased):
                             if proces_name is '05':
                                 r105_id = o.GiscedataSwitchingR105.search([('sw_id', '=', sw_id)])
                                 if r105_id:
-                                    raw_date_05 = o.GiscedataSwitchingR105.read(r105_id, ['create_date'])['create_date']
-                                    raw_date_02 = o.GiscedataSwitchingR102.read(r1_id, ['create_date'])['create_date']
+                                    raw_date_05 = o.model("giscedata.switching.r1.05").read(r105_id, ['create_date'])['create_date']
+                                    raw_date_02 = o.model("giscedata.switching.r1.02").read(r1_id, ['create_date'])['create_date']
                                     date_05 = raw_date_05.strptime(raw_date_05.split(' ')[0], "%Y-%m-%d")
                                     date_02 = raw_date_02.strptime(raw_date_02.split(' ')[0], "%Y-%m-%d")
                                     time_spent = Spain().get_working_days_delta(date_02, date_05)
