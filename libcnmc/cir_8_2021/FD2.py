@@ -109,7 +109,7 @@ class FD2(MultiprocessBased):
                         search_params = [
                             ('create_date', '>=', year_start),
                             ('create_date', '<=', year_end),
-                            ('status', '!=', 'cancel'),
+                            ('state', '!=', 'cancel'),
                             ('subtipus_id', 'in', subtipus_ids)
                         ]
                         atc_ids = o.GiscedataAtc.search(search_params)
@@ -122,7 +122,7 @@ class FD2(MultiprocessBased):
                         ('create_date', '>=', year_start),
                         ('create_date', '<=', year_end),
                         ('cod_gestion_id', '=', item),
-                        ('status', '!=', 'cancel')
+                        ('state', '!=', 'cancel')
                     ]
                     atc_ids = o.GiscedataAtc.search(search_params_atc)
                     cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name'])
