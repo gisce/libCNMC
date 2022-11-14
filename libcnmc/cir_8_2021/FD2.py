@@ -44,7 +44,7 @@ class FD2(MultiprocessBased):
         o = self.connection
         state = o.CrmCase.read(crm_id, ['state'])['state']
         if state == 'done':
-            history_logs = o.CrmCase.read(['history_line'])['history_line']
+            history_logs = o.CrmCase.read(crm_id, ['history_line'])['history_line']
             total_ts = 0
             for history_log in history_logs:
                 tt_id = o.CrmCaseHistory.read(history_log, ['time_tracking_id'])['time_tracking_id']
