@@ -8,8 +8,9 @@ from __future__ import absolute_import
 from datetime import datetime
 import traceback
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import parse_geom, get_tipus_connexio, format_f, get_ine, convert_srid, get_srid
-from shapely import wkt
+from workalendar.europe import Spain
+
+
 
 class FD2(MultiprocessBased):
 
@@ -19,7 +20,6 @@ class FD2(MultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 2)
         self.report_name = 'FD2 - Calidad Comercial'
         self.base_object = 'Despatxos'
-
 
     def get_sequence(self):
 
@@ -38,6 +38,28 @@ class FD2(MultiprocessBased):
         ]
         return self.connection.GiscedataCodigosGestionCalidadZ.search(search_params)
 
+    def compute_time_atc(self, state, cod_gest_data, values, context=None):
+        if context is None:
+            context = {}
+        o = self.connection
+
+        if state == 'done':
+            history_logs = o.CrmCase.read(['history_line'])['history_line']
+            total_ts = 0
+            for history_log in history_logs:
+                tt_id = o.CrmCaseHistory.read(history_log, ['time_tracking_id'])['time_tracking_id']
+                if tt_id and tt_id[1] == 'Distribuidora':
+                    time_spent = o.CrmCaseHistory.read(history_log, ['time_spent'])['time_spent']
+                    total_ts = total_ts + time_spent
+            if total_ts != 0:
+                if total_ts > cod_gest_data['dies_limit']:
+                    values['fuera_plazo'] = values['fuera_plazo'] + 1
+                else:
+                    values['dentro_plazo'] = values['dentro_plazo'] + 1
+        else:
+            values['no_tramitadas'] = values['no_tramitadas'] + 1
+        values['totals'] = values['totals'] + 1
+
     def consumer(self):
 
         o = self.connection
@@ -47,46 +69,91 @@ class FD2(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-                dentro_plazo = 0
-                fuera_plazo = 0
-                no_tramitadas = 0
-                totals = 0
+
+                file_fields = {}
+                z8_fields = {}
+
                 year_start = '01-01-' + str(self.year)
                 year_end = '12-31-' + str(self.year)
-                search_params_atc = [
-                    ('create_date', '>=', year_start),
-                    ('create_date', '<=', year_end),
-                    ('cod_gestion_id', '=', item)
-                ]
-                atc_ids = o.GiscedataAtc.search(search_params_atc)
-                totals = len(atc_ids)
-                for atc_id in atc_ids:
-                    crm_id = o.GiscedataAtc.read(atc_id, ['crm_id'])['crm_id'][0]
-                    crm_state = o.CrmCase.read(crm_id, ['state'])
-                    if crm_state is 'done':
-                        history_logs = o.CrmCase.read(['history_line'])
-                        total_ts = 0
-                        for history_log in history_logs:
-                            tt_id = o.CrmCaseHistory.read(history_log, ['time_tracking_id'])
-                            if tt_id and tt_id[1] == 'Distribuidora':
-                                time_spent = o.CrmCaseHistory.read(history_log, ['time_spent'])
-                                total_ts = total_ts + time_spent
-                        expected_time = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit'])
-                        if total_ts > expected_time:
-                            fuera_plazo = fuera_plazo + 1
-                        else:
-                            dentro_plazo = dentro_plazo + 1
+                cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name'])
+                z_type, z_subtype = cod_gest_data['name'].split('_')
+                if 'Z4' in z_type:
+                    search_params = [
+                        ('create_date', '>=', year_start),
+                        ('create_date', '<=', year_end)
+                    ]
+                    r1_ids = o.GiscedataSwitchingR102.search(search_params)
+                    if '03' in z_subtype:
+                        for r1_id in r1_ids:
+                            r1_header_id = o.GiscedataSwitchingR102.read(r1_id, ['header_id'])['header_id']
+                            sw_id = o.GiscedataSwitchingStepHeader.read(r1_header_id, ['sw_id'])['sw_id']
+                            step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])
+                            proces_name = o.GiscedataSwtichingStep(step_id, ['name'])
+                            if proces_name is '05':
+                                r105_id = o.GiscedataSwitchingR105.search([('sw_id', '=', sw_id)])
+                                if r105_id:
+                                    raw_date_05 = o.GiscedataSwitchingR105.read(r105_id, ['create_date'])['create_date']
+                                    raw_date_02 = o.GiscedataSwitchingR102.read(r1_id, ['create_date'])['create_date']
+                                    date_05 = raw_date_05.strptime(raw_date_05.split(' ')[0], "%Y-%m-%d")
+                                    date_02 = raw_date_02.strptime(raw_date_02.split(' ')[0], "%Y-%m-%d")
+                                    time_spent = Spain().get_working_days_delta(date_02, date_05)
+                                    if time_spent > cod_gest_data['dies_limit']:
+                                        file_fields['fuera_plazo'] = file_fields['fuera_plazo'] + 1
+                                    else:
+                                        file_fields['dentro_plazo'] = file_fields['dentro_plazo'] + 1
+                            else:
+                                file_fields['no_tramitadas'] = file_fields['no_tramitadas'] + 1
+                            file_fields['totals'] = file_fields['totals'] + 1
                     else:
-                        no_tramitadas = no_tramitadas + 1
+                        subtipus_ids = o.GiscedataSubtipusReclamacio.search([('name', 'in', ['008', '009', '028'])])
+                        search_params = [
+                            ('create_date', '>=', year_start),
+                            ('create_date', '<=', year_end),
+                            ('status', '!=', 'cancel'),
+                            ('subtipus_id', 'in', subtipus_ids)
+                        ]
+                        atc_ids = o.GiscedataAtc.search(search_params)
+                        for atc_id in atc_ids:
+                            crm_id = o.GiscedataAtc.read(atc_id, ['crm_id'])['crm_id'][0]
+                            crm_state = o.CrmCase.read(crm_id, ['state'])['state']
+                            self.compute_time_atc(crm_state, cod_gest_data, file_fields, context={})
+                else:
+                    search_params_atc = [
+                        ('create_date', '>=', year_start),
+                        ('create_date', '<=', year_end),
+                        ('cod_gestion_id', '=', item),
+                        ('status', '!=', 'cancel')
+                    ]
+                    atc_ids = o.GiscedataAtc.search(search_params_atc)
+                    cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name'])
+                    totals = len(atc_ids)
+                    for atc_id in atc_ids:
+                        crm_id = o.GiscedataAtc.read(atc_id, ['crm_id'])['crm_id'][0]
+                        crm_state = o.CrmCase.read(crm_id, ['state'])['state']
+                        if 'Z8_01' in cod_gest_data['name']:
+                            self.compute_time_atc(crm_state, cod_gest_data, z8_fields, context={})
+                        else:
+                            self.compute_time_atc(crm_state, cod_gest_data, file_fields, context={})
 
-                output = [
-                    item,
-                    totals,
-                    dentro_plazo,
-                    fuera_plazo,
-                    no_tramitadas
-                ]
-                self.output_q.put(output)
+                if 'Z8_01' not in cod_gest_data['name']:
+                    output = [
+                        cod_gest_data['name'],
+                        file_fields['totals'],
+                        file_fields['dentro_plazo'],
+                        file_fields['fuera_plazo'],
+                        file_fields['no_tramitadas']
+                    ]
+                    self.output_q.put(output)
+                elif cod_gest_data['name'] == 'Z8_01_dl15':
+                    output = [
+                        'Z8_01',
+                        z8_fields['totals'],
+                        z8_fields['dentro_plazo'],
+                        z8_fields['fuera_plazo'],
+                        z8_fields['no_tramitadas']
+                    ]
+                    self.output_q.put(output)
+
             except Exception:
                 traceback.print_exc()
                 if self.raven:
