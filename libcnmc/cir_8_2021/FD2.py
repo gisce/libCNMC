@@ -69,9 +69,8 @@ class FD2(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-
-                file_fields = {}
-                z8_fields = {}
+                file_fields = {'totals': 0}
+                z8_fields = {'totals': 0}
 
                 year_start = '01-01-' + str(self.year)
                 year_end = '12-31-' + str(self.year)
@@ -84,6 +83,7 @@ class FD2(MultiprocessBased):
                     ]
                     r1_ids = o.GiscedataSwitchingR102.search(search_params)
                     if '03' in z_subtype:
+
                         for r1_id in r1_ids:
                             r1_header_id = o.GiscedataSwitchingR102.read(r1_id, ['header_id'])['header_id']
                             sw_id = o.GiscedataSwitchingStepHeader.read(r1_header_id, ['sw_id'])['sw_id']
@@ -126,7 +126,6 @@ class FD2(MultiprocessBased):
                     ]
                     atc_ids = o.GiscedataAtc.search(search_params_atc)
                     cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name'])
-                    totals = len(atc_ids)
                     for atc_id in atc_ids:
                         crm_id = o.GiscedataAtc.read(atc_id, ['crm_id'])['crm_id'][0]
                         crm_state = o.CrmCase.read(crm_id, ['state'])['state']
