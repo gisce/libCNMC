@@ -38,11 +38,11 @@ class FD2(MultiprocessBased):
         ]
         return self.connection.GiscedataCodigosGestionCalidadZ.search(search_params)
 
-    def compute_time_atc(self, state, cod_gest_data, values, context=None):
+    def compute_time_atc(self, crm_id, cod_gest_data, values, context=None):
         if context is None:
             context = {}
         o = self.connection
-
+        state = o.CrmCase.read(crm_id, ['state'])['state']
         if state == 'done':
             history_logs = o.CrmCase.read(['history_line'])['history_line']
             total_ts = 0
@@ -115,8 +115,7 @@ class FD2(MultiprocessBased):
                         atc_ids = o.GiscedataAtc.search(search_params)
                         for atc_id in atc_ids:
                             crm_id = o.GiscedataAtc.read(atc_id, ['crm_id'])['crm_id'][0]
-                            crm_state = o.CrmCase.read(crm_id, ['state'])['state']
-                            self.compute_time_atc(crm_state, cod_gest_data, file_fields, context={})
+                            self.compute_time_atc(crm_id, cod_gest_data, file_fields, context={})
                 else:
                     search_params_atc = [
                         ('create_date', '>=', year_start),
@@ -128,11 +127,10 @@ class FD2(MultiprocessBased):
                     cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name'])
                     for atc_id in atc_ids:
                         crm_id = o.GiscedataAtc.read(atc_id, ['crm_id'])['crm_id'][0]
-                        crm_state = o.CrmCase.read(crm_id, ['state'])['state']
                         if 'Z8_01' in cod_gest_data['name']:
-                            self.compute_time_atc(crm_state, cod_gest_data, z8_fields, context={})
+                            self.compute_time_atc(crm_id, cod_gest_data, z8_fields, context={})
                         else:
-                            self.compute_time_atc(crm_state, cod_gest_data, file_fields, context={})
+                            self.compute_time_atc(crm_id, cod_gest_data, file_fields, context={})
 
                 if 'Z8_01' not in cod_gest_data['name']:
                     output = [
