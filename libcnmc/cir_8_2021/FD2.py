@@ -61,7 +61,7 @@ class FD2(MultiprocessBased):
                 atc_ids = o.GiscedataAtc.search(search_params_atc)
                 totals = len(atc_ids)
                 for atc_id in atc_ids:
-                    crm_id = o.GiscedataAtc.read(atc_id, ['crm_id'])[0]
+                    crm_id = o.GiscedataAtc.read(atc_id, ['crm_id'])['crm_id'][0]
                     crm_state = o.CrmCase.read(crm_id, ['state'])
                     if crm_state is 'done':
                         history_logs = o.CrmCase.read(['history_line'])
