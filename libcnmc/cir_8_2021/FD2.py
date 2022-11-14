@@ -75,17 +75,16 @@ class FD2(MultiprocessBased):
                 year_start = '01-01-' + str(self.year)
                 year_end = '12-31-' + str(self.year)
                 cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name'])
-                z_type, z_subtype = cod_gest_data['name'].split('_')
-                if 'Z4' in z_type:
+                if 'Z4' in cod_gest_data['name']:
                     search_params = [
                         ('create_date', '>=', year_start),
                         ('create_date', '<=', year_end)
                     ]
                     r1_ids = o.model("giscedata.switching.r1.02").search(search_params)
-                    if '03' in z_subtype:
+                    if '03' in cod_gest_data['name']:
 
                         for r1_id in r1_ids:
-                            r1_header_id = o.GiscedataSwitchingR102.read(r1_id, ['header_id'])['header_id']
+                            r1_header_id = o.model("giscedata.switching.r1.02").read(r1_id, ['header_id'])['header_id']
                             sw_id = o.GiscedataSwitchingStepHeader.read(r1_header_id, ['sw_id'])['sw_id']
                             step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])
                             proces_name = o.GiscedataSwtichingStep(step_id, ['name'])
