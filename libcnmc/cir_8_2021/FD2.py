@@ -30,7 +30,7 @@ class FD2(MultiprocessBased):
         """
 
         search_params_interns = [
-            [('name', 'like', '(intern)')]
+            ('name', 'like', '(intern)')
         ]
         intern_z = self.connection.GiscedataCodigosGestionCalidadZ.search(search_params_interns)
         search_params = [
