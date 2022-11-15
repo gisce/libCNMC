@@ -111,7 +111,7 @@ class FB1(MultiprocessBased):
         for elem in range(0, len(bt_ids)):
             bt_ids[elem] = 'bt.{}'.format(bt_ids[elem])
 
-        bt_ids = bt_ids[0:100]
+        # bt_ids = bt_ids[0:1]
         at_bt_ids = at_ids + bt_ids
         print('####################')
         print('####################')
@@ -366,7 +366,10 @@ class FB1(MultiprocessBased):
                         obra_id = O.GiscedataProjecteObraTiAt.search([('element_ti_id', '=', tram['id'])])
 
                         # Filtre d'obres finalitzades
-                        data_finalitzacio = O.GiscedataProjecteObra.read(obra_id, ['data_finalitzacio'])
+                        if obra_id:
+                            data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
+                            if data_finalitzacio_data.get('data_finalitzacio', False):
+                                data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
                         inici_any = '{}-01-01'.format(self.year)
                         fi_any = '{}-12-31'.format(self.year)
 
@@ -675,7 +678,10 @@ class FB1(MultiprocessBased):
                     obra_id = O.GiscedataProjecteObraTiBt.search([('element_ti_id', '=', linia['id'])])
 
                     # Filtre d'obres finalitzades
-                    data_finalitzacio = O.GiscedataProjecteObra.read(obra_id, ['data_finalitzacio'])
+                    if obra_id:
+                        data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
+                        if data_finalitzacio_data.get('data_finalitzacio', False):
+                            data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
                     inici_any = '{}-01-01'.format(self.year)
                     fi_any = '{}-12-31'.format(self.year)
 
