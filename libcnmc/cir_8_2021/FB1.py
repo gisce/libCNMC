@@ -202,6 +202,9 @@ class FB1(MultiprocessBased):
                     else:
                         resistencia, reactancia, intensitat = ['', '', '']
 
+                    # Estado
+                    estado = ''
+
                     # Modelo
                     if tram.get('model', False):
                         modelo = tram['model']
@@ -363,6 +366,7 @@ class FB1(MultiprocessBased):
                         resistencia,                        # RESISTENCIA
                         reactancia,                         # REACTANCIA
                         intensitat,                         # INTENSIDAD
+                        estado,                             # ESTADO
                         punt_frontera,                      # PUNTO_FRONTERA
                         modelo,                             # MODELO
                         operacion,                          # OPERACIÓN
@@ -478,7 +482,7 @@ class FB1(MultiprocessBased):
 
                     # RESISTENCIA, REACTANCIA, INTENSITAT
                     if tram.get('cable', False):
-                        cable_obj = O.GiscedataAtCables
+                        cable_obj = O.GiscedataBtCables
                         cable_id = tram['cable'][0]
                         cable_data = cable_obj.read(cable_id, ['resistencia', 'reactancia', 'intensitat_admisible'])
                         if tram.get('longitud_cad', False):
@@ -639,6 +643,7 @@ class FB1(MultiprocessBased):
                         resistencia,  # RESISTENCIA
                         reactancia,  # REACTANCIA
                         intensitat,  # INTENSIDAD
+                        estado,  # ESTADO
                         punto_frontera,  # PUNTO_FRONTERA
                         modelo,  # MODELO
                         operacion,  # OPERACIÓN
