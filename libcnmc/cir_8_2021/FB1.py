@@ -47,67 +47,25 @@ class FB1(MultiprocessBased):
 
         # AT
         search_params = [
-            ('propietari', '=', True),
-            ('name', '!=', 1)
+            ('active', '=', True),
+            ('criteri_regulatori', '!=', 'excloure')
         ]
         obj_lat = self.connection.GiscedataAtLinia
-        ids = obj_lat.search(search_params, 0, 0, False, {'active_test': False})
-        id_lat_emb = []
-        if self.embarrats:
-            id_lat_emb = obj_lat.search(
-                [
-                    ('name', '=', '1'),
-                ], 0, 0, False, {'active_test': False})
-        final_ids = ids + id_lat_emb
+        ids = obj_lat.search(search_params)
+        at_ids = list(set(ids))
 
-        self.forced_ids = get_forced_elements(self.connection, "giscedata.at.tram")
-        data_tram = self.connection.GiscedataAtTram.read(
-            self.forced_ids["include"],
-            ["linia"]
-        )
-
-        for dt in data_tram:
-            if dt["linia"][0] not in self.linia_tram_include:
-                self.linia_tram_include[dt["linia"][0]] = [dt["id"]]
-            else:
-                self.linia_tram_include[dt["linia"][0]].append([dt["id"]])
-
-        at_ids = list(set(final_ids))
         for elem in range(0, len(at_ids)):
             at_ids[elem] = 'at.{}'.format(at_ids[elem])
 
         # BT
-        data_pm = '{0}-01-01'.format(self.year + 1)
-        data_baixa = '{0}-01-01'.format(self.year)
-        search_params = []
-        if not self.embarrats:
-            search_params += [('cable.tipus.codi', '!=', 'E')]
-        search_params += [('propietari', '=', True),
-                          ('data_pm', '<', data_pm),
-                          '|',
-                          '&', ('data_baixa', '>', data_baixa),
-                               ('baixa', '=', True),
-                          '|',
-                               ('data_baixa', '=', False),
-                               ('baixa', '=', False)
-                          ]
-        # Revisem que si està de baixa ha de tenir la data informada.
-        search_params += ['|',
-                          '&', ('active', '=', False),
-                               ('data_baixa', '!=', False),
-                          ('active', '=', True)]
-        ids = self.connection.GiscedataBtElement.search(
-            search_params, 0, 0, False, {'active_test': False})
-
-        forced_ids = get_forced_elements(
-            self.connection,
-            "giscedata.bt.element"
-        )
-
-        ids = ids + forced_ids["include"]
-        ids = list(set(ids) - set(forced_ids["exclude"]))
-
+        search_params = [
+            ('active', '=', True),
+            ('criteri_regulatori', '!=', 'excloure')
+        ]
+        obj_lat = self.connection.GiscedataBtTram
+        ids = obj_lat.search(search_params)
         bt_ids = list(set(ids))
+
         for elem in range(0, len(bt_ids)):
             bt_ids[elem] = 'bt.{}'.format(bt_ids[elem])
 
