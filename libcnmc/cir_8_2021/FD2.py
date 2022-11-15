@@ -70,8 +70,8 @@ class FD2(MultiprocessBased):
 
         raw_date_05 = o.model(model_name[0]).read(r105_id, ['date_created'])['date_created']
         raw_date_02 = o.model(model_name[1]).read(r102_id, ['date_created'])['date_created']
-        date_05 = raw_date_05.strptime(raw_date_05.split(' ')[0], "%Y-%m-%d")
-        date_02 = raw_date_02.strptime(raw_date_02.split(' ')[0], "%Y-%m-%d")
+        date_05 = datetime.strptime(raw_date_05.split(' ')[0], "%Y-%m-%d")
+        date_02 = datetime.strptime(raw_date_02.split(' ')[0], "%Y-%m-%d")
 
         return Spain().get_working_days_delta(date_02, date_05)
 
