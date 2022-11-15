@@ -50,14 +50,13 @@ class FD2(MultiprocessBased):
         if context is None:
             context = {}
         o = self.connection
-        state = o.CrmCase.read(crm_id, ['state'])['state']
-        if state == 'done':
-            history_logs = o.CrmCase.read(crm_id, ['history_line'])['history_line']
-            for history_log in history_logs:
-                tt_id = o.CrmCaseHistory.read(history_log, ['time_tracking_id'])['time_tracking_id']
-                if tt_id and tt_id[1] == 'Distribuidora':
-                    time_spent = o.CrmCaseHistory.read(history_log, ['time_spent'])['time_spent']
-                    total_ts = total_ts + time_spent
+
+        history_logs = o.CrmCase.read(crm_id, ['history_line'])['history_line']
+        for history_log in history_logs:
+            tt_id = o.CrmCaseHistory.read(history_log, ['time_tracking_id'])['time_tracking_id']
+            if tt_id and tt_id[1] == 'Distribuidora':
+                time_spent = o.CrmCaseHistory.read(history_log, ['time_spent'])['time_spent']
+                total_ts = total_ts + time_spent
 
         return total_ts
 
@@ -130,7 +129,7 @@ class FD2(MultiprocessBased):
                         total_ts = 0
                         for atc_id in atc_ids:
                             crm_data = o.GiscedataAtc.read(atc_id, ['crm_id', 'state'])
-                            if 'close' in crm_data['state']:
+                            if 'done' in crm_data['state']:
                                 time_spent = self.get_atc_time_delta(crm_data['crm_id'][0], total_ts, context={})
                                 compute_time(cod_gest_data, file_fields, time_spent)
                             else:
@@ -150,7 +149,7 @@ class FD2(MultiprocessBased):
                     total_ts = 0
                     for atc_id in atc_ids:
                         crm_data = o.GiscedataAtc.read(atc_id, ['crm_id', 'state'])
-                        if 'close' in crm_data['state']:
+                        if 'done' in crm_data['state']:
                             if 'Z8_01' in cod_gest_data['name']:
                                 time_spent = self.get_atc_time_delta(crm_data['crm_id'][0], total_ts, context={})
                                 compute_time(cod_gest_data, z8_fields, time_spent)
