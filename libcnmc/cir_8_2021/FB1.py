@@ -475,18 +475,18 @@ class FB1(MultiprocessBased):
                             ) or 0.001
                         else:
                             longitud = round(
-                                tram['longitud_cad'] * coeficient/1000.0, 3
+                                linia['longitud_cad'] * coeficient/1000.0, 3
                             ) or 0.001
                     else:
                         longitud = 0
 
                     # RESISTENCIA, REACTANCIA, INTENSITAT
-                    if tram.get('cable', False):
+                    if linia.get('cable', False):
                         cable_obj = O.GiscedataBtCables
-                        cable_id = tram['cable'][0]
+                        cable_id = linia['cable'][0]
                         cable_data = cable_obj.read(cable_id, ['resistencia', 'reactancia', 'intensitat_admisible'])
-                        if tram.get('longitud_cad', False):
-                            longitud_en_km = tram['longitud_cad'] / 1000
+                        if linia.get('longitud_cad', False):
+                            longitud_en_km = linia['longitud_cad'] / 1000
                             if cable_data.get('resistencia', False):
                                 resistencia_per_km = cable_data['resistencia']
                                 resistencia = resistencia_per_km * longitud_en_km
@@ -544,12 +544,12 @@ class FB1(MultiprocessBased):
                         causa_baja = '0'
 
                     # FECHA BAJA
-                    if tram.get('data_baixa'):
-                        if tram.get('data_baixa') > data_pm_limit:
+                    if linia.get('data_baixa'):
+                        if linia.get('data_baixa') > data_pm_limit:
                             fecha_baja = ''
                         else:
                             tmp_date = datetime.strptime(
-                                tram.get('data_baixa'), '%Y-%m-%d')
+                                linia.get('data_baixa'), '%Y-%m-%d')
                             fecha_baja = tmp_date.strftime('%d/%m/%Y')
                     else:
                         fecha_baja = ''
@@ -630,7 +630,7 @@ class FB1(MultiprocessBased):
 
                     output = [
                         '{}{}'.format(self.prefix_BT, identificador_tramo),  # IDENTIFICADOR TRAMO
-                        tram.get('cini', '') or '',  # CINI
+                        linia.get('cini', '') or '',  # CINI
                         codigo_ccuu or '',  # CODIGO_CCUU
                         nudo_inicial,  # ORIGEN
                         nudo_final,  # DESTINO
