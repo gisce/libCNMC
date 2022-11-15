@@ -103,7 +103,7 @@ class FD2(MultiprocessBased):
                         for r102_id in r102_ids:
                             r1_header_id = o.model("giscedata.switching.r1.02").read(r102_id, ['header_id'])[
                                 'header_id']
-                            sw_id = o.GiscedataSwitchingStepHeader.read(r1_header_id[0], ['sw_id'])['sw_id']
+                            sw_id = o.GiscedataSwitchingStepHeader.read(r1_header_id[0], ['sw_id'])['sw_id'][0]
                             step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])['step_id'][0]
                             proces_name = o.GiscedataSwtichingStep.read(step_id, ['name'])['name']
                             if proces_name is '05':
