@@ -11,6 +11,16 @@ from libcnmc.core import MultiprocessBased
 from workalendar.europe import Spain
 
 
+def compute_time(cod_gest_data, values, time_delta):
+    if time_delta != 0:
+        if time_delta > cod_gest_data['dies_limit']:
+            values['fuera_plazo'] = values['fuera_plazo'] + 1
+        else:
+            values['dentro_plazo'] = values['dentro_plazo'] + 1
+    else:
+        values['no_tramitadas'] = values['no_tramitadas'] + 1
+    values['totals'] = values['totals'] + 1
+
 
 class FD2(MultiprocessBased):
 
@@ -38,27 +48,32 @@ class FD2(MultiprocessBased):
         ]
         return self.connection.GiscedataCodigosGestionCalidadZ.search(search_params)
 
-    def compute_time_atc(self, crm_id, cod_gest_data, values, context=None):
+    def get_atc_time_delta(self, crm_id, context=None):
         if context is None:
             context = {}
         o = self.connection
+        total_ts = 0
         state = o.CrmCase.read(crm_id, ['state'])['state']
         if state == 'done':
             history_logs = o.CrmCase.read(crm_id, ['history_line'])['history_line']
-            total_ts = 0
             for history_log in history_logs:
                 tt_id = o.CrmCaseHistory.read(history_log, ['time_tracking_id'])['time_tracking_id']
                 if tt_id and tt_id[1] == 'Distribuidora':
                     time_spent = o.CrmCaseHistory.read(history_log, ['time_spent'])['time_spent']
                     total_ts = total_ts + time_spent
-            if total_ts != 0:
-                if total_ts > cod_gest_data['dies_limit']:
-                    values['fuera_plazo'] = values['fuera_plazo'] + 1
-                else:
-                    values['dentro_plazo'] = values['dentro_plazo'] + 1
-        else:
-            values['no_tramitadas'] = values['no_tramitadas'] + 1
-        values['totals'] = values['totals'] + 1
+
+        return total_ts
+
+    def get_r1_time_delta(self, r102_id, r105_id, model_name):
+
+        o = self.connection
+
+        raw_date_05 = o.model(model_name[0]).read(r105_id, ['create_date'])['create_date']
+        raw_date_02 = o.model(model_name[1]).read(r102_id, ['create_date'])['create_date']
+        date_05 = raw_date_05.strptime(raw_date_05.split(' ')[0], "%Y-%m-%d")
+        date_02 = raw_date_02.strptime(raw_date_02.split(' ')[0], "%Y-%m-%d")
+
+        return Spain().get_working_days_delta(date_02, date_05)
 
     def consumer(self):
 
@@ -69,40 +84,36 @@ class FD2(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-                file_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0 }
-                z8_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0 }
+                file_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0}
+                z8_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0}
 
                 year_start = '01-01-' + str(self.year)
                 year_end = '12-31-' + str(self.year)
                 cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name'])
+
+                ## Tractem el codi de gestio Z4
                 if 'Z4' in cod_gest_data['name']:
                     search_params = [
                         ('create_date', '>=', year_start),
                         ('create_date', '<=', year_end)
                     ]
-                    r1_ids = o.model("giscedata.switching.r1.02").search(search_params)
+                    r102_ids = o.model("giscedata.switching.r1.02").search(search_params)
                     if '03' in cod_gest_data['name']:
-
-                        for r1_id in r1_ids:
-                            r1_header_id = o.model("giscedata.switching.r1.02").read(r1_id, ['header_id'])['header_id']
+                        ## Tractem els r1 i comptabilitzem els que escau
+                        for r102_id in r102_ids:
+                            r1_header_id = o.model("giscedata.switching.r1.02").read(r102_id, ['header_id'])[
+                                'header_id']
                             sw_id = o.GiscedataSwitchingStepHeader.read(r1_header_id[0], ['sw_id'])['sw_id']
                             step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])
                             proces_name = o.GiscedataSwtichingStep(step_id, ['name'])
                             if proces_name is '05':
                                 r105_id = o.GiscedataSwitchingR105.search([('sw_id', '=', sw_id)])
                                 if r105_id:
-                                    raw_date_05 = o.model("giscedata.switching.r1.05").read(r105_id, ['create_date'])['create_date']
-                                    raw_date_02 = o.model("giscedata.switching.r1.02").read(r1_id, ['create_date'])['create_date']
-                                    date_05 = raw_date_05.strptime(raw_date_05.split(' ')[0], "%Y-%m-%d")
-                                    date_02 = raw_date_02.strptime(raw_date_02.split(' ')[0], "%Y-%m-%d")
-                                    time_spent = Spain().get_working_days_delta(date_02, date_05)
-                                    if time_spent > cod_gest_data['dies_limit']:
-                                        file_fields['fuera_plazo'] = file_fields['fuera_plazo'] + 1
-                                    else:
-                                        file_fields['dentro_plazo'] = file_fields['dentro_plazo'] + 1
-                            else:
-                                file_fields['no_tramitadas'] = file_fields['no_tramitadas'] + 1
-                            file_fields['totals'] = file_fields['totals'] + 1
+                                    model_names = ['giscedata.switching.r1.05', 'giscedata.switching.r1.02']
+                                    time_spent = self.get_r1_time_delta(r102_id, r105_id, model_names)
+                                    compute_time(cod_gest_data, file_fields, time_spent)
+
+                    ## Tractem els ATCs del subtipus que escau
                     else:
                         subtipus_ids = o.GiscedataSubtipusReclamacio.search([('name', 'in', ['008', '009', '028'])])
                         search_params = [
@@ -114,7 +125,10 @@ class FD2(MultiprocessBased):
                         atc_ids = o.GiscedataAtc.search(search_params)
                         for atc_id in atc_ids:
                             crm_id = o.GiscedataAtc.read(atc_id, ['crm_id'])['crm_id'][0]
-                            self.compute_time_atc(crm_id, cod_gest_data, file_fields, context={})
+                            time_spent = self.get_atc_time_delta(crm_id, context={})
+                            compute_time(cod_gest_data, file_fields, time_spent)
+
+                ## Tractament general de ATCs
                 else:
                     search_params_atc = [
                         ('create_date', '>=', year_start),
@@ -124,13 +138,17 @@ class FD2(MultiprocessBased):
                     ]
                     atc_ids = o.GiscedataAtc.search(search_params_atc)
                     cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name'])
+
                     for atc_id in atc_ids:
                         crm_id = o.GiscedataAtc.read(atc_id, ['crm_id'])['crm_id'][0]
                         if 'Z8_01' in cod_gest_data['name']:
-                            self.compute_time_atc(crm_id, cod_gest_data, z8_fields, context={})
+                            time_spent = self.get_atc_time_delta(crm_id, context={})
+                            compute_time(cod_gest_data, file_fields, time_spent)
                         else:
-                            self.compute_time_atc(crm_id, cod_gest_data, file_fields, context={})
+                            time_spent = self.get_atc_time_delta(crm_id, context={})
+                            compute_time(cod_gest_data, file_fields, time_spent)
 
+                ## Asignem els valors segons escau
                 if 'Z8_01' not in cod_gest_data['name']:
                     output = [
                         cod_gest_data['name'],
