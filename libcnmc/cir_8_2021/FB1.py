@@ -366,16 +366,17 @@ class FB1(MultiprocessBased):
                         obra_id = O.GiscedataProjecteObraTiAt.search([('element_ti_id', '=', tram['id'])])
 
                         # Filtre d'obres finalitzades
+                        tram_obra = ''
                         if obra_id:
                             data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
                             if data_finalitzacio_data:
                                 if data_finalitzacio_data.get('data_finalitzacio', False):
                                     data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
-                        inici_any = '{}-01-01'.format(self.year)
-                        fi_any = '{}-12-31'.format(self.year)
 
-                        if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
-                            tram_obra = O.GiscedataProjecteObraTiAt.read(obra_id, fields_to_read_obra)[0]
+                                    inici_any = '{}-01-01'.format(self.year)
+                                    fi_any = '{}-12-31'.format(self.year)
+                                    if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
+                                        tram_obra = O.GiscedataProjecteObraTiAt.read(obra_id, fields_to_read_obra)[0]
                         else:
                             tram_obra = ''
 
@@ -679,16 +680,17 @@ class FB1(MultiprocessBased):
                     obra_id = O.GiscedataProjecteObraTiBt.search([('element_ti_id', '=', linia['id'])])
 
                     # Filtre d'obres finalitzades
+                    linia_obra = ''
                     if obra_id:
                         data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
                         if data_finalitzacio_data:
                             if data_finalitzacio_data.get('data_finalitzacio', False):
                                 data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
-                    inici_any = '{}-01-01'.format(self.year)
-                    fi_any = '{}-12-31'.format(self.year)
 
-                    if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
-                        linia_obra = O.GiscedataProjecteObraTiBt.read(obra_id, fields_to_read_obra)[0]
+                                inici_any = '{}-01-01'.format(self.year)
+                                fi_any = '{}-12-31'.format(self.year)
+                                if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
+                                    linia_obra = O.GiscedataProjecteObraTiBt.read(obra_id, fields_to_read_obra)[0]
                     else:
                         linia_obra = ''
 
