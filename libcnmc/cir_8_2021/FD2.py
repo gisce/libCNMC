@@ -12,13 +12,11 @@ from workalendar.europe import Spain
 
 
 def compute_time(cod_gest_data, values, time_delta):
-    if time_delta != 0:
-        if time_delta > cod_gest_data['dies_limit']:
-            values['fuera_plazo'] = values['fuera_plazo'] + 1
-        else:
-            values['dentro_plazo'] = values['dentro_plazo'] + 1
+
+    if time_delta > cod_gest_data['dies_limit']:
+        values['fuera_plazo'] = values['fuera_plazo'] + 1
     else:
-        values['no_tramitadas'] = values['no_tramitadas'] + 1
+        values['dentro_plazo'] = values['dentro_plazo'] + 1
     values['totals'] = values['totals'] + 1
 
 
@@ -48,11 +46,10 @@ class FD2(MultiprocessBased):
         ]
         return self.connection.GiscedataCodigosGestionCalidadZ.search(search_params)
 
-    def get_atc_time_delta(self, crm_id, context=None):
+    def get_atc_time_delta(self, crm_id, total_ts, context=None):
         if context is None:
             context = {}
         o = self.connection
-        total_ts = 0
         state = o.CrmCase.read(crm_id, ['state'])['state']
         if state == 'done':
             history_logs = o.CrmCase.read(crm_id, ['history_line'])['history_line']
@@ -93,12 +90,12 @@ class FD2(MultiprocessBased):
 
                 ## Tractem el codi de gestio Z4
                 if 'Z4' in cod_gest_data['name']:
-                    search_params = [
-                        ('date_created', '>=', year_start),
-                        ('date_created', '<=', year_end)
-                    ]
-                    r102_ids = o.model("giscedata.switching.r1.02").search(search_params)
                     if '03' in cod_gest_data['name']:
+                        search_params = [
+                            ('date_created', '>=', year_start),
+                            ('date_created', '<=', year_end)
+                        ]
+                        r102_ids = o.model("giscedata.switching.r1.02").search(search_params)
                         ## Tractem els r1 i comptabilitzem els que escau
                         for r102_id in r102_ids:
                             r1_header_id = o.model("giscedata.switching.r1.02").read(r102_id, ['header_id'])[
@@ -109,9 +106,16 @@ class FD2(MultiprocessBased):
                             if '05' in proces_name:
                                 r105_id = o.model('giscedata.switching.r1.05').search([('sw_id', '=', sw_id)])[0]
                                 if r105_id:
-                                    model_names = ['giscedata.switching.r1.05', 'giscedata.switching.r1.02']
-                                    time_spent = self.get_r1_time_delta(r102_id, r105_id, model_names)
-                                    compute_time(cod_gest_data, file_fields, time_spent)
+                                    enviament_pendent = o.model('giscedata.switching.r1.05').read(r105_id,
+                                        ['enviament_pendent'])['enviament_pendent']
+                                    if not enviament_pendent:
+                                        model_names = ['giscedata.switching.r1.05', 'giscedata.switching.r1.02']
+                                        time_spent = self.get_r1_time_delta(r102_id, r105_id, model_names)
+                                        compute_time(cod_gest_data, file_fields, time_spent)
+                                    else:
+                                        file_fields['no_tramitadas'] += 1
+                                        file_fields['totals'] += 1
+
 
                     ## Tractem els ATCs del subtipus que escau
                     else:
@@ -123,10 +127,15 @@ class FD2(MultiprocessBased):
                             ('subtipus_id', 'in', subtipus_ids)
                         ]
                         atc_ids = o.GiscedataAtc.search(search_params)
+                        total_ts = 0
                         for atc_id in atc_ids:
-                            crm_id = o.GiscedataAtc.read(atc_id, ['crm_id'])['crm_id'][0]
-                            time_spent = self.get_atc_time_delta(crm_id, context={})
-                            compute_time(cod_gest_data, file_fields, time_spent)
+                            crm_data = o.GiscedataAtc.read(atc_id, ['crm_id', 'state'])
+                            if 'close' in crm_data['state']:
+                                time_spent = self.get_atc_time_delta(crm_data['crm_id'][0], total_ts, context={})
+                                compute_time(cod_gest_data, file_fields, time_spent)
+                            else:
+                                file_fields['no_tramitadas'] += 1
+                                file_fields['totals'] += 1
 
                 ## Tractament general de ATCs
                 else:
@@ -138,15 +147,20 @@ class FD2(MultiprocessBased):
                     ]
                     atc_ids = o.GiscedataAtc.search(search_params_atc)
                     cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name'])
-
+                    total_ts = 0
                     for atc_id in atc_ids:
-                        crm_id = o.GiscedataAtc.read(atc_id, ['crm_id'])['crm_id'][0]
-                        if 'Z8_01' in cod_gest_data['name']:
-                            time_spent = self.get_atc_time_delta(crm_id, context={})
-                            compute_time(cod_gest_data, file_fields, time_spent)
+                        crm_data = o.GiscedataAtc.read(atc_id, ['crm_id', 'state'])
+                        if 'close' in crm_data['state']:
+                            if 'Z8_01' in cod_gest_data['name']:
+                                time_spent = self.get_atc_time_delta(crm_data['crm_id'][0], total_ts, context={})
+                                compute_time(cod_gest_data, z8_fields, time_spent)
+                            else:
+                                time_spent = self.get_atc_time_delta(crm_data['crm_id'][0], total_ts, context={})
+                                compute_time(cod_gest_data, file_fields, time_spent)
                         else:
-                            time_spent = self.get_atc_time_delta(crm_id, context={})
-                            compute_time(cod_gest_data, file_fields, time_spent)
+                            file_fields['no_tramitadas'] += 1
+                            file_fields['totals'] += 1
+
 
                 ## Asignem els valors segons escau
                 if 'Z8_01' not in cod_gest_data['name']:
