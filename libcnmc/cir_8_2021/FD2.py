@@ -107,7 +107,7 @@ class FD2(MultiprocessBased):
                             step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])['step_id'][0]
                             proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
                             if '05' in proces_name:
-                                r105_id = o.GiscedataSwitchingR105.search([('sw_id', '=', sw_id)])
+                                r105_id = o.model('giscedata.switching.r1.05').search([('sw_id', '=', sw_id)])
                                 if r105_id:
                                     model_names = ['giscedata.switching.r1.05', 'giscedata.switching.r1.02']
                                     time_spent = self.get_r1_time_delta(r102_id, r105_id, model_names)
