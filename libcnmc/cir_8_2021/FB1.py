@@ -27,8 +27,9 @@ class FB1(MultiprocessBased):
         self.embarrats = kwargs.pop('embarrats', False)
         self.linia_tram_include = {}
         self.forced_ids = {}
-        self.prefix = kwargs.pop('prefix', 'A') or 'A'
-        self.dividir = kwargs.pop('dividir', False)
+        self.prefix_AT = kwargs.pop('prefix_at', 'A') or 'A'
+        self.prefix_BT = kwargs.pop('prefix_bt', 'B') or 'B'
+        self.dividir = kwargs.pop('div', False)
 
         id_res_like = self.connection.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')])
@@ -74,7 +75,6 @@ class FB1(MultiprocessBased):
         at_ids = list(set(final_ids))
         for elem in range(0, len(at_ids)):
             at_ids[elem] = 'at.{}'.format(at_ids[elem])
-
 
         # BT
         data_pm = '{0}-01-01'.format(self.year + 1)
@@ -123,7 +123,7 @@ class FB1(MultiprocessBased):
 
     def consumer(self):
         """
-        Method that generates the csb file
+        Method that generates the csv file
         :return: List of arrays
         """
         O = self.connection
@@ -357,12 +357,10 @@ class FB1(MultiprocessBased):
 
                         fields_to_read_obra = [
                             'name', 'cini', 'tipo_inversion', 'ccuu', 'codigo_ccaa', 'nivel_tension_explotacion',
-                            'financiado',
-                            'fecha_aps', 'fecha_baja', 'causa_baja', 'im_ingenieria', 'im_materiales', 'im_obracivil',
-                            'im_trabajos', 'subvenciones_europeas', 'subvenciones_nacionales', 'subvenciones_prtr',
-                            'avifauna',
-                            'valor_auditado', 'valor_contabilidad', 'cuenta_contable', 'porcentaje_modificacion',
-                            'motivacion', 'obra_id', 'identificador_baja',
+                            'financiado', 'fecha_aps', 'fecha_baja', 'causa_baja', 'im_ingenieria', 'im_materiales',
+                            'im_obracivil', 'im_trabajos', 'subvenciones_europeas', 'subvenciones_nacionales',
+                            'subvenciones_prtr', 'avifauna', 'valor_auditado', 'valor_contabilidad', 'cuenta_contable',
+                            'porcentaje_modificacion', 'motivacion', 'obra_id', 'identificador_baja'
                         ]
 
                         obra_id = O.GiscedataProjecteObraTiAt.search([('element_ti_id', '=', tram['id'])])
@@ -370,11 +368,10 @@ class FB1(MultiprocessBased):
                         # Filtre d'obres finalitzades
                         data_finalitzacio = O.GiscedataProjecteObra.read(obra_id, ['data_finalitzacio'])
                         inici_any = '{}-01-01'.format(self.year)
+                        fi_any = '{}-12-31'.format(self.year)
 
-                        if obra_id:
+                        if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
                             tram_obra = O.GiscedataProjecteObraTiAt.read(obra_id, fields_to_read_obra)[0]
-                            if data_finalitzacio and data_finalitzacio <= inici_any:
-                                tram_obra = ''
                         else:
                             tram_obra = ''
 
@@ -463,7 +460,7 @@ class FB1(MultiprocessBased):
                             fecha_baja = ''
 
                         output = [
-                            '{}{}'.format(self.prefix, tram['name']),  # IDENTIFICADOR
+                            '{}{}'.format(self.prefix_AT, tram['name']),  # IDENTIFICADOR
                             tram.get('cini', '') or '',         # CINI
                             codi_ccuu or '',                    # CODIGO_CCUU
                             origen or edge['start_node'][1],    # ORIGEN
@@ -680,11 +677,10 @@ class FB1(MultiprocessBased):
                     # Filtre d'obres finalitzades
                     data_finalitzacio = O.GiscedataProjecteObra.read(obra_id, ['data_finalitzacio'])
                     inici_any = '{}-01-01'.format(self.year)
+                    fi_any = '{}-12-31'.format(self.year)
 
-                    if obra_id:
+                    if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
                         linia_obra = O.GiscedataProjecteObraTiBt.read(obra_id, fields_to_read_obra)[0]
-                        if data_finalitzacio and data_finalitzacio <= inici_any:
-                            linia_obra = ''
                     else:
                         linia_obra = ''
 
@@ -735,7 +731,7 @@ class FB1(MultiprocessBased):
                         financiado = ''
 
                     output = [
-                        '{}{}'.format(self.prefix, identificador_tramo),  # IDENTIFICADOR TRAMO
+                        '{}{}'.format(self.prefix_BT, identificador_tramo),  # IDENTIFICADOR TRAMO
                         tram.get('cini', '') or '',  # CINI
                         codigo_ccuu or '',  # CODIGO_CCUU
                         nudo_inicial,  # ORIGEN
