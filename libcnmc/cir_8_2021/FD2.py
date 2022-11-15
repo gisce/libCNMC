@@ -68,8 +68,8 @@ class FD2(MultiprocessBased):
 
         o = self.connection
 
-        raw_date_05 = o.model(model_name[0]).read(r105_id, ['create_date'])['create_date']
-        raw_date_02 = o.model(model_name[1]).read(r102_id, ['create_date'])['create_date']
+        raw_date_05 = o.model(model_name[0]).read(r105_id, ['date_created'])['date_created']
+        raw_date_02 = o.model(model_name[1]).read(r102_id, ['date_created'])['date_created']
         date_05 = raw_date_05.strptime(raw_date_05.split(' ')[0], "%Y-%m-%d")
         date_02 = raw_date_02.strptime(raw_date_02.split(' ')[0], "%Y-%m-%d")
 
@@ -94,8 +94,8 @@ class FD2(MultiprocessBased):
                 ## Tractem el codi de gestio Z4
                 if 'Z4' in cod_gest_data['name']:
                     search_params = [
-                        ('create_date', '>=', year_start),
-                        ('create_date', '<=', year_end)
+                        ('date_created', '>=', year_start),
+                        ('date_created', '<=', year_end)
                     ]
                     r102_ids = o.model("giscedata.switching.r1.02").search(search_params)
                     if '03' in cod_gest_data['name']:
