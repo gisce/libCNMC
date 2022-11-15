@@ -212,10 +212,9 @@ class FB1(MultiprocessBased):
                         modelo = ''
 
                     # Punt frontera
-                    if tram.get('punt_frontera', False):
-                        punt_frontera = tram['punt_frontera']
-                    else:
-                        punt_frontera = ''
+                    punt_frontera = '0'
+                    if tram.get('punto_frontera', False):
+                        punt_frontera = '1'
 
                     # Operación
                     if tram.get('operacion', False):
@@ -393,7 +392,7 @@ class FB1(MultiprocessBased):
 
                 if model == 'bt':
                     fields_to_read = ['name', 'cini', 'coeficient', 'municipi', 'voltatge', 'tensio_const',
-                                      'coeficient', 'longitud_cad', 'punto_frontera', 'model', 'operacion',
+                                      'coeficient', 'longitud_cad', 'punt_frontera', 'model', 'operacion',
                                       'propietari', 'edge_id', 'cable', 'tipus_instalacio_cnmc_id',
                                       'data_pm'
                                       ]
@@ -510,9 +509,9 @@ class FB1(MultiprocessBased):
                     estado = ''
 
                     # PUNTO FRONTERA
-                    punto_frontera = ''
-                    if linia.get('punto_frontera', False):
-                        punto_frontera = linia['punto_frontera']
+                    punto_frontera = '0'
+                    if linia.get('punt_frontera', False):
+                        punto_frontera = '1'
 
                     # MODELO
                     modelo = ''
@@ -557,12 +556,10 @@ class FB1(MultiprocessBased):
                     # OBRES
                     fields_to_read_obra = [
                         'name', 'cini', 'tipo_inversion', 'ccuu', 'codigo_ccaa', 'nivel_tension_explotacion',
-                        'financiado',
-                        'fecha_aps', 'fecha_baja', 'causa_baja', 'im_ingenieria', 'im_materiales', 'im_obracivil',
-                        'im_trabajos', 'subvenciones_europeas', 'subvenciones_nacionales', 'subvenciones_prtr',
-                        'avifauna',
-                        'valor_auditado', 'valor_contabilidad', 'cuenta_contable', 'porcentaje_modificacion',
-                        'motivacion', 'obra_id', 'identificador_baja',
+                        'financiado', 'fecha_aps', 'fecha_baja', 'causa_baja', 'im_ingenieria', 'im_materiales',
+                        'im_obracivil', 'im_trabajos', 'subvenciones_europeas', 'subvenciones_nacionales',
+                        'subvenciones_prtr', 'avifauna', 'valor_auditado', 'valor_contabilidad', 'cuenta_contable',
+                        'porcentaje_modificacion', 'motivacion', 'obra_id', 'identificador_baja'
                     ]
 
                     obra_id = O.GiscedataProjecteObraTiBt.search([('element_ti_id', '=', linia['id'])])
