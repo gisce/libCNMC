@@ -75,7 +75,7 @@ class FD2(MultiprocessBased):
             ('create_date', '>=', year_start),
             ('create_date', '<=', year_end),
             ('state', '!=', 'cancel'),
-            ('cod_gest_id', '=', item)
+            ('cod_gestion_id', '=', item)
         ]
         subtypes = context.get('subtypes', False)
         if subtypes:
