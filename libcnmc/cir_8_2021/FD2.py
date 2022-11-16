@@ -60,7 +60,7 @@ class FD2(MultiprocessBased):
                     method = "get_{}_time_delta".format(model_names[0][20:22])
                 else:
                     method = "get_time_delta"
-                time_spent = getattr(self, method)(case_id, end_case_id, model_names)
+                time_spent = getattr(self, method)(case_id, end_case_id, model_names, context=context)
                 compute_time(cod_gest_data, file_fields, time_spent)
             file_fields['no_tramitadas'] += 1
             file_fields['totals'] += 1
@@ -111,7 +111,7 @@ class FD2(MultiprocessBased):
                 'header_id']
             sw_id = o.GiscedataSwitchingStepHeader.read(a3_header_id[0], ['sw_id'])['sw_id'][0]
             pol_id = o.GiscedataSwitching.read(sw_id, ['cups_polissa_id'])['cups_polissa_id'][0]
-            t_norm = o.GiscedataPolissa.read(pol_id, ['tensio_normalitzada'])['tensio_nomralitzada'][0]
+            t_norm = o.GiscedataPolissa.read(pol_id, ['tensio_normalitzada'])['tensio_normalitzada'][0]
             t_tipus = o.GiscedataTensionsTensio(t_norm, ['tipus'])['tipus']
             if t_tipus is 'AT':
                 at_ids.append((sw_id, a302_id))
