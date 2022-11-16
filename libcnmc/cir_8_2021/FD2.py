@@ -112,7 +112,7 @@ class FD2(MultiprocessBased):
             sw_id = o.GiscedataSwitchingStepHeader.read(a3_header_id[0], ['sw_id'])['sw_id'][0]
             pol_id = o.GiscedataSwitching.read(sw_id, ['cups_polissa_id'])['cups_polissa_id'][0]
             t_norm = o.GiscedataPolissa.read(pol_id, ['tensio_normalitzada'])['tensio_normalitzada'][0]
-            t_tipus = o.GiscedataTensionsTensio(t_norm, ['tipus'])['tipus']
+            t_tipus = o.GiscedataTensionsTensio.read(t_norm, ['tipus'])['tipus']
             if t_tipus is 'AT':
                 at_ids.append((sw_id, a302_id))
             else:
@@ -234,7 +234,7 @@ class FD2(MultiprocessBased):
 
         return Spain().get_working_days_delta(date_start, date_end)
 
-    def get_a3_time_delta(self, r102_id, r105_id, model_name):
+    def get_a3_time_delta(self, r102_id, r105_id, model_name, context=None):
 
         o = self.connection
 
@@ -249,16 +249,16 @@ class FD2(MultiprocessBased):
 
         return Spain().get_working_days_delta(date_start, date_end)
 
-    def get_b1_time_delta(self, r102_id, r105_id, model_name):
+    def get_b1_time_delta(self, b102_id, b105_id, model_name, context=None):
 
         o = self.connection
 
         if '05' in model_name[0]:
-            raw_date_end = o.model(model_name[0]).read(r105_id, ['data_activacio'])['data_activacio']
+            raw_date_end = o.model(model_name[0]).read(b105_id, ['data_activacio'])['data_activacio']
         else:
-            raw_date_end = o.model(model_name[0]).read(r105_id, ['date_created'])['date_created']
+            raw_date_end = o.model(model_name[0]).read(b105_id, ['date_created'])['date_created']
 
-        raw_date_start = o.model(model_name[1]).read(r102_id, ['date_created'])['date_created']
+        raw_date_start = o.model(model_name[1]).read(b102_id, ['date_created'])['date_created']
         date_end = datetime.strptime(raw_date_end.split(' ')[0], "%Y-%m-%d")
         date_start = datetime.strptime(raw_date_start.split(' ')[0], "%Y-%m-%d")
 
