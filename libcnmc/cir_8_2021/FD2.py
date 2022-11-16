@@ -50,12 +50,16 @@ class FD2(MultiprocessBased):
         o = self.connection
         model_names = context.get('model_names', False)
         end_case_o = o.model(model_names[1])
+        switching_type = model_names[0][20:22]
 
         end_case_id = end_case_o.search([('sw_id', '=', sw_id)])[0]
         if end_case_id:
             enviament_pendent = end_case_o.read(end_case_id, ['enviament_pendent'])['enviament_pendent']
             if not enviament_pendent:
-                method = "get_{}_time_delta".format(model_names[0][20:22])
+                if switching_type != 'r1':
+                    method = "get_{}_time_delta".format(model_names[0][20:22])
+                else:
+                    method = "get_time_delta"
                 time_spent = getattr(self, method)(case_id, end_case_id, model_names)
                 compute_time(cod_gest_data, file_fields, time_spent)
             file_fields['no_tramitadas'] += 1
