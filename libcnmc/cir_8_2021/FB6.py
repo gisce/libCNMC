@@ -206,11 +206,6 @@ class FB6(MultiprocessBased):
                     item, fields_to_read
                 )
 
-                obra_id = O.GiscedataProjecteObraTiCelles.search([('element_ti_id', '=', cella['id'])])
-                if obra_id:
-                    linia = O.GiscedataProjecteObraTiCelles.read(obra_id, fields_to_read_obra)[0]
-                else:
-                    linia = ''
 
                 #DATA PM
                 data_pm = ''
@@ -219,28 +214,46 @@ class FB6(MultiprocessBased):
                                                    '%Y-%m-%d')
                     data_pm = data_pm_ct.strftime('%d/%m/%Y')
 
-                #CAMPS OBRA
-                if linia != '':
-                    tipo_inversion = (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1'
-                    im_ingenieria = format_f_6181(linia['im_ingenieria'] or 0.0, float_type='euro')
-                    im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
-                    im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
-                    im_trabajos = format_f_6181(linia['im_trabajos'] or 0.0, float_type='euro')
+                # OBRES
+                obra_id = O.GiscedataProjecteObraTiCelles.search([('element_ti_id', '=', cella['id'])])
+
+                # Filtre d'obres finalitzades
+                cella_obra = ''
+                if obra_id:
+                    data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
+                    if data_finalitzacio_data:
+                        if data_finalitzacio_data.get('data_finalitzacio', False):
+                            data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
+
+                            inici_any = '{}-01-01'.format(self.year)
+                            fi_any = '{}-12-31'.format(self.year)
+                            if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
+                                cella_obra = O.GiscedataProjecteObraTiCelles.read(obra_id, fields_to_read_obra)[0]
+                else:
+                    cella_obra = ''
+
+                # CAMPS OBRA
+                if cella_obra != '':
+                    tipo_inversion = (cella_obra['tipo_inversion'] or '0') if not cella_obra['fecha_baja'] else '1'
+                    im_ingenieria = format_f_6181(cella_obra['im_ingenieria'] or 0.0, float_type='euro')
+                    im_materiales = format_f_6181(cella_obra['im_materiales'] or 0.0, float_type='euro')
+                    im_obracivil = format_f_6181(cella_obra['im_obracivil'] or 0.0, float_type='euro')
+                    im_trabajos = format_f_6181(cella_obra['im_trabajos'] or 0.0, float_type='euro')
                     identificador_baja = (
-                        get_inst_name(linia['identificador_baja'][0]) if linia['identificador_baja'] else ''
+                        get_inst_name(cella_obra['identificador_baja'][0]) if cella_obra['identificador_baja'] else ''
                     )
                     im_construccion = str(format_f(
                         float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
                     , 2)).replace(".", ",")
-                    subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
-                    subvenciones_nacionales = format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro')
-                    subvenciones_prtr = format_f_6181(linia['subvenciones_prtr'] or 0.0, float_type='euro')
-                    valor_auditado = format_f_6181(linia['valor_auditado'] or 0.0, float_type='euro')
-                    valor_contabilidad = format_f_6181(linia['valor_contabilidad'] or 0.0, float_type='euro')
-                    cuenta_contable = linia['cuenta_contable']
-                    avifauna = int(linia['avifauna'] == True)
+                    subvenciones_europeas = format_f_6181(cella_obra['subvenciones_europeas'] or 0.0, float_type='euro')
+                    subvenciones_nacionales = format_f_6181(cella_obra['subvenciones_nacionales'] or 0.0, float_type='euro')
+                    subvenciones_prtr = format_f_6181(cella_obra['subvenciones_prtr'] or 0.0, float_type='euro')
+                    valor_auditado = format_f_6181(cella_obra['valor_auditado'] or 0.0, float_type='euro')
+                    valor_contabilidad = format_f_6181(cella_obra['valor_contabilidad'] or 0.0, float_type='euro')
+                    cuenta_contable = cella_obra['cuenta_contable']
+                    avifauna = int(cella_obra['avifauna'] == True)
                     financiado =format_f(
-                        100.0 - linia.get('financiado', 0.0), 2
+                        100.0 - cella_obra.get('financiado', 0.0), 2
                     )
                 else:
                     tipo_inversion = ''

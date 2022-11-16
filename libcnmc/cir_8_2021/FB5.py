@@ -54,7 +54,7 @@ class FB5(MultiprocessBased):
             coords = wkt.loads(node["geom"]).coords[0]
             vertex = [coords[0], coords[1]]
         else:
-            o_node, vertex = self.get_node_vertex(item)
+            o_node, vertex = self.get_node_vertex(ct_id)
         o_node = o_node.replace('*', '')
         return o_node
 
@@ -69,6 +69,12 @@ class FB5(MultiprocessBased):
             'fecha_aps', 'fecha_baja', 'causa_baja', 'cuenta_contable', 'im_ingenieria', 'im_materiales',
             'im_obracivil', 'im_trabajos', 'motivacion', 'tipo_inversion', 'valor_residual'
         ]
+
+        def get_inst_name(element_id):
+            vals = self.connection.GiscedataTransformadorTrafo.read(
+                element_id, ['name'])
+            return vals['name']
+
         while True:
             try:
                 # generar linies
@@ -78,47 +84,59 @@ class FB5(MultiprocessBased):
                     item, fields_to_read
                 )
 
-                obra_id = o.GiscedataProjecteObraTiTransformador.search([('element_ti_id', '=', trafo['id'])])
-                if obra_id:
-                    linia = o.GiscedataProjecteObraTiTransformador.read(obra_id, fields_to_read_obra)[0]
-                else:
-                    linia = ''
-
                 #DATA_PM
                 if trafo['data_pm']:
                     data_pm_trafo = datetime.strptime(str(trafo['data_pm']),
                                                       '%Y-%m-%d')
                     data_pm = data_pm_trafo.strftime('%d/%m/%Y')
 
+                # OBRES
+                obra_id = o.GiscedataProjecteObraTiTransformador.search([('element_ti_id', '=', trafo['id'])])
+
+                # Filtre d'obres finalitzades
+                trafo_obra = ''
+                if obra_id:
+                    data_finalitzacio_data = o.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
+                    if data_finalitzacio_data:
+                        if data_finalitzacio_data.get('data_finalitzacio', False):
+                            data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
+
+                            inici_any = '{}-01-01'.format(self.year)
+                            fi_any = '{}-12-31'.format(self.year)
+                            if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
+                                trafo_obra = o.GiscedataProjecteObraTiTransformador.read(obra_id, fields_to_read_obra)[0]
+                else:
+                    trafo_obra = ''
+
                 #CAMPS OBRES
-                if linia != '':
+                if trafo_obra != '':
                     data_ip = convert_spanish_date(
-                            linia['fecha_aps'] if not linia['fecha_baja'] and linia['tipo_inversion'] != '1' else ''
+                            trafo_obra['fecha_aps'] if not trafo_obra['fecha_baja'] and trafo_obra['tipo_inversion'] != '1' else ''
                     )
                     identificador_baja = (
-                        get_inst_name(linia['identificador_baja']) if linia['identificador_baja'] else ''
+                        get_inst_name(trafo_obra['identificador_baja']) if trafo_obra['identificador_baja'] else ''
                     )
-                    subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
-                    subvenciones_nacionales = format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro')
-                    subvenciones_prtr = format_f_6181(linia['subvenciones_prtr'] or 0.0, float_type='euro')
-                    im_ingenieria = format_f_6181(linia['im_ingenieria'] or 0.0, float_type='euro')
-                    im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
-                    im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
-                    im_trabajos = format_f_6181(linia['im_trabajos'] or 0.0, float_type='euro')
+                    subvenciones_europeas = format_f_6181(trafo_obra['subvenciones_europeas'] or 0.0, float_type='euro')
+                    subvenciones_nacionales = format_f_6181(trafo_obra['subvenciones_nacionales'] or 0.0, float_type='euro')
+                    subvenciones_prtr = format_f_6181(trafo_obra['subvenciones_prtr'] or 0.0, float_type='euro')
+                    im_ingenieria = format_f_6181(trafo_obra['im_ingenieria'] or 0.0, float_type='euro')
+                    im_materiales = format_f_6181(trafo_obra['im_materiales'] or 0.0, float_type='euro')
+                    im_obracivil = format_f_6181(trafo_obra['im_obracivil'] or 0.0, float_type='euro')
+                    im_trabajos = format_f_6181(trafo_obra['im_trabajos'] or 0.0, float_type='euro')
                     im_construccion = str(format_f(
                         float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
                     , 2)).replace(".", ",")
-                    tipo_inversion = (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1'
+                    tipo_inversion = (trafo_obra['tipo_inversion'] or '0') if not trafo_obra['fecha_baja'] else '1'
                     valor_auditado = str(
                         float(im_construccion.replace(",", ".")) +
                         float(im_ingenieria.replace(",", ".")) + float(im_trabajos.replace(",", "."))
                     ).replace(".", ",")
-                    valor_residual = linia['valor_residual']
-                    cuenta_contable = linia['cuenta_contable']
+                    valor_residual = trafo_obra['valor_residual']
+                    cuenta_contable = trafo_obra['cuenta_contable']
                     financiado = format_f(
-                        100.0 - linia.get('financiado', 0.0), 2
+                        100.0 - trafo_obra.get('financiado', 0.0), 2
                     )
-                    motivacion = linia['motivacion']
+                    motivacion = trafo_obra['motivacion']
                 else:
                     data_ip = ''
                     identificador_baja = ''
@@ -156,6 +174,7 @@ class FB5(MultiprocessBased):
 
                 #FECHA_BAJA, CAUSA_BAJA
 
+                data_pm_limit = '{0}-01-01'.format(self.year + 1)
                 if trafo['data_baixa']:
                     if trafo['data_baixa'] < data_pm_limit:
                         tmp_date = datetime.strptime(

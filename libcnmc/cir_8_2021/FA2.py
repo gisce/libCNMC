@@ -156,9 +156,9 @@ class FA2(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
                 model = item.split('.')[0]
-                id_ = item.split('.')[1]
+                id_ = int(item.split('.')[1])
                 if model == 're':
-                    recore = o.GiscedataRe.read(id_, fields_to_read)[0]
+                    recore = o.GiscedataRe.read(id_, fields_to_read)
                     cups = recore['cups']
 
                 # Coordenades I Node

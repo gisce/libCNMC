@@ -66,12 +66,9 @@ class FB8(MultiprocessBased):
                     item, fields_to_read
                 )
 
-                obra_id = O.GiscedataProjecteObraTiDespatx.search([('element_ti_id', '=', despatx['id'])])
+                # OBRES
 
-                if obra_id:
-                    linia = O.GiscedataProjecteObraTiDespatx.read(obra_id, fields_to_read_obra)[0]
-                else:
-                    linia = ''
+                obra_id = O.GiscedataProjecteObraTiDespatx.search([('element_ti_id', '=', despatx['id'])])
 
                 #DATA_PM
                 if despatx['data_apm']:
@@ -79,23 +76,38 @@ class FB8(MultiprocessBased):
                                                    '%Y-%m-%d')
                     data_pm = data_pm_despatx.strftime('%d/%m/%Y')
 
+                # Filtre d'obres finalitzades
+                despatx_obra = ''
+                if obra_id:
+                    data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
+                    if data_finalitzacio_data:
+                        if data_finalitzacio_data.get('data_finalitzacio', False):
+                            data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
+
+                            inici_any = '{}-01-01'.format(self.year)
+                            fi_any = '{}-12-31'.format(self.year)
+                            if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
+                                despatx_obra = O.GiscedataProjecteObraTiDespatx.read(obra_id, fields_to_read_obra)[0]
+                else:
+                    despatx_obra = ''
+
                 #CAMPS OBRES
-                if linia != '':
-                    subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
-                    subvenciones_nacionales = format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro')
-                    subvenciones_prtr = format_f_6181(linia['subvenciones_prtr'] or 0.0, float_type='euro')
-                    im_ingenieria = format_f_6181(linia['im_ingenieria'] or 0.0, float_type='euro')
-                    im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
-                    im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
-                    im_trabajos = format_f_6181(linia['im_trabajos'] or 0.0, float_type='euro')
+                if despatx_obra != '':
+                    subvenciones_europeas = format_f_6181(despatx_obra['subvenciones_europeas'] or 0.0, float_type='euro')
+                    subvenciones_nacionales = format_f_6181(despatx_obra['subvenciones_nacionales'] or 0.0, float_type='euro')
+                    subvenciones_prtr = format_f_6181(despatx_obra['subvenciones_prtr'] or 0.0, float_type='euro')
+                    im_ingenieria = format_f_6181(despatx_obra['im_ingenieria'] or 0.0, float_type='euro')
+                    im_materiales = format_f_6181(despatx_obra['im_materiales'] or 0.0, float_type='euro')
+                    im_obracivil = format_f_6181(despatx_obra['im_obracivil'] or 0.0, float_type='euro')
+                    im_trabajos = format_f_6181(despatx_obra['im_trabajos'] or 0.0, float_type='euro')
                     valor_auditado = str(
                         float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", ".")) +
                         float(im_ingenieria.replace(",", ".")) + float(im_trabajos.replace(",", "."))
                     ).replace(".", ",")
 
-                    cuenta_contable = linia['cuenta_contable']
+                    cuenta_contable = despatx_obra['cuenta_contable']
                     financiado =format_f(
-                        100.0 - linia.get('financiado', 0.0), 2
+                        100.0 - despatx_obra.get('financiado', 0.0), 2
                     )
                 else:
                     subvenciones_europeas = ''
@@ -114,9 +126,9 @@ class FB8(MultiprocessBased):
                 data_baixa_parcial = ''
                 valor_baixa_parcial = ''
                 if despatx['data_baixa_parcial']:
-                    data_baixa_parcial = datetime.strptime(str(ct['data_pm']),
+                    data_baixa_parcial = datetime.strptime(str(despatx['data_pm']),
                                                    '%Y-%m-%d')
-                    data_baixa_parcial = data_pm_ct.strftime('%d/%m/%Y')
+                    data_baixa_parcial = data_pm_despatx.strftime('%d/%m/%Y')
                     valor_baixa_parcial = despatx['valor_baixa_parcial']
                     causa_baja = 4
                 elif despatx['data_baixa']:

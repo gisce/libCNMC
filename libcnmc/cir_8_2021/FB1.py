@@ -31,6 +31,12 @@ class FB1(MultiprocessBased):
         self.prefix_BT = kwargs.pop('prefix_bt', 'B') or 'B'
         self.dividir = kwargs.pop('div', False)
 
+        print('####################')
+        print('####################')
+        print(kwargs)
+        print('####################')
+        print('####################')
+
         id_res_like = self.connection.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')])
         if id_res_like:

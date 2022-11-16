@@ -439,7 +439,7 @@ class FA1(MultiprocessBased):
                 if cups.get('autoconsum_id', False):
                     # AUTOCONSUMO
                     o_autoconsumo = 1
-                    autoconsum_id = cups['autoconsum_id']
+                    autoconsum_id = cups['autoconsum_id'][0]
                     autoconsum_data = O.GiscedataAutoconsum.read(autoconsum_id, ['cau', 'tipus_autoconsum',
                                                                                  'generador_id', 'codi_cnmc'])
                     # CAU
@@ -452,7 +452,7 @@ class FA1(MultiprocessBased):
 
                     # COD_GENERACION_AUTO
                     if autoconsum_data.get('generador_id', False):
-                        generador_id = autoconsum_data['generador_id']
+                        generador_id = autoconsum_data['generador_id'][0]
                         generador_data = O.GiscedataAutoconsumGenerador.read(generador_id, ['cini'])
                         if generador_data.get('cini', False):
                             cini = generador_data['cini']

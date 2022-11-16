@@ -131,12 +131,6 @@ class FB4(MultiprocessBased):
                     item, fields_to_read
                 )
 
-                obra_id = O.GiscedataProjecteObraTiPosicio.search([('element_ti_id', '=', pos['id'])])
-                if obra_id:
-                    linia = O.GiscedataProjecteObraTiPosicio.read(obra_id, fields_to_read_obra)[0]
-                else:
-                    linia = ''
-
                 #DATA_PM
                 data_pm = ''
                 if pos['data_pm']:
@@ -165,33 +159,52 @@ class FB4(MultiprocessBased):
                     fecha_baja = ''
                     causa_baja = 0;
 
+                # OBRES
+
+                obra_id = O.GiscedataProjecteObraTiPosicio.search([('element_ti_id', '=', pos['id'])])
+
+                # Filtre d'obres finalitzades
+                pos_obra = ''
+                if obra_id:
+                    data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
+                    if data_finalitzacio_data:
+                        if data_finalitzacio_data.get('data_finalitzacio', False):
+                            data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
+
+                            inici_any = '{}-01-01'.format(self.year)
+                            fi_any = '{}-12-31'.format(self.year)
+                            if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
+                                pos_obra = O.GiscedataProjecteObraTiPosicio.read(obra_id, fields_to_read_obra)[0]
+                else:
+                    pos_obra = ''
+
                 #CAMPS OBRES
-                if linia != '':
+                if pos_obra != '':
                     data_ip = convert_spanish_date(
-                        data_pm if not fecha_baja and linia['tipo_inversion'] != '1' else ''
+                        data_pm if not fecha_baja and pos_obra['tipo_inversion'] != '1' else ''
                     )
-                    im_materiales = format_f_6181(linia['im_materiales'] or 0.0, float_type='euro')
-                    im_obracivil = format_f_6181(linia['im_obracivil'] or 0.0, float_type='euro')
+                    im_materiales = format_f_6181(pos_obra['im_materiales'] or 0.0, float_type='euro')
+                    im_obracivil = format_f_6181(pos_obra['im_obracivil'] or 0.0, float_type='euro')
                     im_construccion = str(format_f(
                         float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
                     , 2)).replace(".", ",")
-                    im_ingenieria = format_f_6181(linia['im_ingenieria'] or 0.0, float_type='euro')
-                    im_trabajos = format_f_6181(linia['im_trabajos'] or 0.0, float_type='euro')
-                    tipo_inversion = (linia['tipo_inversion'] or '0') if not linia['fecha_baja'] else '1'
-                    valor_auditado = format_f_6181(linia['valor_auditado'] or 0.0, float_type='euro')
-                    valor_residual = format_f_6181(linia['valor_residual'] or 0.0, float_type='euro')
-                    subvenciones_europeas = format_f_6181(linia['subvenciones_europeas'] or 0.0, float_type='euro')
-                    subvenciones_nacionales = format_f_6181(linia['subvenciones_nacionales'] or 0.0, float_type='euro')
-                    subvenciones_prtr = format_f_6181(linia['subvenciones_prtr'] or 0.0, float_type='euro')
-                    cuenta_contable = linia['cuenta_contable']
+                    im_ingenieria = format_f_6181(pos_obra['im_ingenieria'] or 0.0, float_type='euro')
+                    im_trabajos = format_f_6181(pos_obra['im_trabajos'] or 0.0, float_type='euro')
+                    tipo_inversion = (pos_obra['tipo_inversion'] or '0') if not pos_obra['fecha_baja'] else '1'
+                    valor_auditado = format_f_6181(pos_obra['valor_auditado'] or 0.0, float_type='euro')
+                    valor_residual = format_f_6181(pos_obra['valor_residual'] or 0.0, float_type='euro')
+                    subvenciones_europeas = format_f_6181(pos_obra['subvenciones_europeas'] or 0.0, float_type='euro')
+                    subvenciones_nacionales = format_f_6181(pos_obra['subvenciones_nacionales'] or 0.0, float_type='euro')
+                    subvenciones_prtr = format_f_6181(pos_obra['subvenciones_prtr'] or 0.0, float_type='euro')
+                    cuenta_contable = pos_obra['cuenta_contable']
                     financiado =format_f(
-                        100.0 - linia.get('financiado', 0.0), 2
+                        100.0 - pos_obra.get('financiado', 0.0), 2
                     )
-                    motivacion = get_codi_actuacio(O, linia['motivacion'] and linia['motivacion'][0])
+                    motivacion = get_codi_actuacio(O, pos_obra['motivacion'] and pos_obra['motivacion'][0])
 
                     identificador_baja = (
-                        get_inst_name(linia['identificador_baja'][0])  # IDENTIFICADOR_BAJA
-                        if linia['identificador_baja'] else ''
+                        get_inst_name(pos_obra['identificador_baja'][0])  # IDENTIFICADOR_BAJA
+                        if pos_obra['identificador_baja'] else ''
                     )
                 else:
                     data_ip = ''
@@ -289,7 +302,7 @@ class FB4(MultiprocessBased):
                     identificador_baja, #IDENTIFICADOR BAJA
                 ]
                 if self.include_obres:
-                    output.insert(0, linia['obra_id'][1])
+                    output.insert(0, pos_obra['obra_id'][1])
                 output = map(lambda e: '' if e is False or e is None else e, output)
                 self.output_q.put(output)
 

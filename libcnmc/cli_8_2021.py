@@ -177,7 +177,6 @@ def cir_8_2021_fa4(**kwargs):
 @click.option("--reducir-cups/--no-reducir-cups",default=False)
 @click.option('--prefix_at', help="Prefix dels Trams AT")
 @click.option('--prefix_bt', help="Prefix dels Trams BT")
-@click.option('--circuits', help="Prefix dels Trams BT")
 @click.option('--div/--no-div', default=False, help="Dividir la longitud dels Trams AT entre el núm. de circuits")
 def cir_8_2021_fb1(**kwargs):
     """
@@ -188,6 +187,7 @@ def cir_8_2021_fb1(**kwargs):
     :return: None
     :rtype: None
     """
+
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
                     pwd=kwargs['password'], port=kwargs['port'],
                     uri=kwargs['server'])
@@ -200,7 +200,10 @@ def cir_8_2021_fb1(**kwargs):
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
         derechos=kwargs['derechos'],
-        reducir_cupss=kwargs["reducir_cups"]
+        reducir_cupss=kwargs["reducir_cups"],
+        prefix_at=kwargs['prefix_at'],
+        prefix_bt=kwargs['prefix_bt'],
+        div=kwargs['div']
     )
     proc.calc()
 
