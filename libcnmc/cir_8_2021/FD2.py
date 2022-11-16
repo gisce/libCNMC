@@ -12,7 +12,6 @@ from workalendar.europe import Spain
 
 
 def compute_time(cod_gest_data, values, time_delta):
-
     if time_delta > cod_gest_data['dies_limit']:
         values['fuera_plazo'] = values['fuera_plazo'] + 1
     else:
@@ -46,6 +45,158 @@ class FD2(MultiprocessBased):
         ]
         return self.connection.GiscedataCodigosGestionCalidadZ.search(search_params)
 
+    def manage_switching_cases(self, cod_gest_data, file_fields, sw_id, case_id, context=None):
+
+        o = self.connection
+        model_names = context.get('model_names', False)
+        end_case_o = o.model(model_names[1])
+
+        end_case_id = end_case_o.search([('sw_id', '=', sw_id)])[0]
+        if end_case_id:
+            enviament_pendent = end_case_o.read(end_case_id, ['enviament_pendent'])['enviament_pendent']
+            if not enviament_pendent:
+                method = "get_{}_time_delta".format(model_names[0][20:22])
+                time_spent = getattr(self, method)(case_id, end_case_id, model_names)
+                compute_time(cod_gest_data, file_fields, time_spent)
+            file_fields['no_tramitadas'] += 1
+            file_fields['totals'] += 1
+
+
+    def process_atcs(self, item, cod_gest_data, file_fields, year_start, year_end, context=None):
+        o = self.connection
+        atc_o = o.GiscedataAtc
+        if context is None:
+            context = {}
+        search_params = [
+            ('create_date', '>=', year_start),
+            ('create_date', '<=', year_end),
+            ('state', '!=', 'cancel'),
+            ('cod_gest_id', '=', item)
+        ]
+        subtypes = context.get('subtypes', False)
+        if subtypes:
+            search_params[3] = ('subtipus_id', 'in', subtypes)
+
+        atc_ids = atc_o.search(search_params)
+        total_ts = 0
+        for atc_id in atc_ids:
+            crm_data = atc_o.read(atc_id, ['crm_id', 'state'])
+            if 'done' in crm_data['state']:
+                time_spent = self.get_atc_time_delta(crm_data['crm_id'][0], total_ts, context={})
+                compute_time(cod_gest_data, file_fields, time_spent)
+            else:
+                file_fields['no_tramitadas'] += 1
+                file_fields['totals'] += 1
+
+    def process_z3(self, item, cod_gest_data, file_fields, year_start, year_end):
+
+        o = self.connection
+
+        search_params = [
+            ('date_created', '>=', year_start),
+            ('date_created', '<=', year_end)
+        ]
+        a302_ids = o.model("giscedata.switching.a3.02").search(search_params)
+
+        bt_ids = []
+        at_ids = []
+
+        ## Separem els a3 de baixa i alta tensió per a tractarlos per separat
+        for a302_id in a302_ids:
+            a3_header_id = o.model("giscedata.switching.a3.02").read(a302_id, ['header_id'])[
+                'header_id']
+            sw_id = o.GiscedataSwitchingStepHeader.read(a3_header_id[0], ['sw_id'])['sw_id'][0]
+            pol_id = o.GiscedataSwitching.read(sw_id, ['cups_polissa_id'])['cups_polissa_id'][0]
+            t_norm = o.GiscedataPolissa.read(pol_id, ['tensio_normalitzada'])['tensio_nomralitzada'][0]
+            t_tipus = o.GiscedataTensionsTensio(t_norm, ['tipus'])['tipus']
+            if t_tipus is 'AT':
+                at_ids.append((sw_id, a302_id))
+            else:
+                bt_ids.append((sw_id, a302_id))
+
+        ## Tractem els de baixa tensió
+        if '01' in cod_gest_data['name']:
+            for bt_id in bt_ids:
+                a302_id = bt_id[1]
+                sw_id = bt_id[0]
+                step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])['step_id'][0]
+                proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
+                if '05' in proces_name:
+                    context = {'method_names': ['giscedata.switching.a3.02', 'giscedata.switching.a3.05']}
+                    self.manage_switching_cases(cod_gest_data, file_fields, sw_id, a302_id, context=context)
+                elif '03' in proces_name:
+                    context = {'method_names': ['giscedata.switching.a3.02', 'giscedata.switching.a3.03']}
+                    self.manage_switching_cases(cod_gest_data, file_fields, sw_id, a302_id, context=context)
+
+        ## Tractem els de alta tensió
+        if '02' in cod_gest_data['name']:
+            for at_id in at_ids:
+                a302_id = at_id[1]
+                sw_id = at_id[0]
+                step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])['step_id'][0]
+                proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
+                if '05' in proces_name:
+                    context = {'method_names': ['giscedata.switching.a3.02', 'giscedata.switching.a3.05']}
+                    self.manage_switching_cases(cod_gest_data, file_fields, sw_id, a302_id, context=context)
+                elif '03' in proces_name:
+                    context = {'method_names': ['giscedata.switching.a3.02', 'giscedata.switching.a3.03']}
+                    self.manage_switching_cases(cod_gest_data, file_fields, sw_id, a302_id, context=context)
+
+        ## Tractem els atcs adients
+        self.process_atcs(item, cod_gest_data, file_fields, year_start, year_end)
+
+    def process_z4(self, item, cod_gest_data, file_fields, year_start, year_end):
+        o = self.connection
+        if '03' in cod_gest_data['name']:
+            search_params = [
+                ('date_created', '>=', year_start),
+                ('date_created', '<=', year_end)
+            ]
+            r102_ids = o.model("giscedata.switching.r1.02").search(search_params)
+
+            ## Tractem els r1 i comptabilitzem els que escau
+            for r102_id in r102_ids:
+                r1_header_id = o.model("giscedata.switching.r1.02").read(r102_id, ['header_id'])[
+                    'header_id']
+                sw_id = o.GiscedataSwitchingStepHeader.read(r1_header_id[0], ['sw_id'])['sw_id'][0]
+                step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])['step_id'][0]
+                proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
+                if '05' in proces_name:
+                    model_names = ['giscedata.switching.r1.02', 'giscedata.switching.r1.05']
+                    field_names = ['date_created', 'date_created']
+                    context = {'model_names': model_names, 'field_names': field_names}
+                    self.manage_switching_cases(cod_gest_data, file_fields, sw_id, r102_id, context=context)
+
+            ## Tractem els atcs adients
+            self.process_atcs(item, cod_gest_data, file_fields, year_start, year_end)
+
+        ## Tractem els ATCs del subtipus que escau
+        else:
+            subtipus_ids = o.GiscedataSubtipusReclamacio.search([('name', 'in', ['008', '009', '028'])])
+            context = {'subtype': subtipus_ids}
+            self.process_atcs(item, cod_gest_data, file_fields, year_start, year_end, context=context)
+
+    def process_z5(self, item, cod_gest_data, file_fields, year_start, year_end):
+
+        o = self.connection
+
+        search_params = [
+            ('date_created', '>=', year_start),
+            ('date_created', '<=', year_end),
+            ('motiu', '=', '03')
+        ]
+        model_names = ['giscedata.switching.b1.03', 'giscedata.switching.b1.04']
+        field_names = ['create_date', 'create_date']
+        context = {'model_names': model_names, 'field_names': field_names}
+        b101_ids = o.model("giscedata.switching.b1.01").search(search_params)
+        for b101_id in b101_ids:
+            b1_header_id = o.model("giscedata.switching.b1.01").read(b101_id, ['header_id'])['header_id']
+            sw_id = o.GiscedataSwitchingStepHeader.read(b1_header_id[0], ['sw_id'])['sw_id'][0]
+            self.manage_switching_cases(cod_gest_data, file_fields, sw_id, b101_id, context=context)
+
+        ## Tractem els atcs que escau
+        self.process_atcs(item, cod_gest_data, file_fields, year_start, year_end, context=context)
+
     def get_atc_time_delta(self, crm_id, total_ts, context=None):
         if context is None:
             context = {}
@@ -60,16 +211,54 @@ class FD2(MultiprocessBased):
 
         return total_ts
 
-    def get_r1_time_delta(self, r102_id, r105_id, model_name):
+    def get_time_delta(self, start_id, end_id, context=None):
+
+        o = self.connection
+        if context is None:
+            context = {}
+
+        start_model_name = context['model_name'][0]
+        end_model_name = context['model_name'][1]
+
+        start_field_name = context['fields_name'][0]
+        end_field_name = context['fields_name'][1]
+
+        raw_date_end = o.model(end_model_name).read(end_id, end_field_name)[end_field_name]
+        raw_date_start = o.model(start_model_name).read(start_id, start_field_name)[start_field_name]
+        date_end = datetime.strptime(raw_date_end.split(' ')[0], "%Y-%m-%d")
+        date_start = datetime.strptime(raw_date_start.split(' ')[0], "%Y-%m-%d")
+
+        return Spain().get_working_days_delta(date_start, date_end)
+
+    def get_a3_time_delta(self, r102_id, r105_id, model_name):
 
         o = self.connection
 
-        raw_date_05 = o.model(model_name[0]).read(r105_id, ['date_created'])['date_created']
-        raw_date_02 = o.model(model_name[1]).read(r102_id, ['date_created'])['date_created']
-        date_05 = datetime.strptime(raw_date_05.split(' ')[0], "%Y-%m-%d")
-        date_02 = datetime.strptime(raw_date_02.split(' ')[0], "%Y-%m-%d")
+        if '05' in model_name[0]:
+            raw_date_end = o.model(model_name[0]).read(r105_id, ['data_activacio'])['data_activacio']
+        else:
+            raw_date_end = o.model(model_name[0]).read(r105_id, ['date_created'])['date_created']
 
-        return Spain().get_working_days_delta(date_02, date_05)
+        raw_date_start = o.model(model_name[1]).read(r102_id, ['date_created'])['date_created']
+        date_end = datetime.strptime(raw_date_end.split(' ')[0], "%Y-%m-%d")
+        date_start = datetime.strptime(raw_date_start.split(' ')[0], "%Y-%m-%d")
+
+        return Spain().get_working_days_delta(date_start, date_end)
+
+    def get_b1_time_delta(self, r102_id, r105_id, model_name):
+
+        o = self.connection
+
+        if '05' in model_name[0]:
+            raw_date_end = o.model(model_name[0]).read(r105_id, ['data_activacio'])['data_activacio']
+        else:
+            raw_date_end = o.model(model_name[0]).read(r105_id, ['date_created'])['date_created']
+
+        raw_date_start = o.model(model_name[1]).read(r102_id, ['date_created'])['date_created']
+        date_end = datetime.strptime(raw_date_end.split(' ')[0], "%Y-%m-%d")
+        date_start = datetime.strptime(raw_date_start.split(' ')[0], "%Y-%m-%d")
+
+        return Spain().get_working_days_delta(date_start, date_end)
 
     def consumer(self):
 
@@ -89,53 +278,15 @@ class FD2(MultiprocessBased):
 
                 ## Tractem el codi de gestio Z4
                 if 'Z4' in cod_gest_data['name']:
-                    if '03' in cod_gest_data['name']:
-                        search_params = [
-                            ('date_created', '>=', year_start),
-                            ('date_created', '<=', year_end)
-                        ]
-                        r102_ids = o.model("giscedata.switching.r1.02").search(search_params)
-                        ## Tractem els r1 i comptabilitzem els que escau
-                        for r102_id in r102_ids:
-                            r1_header_id = o.model("giscedata.switching.r1.02").read(r102_id, ['header_id'])[
-                                'header_id']
-                            sw_id = o.GiscedataSwitchingStepHeader.read(r1_header_id[0], ['sw_id'])['sw_id'][0]
-                            step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])['step_id'][0]
-                            proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
-                            if '05' in proces_name:
-                                r105_id = o.model('giscedata.switching.r1.05').search([('sw_id', '=', sw_id)])[0]
-                                if r105_id:
-                                    enviament_pendent = o.model('giscedata.switching.r1.05').read(r105_id,
-                                        ['enviament_pendent'])['enviament_pendent']
-                                    if not enviament_pendent:
-                                        model_names = ['giscedata.switching.r1.05', 'giscedata.switching.r1.02']
-                                        time_spent = self.get_r1_time_delta(r102_id, r105_id, model_names)
-                                        compute_time(cod_gest_data, file_fields, time_spent)
-                                    else:
-                                        file_fields['no_tramitadas'] += 1
-                                        file_fields['totals'] += 1
-
-
-                    ## Tractem els ATCs del subtipus que escau
-                    else:
-                        subtipus_ids = o.GiscedataSubtipusReclamacio.search([('name', 'in', ['008', '009', '028'])])
-                        search_params = [
-                            ('create_date', '>=', year_start),
-                            ('create_date', '<=', year_end),
-                            ('state', '!=', 'cancel'),
-                            ('subtipus_id', 'in', subtipus_ids)
-                        ]
-                        atc_ids = o.GiscedataAtc.search(search_params)
-                        total_ts = 0
-                        for atc_id in atc_ids:
-                            crm_data = o.GiscedataAtc.read(atc_id, ['crm_id', 'state'])
-                            if 'done' in crm_data['state']:
-                                time_spent = self.get_atc_time_delta(crm_data['crm_id'][0], total_ts, context={})
-                                compute_time(cod_gest_data, file_fields, time_spent)
-                            else:
-                                file_fields['no_tramitadas'] += 1
-                                file_fields['totals'] += 1
-
+                    self.process_z4(item, cod_gest_data, file_fields, year_start, year_end)
+                elif 'Z3' in cod_gest_data['name']:
+                    self.process_z3(item, cod_gest_data, file_fields, year_start, year_end)
+                elif 'Z5' in cod_gest_data['name']:
+                    self.process_z5(item, cod_gest_data, file_fields, year_start, year_end)
+                elif 'Z6' in cod_gest_data['name']:
+                    pass
+                elif 'Z7' in cod_gest_data['name']:
+                    pass
                 ## Tractament general de ATCs
                 else:
                     search_params_atc = [
@@ -159,7 +310,6 @@ class FD2(MultiprocessBased):
                         else:
                             file_fields['no_tramitadas'] += 1
                             file_fields['totals'] += 1
-
 
                 ## Asignem els valors segons escau
                 if 'Z8_01' not in cod_gest_data['name']:
