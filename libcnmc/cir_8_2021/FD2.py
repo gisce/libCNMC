@@ -234,31 +234,31 @@ class FD2(MultiprocessBased):
 
         return Spain().get_working_days_delta(date_start, date_end)
 
-    def get_a3_time_delta(self, r102_id, r105_id, model_name, context=None):
+    def get_a3_time_delta(self, start_id, end_id, context=None):
 
         o = self.connection
-
+        model_name = context.get('model_names', False)
         if '05' in model_name[0]:
-            raw_date_end = o.model(model_name[0]).read(r105_id, ['data_activacio'])['data_activacio']
+            raw_date_end = o.model(model_name[0]).read(end_id, ['data_activacio'])['data_activacio']
         else:
-            raw_date_end = o.model(model_name[0]).read(r105_id, ['date_created'])['date_created']
+            raw_date_end = o.model(model_name[0]).read(end_id, ['date_created'])['date_created']
 
-        raw_date_start = o.model(model_name[1]).read(r102_id, ['date_created'])['date_created']
+        raw_date_start = o.model(model_name[1]).read(start_id, ['date_created'])['date_created']
         date_end = datetime.strptime(raw_date_end.split(' ')[0], "%Y-%m-%d")
         date_start = datetime.strptime(raw_date_start.split(' ')[0], "%Y-%m-%d")
 
         return Spain().get_working_days_delta(date_start, date_end)
 
-    def get_b1_time_delta(self, b102_id, b105_id, model_name, context=None):
+    def get_b1_time_delta(self, start_id, end_id, context=None):
 
         o = self.connection
-
+        model_name = context.get('model_names', False)
         if '05' in model_name[0]:
-            raw_date_end = o.model(model_name[0]).read(b105_id, ['data_activacio'])['data_activacio']
+            raw_date_end = o.model(model_name[0]).read(end_id, ['data_activacio'])['data_activacio']
         else:
-            raw_date_end = o.model(model_name[0]).read(b105_id, ['date_created'])['date_created']
+            raw_date_end = o.model(model_name[0]).read(end_id, ['date_created'])['date_created']
 
-        raw_date_start = o.model(model_name[1]).read(b102_id, ['date_created'])['date_created']
+        raw_date_start = o.model(model_name[1]).read(start_id, ['date_created'])['date_created']
         date_end = datetime.strptime(raw_date_end.split(' ')[0], "%Y-%m-%d")
         date_start = datetime.strptime(raw_date_start.split(' ')[0], "%Y-%m-%d")
 
