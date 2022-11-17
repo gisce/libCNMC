@@ -109,7 +109,7 @@ class FD2(MultiprocessBased):
 
         bt_ids = []
         at_ids = []
-
+        file_fields.append(cod_gest_data['name'])
         ## Separem els a3 de baixa i alta tensió per a tractarlos per separat
         for a302_id in a302_ids:
             a3_header_id = o.model("giscedata.switching.a3.02").read(a302_id, ['header_id'])[
@@ -140,9 +140,8 @@ class FD2(MultiprocessBased):
                 elif '03' in proces_name:
                     context = {'model_names': ['giscedata.switching.a3.02', 'giscedata.switching.a3.03']}
                     self.manage_switching_cases(cod_gest_data, file_fields, sw_id, a302_id, context=context)
-
         ## Tractem els de alta tensió
-        if '02' in cod_gest_data['name']:
+        elif '02' in cod_gest_data['name']:
             for at_id in at_ids:
                 a302_id = at_id[1]
                 sw_id = at_id[0]
