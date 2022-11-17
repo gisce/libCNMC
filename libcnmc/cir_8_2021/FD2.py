@@ -202,10 +202,12 @@ class FD2(MultiprocessBased):
         for b103_id in b103_ids:
             b3_header_id = o.model("giscedata.switching.b1.03").read(b103_id, ['header_id'])['header_id']
             sw_id = o.GiscedataSwitchingStepHeader.read(b3_header_id[0], ['sw_id'])['sw_id'][0]
-            b101_id = o.model('giscedata.switching.b1.01').search([('sw_id', '=', sw_id)])[0]
-            motiu_b1 = o.model('giscedata.switching.b1.01').read(b101_id, ['motiu'])['motiu']
-            if motiu_b1 == '03':
-                self.manage_switching_cases(cod_gest_data, file_fields, sw_id, b103_id, context=context)
+            b101_id = o.model('giscedata.switching.b1.01').search([('sw_id', '=', sw_id)])
+            if b101_id:
+                b101_id = b101_id[0]
+                motiu_b1 = o.model('giscedata.switching.b1.01').read(b101_id, ['motiu'])['motiu']
+                if motiu_b1 == '03':
+                    self.manage_switching_cases(cod_gest_data, file_fields, sw_id, b103_id, context=context)
 
         ## Tractem els atcs que escau
         self.process_atcs(item, cod_gest_data, file_fields, year_start, year_end, context=context)
