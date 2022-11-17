@@ -192,7 +192,7 @@ class FD2(MultiprocessBased):
             ('motiu', '=', '03')
         ]
         model_names = ['giscedata.switching.b1.03', 'giscedata.switching.b1.04']
-        field_names = ['create_date', 'create_date']
+        field_names = ['create_date', 'data_acceptacio']
         context = {'model_names': model_names, 'field_names': field_names}
         b101_ids = o.model("giscedata.switching.b1.01").search(search_params)
         for b101_id in b101_ids:
