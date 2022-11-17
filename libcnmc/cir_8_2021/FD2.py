@@ -221,14 +221,12 @@ class FD2(MultiprocessBased):
         if context is None:
             context = {}
 
-        start_model_name = context['model_names'][0]
-        end_model_name = context['model_names'][1]
+        model_names = context.get('model_names', False)
+        field_names = context.get('field_names', False)
 
-        start_field_name = context['field_names'][0]
-        end_field_name = context['field_names'][1]
 
-        raw_date_end = o.model(end_model_name).read(end_id, end_field_name)[end_field_name]
-        raw_date_start = o.model(start_model_name).read(start_id, start_field_name)[start_field_name]
+        raw_date_end = o.model(model_names[1]).read(end_id, field_names[1])[field_names[1]]
+        raw_date_start = o.model(model_names[0]).read(start_id, field_names[0])[field_names[0]]
         date_end = datetime.strptime(raw_date_end.split(' ')[0], "%Y-%m-%d")
         date_start = datetime.strptime(raw_date_start.split(' ')[0], "%Y-%m-%d")
 
