@@ -126,7 +126,7 @@ class FD2(MultiprocessBased):
                         at_ids.append((sw_id, a302_id))
                     else:
                         bt_ids.append((sw_id, a302_id))
-
+        file_fields.append(at_ids)
         ## Tractem els de baixa tensió
         if '01' in cod_gest_data['name']:
             for bt_id in bt_ids:
