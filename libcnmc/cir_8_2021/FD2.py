@@ -62,8 +62,9 @@ class FD2(MultiprocessBased):
                     method = "get_time_delta"
                 time_spent = getattr(self, method)(case_id, end_case_id, context=context)
                 compute_time(cod_gest_data, file_fields, time_spent)
-            file_fields['no_tramitadas'] += 1
-            file_fields['totals'] += 1
+            else:
+                file_fields['no_tramitadas'] += 1
+                file_fields['totals'] += 1
 
 
     def process_atcs(self, item, cod_gest_data, file_fields, year_start, year_end, context=None):
