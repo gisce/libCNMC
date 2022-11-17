@@ -98,7 +98,7 @@ class FB1(MultiprocessBased):
         fields_to_read = [
             'baixa', 'data_pm', 'data_industria', 'coeficient', 'cini', 'propietari', 'tensio_max_disseny_id', 'name',
             'origen', 'final', 'perc_financament', 'longitud_cad', 'cable', 'linia', 'model', 'model', 'punt_frontera',
-            'tipus_instalacio_cnmc_id', 'data_baixa', 'baixa', 'data_baixa', 'longitud_cad', 'data_pm'
+            'tipus_instalacio_cnmc_id', 'data_baixa', 'baixa', 'data_baixa', 'longitud_cad', 'data_pm', 'circuits'
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
@@ -179,29 +179,41 @@ class FB1(MultiprocessBased):
                     # Tensión_construcción
                     tension_construccion = ''
                     if tram.get('tensio_max_disseny_id', False):
-                        tension_construccion = format_f(tram['tensio_max_disseny_id'][1]/1000, 3)
+                        tension_construccion = format_f(int(tram['tensio_max_disseny_id'][1])/1000, 3)
                         if str(tension_construccion) == str(tension_explotacion):
                             tension_construccion = ''
                         else:
                             tension_construccion = ''
+
+                    # Longitud
+                    if 'longitud_cad' in tram:
+                        if self.dividir:
+                            long_tmp = tram['longitud_cad']/tram.get(
+                                'circuits', 1
+                            ) or 1
+                            longitud = round(
+                                long_tmp * coeficient/1000.0, 3
+                            ) or 0.001
+                        else:
+                            longitud = round(
+                                tram['longitud_cad'] * coeficient/1000.0, 3
+                            ) or 0.001
+                    else:
+                        longitud = 0
 
                     # Resistencia, Reactancia, Intensitat
                     if tram.get('cable', False):
                         cable_obj = O.GiscedataAtCables
                         cable_id = tram['cable'][0]
                         cable_data = cable_obj.read(cable_id, ['resistencia', 'reactancia', 'intensitat_admisible'])
-                        longitud = format_f(
-                            round(float(tram['longitud_cad']) *
-                                  coeficient / 1000.0, 3) or 0.001, decimals=3)
-                        o_num_circuits = tram['circuits']
                         resistencia = format_f(
                             cable_data['resistencia'] * (float(tram['longitud_cad']) *
                                                          coeficient / 1000.0) or 0.0,
-                            decimals=6)
+                            decimals=3)
                         reactancia = format_f(
                             cable_data['reactancia'] * (float(tram['longitud_cad']) *
                                                         coeficient / 1000.0) or 0.0,
-                            decimals=6)
+                            decimals=3)
                         intensitat = format_f(
                             cable_data['intensitat_admisible'] or 0.0, decimals=3)
 
@@ -413,10 +425,11 @@ class FB1(MultiprocessBased):
                     if linia.get('edge_id', False):
                         edge_id = linia['edge_id'][0]
                         edge_data = O.GiscegisEdge.read(edge_id, ['start_node', 'end_node'])
+                        print(edge_data)
                         if edge_data.get('start_node', False):
-                            nudo_inicial = tallar_text(['start_node'][1], 22)
+                            nudo_inicial = tallar_text(edge_data['start_node'][1], 22)
                         if edge_data.get('end_node', False):
-                            nudo_final = tallar_text(['end_node'][1], 22)
+                            nudo_final = tallar_text(edge_data['end_node'][1], 22)
 
                     # CCAA 1 / CCAA 2
                     ccaa_1 = ccaa_2 = ''
@@ -445,7 +458,7 @@ class FB1(MultiprocessBased):
                     # TENSION CONSTRUCCION
                     tension_construccion = ''
                     if linia.get('tensio_const', False):
-                        tension_construccion = format_f(linia['tensio_max_disseny_id'][1]/1000, 3)
+                        tension_construccion = format_f(int(linia['tensio_max_disseny_id'][1])/1000, 3)
                         if str(tension_construccion) == str(tension_explotacion):
                             tension_construccion = ''
                         else:
@@ -480,11 +493,11 @@ class FB1(MultiprocessBased):
                         resistencia = format_f(
                             cable_data['resistencia'] * (float(linia['longitud_cad']) *
                                                          coeficient / 1000.0) or 0.0,
-                            decimals=6)
+                            decimals=3)
                         reactancia = format_f(
                             cable_data['reactancia'] * (float(linia['longitud_cad']) *
                                                         coeficient / 1000.0) or 0.0,
-                            decimals=6)
+                            decimals=3)
                         intensitat = format_f(
                             cable_data['intensitat_admisible'] or 0.0, decimals=3)
 
