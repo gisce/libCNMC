@@ -238,10 +238,10 @@ class FD2(MultiprocessBased):
 
         o = self.connection
         model_name = context.get('model_names', False)
-        if '05' in model_name[0]:
-            raw_date_end = o.model(model_name[0]).read(end_id, ['data_activacio'])['data_activacio']
+        if '05' in model_name[1]:
+            raw_date_end = o.model(model_name[1]).read(end_id, ['data_activacio'])['data_activacio']
         else:
-            raw_date_end = o.model(model_name[0]).read(end_id, ['date_created'])['date_created']
+            raw_date_end = o.model(model_name[1]).read(end_id, ['date_created'])['date_created']
 
         raw_date_start = o.model(model_name[1]).read(start_id, ['date_created'])['date_created']
         date_end = datetime.strptime(raw_date_end.split(' ')[0], "%Y-%m-%d")
@@ -253,12 +253,12 @@ class FD2(MultiprocessBased):
 
         o = self.connection
         model_name = context.get('model_names', False)
-        if '05' in model_name[0]:
-            raw_date_end = o.model(model_name[0]).read(end_id, ['data_activacio'])['data_activacio']
+        if '05' in model_name[1]:
+            raw_date_end = o.model(model_name[1]).read(end_id, ['data_activacio'])['data_activacio']
         else:
-            raw_date_end = o.model(model_name[0]).read(end_id, ['date_created'])['date_created']
+            raw_date_end = o.model(model_name[1]).read(end_id, ['date_created'])['date_created']
 
-        raw_date_start = o.model(model_name[1]).read(start_id, ['date_created'])['date_created']
+        raw_date_start = o.model(model_name[0]).read(start_id, ['date_created'])['date_created']
         date_end = datetime.strptime(raw_date_end.split(' ')[0], "%Y-%m-%d")
         date_start = datetime.strptime(raw_date_start.split(' ')[0], "%Y-%m-%d")
 
