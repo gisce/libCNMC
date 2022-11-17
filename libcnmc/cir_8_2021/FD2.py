@@ -135,10 +135,10 @@ class FD2(MultiprocessBased):
                 step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])['step_id'][0]
                 proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
                 if '05' in proces_name:
-                    context = {'method_names': ['giscedata.switching.a3.02', 'giscedata.switching.a3.05']}
+                    context = {'model_names': ['giscedata.switching.a3.02', 'giscedata.switching.a3.05']}
                     self.manage_switching_cases(cod_gest_data, file_fields, sw_id, a302_id, context=context)
                 elif '03' in proces_name:
-                    context = {'method_names': ['giscedata.switching.a3.02', 'giscedata.switching.a3.03']}
+                    context = {'model_names': ['giscedata.switching.a3.02', 'giscedata.switching.a3.03']}
                     self.manage_switching_cases(cod_gest_data, file_fields, sw_id, a302_id, context=context)
 
         ## Tractem els de alta tensió
@@ -149,10 +149,10 @@ class FD2(MultiprocessBased):
                 step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])['step_id'][0]
                 proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
                 if '05' in proces_name:
-                    context = {'method_names': ['giscedata.switching.a3.02', 'giscedata.switching.a3.05']}
+                    context = {'model_names': ['giscedata.switching.a3.02', 'giscedata.switching.a3.05']}
                     self.manage_switching_cases(cod_gest_data, file_fields, sw_id, a302_id, context=context)
                 elif '03' in proces_name:
-                    context = {'method_names': ['giscedata.switching.a3.02', 'giscedata.switching.a3.03']}
+                    context = {'model_names': ['giscedata.switching.a3.02', 'giscedata.switching.a3.03']}
                     self.manage_switching_cases(cod_gest_data, file_fields, sw_id, a302_id, context=context)
 
         ## Tractem els atcs adients
