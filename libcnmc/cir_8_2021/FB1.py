@@ -31,12 +31,6 @@ class FB1(MultiprocessBased):
         self.prefix_BT = kwargs.pop('prefix_bt', 'B') or 'B'
         self.dividir = kwargs.pop('div', False)
 
-        print('####################')
-        print('####################')
-        print(kwargs)
-        print('####################')
-        print('####################')
-
         id_res_like = self.connection.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')])
         if id_res_like:
@@ -50,11 +44,17 @@ class FB1(MultiprocessBased):
         :return: List of ids
         :rtype: list(int)
         """
+        inici_any = '{}-01-01'.format(self.year)
+        fi_any = '{}-12-31'.format(self.year)
 
         # AT
         search_params = [
             ('active', '=', True),
-            ('criteri_regulatori', '!=', 'excloure')
+            ('criteri_regulatori', '!=', 'excloure'),
+            '|',
+            ('active', '=', False),
+            ('data_baixa', '>=', inici_any),
+            ('data_baixa', '<=', fi_any),
         ]
         obj_lat = self.connection.GiscedataAtTram
         ids = obj_lat.search(search_params)
@@ -66,7 +66,11 @@ class FB1(MultiprocessBased):
         # BT
         search_params = [
             ('active', '=', True),
-            ('criteri_regulatori', '!=', 'excloure')
+            ('criteri_regulatori', '!=', 'excloure'),
+            '|',
+            ('active', '=', False),
+            ('data_baixa', '>=', inici_any),
+            ('data_baixa', '<=', fi_any),
         ]
         obj_lat = self.connection.GiscedataBtElement
         ids = obj_lat.search(search_params)
@@ -75,14 +79,7 @@ class FB1(MultiprocessBased):
         for elem in range(0, len(bt_ids)):
             bt_ids[elem] = 'bt.{}'.format(bt_ids[elem])
 
-        # bt_ids = bt_ids[0:1]
         at_bt_ids = at_ids + bt_ids
-        print('####################')
-        print('####################')
-        print('AT: {}'.format(len(at_ids)))
-        print('BT: {}'.format(len(bt_ids)))
-        print('####################')
-        print('####################')
         return at_bt_ids
 
     def consumer(self):
@@ -171,12 +168,12 @@ class FB1(MultiprocessBased):
                         if linia_srch:
                             tensio_data = O.GiscedataAtLinia.read(linia_srch, ['tensio'])[0]
                             if tensio_data.get('tensio', False):
-                                tension_explotacion = tensio_data['tensio']
+                                tension_explotacion = format_f(tensio_data['tensio']/1000, 3)
 
                     # Tensión_construcción
                     tension_construccion = ''
                     if tram.get('tensio_max_disseny_id', False):
-                        tension_construccion = tram['tensio_max_disseny_id'][1]
+                        tension_construccion = format_f(tram['tensio_max_disseny_id'][1]/1000, 3)
                         if str(tension_construccion) == str(tension_explotacion):
                             tension_construccion = ''
                         else:
@@ -187,26 +184,20 @@ class FB1(MultiprocessBased):
                         cable_obj = O.GiscedataAtCables
                         cable_id = tram['cable'][0]
                         cable_data = cable_obj.read(cable_id, ['resistencia', 'reactancia', 'intensitat_admisible'])
-                        if tram.get('longitud_cad', False):
-                            longitud_en_km = tram['longitud_cad'] / 1000
-                            if cable_data.get('resistencia', False):
-                                resistencia_per_km = cable_data['resistencia']
-                                resistencia = resistencia_per_km * longitud_en_km
-                            else:
-                                resistencia = ''
-                            if cable_data.get('reactancia', False):
-                                reactancia_per_km = cable_data['reactancia']
-                                reactancia = reactancia_per_km * longitud_en_km
-                            else:
-                                reactancia = ''
-                        else:
-                            resistencia, reactancia = ['', '']
-                        if cable_data.get('intensitat_admisible',  False):
-                            intensitat = cable_data['intensitat_admisible']
-                        else:
-                            intensitat = ''
-                    else:
-                        resistencia, reactancia, intensitat = ['', '', '']
+                        longitud = format_f(
+                            round(float(tram['longitud_cad']) *
+                                  coeficient / 1000.0, 3) or 0.001, decimals=3)
+                        o_num_circuits = tram['circuits']
+                        resistencia = format_f(
+                            cable_data['resistencia'] * (float(tram['longitud_cad']) *
+                                                         coeficient / 1000.0) or 0.0,
+                            decimals=6)
+                        reactancia = format_f(
+                            cable_data['reactancia'] * (float(tram['longitud_cad']) *
+                                                        coeficient / 1000.0) or 0.0,
+                            decimals=6)
+                        intensitat = format_f(
+                            cable_data['intensitat_admisible'] or 0.0, decimals=3)
 
                     # Estado
                     estado = ''
@@ -223,16 +214,18 @@ class FB1(MultiprocessBased):
                         punt_frontera = '1'
 
                     # Operación
+                    operacion = '1'
                     if tram.get('operacion', False):
-                        operacion = tram['operacion']
-                    else:
-                        operacion = ''
+                        if tram['operacion']:
+                            operacion = '1'
+                        else:
+                            operacion = '0'
 
                     # Fechas APS
-                    if tram.get('data_pm', False):
-                        data_pm = tram['data_pm']
-                    else:
-                        data_pm = ''
+                    if tram['data_pm']:
+                        data_pm_linia = datetime.strptime(str(tram['data_pm']),
+                                                          '%Y-%m-%d')
+                        fecha_aps = data_pm_linia.strftime('%d/%m/%Y')
 
                     # Causa baja
                     if tram.get('obra_id', False):
@@ -296,9 +289,7 @@ class FB1(MultiprocessBased):
                         motivacion = get_codi_actuacio(O, tram_obra['motivacion'] and tram_obra['motivacion'][0]) if not \
                             tram_obra['fecha_baja'] else ''
                         cuenta_contable = tram_obra['cuenta_contable']
-                        financiado = format_f(
-                            100.0 - tram_obra.get('financiado', 0.0), 2
-                        )
+                        financiado = format_f(tram_obra.get('financiado', 0.0), 2)
                         avifauna = int(tram_obra['avifauna'] == True)
                     else:
                         data_ip = ''
@@ -317,22 +308,8 @@ class FB1(MultiprocessBased):
                         financiado = ''
 
                     # Descripció
-                    origen = tallar_text(tram['origen'], 50)
-                    final = tallar_text(tram['final'], 50)
-                    if 'longitud_cad' in tram:
-                        if self.dividir:
-                            long_tmp = tram['longitud_cad']/tram.get(
-                                'circuits', 1
-                            ) or 1
-                            longitud = round(
-                                long_tmp * coeficient/1000.0, 3
-                            ) or 0.001
-                        else:
-                            longitud = round(
-                                tram['longitud_cad'] * coeficient/1000.0, 3
-                            ) or 0.001
-                    else:
-                        longitud = 0
+                    origen = tallar_text(tram['origen'], 22)
+                    final = tallar_text(tram['final'], 22)
                     if not origen or not final:
                         res = O.GiscegisEdge.search(
                             [
@@ -375,21 +352,21 @@ class FB1(MultiprocessBased):
                         punt_frontera,                      # PUNTO_FRONTERA
                         modelo,                             # MODELO
                         operacion,                          # OPERACIÓN
-                        data_pm,                            # FECHA APS
+                        fecha_aps,                          # FECHA APS
                         causa_baja,                         # CAUSA BAJA
                         fecha_baja or '',                   # FECHA BAJA
                         data_ip,                            # FECHA IP
                         tipo_inversion,                     # TIPO INVERSION
+                        motivacion,                         # MOTIVACION
                         im_ingenieria,                      # IM_TRAMITES
                         im_construccion,                    # IM_CONSTRUCCION
                         im_trabajos,                        # IM_TRABAJOS
+                        valor_auditado,  # VALOR AUDITADO
+                        financiado,  # FINANCIADO
                         subvenciones_europeas,              # SUBVENCIONES EUROPEAS
                         subvenciones_nacionales,            # SUBVENCIONES NACIONALES
                         subvenciones_prtr,                  # SUBVENCIONES PRTR
-                        valor_auditado,                     # VALOR AUDITADO
-                        financiado,                         # FINANCIADO
                         cuenta_contable,                    # CUENTA CONTABLE
-                        motivacion,                         # MOTIVACION
                         avifauna,                           # AVIFAUNA
                         identificador_baja,                 # ID_BAJA
                     ]
@@ -431,9 +408,9 @@ class FB1(MultiprocessBased):
                         edge_id = linia['edge_id'][0]
                         edge_data = O.GiscegisEdge.read(edge_id, ['start_node', 'end_node'])
                         if edge_data.get('start_node', False):
-                            nudo_inicial = edge_data['start_node'][1]
+                            nudo_inicial = tallar_text(['start_node'][1], 22)
                         if edge_data.get('end_node', False):
-                            nudo_final = edge_data['end_node'][1]
+                            nudo_final = tallar_text(['end_node'][1], 22)
 
                     # CCAA 1 / CCAA 2
                     ccaa_1 = ccaa_2 = ''
@@ -457,12 +434,12 @@ class FB1(MultiprocessBased):
                     # TENSION EXPLOTACION
                     tension_explotacion = ''
                     if linia.get('voltatge', False):
-                        tension_explotacion = linia['voltatge']
+                        tension_explotacion = format_f(linia['voltatge']/1000, 3)
 
                     # TENSION CONSTRUCCION
                     tension_construccion = ''
                     if linia.get('tensio_const', False):
-                        tension_construccion = linia['tensio_max_disseny_id'][1]
+                        tension_construccion = format_f(linia['tensio_max_disseny_id'][1]/1000, 3)
                         if str(tension_construccion) == str(tension_explotacion):
                             tension_construccion = ''
                         else:
@@ -487,29 +464,23 @@ class FB1(MultiprocessBased):
 
                     # RESISTENCIA, REACTANCIA, INTENSITAT
                     if linia.get('cable', False):
-                        cable_obj = O.GiscedataBtCables
+                        cable_obj = O.GiscedataAtCables
                         cable_id = linia['cable'][0]
                         cable_data = cable_obj.read(cable_id, ['resistencia', 'reactancia', 'intensitat_admisible'])
-                        if linia.get('longitud_cad', False):
-                            longitud_en_km = linia['longitud_cad'] / 1000
-                            if cable_data.get('resistencia', False):
-                                resistencia_per_km = cable_data['resistencia']
-                                resistencia = resistencia_per_km * longitud_en_km
-                            else:
-                                resistencia = ''
-                            if cable_data.get('reactancia', False):
-                                reactancia_per_km = cable_data['reactancia']
-                                reactancia = reactancia_per_km * longitud_en_km
-                            else:
-                                reactancia = ''
-                        else:
-                            resistencia, reactancia = ['', '']
-                        if cable_data.get('intensitat_admisible', False):
-                            intensitat = cable_data['intensitat_admisible']
-                        else:
-                            intensitat = ''
-                    else:
-                        resistencia, reactancia, intensitat = ['', '', '']
+                        longitud = format_f(
+                            round(float(linia['longitud_cad']) *
+                                  coeficient / 1000.0, 3) or 0.001, decimals=3)
+                        o_num_circuits = linia['circuits']
+                        resistencia = format_f(
+                            cable_data['resistencia'] * (float(linia['longitud_cad']) *
+                                                         coeficient / 1000.0) or 0.0,
+                            decimals=6)
+                        reactancia = format_f(
+                            cable_data['reactancia'] * (float(linia['longitud_cad']) *
+                                                        coeficient / 1000.0) or 0.0,
+                            decimals=6)
+                        intensitat = format_f(
+                            cable_data['intensitat_admisible'] or 0.0, decimals=3)
 
                     # ESTADO
                     estado = ''
@@ -525,7 +496,7 @@ class FB1(MultiprocessBased):
                         modelo = linia['model']
 
                     # OPERACION
-                    operacion = ''
+                    operacion = '1'
                     if linia.get('operacion', False):
                         if linia['operacion']:
                             operacion = '1'
@@ -533,9 +504,10 @@ class FB1(MultiprocessBased):
                             operacion = '0'
 
                     # FECHA APS
-                    fecha_aps = ''
-                    if linia.get('data_pm', False):
-                        fecha_aps = linia['data_pm']
+                    if linia['data_pm']:
+                        data_pm_linia = datetime.strptime(str(linia['data_pm']),
+                                                          '%Y-%m-%d')
+                        fecha_aps = data_pm_linia.strftime('%d/%m/%Y')
 
                     # CAUSA BAJA
                     if linia.get('obra_id', False):
@@ -611,9 +583,7 @@ class FB1(MultiprocessBased):
                         motivacion = get_codi_actuacio(O, linia_obra['motivacion'] and linia_obra['motivacion'][0]) if not \
                             linia_obra['fecha_baja'] else ''
                         cuenta_contable = linia_obra['cuenta_contable']
-                        financiado = format_f(
-                            100.0 - linia_obra.get('financiado', 0.0), 2
-                        )
+                        financiado = format_f(linia_obra.get('financiado', 0.0), 2)
                         avifauna = int(linia_obra['avifauna'] == True)
                     else:
                         data_ip = ''
@@ -655,16 +625,16 @@ class FB1(MultiprocessBased):
                         fecha_baja or '',  # FECHA BAJA
                         data_ip,  # FECHA IP
                         tipo_inversion,  # TIPO INVERSION
+                        motivacion,  # MOTIVACION
                         im_ingenieria,  # IM_TRAMITES
                         im_construccion,  # IM_CONSTRUCCION
                         im_trabajos,  # IM_TRABAJOS
+                        valor_auditado,  # VALOR AUDITADO
+                        financiado,  # FINANCIADO
                         subvenciones_europeas,  # SUBVENCIONES EUROPEAS
                         subvenciones_nacionales,  # SUBVENCIONES NACIONALES
                         subvenciones_prtr,  # SUBVENCIONES PRTR
-                        valor_auditado,  # VALOR AUDITADO
-                        financiado,  # FINANCIADO
                         cuenta_contable,  # CUENTA CONTABLE
-                        motivacion,  # MOTIVACION
                         avifauna,  # AVIFAUNA
                         identificador_baja,  # ID_BAJA
                     ]
