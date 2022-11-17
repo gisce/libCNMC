@@ -45,7 +45,7 @@ class FD2(MultiprocessBased):
         ]
         return self.connection.GiscedataCodigosGestionCalidadZ.search(search_params)
 
-    def manage_switching_cases(self, cod_gest_data, file_fields, sw_id, case_id, context=None):
+    def manage_switching_cases(self, cod_gest_data, file_fields, sw_id, start_case_id, context=None):
 
         o = self.connection
         model_names = context.get('model_names', False)
@@ -60,12 +60,11 @@ class FD2(MultiprocessBased):
                     method = "get_{}_time_delta".format(model_names[0][20:22])
                 else:
                     method = "get_time_delta"
-                time_spent = getattr(self, method)(case_id, end_case_id, context=context)
+                time_spent = getattr(self, method)(start_case_id, end_case_id, context=context)
                 compute_time(cod_gest_data, file_fields, time_spent)
             else:
                 file_fields['no_tramitadas'] += 1
                 file_fields['totals'] += 1
-
 
     def process_atcs(self, item, cod_gest_data, file_fields, year_start, year_end, context=None):
         o = self.connection
@@ -158,6 +157,9 @@ class FD2(MultiprocessBased):
                 ('date_created', '<=', year_end)
             ]
             r102_ids = o.model("giscedata.switching.r1.02").search(search_params)
+
+            file_fields['debug_helper'][1] += file_fields['debug_helper'][1]
+            file_fields['debug_helper'][0] = len(r102_ids)
 
             ## Tractem els r1 i comptabilitzem els que escau
             for r102_id in r102_ids:
@@ -272,7 +274,7 @@ class FD2(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-                file_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0}
+                file_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0, 'debug_helper': []}
                 z8_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0}
 
                 year_start = '01-01-' + str(self.year)
@@ -321,7 +323,8 @@ class FD2(MultiprocessBased):
                         file_fields['totals'],
                         file_fields['dentro_plazo'],
                         file_fields['fuera_plazo'],
-                        file_fields['no_tramitadas']
+                        file_fields['no_tramitadas'],
+                        file_fields['debug_helper']
                     ]
                     self.output_q.put(output)
                 elif cod_gest_data['name'] == 'Z8_01_dl15':
