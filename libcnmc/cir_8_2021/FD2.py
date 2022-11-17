@@ -52,7 +52,6 @@ class FD2(MultiprocessBased):
         start_case_o = o.model(model_names[0])
         end_case_o = o.model(model_names[1])
         switching_type = model_names[0][20:22]
-        file_fields['debug_helper'] = [sw_id, start_case_id]
         end_case_id = end_case_o.search([('sw_id', '=', sw_id)])
         if end_case_id:
             end_case_id = end_case_id[0]
