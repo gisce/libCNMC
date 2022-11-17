@@ -255,7 +255,7 @@ class FD2(MultiprocessBased):
         else:
             raw_date_end = o.model(model_name[1]).read(end_id, ['date_created'])['date_created']
 
-        raw_date_start = o.model(model_name[1]).read(start_id, ['date_created'])['date_created']
+        raw_date_start = o.model(model_name[0]).read(start_id, ['date_created'])['date_created']
         date_end = datetime.strptime(raw_date_end.split(' ')[0], "%Y-%m-%d")
         date_start = datetime.strptime(raw_date_start.split(' ')[0], "%Y-%m-%d")
 
