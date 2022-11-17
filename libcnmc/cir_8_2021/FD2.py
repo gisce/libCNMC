@@ -203,7 +203,7 @@ class FD2(MultiprocessBased):
             b3_header_id = o.model("giscedata.switching.b1.03").read(b103_id, ['header_id'])['header_id']
             sw_id = o.GiscedataSwitchingStepHeader.read(b3_header_id[0], ['sw_id'])['sw_id'][0]
             b101_id = o.model('giscedata.switching.b1.01').search([('sw_id', '=', sw_id)])
-            motiu_b1 = o.model('giscedata.switching.b1.01').read(b101_id, ['motiu'])['motiu']
+            motiu_b1 = o.model('giscedata.switching.b1.01').read(b101_id, ['motiu'])['motiu'][0]
             if motiu_b1 == '03':
                 self.manage_switching_cases(cod_gest_data, file_fields, sw_id, b103_id, context=context)
 
