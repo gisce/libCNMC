@@ -157,9 +157,8 @@ class FD2(MultiprocessBased):
                 ('date_created', '<=', year_end)
             ]
             r102_ids = o.model("giscedata.switching.r1.02").search(search_params)
-
-            file_fields['debug_helper'][1] += file_fields['debug_helper'][1]
-            file_fields['debug_helper'][0] = len(r102_ids)
+            times = file_fields['debug_helper'][1] + 1
+            file_fields['debug_helper'] = [len(r102_ids), times]
 
             ## Tractem els r1 i comptabilitzem els que escau
             for r102_id in r102_ids:
@@ -274,7 +273,7 @@ class FD2(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-                file_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0, 'debug_helper': []}
+                file_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0, 'debug_helper': ['','']}
                 z8_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0}
 
                 year_start = '01-01-' + str(self.year)
