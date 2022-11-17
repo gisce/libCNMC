@@ -116,12 +116,14 @@ class FD2(MultiprocessBased):
                 'header_id']
             sw_id = o.GiscedataSwitchingStepHeader.read(a3_header_id[0], ['sw_id'])['sw_id'][0]
             pol_id = o.GiscedataSwitching.read(sw_id, ['cups_polissa_id'])['cups_polissa_id'][0]
-            t_norm = o.GiscedataPolissa.read(pol_id, ['tensio_normalitzada'])['tensio_normalitzada'][0]
-            t_tipus = o.GiscedataTensionsTensio.read(t_norm, ['tipus'])['tipus']
-            if t_tipus is 'AT':
-                at_ids.append((sw_id, a302_id))
-            else:
-                bt_ids.append((sw_id, a302_id))
+            t_norm = o.GiscedataPolissa.read(pol_id, ['tensio_normalitzada'])['tensio_normalitzada']
+            if t_norm:
+                t_norm = t_norm[0]
+                t_tipus = o.GiscedataTensionsTensio.read(t_norm, ['tipus'])['tipus']
+                if t_tipus is 'AT':
+                    at_ids.append((sw_id, a302_id))
+                else:
+                    bt_ids.append((sw_id, a302_id))
 
         ## Tractem els de baixa tensió
         if '01' in cod_gest_data['name']:
