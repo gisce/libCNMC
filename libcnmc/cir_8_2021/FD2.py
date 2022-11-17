@@ -194,11 +194,11 @@ class FD2(MultiprocessBased):
         model_names = ['giscedata.switching.b1.03', 'giscedata.switching.b1.04']
         field_names = ['create_date', 'data_acceptacio']
         context = {'model_names': model_names, 'field_names': field_names}
-        b101_ids = o.model("giscedata.switching.b1.01").search(search_params)
-        for b101_id in b101_ids:
-            b1_header_id = o.model("giscedata.switching.b1.01").read(b101_id, ['header_id'])['header_id']
+        b103_ids = o.model("giscedata.switching.b1.03").search(search_params)
+        for b103_id in b103_ids:
+            b1_header_id = o.model("giscedata.switching.b1.03").read(b103_id, ['header_id'])['header_id']
             sw_id = o.GiscedataSwitchingStepHeader.read(b1_header_id[0], ['sw_id'])['sw_id'][0]
-            self.manage_switching_cases(cod_gest_data, file_fields, sw_id, b101_id, context=context)
+            self.manage_switching_cases(cod_gest_data, file_fields, sw_id, b103_id, context=context)
 
         ## Tractem els atcs que escau
         self.process_atcs(item, cod_gest_data, file_fields, year_start, year_end, context=context)
@@ -225,7 +225,6 @@ class FD2(MultiprocessBased):
 
         model_names = context.get('model_names', False)
         field_names = context.get('field_names', False)
-
 
         raw_date_end = o.model(model_names[1]).read(end_id, [field_names[1]])[field_names[1]]
         raw_date_start = o.model(model_names[0]).read(start_id, [field_names[0]])[field_names[0]]
@@ -273,7 +272,8 @@ class FD2(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-                file_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0, 'debug_helper': [0, 0]}
+                file_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0,
+                               'debug_helper': [0, 0]}
                 z8_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0}
 
                 year_start = '01-01-' + str(self.year)
