@@ -225,8 +225,8 @@ class FD2(MultiprocessBased):
         field_names = context.get('field_names', False)
 
 
-        raw_date_end = o.model(model_names[1]).read(end_id, field_names[1])[field_names[1]]
-        raw_date_start = o.model(model_names[0]).read(start_id, field_names[0])[field_names[0]]
+        raw_date_end = o.model(model_names[1]).read(end_id, [field_names[1]])[field_names[1]]
+        raw_date_start = o.model(model_names[0]).read(start_id, [field_names[0]])[field_names[0]]
         date_end = datetime.strptime(raw_date_end.split(' ')[0], "%Y-%m-%d")
         date_start = datetime.strptime(raw_date_start.split(' ')[0], "%Y-%m-%d")
 
