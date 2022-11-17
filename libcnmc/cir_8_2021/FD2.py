@@ -56,7 +56,7 @@ class FD2(MultiprocessBased):
         if end_case_id:
             enviament_pendent = end_case_o.read(end_case_id, ['enviament_pendent'])['enviament_pendent']
             if not enviament_pendent:
-                if switching_type != 'r1':
+                if switching_type == 'a3':
                     method = "get_{}_time_delta".format(model_names[0][20:22])
                 else:
                     method = "get_time_delta"
