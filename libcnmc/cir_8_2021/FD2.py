@@ -221,8 +221,8 @@ class FD2(MultiprocessBased):
         if context is None:
             context = {}
 
-        start_model_name = context['model_name'][0]
-        end_model_name = context['model_name'][1]
+        start_model_name = context['model_names'][0]
+        end_model_name = context['model_names'][1]
 
         start_field_name = context['fields_name'][0]
         end_field_name = context['fields_name'][1]
