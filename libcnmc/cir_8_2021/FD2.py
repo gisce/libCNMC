@@ -108,7 +108,6 @@ class FD2(MultiprocessBased):
 
         bt_ids = []
         at_ids = []
-        file_fields.append(cod_gest_data['name'])
         ## Separem els a3 de baixa i alta tensió per a tractarlos per separat
         for a302_id in a302_ids:
             a3_header_id = o.model("giscedata.switching.a3.02").read(a302_id, ['header_id'])[
@@ -121,11 +120,10 @@ class FD2(MultiprocessBased):
                 if t_norm:
                     t_norm = t_norm[0]
                     t_tipus = o.GiscedataTensionsTensio.read(t_norm, ['tipus'])['tipus']
-                    if t_tipus is 'AT':
+                    if 'AT' in t_tipus:
                         at_ids.append((sw_id, a302_id))
                     else:
                         bt_ids.append((sw_id, a302_id))
-        file_fields.append(at_ids)
         ## Tractem els de baixa tensió
         if '01' in cod_gest_data['name']:
             for bt_id in bt_ids:
@@ -334,7 +332,6 @@ class FD2(MultiprocessBased):
                         file_fields['dentro_plazo'],
                         file_fields['fuera_plazo'],
                         file_fields['no_tramitadas'],
-                        file_fields['debug_helper']
                     ]
                     self.output_q.put(output)
                 elif cod_gest_data['name'] == 'Z8_01_dl15':
