@@ -121,7 +121,7 @@ class FD2(MultiprocessBased):
                 if t_norm:
                     t_norm = t_norm[0]
                     t_tipus = o.GiscedataTensionsTensio.read(t_norm, ['tipus'])['tipus']
-                    if t_tipus is 'AT':
+                    if 'AT' in t_tipus:
                         at_ids.append((sw_id, a302_id))
                     else:
                         bt_ids.append((sw_id, a302_id))
