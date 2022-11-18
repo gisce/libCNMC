@@ -186,7 +186,7 @@ class FB2(MultiprocessBased):
                     valor_auditado = format_f_6181(ct_obra['valor_auditado'] or 0.0, float_type='euro')
                     motivacion = get_codi_actuacio(O, ct_obra['motivacion'] and ct_obra['motivacion'][0]) if not \
                         ct_obra['fecha_baja'] else ''
-                    cuenta_contable = ct_obra['cuenta_contable']
+                    cuenta_contable = ct_obra['cuenta_contable'] or ''
                     financiado = format_f(ct_obra.get('financiado', 0.0), 2)
                     avifauna = int(ct_obra['avifauna'] == True)
                 else:

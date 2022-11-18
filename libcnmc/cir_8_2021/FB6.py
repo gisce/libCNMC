@@ -250,9 +250,9 @@ class FB6(MultiprocessBased):
                     subvenciones_prtr = format_f_6181(cella_obra['subvenciones_prtr'] or 0.0, float_type='euro')
                     valor_auditado = format_f_6181(cella_obra['valor_auditado'] or 0.0, float_type='euro')
                     valor_contabilidad = format_f_6181(cella_obra['valor_contabilidad'] or 0.0, float_type='euro')
-                    cuenta_contable = cella_obra['cuenta_contable']
+                    cuenta_contable = cella_obra['cuenta_contable'] or ''
                     avifauna = int(cella_obra['avifauna'] == True)
-                    financiado = format_f(cella_obra.get('financiado', 0.0), 2)
+                    financiado = format_f(cella_obra.get('financiado') or 0.0, 2)
                 else:
                     tipo_inversion = ''
                     ccuu = ''

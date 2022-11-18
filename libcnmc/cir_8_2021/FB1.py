@@ -78,8 +78,8 @@ class FB1(MultiprocessBased):
             ('data_baixa', '>=', inici_any),
             ('data_baixa', '<=', fi_any),
         ]
-        obj_lat = self.connection.GiscedataBtElement
-        ids = obj_lat.search(search_params)
+        obj_lbt = self.connection.GiscedataBtElement
+        ids = obj_lbt.search(search_params)
         bt_ids = list(set(ids))
 
         for elem in range(0, len(bt_ids)):
@@ -169,10 +169,9 @@ class FB1(MultiprocessBased):
                     # Tensión_explotación
                     tension_explotacion = ''
                     if tram.get('linia', False):
-                        linia_name = tram['linia'][1]
-                        linia_srch = O.GiscedataAtLinia.search([('name', '=', linia_name)])
-                        if linia_srch:
-                            tensio_data = O.GiscedataAtLinia.read(linia_srch, ['tensio_id'])
+                        linia_id, linia_name = tram['linia']
+                        if linia_id:
+                            tensio_data = O.GiscedataAtLinia.read(linia_id, ['tensio_id'])
                             if tensio_data.get('tensio_id', False):
                                 tension_explotacion = format_f(float(tensio_data['tensio_id'][1])/1000, 3)
 
@@ -310,8 +309,8 @@ class FB1(MultiprocessBased):
                         valor_auditado = format_f_6181(tram_obra['valor_auditado'] or 0.0, float_type='euro')
                         motivacion = get_codi_actuacio(O, tram_obra['motivacion'] and tram_obra['motivacion'][0]) if not \
                             tram_obra['fecha_baja'] else ''
-                        cuenta_contable = tram_obra['cuenta_contable']
-                        financiado = format_f(tram_obra.get('financiado', 0.0), 2)
+                        cuenta_contable = tram_obra['cuenta_contable'] or ''
+                        financiado = format_f(tram_obra.get('financiado') or 0.0, 2)
                         avifauna = int(tram_obra['avifauna'] == True)
                     else:
                         data_ip = ''
@@ -399,7 +398,7 @@ class FB1(MultiprocessBased):
                     fields_to_read = ['name', 'cini', 'coeficient', 'municipi', 'voltatge', 'tensio_const',
                                       'coeficient', 'longitud_cad', 'punt_frontera', 'model', 'operacion',
                                       'propietari', 'edge_id', 'cable', 'tipus_instalacio_cnmc_id',
-                                      'data_pm'
+                                      'data_pm', 'data_baixa'
                                       ]
 
                     linia = O.GiscedataBtElement.read(item, fields_to_read)
@@ -607,8 +606,8 @@ class FB1(MultiprocessBased):
                         valor_auditado = format_f_6181(linia_obra['valor_auditado'] or 0.0, float_type='euro')
                         motivacion = get_codi_actuacio(O, linia_obra['motivacion'] and linia_obra['motivacion'][0]) if not \
                             linia_obra['fecha_baja'] else ''
-                        cuenta_contable = linia_obra['cuenta_contable']
-                        financiado = format_f(linia_obra.get('financiado', 0.0), 2)
+                        cuenta_contable = linia_obra['cuenta_contable'] or ''
+                        financiado = format_f(linia_obra.get('financiado') or 0.0, 2)
                         avifauna = int(linia_obra['avifauna'] == True)
                     else:
                         data_ip = ''
