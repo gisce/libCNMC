@@ -332,7 +332,6 @@ class FD2(MultiprocessBased):
                         file_fields['dentro_plazo'],
                         file_fields['fuera_plazo'],
                         file_fields['no_tramitadas'],
-                        file_fields['debug_helper']
                     ]
                     self.output_q.put(output)
                 elif cod_gest_data['name'] == 'Z8_01_dl15':
