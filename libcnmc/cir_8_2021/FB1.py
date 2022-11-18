@@ -172,14 +172,14 @@ class FB1(MultiprocessBased):
                         linia_name = tram['linia'][1]
                         linia_srch = O.GiscedataAtLinia.search([('name', '=', linia_name)])
                         if linia_srch:
-                            tensio_data = O.GiscedataAtLinia.read(linia_srch, ['tensio'])[0]
-                            if tensio_data.get('tensio', False):
-                                tension_explotacion = format_f(tensio_data['tensio']/1000, 3)
+                            tensio_data = O.GiscedataAtLinia.read(linia_srch, ['tensio_id'])
+                            if tensio_data.get('tensio_id', False):
+                                tension_explotacion = format_f(float(tensio_data['tensio_id'][1])/1000, 3)
 
                     # Tensión_construcción
                     tension_construccion = ''
                     if tram.get('tensio_max_disseny_id', False):
-                        tension_construccion = format_f(int(tram['tensio_max_disseny_id'][1])/1000, 3)
+                        tension_construccion = format_f(float(tram['tensio_max_disseny_id'][1])/1000, 3)
                         if str(tension_construccion) == str(tension_explotacion):
                             tension_construccion = ''
                         else:
@@ -202,20 +202,24 @@ class FB1(MultiprocessBased):
                         longitud = 0
 
                     # Resistencia, Reactancia, Intensitat
+                    resistencia, reactancia, intensitat = ['', '', '']
                     if tram.get('cable', False):
                         cable_obj = O.GiscedataAtCables
                         cable_id = tram['cable'][0]
                         cable_data = cable_obj.read(cable_id, ['resistencia', 'reactancia', 'intensitat_admisible'])
-                        resistencia = format_f(
-                            cable_data['resistencia'] * (float(tram['longitud_cad']) *
-                                                         coeficient / 1000.0) or 0.0,
-                            decimals=3)
-                        reactancia = format_f(
-                            cable_data['reactancia'] * (float(tram['longitud_cad']) *
-                                                        coeficient / 1000.0) or 0.0,
-                            decimals=3)
-                        intensitat = format_f(
-                            cable_data['intensitat_admisible'] or 0.0, decimals=3)
+                        if cable_data.get('resistencia', False):    
+                            resistencia = format_f(
+                                cable_data['resistencia'] * (float(tram['longitud_cad']) *
+                                                             coeficient / 1000.0) or 0.0,
+                                decimals=3)
+                        if cable_data.get('reactancia', False):    
+                            reactancia = format_f(
+                                cable_data['reactancia'] * (float(tram['longitud_cad']) *
+                                                            coeficient / 1000.0) or 0.0,
+                                decimals=3)
+                        if cable_data.get('resistencia', False):    
+                            intensitat = format_f(
+                                cable_data['intensitat_admisible'] or 0.0, decimals=3)
 
                     # Estado
                     estado = ''
@@ -425,7 +429,6 @@ class FB1(MultiprocessBased):
                     if linia.get('edge_id', False):
                         edge_id = linia['edge_id'][0]
                         edge_data = O.GiscegisEdge.read(edge_id, ['start_node', 'end_node'])
-                        print(edge_data)
                         if edge_data.get('start_node', False):
                             nudo_inicial = tallar_text(edge_data['start_node'][1], 22)
                         if edge_data.get('end_node', False):
@@ -453,12 +456,12 @@ class FB1(MultiprocessBased):
                     # TENSION EXPLOTACION
                     tension_explotacion = ''
                     if linia.get('voltatge', False):
-                        tension_explotacion = format_f(linia['voltatge']/1000, 3)
+                        tension_explotacion = format_f(float(linia['voltatge'])/1000, 3)
 
                     # TENSION CONSTRUCCION
                     tension_construccion = ''
                     if linia.get('tensio_const', False):
-                        tension_construccion = format_f(int(linia['tensio_max_disseny_id'][1])/1000, 3)
+                        tension_construccion = format_f(float(linia['tensio_max_disseny_id'][1])/1000, 3)
                         if str(tension_construccion) == str(tension_explotacion):
                             tension_construccion = ''
                         else:
@@ -482,24 +485,27 @@ class FB1(MultiprocessBased):
                         longitud = 0
 
                     # RESISTENCIA, REACTANCIA, INTENSITAT
+                    resistencia, reactancia, intensitat = ['', '', '']
                     if linia.get('cable', False):
-                        cable_obj = O.GiscedataAtCables
+                        cable_obj = O.GiscedataBtCables
                         cable_id = linia['cable'][0]
                         cable_data = cable_obj.read(cable_id, ['resistencia', 'reactancia', 'intensitat_admisible'])
                         longitud = format_f(
                             round(float(linia['longitud_cad']) *
                                   coeficient / 1000.0, 3) or 0.001, decimals=3)
-                        o_num_circuits = linia['circuits']
-                        resistencia = format_f(
-                            cable_data['resistencia'] * (float(linia['longitud_cad']) *
-                                                         coeficient / 1000.0) or 0.0,
-                            decimals=3)
-                        reactancia = format_f(
-                            cable_data['reactancia'] * (float(linia['longitud_cad']) *
-                                                        coeficient / 1000.0) or 0.0,
-                            decimals=3)
-                        intensitat = format_f(
-                            cable_data['intensitat_admisible'] or 0.0, decimals=3)
+                        if cable_data.get('resistencia', False):    
+                            resistencia = format_f(
+                                cable_data['resistencia'] * (float(linia['longitud_cad']) *
+                                                             coeficient / 1000.0) or 0.0,
+                                decimals=3)
+                        if cable_data.get('reactancia', False):    
+                            reactancia = format_f(
+                                cable_data['reactancia'] * (float(linia['longitud_cad']) *
+                                                            coeficient / 1000.0) or 0.0,
+                                decimals=3)
+                        if cable_data.get('resistencia', False):    
+                            intensitat = format_f(
+                                cable_data['intensitat_admisible'] or 0.0, decimals=3)
 
                     # ESTADO
                     estado = ''

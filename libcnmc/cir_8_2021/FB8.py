@@ -106,9 +106,7 @@ class FB8(MultiprocessBased):
                     ).replace(".", ",")
 
                     cuenta_contable = despatx_obra['cuenta_contable']
-                    financiado =format_f(
-                        100.0 - despatx_obra.get('financiado', 0.0), 2
-                    )
+                    financiado = format_f(despatx_obra.get('financiado', 0.0), 2)
                 else:
                     subvenciones_europeas = ''
                     subvenciones_nacionales = ''

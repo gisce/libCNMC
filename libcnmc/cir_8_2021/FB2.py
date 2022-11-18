@@ -187,9 +187,7 @@ class FB2(MultiprocessBased):
                     motivacion = get_codi_actuacio(O, ct_obra['motivacion'] and ct_obra['motivacion'][0]) if not \
                         ct_obra['fecha_baja'] else ''
                     cuenta_contable = ct_obra['cuenta_contable']
-                    financiado =format_f(
-                        100.0 - ct_obra.get('financiado', 0.0), 2
-                    )
+                    financiado = format_f(ct_obra.get('financiado', 0.0), 2)
                     avifauna = int(ct_obra['avifauna'] == True)
                 else:
                     data_ip = ''

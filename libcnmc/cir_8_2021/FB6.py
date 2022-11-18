@@ -252,9 +252,7 @@ class FB6(MultiprocessBased):
                     valor_contabilidad = format_f_6181(cella_obra['valor_contabilidad'] or 0.0, float_type='euro')
                     cuenta_contable = cella_obra['cuenta_contable']
                     avifauna = int(cella_obra['avifauna'] == True)
-                    financiado =format_f(
-                        100.0 - cella_obra.get('financiado', 0.0), 2
-                    )
+                    financiado = format_f(cella_obra.get('financiado', 0.0), 2)
                 else:
                     tipo_inversion = ''
                     ccuu = ''

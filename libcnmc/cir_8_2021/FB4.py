@@ -197,9 +197,7 @@ class FB4(MultiprocessBased):
                     subvenciones_nacionales = format_f_6181(pos_obra['subvenciones_nacionales'] or 0.0, float_type='euro')
                     subvenciones_prtr = format_f_6181(pos_obra['subvenciones_prtr'] or 0.0, float_type='euro')
                     cuenta_contable = pos_obra['cuenta_contable']
-                    financiado =format_f(
-                        100.0 - pos_obra.get('financiado', 0.0), 2
-                    )
+                    financiado = format_f(pos_obra.get('financiado', 0.0), 2)
                     motivacion = get_codi_actuacio(O, pos_obra['motivacion'] and pos_obra['motivacion'][0])
 
                     identificador_baja = (

@@ -133,9 +133,7 @@ class FB5(MultiprocessBased):
                     ).replace(".", ",")
                     valor_residual = trafo_obra['valor_residual']
                     cuenta_contable = trafo_obra['cuenta_contable']
-                    financiado = format_f(
-                        100.0 - trafo_obra.get('financiado', 0.0), 2
-                    )
+                    financiado = format_f(trafo_obra.get('financiado', 0.0), 2)
                     motivacion = trafo_obra['motivacion']
                 else:
                     data_ip = ''
