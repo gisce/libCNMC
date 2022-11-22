@@ -357,7 +357,7 @@ class FD2(MultiprocessBased):
                 proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
                 if '05' in proces_name:
                     comer_sortint_id = o.GiscedataSwitching.read(sw_id, ['comer_sortint_id'])['comer_sortint_id'][0]
-                    invoice_id = o.AccountInvoice.search([('partner_id', '=', comer_sortint_id)], order='date_invoice asc')[0]
+                    invoice_id = o.AccountInvoice.search([('partner_id', '=', comer_sortint_id)], 0, None, 'date_invoice asc')[0]
                     model_names = ['giscedata.switching.c1.05', 'account.invoice']
                     field_names = ['data_activacio', 'date_invoice']
                     context = {'model_names': model_names, 'field_names': field_names}
@@ -378,7 +378,7 @@ class FD2(MultiprocessBased):
                 proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
                 if '05' in proces_name:
                     comer_sortint_id = o.GiscedataSwitching.read(sw_id, ['comer_sortint_id'])['comer_sortint_id'][0]
-                    invoice_id = o.AccountInvoice.search([('partner_id', '=', comer_sortint_id)], order='date_invoice asc')[0]
+                    invoice_id = o.AccountInvoice.search([('partner_id', '=', comer_sortint_id)], 0, None, 'date_invoice asc', )[0]
                     model_names = ['giscedata.switching.c2.05', 'account.invoice']
                     field_names = ['data_activacio', 'date_invoice']
                     context = {'model_names': model_names, 'field_names': field_names}
@@ -386,6 +386,7 @@ class FD2(MultiprocessBased):
                     compute_time(cod_gest_data, file_fields, time_spent)
                 else:
                     file_fields['no_tramitadas'] += 1
+
                     file_fields['totals'] += 1
 
         ## Tractem els atcs adients
@@ -426,12 +427,12 @@ class FD2(MultiprocessBased):
             r101_ids = o.model("giscedata.switching.r1.01").search(search_params)
 
             for r101_id in r101_ids:
-                r1_header_id = o.model("giscedata.switching.r1.02").read(r101_id, ['header_id'])[
+                r1_header_id = o.model("giscedata.switching.r1.01").read(r101_id, ['header_id'])[
                     'header_id']
                 sw_id = o.GiscedataSwitchingStepHeader.read(r1_header_id[0], ['sw_id'])['sw_id'][0]
                 r105_id = o.model("giscedata.switching.r1.05").search([('sw_id', '=', sw_id)])
                 if r105_id:
-                    model_names = ['giscedata.switching.r1.02', 'giscedata.switching.r1.05']
+                    model_names = ['giscedata.switching.r1.01', 'giscedata.switching.r1.05']
                     field_names = ['date_created', 'date_created']
                     context = {'model_names': model_names, 'field_names': field_names}
                     self.manage_switching_cases(cod_gest_data, file_fields, sw_id, r101_id, context=context)
@@ -479,7 +480,7 @@ class FD2(MultiprocessBased):
                 sw_id = o.GiscedataSwitchingStepHeader.read(c2_header_id[0], ['sw_id'])['sw_id'][0]
                 self.manage_switching_cases(cod_gest_data, file_fields, sw_id, c202_id, context=context)
             
-            self.process_atcs(item, cod_gest_data,file_fields, year_start, year_end)
+            self.process_atcs(item, cod_gest_data, file_fields, year_start, year_end)
 
     def consumer(self): 
 
