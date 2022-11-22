@@ -76,21 +76,21 @@ class FA3(MultiprocessBased):
                     o_provincia = prevision['id_provincia']
 
                 # AÑO PREVISTO
-                o_año_previsto = ''
+                o_year_previsto = ''
                 if prevision['year_previsto']:
-                    o_año_previsto = prevision['year_previsto']
+                    o_year_previsto = prevision['year_previsto']
 
-                # SUBMINISTROS BT
+                # SUMINISTROS BT
                 o_suministros_bt = ''
                 if prevision['suministros_bt']:
                     o_suministros_bt = prevision['suministros_bt']
 
-                # SUBMINISTROS MT
+                # SUMINISTROS MT
                 o_suministros_mt = ''
                 if prevision['suministros_mt']:
                     o_suministros_mt = prevision['suministros_mt']
 
-                # SUBMINISTROS AT
+                # SUMINISTROS AT
                 o_suministros_at = ''
                 if prevision['suministros_at']:
                     o_suministros_at = prevision['suministros_at']
@@ -106,10 +106,10 @@ class FA3(MultiprocessBased):
                     o_potencia_solicitada,              # POTENCIA SOLICITADA
                     o_municipio,                        # MUNICIPIO
                     o_provincia,                        # PROVINCIA
-                    o_año_previsto,                     # AÑO PREVISTO
-                    o_suministros_bt,                   # SUBMINISTROS BT
-                    o_suministros_mt,                   # SUBMINISTROS MT
-                    o_suministros_at,                   # SUBMINISTROS AT
+                    o_year_previsto,                    # AÑO PREVISTO
+                    o_suministros_bt,                   # SUMINISTROS BT
+                    o_suministros_mt,                   # SUMINISTROS MT
+                    o_suministros_at,                   # SUMINISTROS AT
                 ])
 
             except Exception:
