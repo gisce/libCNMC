@@ -37,7 +37,9 @@ class FD2(MultiprocessBased):
         """
 
         search_params_interns = [
-            ('name', 'like', '(intern)')
+            '|',
+            ('name', 'like', '(intern)'),
+            ('name', 'like', 'Z8_01_dl5')
         ]
         intern_z = self.connection.GiscedataCodigosGestionCalidadZ.search(search_params_interns)
         search_params = [
@@ -144,7 +146,6 @@ class FD2(MultiprocessBased):
         subtypes = context.get('subtypes', False)
         if subtypes:
             search_params[3] = ('subtipus_id', 'in', subtypes)
-
         atc_ids = atc_o.search(search_params)
         total_ts = 0
         for atc_id in atc_ids:
@@ -479,10 +480,15 @@ class FD2(MultiprocessBased):
                 c2_header_id = o.model("giscedata.switching.c2.02").read(c202_id, ['header_id'])['header_id']
                 sw_id = o.GiscedataSwitchingStepHeader.read(c2_header_id[0], ['sw_id'])['sw_id'][0]
                 self.manage_switching_cases(cod_gest_data, file_fields, sw_id, c202_id, context=context)
-            
+
+        if '01' in cod_gest_data['name']:
+            self.process_atcs(item, cod_gest_data, file_fields, year_start, year_end)
+            z801_dl15_id = o.GiscedataCodigosGestionCalidadZ.search([('name', '=', 'Z8_01_dl15')])
+            self.process_atcs(z801_dl15_id, cod_gest_data, file_fields, year_start, year_end)
+        else:
             self.process_atcs(item, cod_gest_data, file_fields, year_start, year_end)
 
-    def consumer(self): 
+    def consumer(self):
 
         o = self.connection
 
@@ -494,7 +500,6 @@ class FD2(MultiprocessBased):
                 file_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0,
                                'debug_helper': [0, 0]}
                 z8_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0}
-
                 year_start = '01-01-' + str(self.year)
                 year_end = '12-31-' + str(self.year)
                 cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name'])
@@ -511,7 +516,7 @@ class FD2(MultiprocessBased):
                 elif 'Z7' in cod_gest_data['name']:
                     self.process_z7(item, cod_gest_data, file_fields, year_start, year_end)
                 elif 'Z8' in cod_gest_data['name']:
-                    self.process_z8(item, cod_gest_data, z8_fields, year_start, year_end)
+                    self.process_z8(item, cod_gest_data, z8_fields, year_start, year_end, z8_01_check)
 
                 ## Tractament general de ATCs
                 else:
@@ -547,22 +552,13 @@ class FD2(MultiprocessBased):
                         file_fields['no_tramitadas'],
                     ]
                     self.output_q.put(output)
-                elif cod_gest_data['name'] == 'Z8_01_dl15':
+                elif cod_gest_data['name'] == 'Z8_01_dl15' and z8_01_check:
                     output = [
                         'Z8_01',
                         z8_fields['totals'],
                         z8_fields['dentro_plazo'],
                         z8_fields['fuera_plazo'],
                         z8_fields['no_tramitadas']
-                    ]
-                    self.output_q.put(output)
-                else:
-                    output = [
-                        cod_gest_data['name'],
-                        z8_fields['totals'],
-                        z8_fields['dentro_plazo'],
-                        z8_fields['fuera_plazo'],
-                        z8_fields['no_tramitadas'],
                     ]
                     self.output_q.put(output)
 
