@@ -45,6 +45,66 @@ class FD2(MultiprocessBased):
         ]
         return self.connection.GiscedataCodigosGestionCalidadZ.search(search_params)
 
+    def get_atc_time_delta(self, crm_id, total_ts, context=None):
+        if context is None:
+            context = {}
+        o = self.connection
+
+        history_logs = o.CrmCase.read(crm_id, ['history_line'])['history_line']
+        for history_log in history_logs:
+            tt_id = o.CrmCaseHistory.read(history_log, ['time_tracking_id'])['time_tracking_id']
+            if tt_id and tt_id[1] == 'Distribuidora':
+                time_spent = o.CrmCaseHistory.read(history_log, ['time_spent'])['time_spent']
+                total_ts = total_ts + time_spent
+
+        return total_ts
+
+    def get_time_delta(self, start_id, end_id, context=None):
+
+        o = self.connection
+        if context is None:
+            context = {}
+
+        model_names = context.get('model_names', False)
+        field_names = context.get('field_names', False)
+
+        raw_date_end = o.model(model_names[1]).read(end_id, [field_names[1]])[field_names[1]]
+        raw_date_start = o.model(model_names[0]).read(start_id, [field_names[0]])[field_names[0]]
+        date_end = datetime.strptime(raw_date_end.split(' ')[0], "%Y-%m-%d")
+        date_start = datetime.strptime(raw_date_start.split(' ')[0], "%Y-%m-%d")
+
+        return Spain().get_working_days_delta(date_start, date_end)
+
+    def get_a3_time_delta(self, start_id, end_id, context=None):
+
+        o = self.connection
+        model_name = context.get('model_names', False)
+        if '05' in model_name[1]:
+            raw_date_end = o.model(model_name[1]).read(end_id, ['data_activacio'])['data_activacio']
+        else:
+            raw_date_end = o.model(model_name[1]).read(end_id, ['date_created'])['date_created']
+
+        raw_date_start = o.model(model_name[0]).read(start_id, ['date_created'])['date_created']
+        date_end = datetime.strptime(raw_date_end.split(' ')[0], "%Y-%m-%d")
+        date_start = datetime.strptime(raw_date_start.split(' ')[0], "%Y-%m-%d")
+
+        return Spain().get_working_days_delta(date_start, date_end)
+
+    def get_b1_time_delta(self, start_id, end_id, context=None):
+
+        o = self.connection
+        model_name = context.get('model_names', False)
+        if '05' in model_name[1]:
+            raw_date_end = o.model(model_name[1]).read(end_id, ['data_activacio'])['data_activacio']
+        else:
+            raw_date_end = o.model(model_name[1]).read(end_id, ['date_created'])['date_created']
+
+        raw_date_start = o.model(model_name[0]).read(start_id, ['date_created'])['date_created']
+        date_end = datetime.strptime(raw_date_end.split(' ')[0], "%Y-%m-%d")
+        date_start = datetime.strptime(raw_date_start.split(' ')[0], "%Y-%m-%d")
+
+        return Spain().get_working_days_delta(date_start, date_end)
+
     def manage_switching_cases(self, cod_gest_data, file_fields, sw_id, start_case_id, context=None):
 
         o = self.connection
@@ -162,8 +222,6 @@ class FD2(MultiprocessBased):
                 ('date_created', '<=', year_end)
             ]
             r102_ids = o.model("giscedata.switching.r1.02").search(search_params)
-            times = file_fields['debug_helper'][1] + 1
-            file_fields['debug_helper'] = [len(r102_ids), times]
 
             ## Tractem els r1 i comptabilitzem els que escau
             for r102_id in r102_ids:
@@ -187,7 +245,7 @@ class FD2(MultiprocessBased):
             context = {'subtype': subtipus_ids}
             self.process_atcs(item, cod_gest_data, file_fields, year_start, year_end, context=context)
 
-    def process_z5(self, item, cod_gest_data, file_fields, year_start, year_end):
+    def process_z5(self, item, cod_gest_data, file_fields, year_start, year_end, context=None):
 
         o = self.connection
 
@@ -212,67 +270,218 @@ class FD2(MultiprocessBased):
         ## Tractem els atcs que escau
         self.process_atcs(item, cod_gest_data, file_fields, year_start, year_end, context=context)
 
-    def get_atc_time_delta(self, crm_id, total_ts, context=None):
-        if context is None:
-            context = {}
+    def process_z6(self, item, cod_gest_data, file_fields, year_start, year_end):
         o = self.connection
 
-        history_logs = o.CrmCase.read(crm_id, ['history_line'])['history_line']
-        for history_log in history_logs:
-            tt_id = o.CrmCaseHistory.read(history_log, ['time_tracking_id'])['time_tracking_id']
-            if tt_id and tt_id[1] == 'Distribuidora':
-                time_spent = o.CrmCaseHistory.read(history_log, ['time_spent'])['time_spent']
-                total_ts = total_ts + time_spent
+        subtipus_ids = o.GiscedataSubtipusReclamacio.search([('name', 'in', ['028'])])
+        search_params = [
+            ('date_created', '>=', year_start),
+            ('date_created', '<=', year_end),
+            ('subtipus_id', 'in', subtipus_ids)
+        ]
+        r101_ids = o.model("giscedata.switching.r1.01").search(search_params)
 
-        return total_ts
+        ## Tractem els r1 i comptabilitzem els que escau
+        for r101_id in r101_ids:
+            r1_header_id = o.model("giscedata.switching.r1.02").read(r101_id, ['header_id'])[
+                'header_id']
+            sw_id = o.GiscedataSwitchingStepHeader.read(r1_header_id[0], ['sw_id'])['sw_id'][0]
+            pol_id = o.GiscedataSwitching.read(sw_id, ['cups_polissa_id'])['cups_polissa_id'][0]
+            b101_ids = o.model("giscedata.switching.b1.01").search([('sw_id', '=', sw_id), ('motiu', '=', '03')])
+            for b101_id in b101_ids:
+                b1_header_id = o.model("giscedata.switching.b1.01").read(r101_id, ['header_id'])[
+                    'header_id']
+                sw_id = o.GiscedataSwitchingStepHeader.read(b1_header_id[0], ['sw_id'])['sw_id'][0]
+                b1_pol_id = o.GiscedataSwitchin.read(b101_id, ['cups_polissa_id'])['cups_polissa_id'][0]
+                if b1_pol_id == pol_id:
+                    b103_id = o.model('giscedata.switching.b1.03').search([('sw_id', '=', sw_id)])
+                    model_names = ['giscedata.switching.r1.03', 'giscedata.switching.r1.04']
+                    field_names = ['date_created', 'data_activacio']
+                    context = {'model_names': model_names, 'field_names': field_names}
+                    self.manage_switching_cases(cod_gest_data, file_fields, sw_id, b103_id, context=context)
 
-    def get_time_delta(self, start_id, end_id, context=None):
-
+        ## Tractem els atcs adients
+        self.process_atcs(item, cod_gest_data, file_fields, year_start, year_end)
+    
+    def process_z7(self, item, cod_gest_data, file_fields, year_start, year_end):
         o = self.connection
-        if context is None:
-            context = {}
+        
+        if '01' in cod_gest_data['name']:
+            search_params = [
+                ('date_created', '>=', year_start),
+                ('date_created', '<=', year_end)
+            ]
+            c102_ids = o.model("giscedata.switching.c1.01").search(search_params)
 
-        model_names = context.get('model_names', False)
-        field_names = context.get('field_names', False)
+            ## Tractem els c1 i comptabilitzem els que escau
+            for c102_id in c102_ids:
+                c1_header_id = o.model("giscedata.switching.c1.01").read(c102_id, ['header_id'])[
+                    'header_id']
+                sw_id = o.GiscedataSwitchingStepHeader.read(c1_header_id[0], ['sw_id'])['sw_id'][0]
+                step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])['step_id'][0]
+                proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
+                if '05' in proces_name:
+                    model_names = ['giscedata.switching.c1.01', 'giscedata.switching.c1.05']
+                    field_names = ['date_created', 'data_activacio']
+                    context = {'model_names': model_names, 'field_names': field_names}
+                    self.manage_switching_cases(cod_gest_data, file_fields, sw_id, c102_id, context=context)
 
-        raw_date_end = o.model(model_names[1]).read(end_id, [field_names[1]])[field_names[1]]
-        raw_date_start = o.model(model_names[0]).read(start_id, [field_names[0]])[field_names[0]]
-        date_end = datetime.strptime(raw_date_end.split(' ')[0], "%Y-%m-%d")
-        date_start = datetime.strptime(raw_date_start.split(' ')[0], "%Y-%m-%d")
+            c202_ids = o.model("giscedata.switching.c2.01").search(search_params)
 
-        return Spain().get_working_days_delta(date_start, date_end)
+            ## Tractem els c2 i comptabilitzem els que escau
+            for c202_id in c202_ids:
+                c2_header_id = o.model("giscedata.switching.c2.01").read(c202_id, ['header_id'])[
+                    'header_id']
+                sw_id = o.GiscedataSwitchingStepHeader.read(c2_header_id[0], ['sw_id'])['sw_id'][0]
+                step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])['step_id'][0]
+                proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
+                if '05' in proces_name:
+                    model_names = ['giscedata.switching.c2.01', 'giscedata.switching.c2.05']
+                    field_names = ['date_created', 'data_activacio']
+                    context = {'model_names': model_names, 'field_names': field_names}
+                    self.manage_switching_cases(cod_gest_data, file_fields, sw_id, c202_id, context=context)
 
-    def get_a3_time_delta(self, start_id, end_id, context=None):
-
-        o = self.connection
-        model_name = context.get('model_names', False)
-        if '05' in model_name[1]:
-            raw_date_end = o.model(model_name[1]).read(end_id, ['data_activacio'])['data_activacio']
         else:
-            raw_date_end = o.model(model_name[1]).read(end_id, ['date_created'])['date_created']
+            search_params = [
+                ('date_created', '>=', year_start),
+                ('date_created', '<=', year_end)
+            ]
+            c105_ids = o.model("giscedata.switching.c1.05").search(search_params)
 
-        raw_date_start = o.model(model_name[0]).read(start_id, ['date_created'])['date_created']
-        date_end = datetime.strptime(raw_date_end.split(' ')[0], "%Y-%m-%d")
-        date_start = datetime.strptime(raw_date_start.split(' ')[0], "%Y-%m-%d")
+            ## Tractem els c1 i comptabilitzem els que escau
+            for c105_id in c105_ids:
+                c1_header_id = o.model("giscedata.switching.c1.05").read(c105_id, ['header_id'])[
+                    'header_id']
+                sw_id = o.GiscedataSwitchingStepHeader.read(c1_header_id[0], ['sw_id'])['sw_id'][0]
+                step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])['step_id'][0]
+                proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
+                if '05' in proces_name:
+                    comer_sortint_id = o.GiscedataSwitching.read(sw_id, ['comer_sortint_id'])['comer_sortint_id'][0]
+                    invoice_id = o.AccountInvoice.search([('partner_id', '=', comer_sortint_id)], order='date_invoice asc')[0]
+                    model_names = ['giscedata.switching.c1.05', 'account.invoice']
+                    field_names = ['data_activacio', 'date_invoice']
+                    context = {'model_names': model_names, 'field_names': field_names}
+                    time_spent = self.get_time_delta(c105_id, invoice_id, context=context)
+                    compute_time(cod_gest_data, file_fields, time_spent)
+                else:
+                    file_fields['no_tramitadas'] += 1
+                    file_fields['totals'] += 1
+                    
+            c205_ids = o.model("giscedata.switching.c2.05").search(search_params)
 
-        return Spain().get_working_days_delta(date_start, date_end)
+            ## Tractem els c2 i comptabilitzem els que escau
+            for c205_id in c205_ids:
+                c2_header_id = o.model("giscedata.switching.c2.05").read(c205_id, ['header_id'])[
+                    'header_id']
+                sw_id = o.GiscedataSwitchingStepHeader.read(c2_header_id[0], ['sw_id'])['sw_id'][0]
+                step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])['step_id'][0]
+                proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
+                if '05' in proces_name:
+                    comer_sortint_id = o.GiscedataSwitching.read(sw_id, ['comer_sortint_id'])['comer_sortint_id'][0]
+                    invoice_id = o.AccountInvoice.search([('partner_id', '=', comer_sortint_id)], order='date_invoice asc')[0]
+                    model_names = ['giscedata.switching.c2.05', 'account.invoice']
+                    field_names = ['data_activacio', 'date_invoice']
+                    context = {'model_names': model_names, 'field_names': field_names}
+                    time_spent = self.get_time_delta(c205_id, invoice_id, context=context)
+                    compute_time(cod_gest_data, file_fields, time_spent)
+                else:
+                    file_fields['no_tramitadas'] += 1
+                    file_fields['totals'] += 1
 
-    def get_b1_time_delta(self, start_id, end_id, context=None):
+        ## Tractem els atcs adients
+        self.process_atcs(item, cod_gest_data, file_fields, year_start, year_end)
 
+    def process_z8(self, item, cod_gest_data, file_fields, year_start, year_end):
         o = self.connection
-        model_name = context.get('model_names', False)
-        if '05' in model_name[1]:
-            raw_date_end = o.model(model_name[1]).read(end_id, ['data_activacio'])['data_activacio']
-        else:
-            raw_date_end = o.model(model_name[1]).read(end_id, ['date_created'])['date_created']
 
-        raw_date_start = o.model(model_name[0]).read(start_id, ['date_created'])['date_created']
-        date_end = datetime.strptime(raw_date_end.split(' ')[0], "%Y-%m-%d")
-        date_start = datetime.strptime(raw_date_start.split(' ')[0], "%Y-%m-%d")
+        if '08' in cod_gest_data['name']:
+            subtipus_list = ['058', '059', '060', '061', '062', '064', '064', '071', '072', '074']
+            subtipus_ids = o.GiscedataSubtipusReclamacio.search([('name', 'in', subtipus_list)])
+            search_params = [
+                ('date_created', '>=', year_start),
+                ('date_created', '<=', year_end),
+                ('subtipus_id', 'in', subtipus_ids)
+            ]
+            r101_ids = o.model("giscedata.switching.r1.01").search(search_params)
 
-        return Spain().get_working_days_delta(date_start, date_end)
+            for r101_id in r101_ids:
+                r1_header_id = o.model("giscedata.switching.r1.02").read(r101_id, ['header_id'])[
+                    'header_id']
+                sw_id = o.GiscedataSwitchingStepHeader.read(r1_header_id[0], ['sw_id'])['sw_id'][0]
+                r105_id = o.model("giscedata.switching.r1.05").search([('sw_id', '=', sw_id)])
+                if r105_id:
+                    model_names = ['giscedata.switching.r1.02', 'giscedata.switching.r1.05']
+                    field_names = ['date_created', 'date_created']
+                    context = {'model_names': model_names, 'field_names': field_names}
+                    self.manage_switching_cases(cod_gest_data, file_fields, sw_id, r101_id, context=context)
 
-    def consumer(self):
+        elif '09' in cod_gest_data['name']:
+            subtipus_list = ['003', '004']
+            subtipus_ids = o.GiscedataSubtipusReclamacio.search([('name', 'in', subtipus_list)])
+            search_params = [
+                ('date_created', '>=', year_start),
+                ('date_created', '<=', year_end),
+                ('subtipus_id', 'in', subtipus_ids)
+            ]
+            r101_ids = o.model("giscedata.switching.r1.01").search(search_params)
+
+            for r101_id in r101_ids:
+                r1_header_id = o.model("giscedata.switching.r1.02").read(r101_id, ['header_id'])[
+                    'header_id']
+                sw_id = o.GiscedataSwitchingStepHeader.read(r1_header_id[0], ['sw_id'])['sw_id'][0]
+                r105_id = o.model("giscedata.switching.r1.05").search([('sw_id', '=', sw_id)])
+                if r105_id:
+                    model_names = ['giscedata.switching.r1.02', 'giscedata.switching.r1.05']
+                    field_names = ['date_created', 'date_created']
+                    context = {'model_names': model_names, 'field_names': field_names}
+                    self.manage_switching_cases(cod_gest_data, file_fields, sw_id, r101_id, context=context)
+
+        elif '10' in cod_gest_data['name']:
+            search_params = [
+                ('date_created', '>=', year_start),
+                ('date_created', '<=', year_end),
+                ('actuacio_camp', '=', 'S')
+            ]
+            model_names = ['giscedata.switching.a3.02', 'giscedata.switching.a3.05']
+            field_names = ['date_created', 'data_acceptacio']
+            context = {'model_names': model_names, 'field_names': field_names}
+            a302_ids = o.model("giscedata.switching.a3.02").search(search_params)
+            for a302_id in a302_ids:
+                a3_header_id = o.model("giscedata.switching.a3.02").read(a302_id, ['header_id'])['header_id']
+                sw_id = o.GiscedataSwitchingStepHeader.read(a3_header_id[0], ['sw_id'])['sw_id'][0]
+                self.manage_switching_cases(cod_gest_data, file_fields, sw_id, a302_id, context=context)
+
+            search_params = [
+                ('date_created', '>=', year_start),
+                ('date_created', '<=', year_end),
+                ('actuacio_camp', '=', 'S')
+            ]
+            model_names = ['giscedata.switching.m1.02', 'giscedata.switching.m1.05']
+            field_names = ['date_created', 'data_acceptacio']
+            context = {'model_names': model_names, 'field_names': field_names}
+            m102_ids = o.model("giscedata.switching.m1.02").search(search_params)
+            for m102_id in m102_ids:
+                m1_header_id = o.model("giscedata.switching.m1.02").read(m102_id, ['header_id'])['header_id']
+                sw_id = o.GiscedataSwitchingStepHeader.read(m1_header_id[0], ['sw_id'])['sw_id'][0]
+                self.manage_switching_cases(cod_gest_data, file_fields, sw_id, m102_id, context=context)
+
+            search_params = [
+                ('date_created', '>=', year_start),
+                ('date_created', '<=', year_end),
+                ('actuacio_camp', '=', 'S')
+            ]
+            model_names = ['giscedata.switching.c2.02', 'giscedata.switching.c2.05']
+            field_names = ['date_created', 'data_acceptacio']
+            context = {'model_names': model_names, 'field_names': field_names}
+            c202_ids = o.model("giscedata.switching.c2.02").search(search_params)
+            for c202_id in c202_ids:
+                c2_header_id = o.model("giscedata.switching.c2.02").read(c202_id, ['header_id'])['header_id']
+                sw_id = o.GiscedataSwitchingStepHeader.read(c2_header_id[0], ['sw_id'])['sw_id'][0]
+                self.manage_switching_cases(cod_gest_data, file_fields, sw_id, c202_id, context=context)
+            
+            self.process_atcs(item, cod_gest_data,file_fields, year_start, year_end)
+
+    def consumer(self): 
 
         o = self.connection
 
@@ -290,16 +499,19 @@ class FD2(MultiprocessBased):
                 cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name'])
 
                 ## Tractem el codi de gestio Z4
-                if 'Z4' in cod_gest_data['name']:
-                    self.process_z4(item, cod_gest_data, file_fields, year_start, year_end)
-                elif 'Z3' in cod_gest_data['name']:
+                if 'Z3' in cod_gest_data['name']:
                     self.process_z3(item, cod_gest_data, file_fields, year_start, year_end)
+                elif 'Z4' in cod_gest_data['name']:
+                    self.process_z4(item, cod_gest_data, file_fields, year_start, year_end)
                 elif 'Z5' in cod_gest_data['name']:
                     self.process_z5(item, cod_gest_data, file_fields, year_start, year_end)
                 elif 'Z6' in cod_gest_data['name']:
-                    pass
+                    self.process_z6(item, cod_gest_data, file_fields, year_start, year_end)
                 elif 'Z7' in cod_gest_data['name']:
-                    pass
+                    self.process_z7(item, cod_gest_data, file_fields, year_start, year_end)
+                elif 'Z8' in cod_gest_data['name']:
+                    self.process_z8(item, cod_gest_data, z8_fields, year_start, year_end)
+
                 ## Tractament general de ATCs
                 else:
                     search_params_atc = [
