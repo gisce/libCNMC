@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from libcnmc.core import MultiprocessBased
-from libcnmc.utils import format_f, convert_srid, get_srid
+from libcnmc.utils import format_f, convert_srid, get_srid, get_ine
 from datetime import datetime
 from shapely import wkt
 import traceback
@@ -18,6 +18,18 @@ class FA3(MultiprocessBased):
     def get_sequence(self):
         prevision_ids = self.connection.GiscedataPrevisioCreixement.search([('year_previsto', '>', self.year)])
         return prevision_ids
+
+    def get_ine(self, municipi_id):
+        """
+        Returns the INE code of the given municipi
+        :param municipi_id: Id of the municipi
+        :type municipi_id: int
+        :return: state, ine municipi
+        :rtype:tuple
+        """
+        O = self.connection
+        muni = O.ResMunicipi.read(municipi_id, ['ine'])
+        return get_ine(O, muni['ine'])
 
     def consumer(self):
         O = self.connection
@@ -65,15 +77,12 @@ class FA3(MultiprocessBased):
                 if prevision['potencia_solicitada']:
                     o_potencia_solicitada = prevision['potencia_solicitada']
 
-                # MUNICIPIO
-                o_municipio = ''
+                # MUNICIPIO / PROVINCIA
+                o_codi_ine_mun = ''
+                o_codi_ine_prov = ''
                 if prevision['id_municipi']:
-                    o_municipio = prevision['id_municipi']
-
-                # PROVINCIA
-                o_provincia = ''
-                if prevision['id_provincia']:
-                    o_provincia = prevision['id_provincia']
+                    id_municipio = prevision['id_municipi']
+                    o_codi_ine_prov, o_codi_ine_mun = self.get_ine(id_municipio)
 
                 # AÑO PREVISTO
                 o_year_previsto = ''
@@ -96,20 +105,20 @@ class FA3(MultiprocessBased):
                     o_suministros_at = prevision['suministros_at']
 
                 self.output_q.put([
-                    o_cod_crecimiento,                  # CÓDIGO CRECIMIENTO
-                    o_tipo_crecimiento,                 # TIPO CRECIMIENTO
-                    format_f(res_srid[0], decimals=3),  # COORDENADA X
-                    format_f(res_srid[1], decimals=3),  # COORDENADA Y
-                    '',                                 # COORDENADA Z
-                    o_superficie,                       # SUPERFICIE
-                    o_uso,                              # USO
-                    o_potencia_solicitada,              # POTENCIA SOLICITADA
-                    o_municipio,                        # MUNICIPIO
-                    o_provincia,                        # PROVINCIA
-                    o_year_previsto,                    # AÑO PREVISTO
-                    o_suministros_bt,                   # SUMINISTROS BT
-                    o_suministros_mt,                   # SUMINISTROS MT
-                    o_suministros_at,                   # SUMINISTROS AT
+                    o_cod_crecimiento,                              # CÓDIGO CRECIMIENTO
+                    o_tipo_crecimiento,                             # TIPO CRECIMIENTO
+                    format_f(res_srid[0], decimals=3),              # COORDENADA X
+                    format_f(res_srid[1], decimals=3),              # COORDENADA Y
+                    '',                                             # COORDENADA Z
+                    format_f(o_superficie, decimals=3),             # SUPERFICIE
+                    o_uso,                                          # USO
+                    format_f(o_potencia_solicitada, decimals=3),    # POTENCIA SOLICITADA
+                    o_codi_ine_mun,                                 # MUNICIPIO
+                    o_codi_ine_prov,                                # PROVINCIA
+                    o_year_previsto,                                # AÑO PREVISTO
+                    o_suministros_bt,                               # SUMINISTROS BT
+                    o_suministros_mt,                               # SUMINISTROS MT
+                    o_suministros_at,                               # SUMINISTROS AT
                 ])
 
             except Exception:
