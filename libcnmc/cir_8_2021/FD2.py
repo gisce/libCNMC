@@ -516,7 +516,7 @@ class FD2(MultiprocessBased):
                 elif 'Z7' in cod_gest_data['name']:
                     self.process_z7(item, cod_gest_data, file_fields, year_start, year_end)
                 elif 'Z8' in cod_gest_data['name']:
-                    self.process_z8(item, cod_gest_data, z8_fields, year_start, year_end, z8_01_check)
+                    self.process_z8(item, cod_gest_data, z8_fields, year_start, year_end)
 
                 ## Tractament general de ATCs
                 else:
