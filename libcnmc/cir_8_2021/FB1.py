@@ -31,11 +31,33 @@ class FB1(MultiprocessBased):
         self.prefix_BT = kwargs.pop('prefix_bt', 'B') or 'B'
         self.dividir = kwargs.pop('div', False)
 
+        O = self.connection
+
         id_res_like = self.connection.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')])
         if id_res_like:
             self.layer = self.connection.ResConfig.read(
                 id_res_like, ['value'])[0]['value']
+
+        trafos_fields = O.GiscedataTransformadorTrafo.fields_get().keys()
+        if 'node_id' in trafos_fields:
+            ids_red = O.GiscedataTransformadorTrafo.search(
+                [('reductor', '=', True)]
+            )
+            data_nodes = O.GiscedataTransformadorTrafo.read(
+                ids_red, ["node_id"]
+            )
+            self.nodes_red = [
+                nod["node_id"][1] for nod in data_nodes if nod["node_id"]
+            ]
+        else:
+            ids_red = O.GiscegisBlocsTransformadorsReductors.search([])
+            data_nodes = O.GiscegisBlocsTransformadorsReductors.read(
+                ids_red, ["node"]
+            )
+            self.nodes_red = [
+                nod["node"][1] for nod in data_nodes if nod["node"]
+            ]
 
     def get_sequence(self):
         """
@@ -328,7 +350,19 @@ class FB1(MultiprocessBased):
                         avifauna = ''
                         financiado = ''
 
-                    # Descripció
+                    # Node inicial / Node final
+                    o_nivell_tensio = ''
+                    if tram.get('tensio_max_disseny_id', False):
+                        nivell_tensio_id = tram['tensio_max_disseny_id'][0]
+                        o_nivell_tensio = O.GiscedataTensionsTensio.read(nivell_tensio_id, ["tensio"])["tensio"]
+                    else:
+                        linia_id, linia_name = tram['linia']
+                        if linia_id:
+                            tensio_data = O.GiscedataAtLinia.read(linia_id, ['tensio_id'])
+                            if tensio_data.get('tensio_id', False):
+                                o_nivell_tensio = float(tensio_data['tensio_id'][1])
+                    o_nivell_tensio = format_f(float(o_nivell_tensio) / 1000.0, 3)
+                    o_tram = 'A%s' % tram['name']
                     if 'edge_id' in O.GiscedataAtTram.fields_get().keys():
                         tram_edge = O.GiscedataAtTram.read(
                             tram['id'], ['edge_id']
@@ -371,10 +405,19 @@ class FB1(MultiprocessBased):
                             edge = O.GiscegisEdge.read(
                                 res[0], ['start_node', 'end_node']
                             )
+
                     o_node_inicial = tallar_text(edge['start_node'][1], 20)
                     o_node_inicial = o_node_inicial.replace('*', '')
+                    if o_node_inicial in self.nodes_red:
+                        o_node_inicial = "{}-{}".format(
+                            o_node_inicial, o_nivell_tensio
+                        )
                     o_node_final = tallar_text(edge['end_node'][1], 20)
                     o_node_final = o_node_final.replace('*', '')
+                    if o_node_final in self.nodes_red:
+                        o_node_final = "{}-{}".format(
+                            o_node_final, o_nivell_tensio
+                        )
 
                     if tram.get('data_baixa'):
                         if tram.get('data_baixa') > data_pm_limit:
