@@ -329,21 +329,53 @@ class FB1(MultiprocessBased):
                         financiado = ''
 
                     # Descripció
-                    origen = tallar_text(tram['origen'], 22)
-                    final = tallar_text(tram['final'], 22)
-                    if not origen or not final:
+                    if 'edge_id' in O.GiscedataAtTram.fields_get().keys():
+                        tram_edge = O.GiscedataAtTram.read(
+                            tram['id'], ['edge_id']
+                        )['edge_id']
+                        if not tram_edge:
+                            res = O.GiscegisEdge.search(
+                                [
+                                    ('id_linktemplate', '=', tram['name']),
+                                    ('layer', 'not ilike', self.layer),
+                                    ('layer', 'not ilike', 'EMBARRA%BT%')
+                                ]
+                            )
+                            if not res or len(res) > 1:
+                                edge = {
+                                    'start_node': (0, '%s_0' % tram['name']),
+                                    'end_node': (0, '%s_1' % tram['name'])
+                                }
+                            else:
+                                edge = O.GiscegisEdge.read(
+                                    res[0], ['start_node', 'end_node']
+                                )
+                        else:
+                            edge = O.GiscegisEdge.read(
+                                tram_edge[0], ['start_node', 'end_node']
+                            )
+                    else:
                         res = O.GiscegisEdge.search(
                             [
                                 ('id_linktemplate', '=', tram['name']),
                                 ('layer', 'not ilike', self.layer),
                                 ('layer', 'not ilike', 'EMBARRA%BT%')
-                            ])
+                            ]
+                        )
                         if not res or len(res) > 1:
-                            edge = {'start_node': (0, '{0}_0'.format(tram.get('name'))),
-                                    'end_node': (0, '{0}_1'.format(tram.get('name')))}
+                            edge = {
+                                'start_node': (0, '%s_0' % tram['name']),
+                                'end_node': (0, '%s_1' % tram['name'])
+                            }
                         else:
-                            edge = O.GiscegisEdge.read(res[0], ['start_node',
-                                                                'end_node'])
+                            edge = O.GiscegisEdge.read(
+                                res[0], ['start_node', 'end_node']
+                            )
+                    o_node_inicial = tallar_text(edge['start_node'][1], 20)
+                    o_node_inicial = o_node_inicial.replace('*', '')
+                    o_node_final = tallar_text(edge['end_node'][1], 20)
+                    o_node_final = o_node_final.replace('*', '')
+
                     if tram.get('data_baixa'):
                         if tram.get('data_baixa') > data_pm_limit:
                             fecha_baja = ''
@@ -358,8 +390,8 @@ class FB1(MultiprocessBased):
                         '{}{}'.format(self.prefix_AT, tram['name']),  # IDENTIFICADOR
                         tram.get('cini', '') or '',         # CINI
                         codi_ccuu or '',                    # CODIGO_CCUU
-                        origen or edge['start_node'][1],    # ORIGEN
-                        final or edge['end_node'][1],       # DESTINO
+                        o_node_inicial or edge['start_node'][1],    # ORIGEN
+                        o_node_final or edge['end_node'][1],       # DESTINO
                         comunitat,                          # CODIGO_CCAA_1
                         comunitat,                          # CODIGO_CCAA_2
                         propietari,                         # PROPIEDAD
