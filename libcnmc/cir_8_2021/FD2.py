@@ -483,8 +483,8 @@ class FD2(MultiprocessBased):
 
         if '01' in cod_gest_data['name']:
             self.process_atcs(item, cod_gest_data, file_fields, year_start, year_end)
-            z801_dl15_id = o.GiscedataCodigosGestionCalidadZ.search([('name', '=', 'Z8_01_dl15')])
-            self.process_atcs(z801_dl15_id, cod_gest_data, file_fields, year_start, year_end)
+            z801_dl5_id = o.GiscedataCodigosGestionCalidadZ.search([('name', '=', 'Z8_01_dl5')])
+            self.process_atcs(z801_dl5_id, cod_gest_data, file_fields, year_start, year_end)
         else:
             self.process_atcs(item, cod_gest_data, file_fields, year_start, year_end)
 
