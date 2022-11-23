@@ -73,6 +73,8 @@ class FB1(MultiprocessBased):
         search_params = [
             '|',
             '&',
+            ('data_pm', '<=', fi_any),
+            '&',
             ('active', '=', True),
             ('criteri_regulatori', '!=', 'excloure'),
             '&',
@@ -91,6 +93,8 @@ class FB1(MultiprocessBased):
         # BT
         search_params = [
             '|',
+            '&',
+            ('data_pm', '<=', fi_any),
             '&',
             ('active', '=', True),
             ('criteri_regulatori', '!=', 'excloure'),
