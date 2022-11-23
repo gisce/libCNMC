@@ -561,6 +561,15 @@ class FD2(MultiprocessBased):
                         z8_fields['no_tramitadas']
                     ]
                     self.output_q.put(output)
+                else:
+                    output = [
+                        cod_gest_data['name'],
+                        z8_fields['totals'],
+                        z8_fields['dentro_plazo'],
+                        z8_fields['fuera_plazo'],
+                        z8_fields['no_tramitadas']
+                    ]
+                    self.output_q.put(output)
 
 
             except Exception:
