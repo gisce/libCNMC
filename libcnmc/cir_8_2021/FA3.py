@@ -16,7 +16,7 @@ class FA3(MultiprocessBased):
         self.base_object = 'Previsiones de crecimiento'
 
     def get_sequence(self):
-        prevision_ids = self.connection.GiscedataPrevisioCreixement.search([('year_previsto', '>', self.year)])
+        prevision_ids = self.connection.GiscedataPrevisioCreixement.search([('formulario_year', '=', self.year)])
         return prevision_ids
 
     def get_ine(self, municipi_id):
@@ -81,7 +81,7 @@ class FA3(MultiprocessBased):
                 o_codi_ine_mun = ''
                 o_codi_ine_prov = ''
                 if prevision['id_municipi']:
-                    id_municipio = prevision['id_municipi']
+                    id_municipio = prevision['id_municipi'][0]
                     o_codi_ine_prov, o_codi_ine_mun = self.get_ine(id_municipio)
 
                 # AÑO PREVISTO
