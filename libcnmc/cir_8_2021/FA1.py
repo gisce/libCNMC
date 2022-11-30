@@ -507,7 +507,6 @@ class FA1(MultiprocessBased):
                 polissa_id = self.get_polissa(cups['id'])
                 o_potencia = ''
                 o_cnae = ''
-                o_pot_ads = cups.get('potencia_adscrita', '0,000') or '0,000'
                 o_cod_tfa = ''
                 o_estat_contracte = 0
                 # energies consumides
@@ -649,6 +648,12 @@ class FA1(MultiprocessBased):
                         if self.default_o_cod_tfa:
                             o_cod_tfa = self.default_o_cod_tfa
 
+                # potencia adscrita
+                if cups.get('potencia_adscrita', False) != 0:
+                    o_pot_ads = cups['potencia_adscrita']
+                else:
+                    o_pot_ads = o_potencia
+
                 res_srid = ['', '']
                 if vertex:
                     res_srid = convert_srid(
@@ -676,7 +681,6 @@ class FA1(MultiprocessBased):
                     o_tensio,           # Tension de alimentacion
                     o_estat_contracte,  # Estado de contrato
                     format_f(o_potencia or '0,000', decimals=3),    # Potencia contratada
-                    #format_f(o_potencia_facturada, decimals=3),     # Potencia facturada
                     format_f(o_pot_ads, decimals=3),        # Potencia adscrita a la instalacion
                     format_f(o_anual_activa, decimals=3),   # Energia activa anual consumida
                     format_f(o_anual_reactiva, decimals=3), # Energia reactiva anual consumida
