@@ -303,19 +303,6 @@ class FA1(MultiprocessBased):
             data = '%s/%s' % (data[1], data[0])
         return data
 
-    def get_polissa(self, cups_id):
-        polissa_obj = self.connection.GiscedataPolissa
-        context = {
-            'date': self.ultim_dia_any,
-            'active_test': False
-        }
-        polissa_id = polissa_obj.search([
-            ('cups', '=', cups_id),
-            ('state', 'in', ['tall', 'activa', 'baixa']),
-            ('data_alta', '<=', self.ultim_dia_any),
-        ], 0, 1, 'data_alta desc', context)
-        return polissa_id
-
     def get_cambio_titularidad(self, cups_id):
         O = self.connection
         intervals = O.GiscedataCupsPs.get_modcontractual_intervals
@@ -504,7 +491,9 @@ class FA1(MultiprocessBased):
                                     [bloc_escomesa['node'][0]], ['name'])
                                 o_nom_node = node[0]['name']
                 o_nom_node = o_nom_node.replace('*', '')
-                polissa_id = self.get_polissa(cups['id'])
+                search_params = [('cups', '=', cups['id'])] + search_glob
+                polissa_id = O.GiscedataPolissa.search(
+                    search_params, 0, 1, 'data_alta desc', context_glob)
                 o_potencia = ''
                 o_cnae = ''
                 o_cod_tfa = ''
