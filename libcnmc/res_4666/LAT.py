@@ -163,6 +163,12 @@ class LAT(MultiprocessBased):
                         cable = O.GiscedataAtCables.read(
                             id_desconegut, ['tipus'])
 
+                    # Si hi ha 'id_regulatori' el posem
+                    if tram.get('id_regulatori', False):
+                        o_tram = tram['id_regulatori']
+                    else:
+                        o_tram = tram['name']
+
                     # Calculem any posada en marxa
                     data_pm = ''
                     if 'data_pm' in tram and tram['data_pm'] and tram['data_pm'] < data_pm_limit:
@@ -323,7 +329,7 @@ class LAT(MultiprocessBased):
                     else:
                         conductors = 1
                     output = [
-                        '{}{}'.format(self.prefix, tram['name']),  # IDENTIFIC.
+                        '{}{}'.format(self.prefix, o_tram),  # IDENTIFIC.
                         tram.get('cini', '') or '',         # CINI
                         origen or edge['start_node'][1],    # ORIGEN
                         final or edge['end_node'][1],       # DESTINO

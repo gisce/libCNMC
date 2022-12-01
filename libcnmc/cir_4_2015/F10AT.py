@@ -118,7 +118,13 @@ class F10AT(MultiprocessBased):
                         o_nivell_tensio = linia["tensio"]
                     o_nivell_tensio = format_f(
                         float(o_nivell_tensio) / 1000.0, 3)
-                    o_tram = 'A%s' % at['name']
+
+                    # Si hi ha 'id_regulatori' el posem
+                    if at.get('id_regulatori', False):
+                        o_tram = 'A%s' % at['id_regulatori']
+                    else:
+                        o_tram = 'A%s' % at['name']
+
                     if 'edge_id' in o.GiscedataAtTram.fields_get().keys():
                         at_edge = o.GiscedataAtTram.read(
                             at['id'], ['edge_id']

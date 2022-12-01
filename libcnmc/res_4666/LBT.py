@@ -97,6 +97,12 @@ class LBT(MultiprocessBased):
 
                 linia = O.GiscedataBtElement.read(item, fields_to_read)
 
+                # Si hi ha 'id_regulatori' el posem
+                if linia.get('id_regulatori', False):
+                    o_linia = linia['id_regulatori']
+                else:
+                    o_linia = linia['name']
+
                 comunitat = ''
                 if linia['municipi']:
                     ccaa_obj = O.ResComunitat_autonoma
@@ -230,7 +236,7 @@ class LBT(MultiprocessBased):
                         final = str(linia['name']) + '_1'
 
                 output = [
-                    '{}{}'.format(self.prefix, linia['name']),  # IDENTIFICADOR
+                    '{}{}'.format(self.prefix, o_linia),  # IDENTIFICADOR
                     linia['cini'] or '',            # CINI
                     origen or '',                   # ORIGEN
                     final or '',                    # DESTINO

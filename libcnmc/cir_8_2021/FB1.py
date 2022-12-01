@@ -366,7 +366,13 @@ class FB1(MultiprocessBased):
                             if tensio_data.get('tensio_id', False):
                                 o_nivell_tensio = float(tensio_data['tensio_id'][1])
                     o_nivell_tensio = format_f(float(o_nivell_tensio) / 1000.0, 3)
-                    o_tram = 'A%s' % tram['name']
+
+                    # identificador_tramo
+                    if tram.get('id_regulatori', False):
+                        o_tram = tram['id_regulatori']
+                    else:
+                        o_tram = tram['name']
+
                     if 'edge_id' in O.GiscedataAtTram.fields_get().keys():
                         tram_edge = O.GiscedataAtTram.read(
                             tram['id'], ['edge_id']
@@ -434,7 +440,7 @@ class FB1(MultiprocessBased):
                         fecha_baja = ''
 
                     output = [
-                        '{}{}'.format(self.prefix_AT, tram['name']),  # IDENTIFICADOR
+                        '{}{}'.format(self.prefix_AT, o_tram),  # IDENTIFICADOR
                         tram.get('cini', '') or '',         # CINI
                         codi_ccuu or '',                    # CODIGO_CCUU
                         o_node_inicial or edge['start_node'][1],    # ORIGEN
@@ -482,9 +488,10 @@ class FB1(MultiprocessBased):
 
                     linia = O.GiscedataBtElement.read(item, fields_to_read)
 
-                    # IDENTIFICADOR TRAMO
-                    identificador_tramo = ''
-                    if linia.get('name', False):
+                    # Identificador_tramo
+                    if linia.get('id_regulatori', False):
+                        identificador_tramo = linia['id_regulatori']
+                    else:
                         identificador_tramo = linia['name']
 
                     # CINI
