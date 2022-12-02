@@ -39,6 +39,7 @@ class FB6(MultiprocessBased):
         self.base_object = 'Elements de millora de fiabilitat'
         self.cod_dis = 'R1-{}'.format(self.codi_r1[-3:])
         self.compare_field = "4666_entregada"
+        self.prefix = kwargs.pop('prefix', 'A') or 'A'
 
     def get_sequence(self):
         """
@@ -167,7 +168,7 @@ class FB6(MultiprocessBased):
                         tram_name = o.GiscedataAtTram.read(
                             tram_id, ['name']
                         )[0]['name']
-                        return "A{0}".format(tram_name)
+                        return "{}{}".format(self.prefix, tram_name)
         return ""
 
     def consumer(self):
@@ -279,11 +280,11 @@ class FB6(MultiprocessBased):
                 #TRAM
                 o_tram = ""
                 if cella['tram_id']:
-                    o_tram = "A{0}".format(
-                        O.GiscedataAtTram.read(
-                            cella['tram_id'][0], ['name']
-                        )['name']
-                    )
+                    tram_data = O.GiscedataAtTram.read(cella['tram_id'][0], ['name', 'id_regulatori'])
+                    if tram_data.get('id_regulatori', False):
+                        o_tram = tram_data['id_regulatori']
+                    else:
+                        o_tram = "{}{}".format(self.prefix, tram_data['name'])
                 else:
                     o_tram = self.get_node_vertex_tram(o_fiabilitat)
 
@@ -373,7 +374,7 @@ class FB6(MultiprocessBased):
                 self.output_q.put([
                     o_fiabilitat,   # ELEMENTO FIABILIDAD
                     o_cini,  # CINI
-                    o_name,  #IDENTIFICADOR_ELEMENTO
+                    o_tram,  #IDENTIFICADOR_ELEMENTO
                     o_node,  # NUDO
                     x,              # X
                     y,              # Y
