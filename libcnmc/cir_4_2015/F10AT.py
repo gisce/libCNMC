@@ -121,7 +121,7 @@ class F10AT(MultiprocessBased):
 
                     # Si hi ha 'id_regulatori' el posem
                     if at.get('id_regulatori', False):
-                        o_tram = 'A%s' % at['id_regulatori']
+                        o_tram = at['id_regulatori']
                     else:
                         o_tram = 'A%s' % at['name']
 

@@ -167,7 +167,7 @@ class LAT(MultiprocessBased):
                     if tram.get('id_regulatori', False):
                         o_tram = tram['id_regulatori']
                     else:
-                        o_tram = tram['name']
+                        o_tram = '{}{}'.format(self.prefix, tram['name'])
 
                     # Calculem any posada en marxa
                     data_pm = ''
@@ -329,7 +329,7 @@ class LAT(MultiprocessBased):
                     else:
                         conductors = 1
                     output = [
-                        '{}{}'.format(self.prefix, o_tram),  # IDENTIFIC.
+                        o_tram,  # IDENTIFIC.
                         tram.get('cini', '') or '',         # CINI
                         origen or edge['start_node'][1],    # ORIGEN
                         final or edge['end_node'][1],       # DESTINO

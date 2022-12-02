@@ -100,7 +100,7 @@ class F10BT(MultiprocessBased):
 
                 # Si hi ha 'id_regulatori' el posem
                 if linia.get('id_regulatori', False):
-                    o_tram = 'B%s' % linia['id_regulatori']
+                    o_tram = linia['id_regulatori']
                 else:
                     o_tram = 'B%s' % linia['name']
 

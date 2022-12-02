@@ -371,7 +371,7 @@ class FB1(MultiprocessBased):
                     if tram.get('id_regulatori', False):
                         o_tram = tram['id_regulatori']
                     else:
-                        o_tram = tram['name']
+                        o_tram = '{}{}'.format(self.prefix_AT, tram['name'])
 
                     if 'edge_id' in O.GiscedataAtTram.fields_get().keys():
                         tram_edge = O.GiscedataAtTram.read(
@@ -440,7 +440,7 @@ class FB1(MultiprocessBased):
                         fecha_baja = ''
 
                     output = [
-                        '{}{}'.format(self.prefix_AT, o_tram),  # IDENTIFICADOR
+                        o_tram,  # IDENTIFICADOR
                         tram.get('cini', '') or '',         # CINI
                         codi_ccuu or '',                    # CODIGO_CCUU
                         o_node_inicial or edge['start_node'][1],    # ORIGEN
@@ -492,7 +492,7 @@ class FB1(MultiprocessBased):
                     if linia.get('id_regulatori', False):
                         identificador_tramo = linia['id_regulatori']
                     else:
-                        identificador_tramo = linia['name']
+                        identificador_tramo = '{}{}'.format(self.prefix_BT, linia['name'])
 
                     # CINI
                     cini = ''
@@ -712,7 +712,7 @@ class FB1(MultiprocessBased):
                         financiado = ''
 
                     output = [
-                        '{}{}'.format(self.prefix_BT, identificador_tramo),  # IDENTIFICADOR TRAMO
+                        identificador_tramo,  # IDENTIFICADOR TRAMO
                         linia.get('cini', '') or '',  # CINI
                         codigo_ccuu or '',  # CODIGO_CCUU
                         nudo_inicial,  # ORIGEN
