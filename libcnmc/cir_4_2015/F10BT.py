@@ -71,7 +71,7 @@ class F10BT(MultiprocessBased):
         o = self.connection
         fields_to_read = [
             'name', 'propietari', 'coeficient', 'cable', 'voltatge', 'cini',
-            'longitud_cad', 'municipi', 'longitud_cad', 'tipus_linia'
+            'longitud_cad', 'municipi', 'longitud_cad', 'tipus_linia', 'id_regulatori'
         ]
         while True:
             try:

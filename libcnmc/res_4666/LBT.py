@@ -86,7 +86,7 @@ class LBT(MultiprocessBased):
             'name', 'municipi', 'data_pm', 'ct', 'coeficient', 'cini',
             'perc_financament', 'longitud_cad', 'cable', 'voltatge',
             'data_alta', 'propietari', 'tipus_instalacio_cnmc_id', 'baixa',
-            'data_baixa', "edge_id", self.compare_field
+            'data_baixa', "edge_id", self.compare_field, 'id_regulatori'
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         while True:

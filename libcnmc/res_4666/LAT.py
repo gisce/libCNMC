@@ -92,7 +92,7 @@ class LAT(MultiprocessBased):
             'propietari', 'tensio_max_disseny_id', 'name', 'origen', 'final',
             'perc_financament', 'circuits', 'longitud_cad', 'cable',
             'tipus_instalacio_cnmc_id', 'data_baixa', self.compare_field,
-            'baixa', 'data_baixa', 'conductors'
+            'baixa', 'data_baixa', 'conductors', 'id_regulatori'
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
