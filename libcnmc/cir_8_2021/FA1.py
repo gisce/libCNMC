@@ -197,7 +197,13 @@ class FA1(MultiprocessBased):
         :rtype: list[int]
         """
         data_ini = '%s-01-01' % (self.year + 1)
-        ret_cups_ids = self.connection.GiscedataCupsPs.search([])
+        search_params = [('active', '=', True),
+                         '|',
+                         ('create_date', '<', data_ini),
+                         ('create_date', '=', False)]
+
+        ret_cups_ids = self.connection.GiscedataCupsPs.search(
+            search_params, 0, 0, False, {'active_test': False})
 
         ret_cups_tmp = self.connection.GiscedataCupsPs.read(
             ret_cups_ids, ["polisses"]
@@ -213,6 +219,19 @@ class FA1(MultiprocessBased):
             return list(set(ret_cups + cups_derechos_at + cups_derechos_bt))
         else:
             return ret_cups
+
+    def get_polissa(self, cups_id):
+        polissa_obj = self.connection.GiscedataPolissa
+        context = {
+            'date': self.ultim_dia_any,
+            'active_test': False
+        }
+        polissa_id = polissa_obj.search([
+            ('cups', '=', cups_id),
+            ('state', 'in', ['tall', 'activa', 'baixa']),
+            ('data_alta', '<=', self.ultim_dia_any),
+        ], 0, 1, 'data_alta desc', context)
+        return polissa_id
 
     def get_zona_qualitat(self, tipus_zona, codi_ct, id_municipi):
         zona_q = False
@@ -272,15 +291,6 @@ class FA1(MultiprocessBased):
                 if zona_desc in CODIS_ZONA:
                     zona_qualitat = CODIS_ZONA[zona_desc]
         return zona_qualitat
-
-    def get_comptador(self, polissa_id):
-        o = self.connection
-        comp_obj = o.GiscedataLecturesComptador
-        comp_id = comp_obj.search([
-            ('polissa', '=', polissa_id),
-            ('data_alta', '<', '%s-01-01' % (self.year + 1))
-        ], 0, 1, 'data_alta desc', {'active_test': False})
-        return comp_id
 
     def get_comptador_cini(self, polissa_id):
         comp_obj = self.connection.GiscedataLecturesComptador
@@ -491,9 +501,7 @@ class FA1(MultiprocessBased):
                                     [bloc_escomesa['node'][0]], ['name'])
                                 o_nom_node = node[0]['name']
                 o_nom_node = o_nom_node.replace('*', '')
-                search_params = [('cups', '=', cups['id'])] + search_glob
-                polissa_id = O.GiscedataPolissa.search(
-                    search_params, 0, 1, 'data_alta desc', context_glob)
+                polissa_id = self.get_polissa(cups['id'])
                 o_potencia = ''
                 o_cnae = ''
                 o_cod_tfa = ''
