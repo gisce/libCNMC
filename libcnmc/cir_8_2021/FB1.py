@@ -417,17 +417,17 @@ class FB1(MultiprocessBased):
                                 res[0], ['start_node', 'end_node']
                             )
 
-                    o_node_inicial = tallar_text(edge['start_node'][1], 20)
-                    o_node_inicial = o_node_inicial.replace('*', '')
-                    if o_node_inicial in self.nodes_red:
-                        o_node_inicial = "{}-{}".format(
-                            o_node_inicial, o_nivell_tensio
+                    node_inicial = tallar_text(edge['start_node'][1], 20)
+                    node_inicial = node_inicial.replace('*', '')
+                    if node_inicial in self.nodes_red:
+                        node_inicial = "{}-{}".format(
+                            node_inicial, o_nivell_tensio
                         )
-                    o_node_final = tallar_text(edge['end_node'][1], 20)
-                    o_node_final = o_node_final.replace('*', '')
-                    if o_node_final in self.nodes_red:
-                        o_node_final = "{}-{}".format(
-                            o_node_final, o_nivell_tensio
+                    node_final = tallar_text(edge['end_node'][1], 20)
+                    node_final = node_final.replace('*', '')
+                    if node_final in self.nodes_red:
+                        node_final = "{}-{}".format(
+                            node_final, o_nivell_tensio
                         )
 
                     if tram.get('data_baixa'):
@@ -440,12 +440,16 @@ class FB1(MultiprocessBased):
                     else:
                         fecha_baja = ''
 
+                    if modelo == 'M':
+                        fecha_aps = ''
+                        estado = ''
+
                     output = [
                         o_tram,  # IDENTIFICADOR
                         tram.get('cini', '') or '',         # CINI
                         codi_ccuu or '',                    # CODIGO_CCUU
-                        o_node_inicial or edge['start_node'][1],    # ORIGEN
-                        o_node_final or edge['end_node'][1],       # DESTINO
+                        node_inicial or edge['start_node'][1],    # ORIGEN
+                        node_final or edge['end_node'][1],       # DESTINO
                         comunitat,                          # CODIGO_CCAA_1
                         comunitat,                          # CODIGO_CCAA_2
                         propietari,                         # PROPIEDAD
@@ -510,15 +514,45 @@ class FB1(MultiprocessBased):
                         codigo_ccuu = ''
 
                     # NUDO INICIAL / NUDO FINAL
-                    nudo_inicial = ''
-                    nudo_final = ''
-                    if linia.get('edge_id', False):
-                        edge_id = linia['edge_id'][0]
-                        edge_data = O.GiscegisEdge.read(edge_id, ['start_node', 'end_node'])
-                        if edge_data.get('start_node', False):
-                            nudo_inicial = tallar_text(edge_data['start_node'][1], 22)
-                        if edge_data.get('end_node', False):
-                            nudo_final = tallar_text(edge_data['end_node'][1], 22)
+                    if 'edge_id' in O.GiscedataBtElement.fields_get().keys():
+                        bt_edge = O.GiscedataBtElement.read(
+                            linia['id'], ['edge_id']
+                        )['edge_id']
+                        if not bt_edge:
+                            res = O.GiscegisEdge.search(
+                                [('id_linktemplate', '=', linia['name']),
+                                 '|',
+                                 ('layer', 'ilike', self.layer),
+                                 ('layer', 'ilike', 'EMBARRA%BT%')
+                                 ])
+                            if not res or len(res) > 1:
+                                edge = {'start_node': (0, '%s_0' % linia['name']),
+                                        'end_node': (0, '%s_1' % linia['name'])}
+                            else:
+                                edge = O.GiscegisEdge.read(
+                                    res[0], ['start_node', 'end_node']
+                                )
+                        else:
+                            edge = O.GiscegisEdge.read(
+                                bt_edge[0], ['start_node', 'end_node']
+                            )
+                    else:
+                        res = O.GiscegisEdge.search(
+                            [('id_linktemplate', '=', linia['name']),
+                             '|',
+                             ('layer', 'ilike', self.layer),
+                             ('layer', 'ilike', 'EMBARRA%BT%')
+                             ])
+                        if not res or len(res) > 1:
+                            edge = {'start_node': (0, '%s_0' % linia['name']),
+                                    'end_node': (0, '%s_1' % linia['name'])}
+                        else:
+                            edge = O.GiscegisEdge.read(res[0], ['start_nOde',
+                                                                'end_node'])
+                    node_inicial = tallar_text(edge['start_node'][1], 20)
+                    node_inicial = node_inicial.replace('*', '')
+                    node_final = tallar_text(edge['end_node'][1], 20)
+                    node_final = node_final.replace('*', '')
 
                     # CCAA 1 / CCAA 2
                     ccaa_1 = ccaa_2 = ''
@@ -712,12 +746,16 @@ class FB1(MultiprocessBased):
                         avifauna = ''
                         financiado = ''
 
+                    if modelo == 'M':
+                        fecha_aps = ''
+                        estado = ''
+
                     output = [
                         identificador_tramo,  # IDENTIFICADOR TRAMO
                         linia.get('cini', '') or '',  # CINI
                         codigo_ccuu or '',  # CODIGO_CCUU
-                        nudo_inicial,  # ORIGEN
-                        nudo_final,  # DESTINO
+                        node_inicial,  # ORIGEN
+                        node_final,  # DESTINO
                         ccaa_1,  # CODIGO_CCAA_1
                         ccaa_2,  # CODIGO_CCAA_2
                         propiedad,  # PROPIEDAD
