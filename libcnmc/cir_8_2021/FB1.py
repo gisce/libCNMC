@@ -68,6 +68,7 @@ class FB1(MultiprocessBased):
         """
         inici_any = '{}-01-01'.format(self.year)
         fi_any = '{}-12-31'.format(self.year)
+        data_pm_limit = '%s-01-01' % (self.year + 1)
 
         # AT
         search_params = [
@@ -82,6 +83,16 @@ class FB1(MultiprocessBased):
             '&',
             ('data_baixa', '>=', inici_any),
             ('data_baixa', '<=', fi_any),
+        ]
+
+        search_params += [
+            ('cini', '!=', '0000000'),
+            '|',
+            ('data_pm', '=', False),
+            ('data_pm', '<', data_pm_limit),
+            '|',
+            ('data_baixa', '>', fi_any),
+            ('data_baixa', '=', False),
         ]
         obj_lat = self.connection.GiscedataAtTram
         ids = obj_lat.search(search_params)
@@ -104,6 +115,17 @@ class FB1(MultiprocessBased):
             ('data_baixa', '>=', inici_any),
             ('data_baixa', '<=', fi_any),
         ]
+
+        search_params += [
+            ('cini', '!=', '0000000'),
+            '|',
+            ('data_pm', '=', False),
+            ('data_pm', '<', data_pm_limit),
+            '|',
+            ('data_baixa', '>', fi_any),
+            ('data_baixa', '=', False),
+        ]
+
         obj_lbt = self.connection.GiscedataBtElement
         ids = obj_lbt.search(search_params)
         bt_ids = list(set(ids))
@@ -361,12 +383,13 @@ class FB1(MultiprocessBased):
                         nivell_tensio_id = tram['tensio_max_disseny_id'][0]
                         o_nivell_tensio = O.GiscedataTensionsTensio.read(nivell_tensio_id, ["tensio"])["tensio"]
                     else:
-                        linia_id, linia_name = tram['linia']
-                        if linia_id:
+                        if tram.get('linia', False):
+                            linia_id, linia_name = tram['linia']
                             tensio_data = O.GiscedataAtLinia.read(linia_id, ['tensio_id'])
                             if tensio_data.get('tensio_id', False):
                                 o_nivell_tensio = float(tensio_data['tensio_id'][1])
-                    o_nivell_tensio = format_f(float(o_nivell_tensio) / 1000.0, 3)
+                    if o_nivell_tensio:
+                        o_nivell_tensio = format_f(float(o_nivell_tensio) / 1000.0, 3)
 
                     # identificador_tramo
                     if tram.get('id_regulatori', False):
