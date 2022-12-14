@@ -66,31 +66,26 @@ class FB1(MultiprocessBased):
         :return: List of ids
         :rtype: list(int)
         """
-        inici_any = '{}-01-01'.format(self.year)
-        fi_any = '{}-12-31'.format(self.year)
-        data_pm_limit = '%s-01-01' % (self.year + 1)
+        data_pm = '%s-01-01' % (self.year + 1)
+        data_baixa = '%s-12-31' % self.year
 
         # AT
-        search_params = [
-            '|',
-            '&',
-            ('data_pm', '<=', fi_any),
-            '&',
-            ('active', '=', True),
-            ('criteri_regulatori', '!=', 'excloure'),
-            '&',
-            ('active', '=', False),
-            '&',
-            ('data_baixa', '>=', inici_any),
-            ('baixa', '=', True),
-        ]
-
-        search_params += [
-            ('cini', '!=', '0000000'),
-            '|',
-            ('data_pm', '=', False),
-            ('data_pm', '<', data_pm_limit),
-        ]
+        search_params = ['|',
+                         ('data_pm', '=', False),
+                         ('data_pm', '<', data_pm),
+                         '|',
+                         ('data_baixa', '>', data_baixa),
+                         ('data_baixa', '=', False)
+                         ]
+        # Revisem que si està de baixa ha de tenir la data informada.
+        search_params += ['|',
+                          '&',
+                          ('active', '=', False),
+                          ('data_baixa', '!=', False),
+                          '&',
+                          ('active', '=', True),
+                          ('criteri_regulatori', '!=', 'excloure')
+                          ]
         obj_lat = self.connection.GiscedataAtTram
         ids = obj_lat.search(search_params)
         at_ids = list(set(ids))
@@ -99,26 +94,22 @@ class FB1(MultiprocessBased):
             at_ids[elem] = 'at.{}'.format(at_ids[elem])
 
         # BT
-        search_params = [
-            '|',
-            '&',
-            ('data_pm', '<=', fi_any),
-            '&',
-            ('active', '=', True),
-            ('criteri_regulatori', '!=', 'excloure'),
-            '&',
-            ('active', '=', False),
-            '&',
-            ('data_baixa', '>=', inici_any),
-            ('baixa', '=', True),
-        ]
-
-        search_params += [
-            ('cini', '!=', '0000000'),
-            '|',
-            ('data_pm', '=', False),
-            ('data_pm', '<', data_pm_limit),
-        ]
+        search_params = ['|',
+                         ('data_pm', '=', False),
+                         ('data_pm', '<', data_pm),
+                         '|',
+                         ('data_baixa', '>', data_baixa),
+                         ('data_baixa', '=', False)
+                         ]
+        # Revisem que si està de baixa ha de tenir la data informada.
+        search_params += ['|',
+                          '&',
+                          ('active', '=', False),
+                          ('data_baixa', '!=', False),
+                          '&',
+                          ('active', '=', True),
+                          ('criteri_regulatori', '!=', 'excloure')
+                          ]
 
         obj_lbt = self.connection.GiscedataBtElement
         ids = obj_lbt.search(search_params)
