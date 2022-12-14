@@ -70,7 +70,8 @@ class FB1(MultiprocessBased):
         data_baixa = '%s-12-31' % self.year
 
         # AT
-        search_params = ['|',
+        search_params = [('criteri_regulatori', '!=', 'excloure'),
+                         '|',
                          ('data_pm', '=', False),
                          ('data_pm', '<', data_pm),
                          '|',
@@ -82,9 +83,7 @@ class FB1(MultiprocessBased):
                           '&',
                           ('active', '=', False),
                           ('data_baixa', '!=', False),
-                          '&',
                           ('active', '=', True),
-                          ('criteri_regulatori', '!=', 'excloure')
                           ]
         obj_lat = self.connection.GiscedataAtTram
         ids = obj_lat.search(search_params)
@@ -94,7 +93,8 @@ class FB1(MultiprocessBased):
             at_ids[elem] = 'at.{}'.format(at_ids[elem])
 
         # BT
-        search_params = ['|',
+        search_params = [('criteri_regulatori', '!=', 'excloure'),
+                         '|',
                          ('data_pm', '=', False),
                          ('data_pm', '<', data_pm),
                          '|',
@@ -106,9 +106,7 @@ class FB1(MultiprocessBased):
                           '&',
                           ('active', '=', False),
                           ('data_baixa', '!=', False),
-                          '&',
                           ('active', '=', True),
-                          ('criteri_regulatori', '!=', 'excloure')
                           ]
 
         obj_lbt = self.connection.GiscedataBtElement
