@@ -82,7 +82,7 @@ class FB1(MultiprocessBased):
             ('active', '=', False),
             '&',
             ('data_baixa', '>=', inici_any),
-            ('data_baixa', '<=', fi_any),
+            ('baixa', '=', True),
         ]
 
         search_params += [
@@ -110,7 +110,7 @@ class FB1(MultiprocessBased):
             ('active', '=', False),
             '&',
             ('data_baixa', '>=', inici_any),
-            ('data_baixa', '<=', fi_any),
+            ('baixa', '=', True),
         ]
 
         search_params += [
