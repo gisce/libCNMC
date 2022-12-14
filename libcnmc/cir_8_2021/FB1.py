@@ -90,9 +90,6 @@ class FB1(MultiprocessBased):
             '|',
             ('data_pm', '=', False),
             ('data_pm', '<', data_pm_limit),
-            '|',
-            ('data_baixa', '>', fi_any),
-            ('data_baixa', '=', False),
         ]
         obj_lat = self.connection.GiscedataAtTram
         ids = obj_lat.search(search_params)
@@ -121,9 +118,6 @@ class FB1(MultiprocessBased):
             '|',
             ('data_pm', '=', False),
             ('data_pm', '<', data_pm_limit),
-            '|',
-            ('data_baixa', '>', fi_any),
-            ('data_baixa', '=', False),
         ]
 
         obj_lbt = self.connection.GiscedataBtElement
