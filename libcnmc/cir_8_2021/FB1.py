@@ -86,7 +86,8 @@ class FB1(MultiprocessBased):
                           ('active', '=', True),
                           ]
         obj_lat = self.connection.GiscedataAtTram
-        ids = obj_lat.search(search_params)
+        ids = obj_lat.search(
+            search_params, 0, 0, False, {'active_test': False})
         at_ids = list(set(ids))
 
         for elem in range(0, len(at_ids)):
@@ -110,7 +111,8 @@ class FB1(MultiprocessBased):
                           ]
 
         obj_lbt = self.connection.GiscedataBtElement
-        ids = obj_lbt.search(search_params)
+        ids = obj_lbt.search(
+            search_params, 0, 0, False, {'active_test': False})
         bt_ids = list(set(ids))
 
         for elem in range(0, len(bt_ids)):
@@ -129,11 +131,10 @@ class FB1(MultiprocessBased):
         fields_to_read = [
             'baixa', 'data_pm', 'data_industria', 'coeficient', 'cini', 'propietari', 'tensio_max_disseny_id', 'name',
             'origen', 'final', 'perc_financament', 'longitud_cad', 'cable', 'linia', 'model', 'model', 'punt_frontera',
-            'tipus_instalacio_cnmc_id', 'data_baixa', 'baixa', 'data_baixa', 'longitud_cad', 'data_pm', 'circuits',
+            'tipus_instalacio_cnmc_id', 'data_baixa', 'baixa', 'longitud_cad', 'data_pm', 'circuits',
             'id_regulatori'
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
-        data_baixa = '{0}-01-01'.format(self.year)
 
         def get_inst_name(element_id):
             vals = self.connection.GiscedataCts.read(
@@ -160,7 +161,7 @@ class FB1(MultiprocessBased):
 
                     # Calculem la data de baixa
                     data_baixa = ''
-                    if tram['data_baixa'] and tram['baixa']:
+                    if tram['data_baixa']:
                         data_baixa = datetime.strptime(str(tram['data_baixa']),
                                                        '%Y-%m-%d')
                         data_baixa = data_baixa.strftime('%d/%m/%Y')
