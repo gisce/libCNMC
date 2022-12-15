@@ -453,7 +453,7 @@ class FA1(MultiprocessBased):
                         generador_data = O.GiscedataAutoconsumGenerador.read(generador_id, ['cini'])
                         if generador_data.get('cini', False):
                             cini = generador_data['cini']
-                            o_cod_generacio_auto = cini[3]
+                            o_cod_generacio_auto = cini[4]
 
                     # CONEXION_AUTOCONSUMO
 
