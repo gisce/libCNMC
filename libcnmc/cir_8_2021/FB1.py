@@ -71,20 +71,26 @@ class FB1(MultiprocessBased):
 
         # AT
         search_params = [('criteri_regulatori', '!=', 'excloure'),
-                         '|',
-                         ('data_pm', '=', False),
-                         ('data_pm', '<', data_pm),
-                         '|',
-                         ('data_baixa', '>', data_baixa),
-                         ('data_baixa', '=', False)
-                         ]
-        # Revisem que si està de baixa ha de tenir la data informada.
+                         '|', ('data_pm', '=', False),
+                              ('data_pm', '<', data_pm),
+                         '|', ('data_baixa', '>=', data_baixa),
+                              ('data_baixa', '=', False)]
+
+        # Revisem que si està de baixa ha de tenir la data informada
         search_params += ['|',
+                          '&', ('active', '=', False),
+                               ('data_baixa', '!=', False),
+                          ('active', '=', True)]
+
+        # No han d'aparèixer si la data_pm i la data_baixa són del mateix any que el formulari
+        search_params += ['!',
                           '&',
-                          ('active', '=', False),
-                          ('data_baixa', '!=', False),
-                          ('active', '=', True),
-                          ]
+                          '&', ('data_pm', '>', data_baixa),
+                          '&', ('data_pm', '<', data_pm),
+                               ('data_baixa', '!=', False),
+                          '&', ('data_baixa', '>', data_baixa),
+                               ('data_baixa', '<', data_pm)]
+
         obj_lat = self.connection.GiscedataAtTram
         ids = obj_lat.search(
             search_params, 0, 0, False, {'active_test': False})
@@ -95,20 +101,25 @@ class FB1(MultiprocessBased):
 
         # BT
         search_params = [('criteri_regulatori', '!=', 'excloure'),
-                         '|',
-                         ('data_pm', '=', False),
-                         ('data_pm', '<', data_pm),
-                         '|',
-                         ('data_baixa', '>', data_baixa),
-                         ('data_baixa', '=', False)
-                         ]
-        # Revisem que si està de baixa ha de tenir la data informada.
+                         '|', ('data_pm', '=', False),
+                              ('data_pm', '<', data_pm),
+                         '|', ('data_baixa', '>=', data_baixa),
+                              ('data_baixa', '=', False)]
+
+        # Revisem que si està de baixa ha de tenir la data informada
         search_params += ['|',
+                          '&', ('active', '=', False),
+                               ('data_baixa', '!=', False),
+                          ('active', '=', True)]
+
+        # No han d'aparèixer si la data_pm i la data_baixa són del mateix any que el formulari
+        search_params += ['!',
                           '&',
-                          ('active', '=', False),
-                          ('data_baixa', '!=', False),
-                          ('active', '=', True),
-                          ]
+                          '&', ('data_pm', '>', data_baixa),
+                          '&', ('data_pm', '<', data_pm),
+                               ('data_baixa', '!=', False),
+                          '&', ('data_baixa', '>', data_baixa),
+                               ('data_baixa', '<', data_pm)]
 
         obj_lbt = self.connection.GiscedataBtElement
         ids = obj_lbt.search(
@@ -151,20 +162,6 @@ class FB1(MultiprocessBased):
                 if model == 'at':
 
                     tram = O.GiscedataAtTram.read(item, fields_to_read)
-
-                    # Calculem any posada en marxa
-                    data_pm = ''
-                    if 'data_pm' in tram and tram['data_pm'] and tram['data_pm'] < data_pm_limit:
-                        data_pm = datetime.strptime(str(tram['data_pm']),
-                                                    '%Y-%m-%d')
-                        data_pm = data_pm.strftime('%d/%m/%Y')
-
-                    # Calculem la data de baixa
-                    data_baixa = ''
-                    if tram['data_baixa']:
-                        data_baixa = datetime.strptime(str(tram['data_baixa']),
-                                                       '%Y-%m-%d')
-                        data_baixa = data_baixa.strftime('%d/%m/%Y')
 
                     # Coeficient per ajustar longituds de trams
                     coeficient = tram.get('coeficient', 1.0)
