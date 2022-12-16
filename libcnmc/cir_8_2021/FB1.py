@@ -67,7 +67,7 @@ class FB1(MultiprocessBased):
         :rtype: list(int)
         """
         data_pm = '%s-01-01' % (self.year + 1)
-        data_baixa = '%s-12-31' % self.year
+        data_baixa = '%s-01-01' % self.year
 
         # AT
         search_params = [('criteri_regulatori', '!=', 'excloure'),
