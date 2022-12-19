@@ -91,11 +91,18 @@ class FB5(MultiprocessBased):
                     data_pm = data_pm_trafo.strftime('%d/%m/%Y')
 
                 # OBRES
-                obra_id = o.GiscedataProjecteObraTiTransformador.search([('element_ti_id', '=', trafo['id'])])
+
+                obra_ti_trafo_obj = o.GiscedataProjecteObraTiTransformador
+                obra_ti_trafo_id = obra_ti_trafo_obj.search([('element_ti_id', '=', trafo['id'])])
+                if obra_ti_trafo_id:
+                    obra_id_data = obra_ti_trafo_obj.read(obra_ti_trafo_id[0], ['obra_id'])
+                else:
+                    obra_id_data = {}
 
                 # Filtre d'obres finalitzades
                 trafo_obra = ''
-                if obra_id:
+                if obra_id_data.get('obra_id', False):
+                    obra_id = obra_id_data['obra_id']
                     data_finalitzacio_data = o.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
                     if data_finalitzacio_data:
                         if data_finalitzacio_data.get('data_finalitzacio', False):
@@ -104,7 +111,8 @@ class FB5(MultiprocessBased):
                             inici_any = '{}-01-01'.format(self.year)
                             fi_any = '{}-12-31'.format(self.year)
                             if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
-                                trafo_obra = o.GiscedataProjecteObraTiTransformador.read(obra_id, fields_to_read_obra)[0]
+                                trafo_obra = o.GiscedataProjecteObraTiTransformador.read(obra_ti_trafo_id[0],
+                                                                                         fields_to_read_obra)
                 else:
                     trafo_obra = ''
 
