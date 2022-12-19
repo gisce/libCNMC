@@ -180,7 +180,7 @@ class FB4(MultiprocessBased):
                             inici_any = '{}-01-01'.format(self.year)
                             fi_any = '{}-12-31'.format(self.year)
                             if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
-                                pos_obra = O.GiscedataProjecteObraTiPosicio.read(obra_id, fields_to_read_obra)[0]
+                                pos_obra = O.GiscedataProjecteObraTiPosicio.read(obra_ti_pos_id[0], fields_to_read_obra)
                 else:
                     pos_obra = ''
 
