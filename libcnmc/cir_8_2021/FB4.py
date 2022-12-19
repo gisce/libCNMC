@@ -161,11 +161,17 @@ class FB4(MultiprocessBased):
 
                 # OBRES
 
-                obra_id = O.GiscedataProjecteObraTiPosicio.search([('element_ti_id', '=', pos['id'])])
+                obra_ti_pos_obj = O.GiscedataProjecteObraTiPosicio
+                obra_ti_pos_id = obra_ti_pos_obj.search([('element_ti_id', '=', pos['id'])])
+                if obra_ti_pos_id:
+                    obra_id_data = obra_ti_pos_obj.read(obra_ti_pos_id[0], ['obra_id'])
+                else:
+                    obra_id_data = {}
 
                 # Filtre d'obres finalitzades
                 pos_obra = ''
-                if obra_id:
+                if obra_id_data.get('obra_id', False):
+                    obra_id = obra_id_data['obra_id']
                     data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
                     if data_finalitzacio_data:
                         if data_finalitzacio_data.get('data_finalitzacio', False):
