@@ -327,9 +327,10 @@ class FB1(MultiprocessBased):
                         data_ip = convert_spanish_date(
                             tram_obra['fecha_aps'] if not tram_obra['fecha_baja'] and tram_obra['tipo_inversion'] != '1' else ''
                         )
-                        identificador_baja = (
-                            get_inst_name(tram_obra['identificador_baja']) if tram_obra['identificador_baja'] else ''
-                        )
+                        if tram_obra.get('identificador_baja', False):
+                            identificador_baja = (
+                                get_inst_name(tram_obra['identificador_baja']) if tram_obra['identificador_baja'] else ''
+                            )
                         tipo_inversion = (tram_obra['tipo_inversion'] or '0') if not tram_obra['fecha_baja'] else '1'
                         im_ingenieria = format_f_6181(tram_obra['im_ingenieria'] or 0.0, float_type='euro')
                         im_materiales = format_f_6181(tram_obra['im_materiales'] or 0.0, float_type='euro')
