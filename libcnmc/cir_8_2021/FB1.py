@@ -328,9 +328,9 @@ class FB1(MultiprocessBased):
                             tram_obra['fecha_aps'] if not tram_obra['fecha_baja'] and tram_obra['tipo_inversion'] != '1' else ''
                         )
                         if tram_obra.get('identificador_baja', False):
-                            identificador_baja = (
-                                get_inst_name(tram_obra['identificador_baja']) if tram_obra['identificador_baja'] else ''
-                            )
+                            identificador_baja = tram_obra['identificador_baja']
+                        else:
+                            identificador_baja = ''
                         tipo_inversion = (tram_obra['tipo_inversion'] or '0') if not tram_obra['fecha_baja'] else '1'
                         im_ingenieria = format_f_6181(tram_obra['im_ingenieria'] or 0.0, float_type='euro')
                         im_materiales = format_f_6181(tram_obra['im_materiales'] or 0.0, float_type='euro')
@@ -725,9 +725,10 @@ class FB1(MultiprocessBased):
                             linia_obra['fecha_aps'] if not linia_obra['fecha_baja'] and linia_obra[
                                 'tipo_inversion'] != '1' else ''
                         )
-                        identificador_baja = (
-                            get_inst_name(linia_obra['identificador_baja']) if linia_obra['identificador_baja'] else ''
-                        )
+                        if linia_obra.get('identificador_baja', False):
+                            identificador_baja = linia_obra['identificador_baja']
+                        else:
+                            identificador_baja = ''
                         tipo_inversion = (linia_obra['tipo_inversion'] or '0') if not linia_obra['fecha_baja'] else '1'
                         im_ingenieria = format_f_6181(linia_obra['im_ingenieria'] or 0.0, float_type='euro')
                         im_materiales = format_f_6181(linia_obra['im_materiales'] or 0.0, float_type='euro')
