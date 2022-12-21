@@ -131,12 +131,24 @@ class FB4(MultiprocessBased):
                     item, fields_to_read
                 )
 
-                #DATA_PM
-                data_pm = ''
-                if pos['data_pm']:
-                    data_pm_ct = datetime.strptime(str(pos['data_pm']),
-                                                   '%Y-%m-%d')
-                    data_pm = data_pm_ct.strftime('%d/%m/%Y')
+                # MODEL
+                if pos['model']:
+                    modelo = pos['model']
+                else:
+                    modelo = ''
+
+                # Fecha APS / Estado
+                if modelo == 'M':
+                    estado = ''
+                    fecha_aps = ''
+                else:
+                    # Fecha APS
+                    data_pm = ''
+                    if pos['data_pm']:
+                        data_pm_ct = datetime.strptime(str(pos['data_pm']),
+                                                       '%Y-%m-%d')
+                        data_pm = data_pm_ct.strftime('%d/%m/%Y')
+                    # Estado
 
                 #FECHA_BAJA, CAUSA_BAJA
                 if pos['data_baixa']:
@@ -261,12 +273,6 @@ class FB4(MultiprocessBased):
 
                 #PUNT_FRONTERA
                 punt_frontera = int(pos['punt_frontera'] == True)
-
-                #MODEL
-                if pos['model']:
-                    modelo = pos['model']
-                else :
-                    modelo = ''
 
                 #EQUIPADA
                 id_interruptor = pos['interruptor']

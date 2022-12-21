@@ -315,6 +315,8 @@ def cir_8_2021_fb1(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('--derechos/--no-derechos', default=False)
+@click.option('--prefix_at', help="Prefix dels Trams AT")
+@click.option('--prefix_bt', help="Prefix dels Trams BT")
 @click.option("--reducir-cups/--no-reducir-cups",default=False)
 def cir_8_2021_fb1_1(**kwargs):
     """
@@ -337,6 +339,8 @@ def cir_8_2021_fb1_1(**kwargs):
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
         derechos=kwargs['derechos'],
+        prefix_at=kwargs['prefix_at'],
+        prefix_bt=kwargs['prefix_bt'],
         reducir_cupss=kwargs["reducir_cups"]
     )
     proc.calc()

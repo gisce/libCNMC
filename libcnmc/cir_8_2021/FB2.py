@@ -213,12 +213,18 @@ class FB2(MultiprocessBased):
                     avifauna = ''
                     financiado = ''
 
-                #DATA_PM
-                data_pm = ''
-                if ct['data_pm']:
-                    data_pm_ct = datetime.strptime(str(ct['data_pm']),
-                                                   '%Y-%m-%d')
-                    data_pm = data_pm_ct.strftime('%d/%m/%Y')
+                # Fecha APS / Estado
+                if modelo == 'M':
+                    estado = ''
+                    fecha_aps = ''
+                else:
+                    # Fecha APS
+                    data_pm = ''
+                    if ct['data_pm']:
+                        data_pm_ct = datetime.strptime(str(ct['data_pm']),
+                                                       '%Y-%m-%d')
+                        data_pm = data_pm_ct.strftime('%d/%m/%Y')
+                    # Estado
 
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data IP sortirà en blanc

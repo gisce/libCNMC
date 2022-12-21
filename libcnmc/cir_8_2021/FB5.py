@@ -62,7 +62,7 @@ class FB5(MultiprocessBased):
         o = self.connection
         fields_to_read = [
             'ct', 'name', 'cini', 'potencia_nominal', 'id_estat', 'node_id',
-            'data_pm', 'data_baixa', 'tipus_instalacio_cnmc_id', 'node_baixa'
+            'data_pm', 'data_baixa', 'tipus_instalacio_cnmc_id', 'node_baixa', 'model'
         ]
         fields_to_read_obra = [
             'subvenciones_europeas', 'subvenciones_nacionales', 'subvenciones_prtr', 'financiado',
@@ -84,11 +84,23 @@ class FB5(MultiprocessBased):
                     item, fields_to_read
                 )
 
-                #DATA_PM
-                if trafo['data_pm']:
-                    data_pm_trafo = datetime.strptime(str(trafo['data_pm']),
-                                                      '%Y-%m-%d')
-                    data_pm = data_pm_trafo.strftime('%d/%m/%Y')
+                # MODEL
+                if trafo['model']:
+                    modelo = trafo['model']
+                else:
+                    modelo = ''
+
+                # Fecha APS / Estado
+                if modelo == 'M':
+                    estado = ''
+                    fecha_aps = ''
+                else:
+                    # FECHA_APS
+                    if trafo['data_pm']:
+                        data_pm_trafo = datetime.strptime(str(trafo['data_pm']),
+                                                          '%Y-%m-%d')
+                        data_pm = data_pm_trafo.strftime('%d/%m/%Y')
+                    # ESTADO
 
                 # OBRES
 
@@ -205,13 +217,6 @@ class FB5(MultiprocessBased):
                 ti = o.GiscedataTipusInstallacio.read(
                     id_ti,
                     ['name'])['name']
-
-                #MODEL
-                model = o.GiscedataCts.read(trafo['ct'][0], ['model'])['model']
-                if model:
-                    o_modelo = model
-                else:
-                    o_modelo = ''
 
                 # TODO: Temporal
                 o_estat = 0

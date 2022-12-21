@@ -250,14 +250,23 @@ class FB1(MultiprocessBased):
                             intensitat = format_f(
                                 cable_data['intensitat_admisible'] or 0.0, decimals=3)
 
-                    # Estado
-                    estado = ''
-
                     # Modelo
                     if tram.get('model', False):
                         modelo = tram['model']
                     else:
                         modelo = ''
+
+                    # Fecha APS / Estado
+                    if modelo == 'M':
+                        estado = ''
+                        fecha_aps = ''
+                    else:
+                        # Fecha APS
+                        if tram['data_pm']:
+                            data_pm_linia = datetime.strptime(str(tram['data_pm']),
+                                                              '%Y-%m-%d')
+                            fecha_aps = data_pm_linia.strftime('%d/%m/%Y')
+                        # Estado
 
                     # Punt frontera
                     punt_frontera = '0'
@@ -271,12 +280,6 @@ class FB1(MultiprocessBased):
                             operacion = '1'
                         else:
                             operacion = '0'
-
-                    # Fechas APS
-                    if tram['data_pm']:
-                        data_pm_linia = datetime.strptime(str(tram['data_pm']),
-                                                          '%Y-%m-%d')
-                        fecha_aps = data_pm_linia.strftime('%d/%m/%Y')
 
                     # Causa baja
                     if tram.get('obra_id', False):
@@ -450,10 +453,6 @@ class FB1(MultiprocessBased):
                             fecha_baja = tmp_date.strftime('%d/%m/%Y')
                     else:
                         fecha_baja = ''
-
-                    if modelo == 'M':
-                        fecha_aps = ''
-                        estado = ''
 
                     output = [
                         o_tram,  # IDENTIFICADOR
@@ -638,9 +637,6 @@ class FB1(MultiprocessBased):
                             intensitat = format_f(
                                 cable_data['intensitat_admisible'] or 0.0, decimals=3)
 
-                    # ESTADO
-                    estado = ''
-
                     # PUNTO FRONTERA
                     punto_frontera = '0'
                     if linia.get('punt_frontera', False):
@@ -651,6 +647,18 @@ class FB1(MultiprocessBased):
                     if linia.get('model', False):
                         modelo = linia['model']
 
+                    # Fecha APS / Estado
+                    if modelo == 'M':
+                        estado = ''
+                        fecha_aps = ''
+                    else:
+                        # Fecha APS
+                        if tram['data_pm']:
+                            data_pm_linia = datetime.strptime(str(tram['data_pm']),
+                                                              '%Y-%m-%d')
+                            fecha_aps = data_pm_linia.strftime('%d/%m/%Y')
+                        # Estado
+
                     # OPERACION
                     operacion = '1'
                     if linia.get('operacion', False):
@@ -658,12 +666,6 @@ class FB1(MultiprocessBased):
                             operacion = '1'
                         else:    
                             operacion = '0'
-
-                    # FECHA APS
-                    if linia['data_pm']:
-                        data_pm_linia = datetime.strptime(str(linia['data_pm']),
-                                                          '%Y-%m-%d')
-                        fecha_aps = data_pm_linia.strftime('%d/%m/%Y')
 
                     # CAUSA BAJA
                     if linia.get('obra_id', False):
@@ -763,10 +765,6 @@ class FB1(MultiprocessBased):
                         cuenta_contable = ''
                         avifauna = ''
                         financiado = ''
-
-                    if modelo == 'M':
-                        fecha_aps = ''
-                        estado = ''
 
                     output = [
                         identificador_tramo,  # IDENTIFICADOR TRAMO

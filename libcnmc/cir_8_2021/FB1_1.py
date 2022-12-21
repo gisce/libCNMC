@@ -11,7 +11,8 @@ class FB1_1(MultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.report_name = 'FB1.1 - Topología real'
         self.base_object = 'Topología'
-        self.prefix = kwargs.pop('prefix', 'A') or 'A'
+        self.prefix_AT = kwargs.pop('prefix_at', 'A') or 'A'
+        self.prefix_BT = kwargs.pop('prefix_bt', 'B') or 'B'
 
     def get_sequence(self):
         data_pm = '%s-01-01' % (self.year + 1)
@@ -37,7 +38,7 @@ class FB1_1(MultiprocessBased):
     def consumer(self):
         o = self.connection
         fields_to_read = [
-            'id', 'name', 'geom'
+            'id', 'name', 'geom', 'id_regulatori'
         ]
         while True:
             try:
@@ -46,9 +47,24 @@ class FB1_1(MultiprocessBased):
                 self.progress_q.put(item)
                 if item[1] == 'at':
                     tramo = o.GiscedataAtTram.read(item[0], fields_to_read)
+
+                    # identificador_tramo
+                    if tramo.get('id_regulatori', False):
+                        o_tram = tramo['id_regulatori']
+                    else:
+                        o_tram = '{}{}'.format(self.prefix_AT, tramo['name'])
+
                 elif item[1] == 'bt':
                     tramo = o.GiscedataBtElement.read(item[0], fields_to_read)
+
+                    # identificador_tramo
+                    if tramo.get('id_regulatori', False):
+                        o_tram = tramo['id_regulatori']
+                    else:
+                        o_tram = '{}{}'.format(self.prefix_BT, tramo['name'])
+
                 o_segmento = tramo['name']
+
                 o_identificador = '{}{}'.format(self.prefix, tramo['name']) 
                 geom = tramo['geom']
                 points = geom.replace('LINESTRING(', '')
@@ -84,7 +100,7 @@ class FB1_1(MultiprocessBased):
 
                             self.output_q.put([
                                 '{}_{}'.format(o_segmento, o_position + 1),  # CÓDIGO SEGMENTO
-                                o_identificador,                             # IDENTIFICADOR DE TRAMO
+                                o_tram,                                      # IDENTIFICADOR DE TRAMO
                                 o_position + 1,                              # ORDEN EN LA LISTA DE SEGMENTOS
                                 o_nsegmento,                                 # TOTAL SEGMENTOS
                                 format_f(res_srid_inicio[0], decimals=3),    # COORDENADA X INICIO

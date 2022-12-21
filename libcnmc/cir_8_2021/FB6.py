@@ -207,13 +207,24 @@ class FB6(MultiprocessBased):
                     item, fields_to_read
                 )
 
+                # MODEL
+                if cella['model']:
+                    modelo = cella['model']
+                else:
+                    modelo = ''
 
-                #DATA PM
-                data_pm = ''
-                if cella['data_pm']:
-                    data_pm_ct = datetime.strptime(str(cella['data_pm']),
-                                                   '%Y-%m-%d')
-                    data_pm = data_pm_ct.strftime('%d/%m/%Y')
+                # Fecha APS / Estado
+                if modelo == 'M':
+                    estado = ''
+                    fecha_aps = ''
+                else:
+                    # FECHA_APS
+                    data_pm = ''
+                    if cella['data_pm']:
+                        data_pm_ct = datetime.strptime(str(cella['data_pm']),
+                                                       '%Y-%m-%d')
+                        data_pm = data_pm_ct.strftime('%d/%m/%Y')
+                    # ESTADO
 
                 # OBRES
 
@@ -373,8 +384,6 @@ class FB6(MultiprocessBased):
                     res_srid = convert_srid(get_srid(O), vertex)
                     x = format_f(res_srid[0], decimals=3)
                     y = format_f(res_srid[1], decimals=3)
-
-                modelo = cella['model']
 
                 # TODO: Temporal
                 o_estat = 0
