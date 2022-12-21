@@ -11,13 +11,6 @@ from libcnmc.core import MultiprocessBased
 from workalendar.europe import Spain
 
 
-def compute_time(cod_gest_data, values, time_delta):
-    if time_delta > cod_gest_data['dies_limit']:
-        values['fuera_plazo'] = values['fuera_plazo'] + 1
-    else:
-        values['dentro_plazo'] = values['dentro_plazo'] + 1
-    values['totals'] = values['totals'] + 1
-
 
 class FD2(MultiprocessBased):
 
@@ -46,6 +39,20 @@ class FD2(MultiprocessBased):
             ('id', 'not in', intern_z)
         ]
         return self.connection.GiscedataCodigosGestionCalidadZ.search(search_params)
+
+    def compute_time(self, cod_gest_data, values, time_delta, ref):
+        o = self.connection
+        create_vals = {'cod_gestio_id': cod_gest_data['id'], 'ref': '{},{}'.format(ref[0], [1])}
+        track_obj = o.model('giscedata.circular.82021.case.tracking')
+        if time_delta > cod_gest_data['dies_limit']:
+            values['fuera_plazo'] = values['fuera_plazo'] + 1
+            create_vals.update({'on_time': False})
+            track_obj.create(create_vals)
+        else:
+            values['dentro_plazo'] = values['dentro_plazo'] + 1
+            create_vals.update({'on_time': True})
+            track_obj.create(create_vals)
+        values['totals'] = values['totals'] + 1
 
     def get_atc_time_delta(self, crm_id, total_ts, context=None):
         if context is None:
@@ -127,7 +134,8 @@ class FD2(MultiprocessBased):
                 else:
                     method = "get_time_delta"
                 time_spent = getattr(self, method)(start_case_id, end_case_id, context=context)
-                compute_time(cod_gest_data, file_fields, time_spent)
+                ref = ('giscedata.switching', sw_id)
+                self.compute_time(cod_gest_data, file_fields, time_spent, ref)
             else:
                 file_fields['no_tramitadas'] += 1
                 file_fields['totals'] += 1
@@ -152,7 +160,8 @@ class FD2(MultiprocessBased):
             crm_data = atc_o.read(atc_id, ['crm_id', 'state'])
             if 'done' in crm_data['state']:
                 time_spent = self.get_atc_time_delta(crm_data['crm_id'][0], total_ts, context={})
-                compute_time(cod_gest_data, file_fields, time_spent)
+                ref = ('giscedata.atc', atc_id)
+                self.compute_time(cod_gest_data, file_fields, time_spent, ref)
             else:
                 file_fields['no_tramitadas'] += 1
                 file_fields['totals'] += 1
@@ -363,7 +372,8 @@ class FD2(MultiprocessBased):
                     field_names = ['data_activacio', 'date_invoice']
                     context = {'model_names': model_names, 'field_names': field_names}
                     time_spent = self.get_time_delta(c105_id, invoice_id, context=context)
-                    compute_time(cod_gest_data, file_fields, time_spent)
+                    ref = ('giscedata.switching', sw_id)
+                    self.compute_time(cod_gest_data, file_fields, time_spent, ref)
                 else:
                     file_fields['no_tramitadas'] += 1
                     file_fields['totals'] += 1
@@ -384,7 +394,8 @@ class FD2(MultiprocessBased):
                     field_names = ['data_activacio', 'date_invoice']
                     context = {'model_names': model_names, 'field_names': field_names}
                     time_spent = self.get_time_delta(c205_id, invoice_id, context=context)
-                    compute_time(cod_gest_data, file_fields, time_spent)
+                    ref = ('giscedata.switching', sw_id)
+                    self.compute_time(cod_gest_data, file_fields, time_spent, ref)
                 else:
                     file_fields['no_tramitadas'] += 1
 
@@ -502,7 +513,7 @@ class FD2(MultiprocessBased):
                 z8_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0}
                 year_start = '01-01-' + str(self.year)
                 year_end = '12-31-' + str(self.year)
-                cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name'])
+                cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name', 'id'])
 
                 ## Tractem el codi de gestio Z4
                 if 'Z3' in cod_gest_data['name']:
@@ -527,17 +538,19 @@ class FD2(MultiprocessBased):
                         ('state', '!=', 'cancel')
                     ]
                     atc_ids = o.GiscedataAtc.search(search_params_atc)
-                    cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name'])
+                    cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name', 'id'])
                     total_ts = 0
                     for atc_id in atc_ids:
                         crm_data = o.GiscedataAtc.read(atc_id, ['crm_id', 'state'])
                         if 'done' in crm_data['state']:
                             if 'Z8_01' in cod_gest_data['name']:
                                 time_spent = self.get_atc_time_delta(crm_data['crm_id'][0], total_ts, context={})
-                                compute_time(cod_gest_data, z8_fields, time_spent)
+                                ref = ('giscedata.atc', atc_id)
+                                self.compute_time(cod_gest_data, file_fields, time_spent, ref)
                             else:
                                 time_spent = self.get_atc_time_delta(crm_data['crm_id'][0], total_ts, context={})
-                                compute_time(cod_gest_data, file_fields, time_spent)
+                                ref = ('giscedata.atc', atc_id)
+                                self.compute_time(cod_gest_data, file_fields, time_spent, ref)
                         else:
                             file_fields['no_tramitadas'] += 1
                             file_fields['totals'] += 1
