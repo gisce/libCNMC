@@ -145,7 +145,7 @@ class FB1(MultiprocessBased):
             'baixa', 'data_pm', 'data_industria', 'coeficient', 'cini', 'propietari', 'tensio_max_disseny_id', 'name',
             'origen', 'final', 'perc_financament', 'longitud_cad', 'cable', 'linia', 'model', 'model', 'punt_frontera',
             'tipus_instalacio_cnmc_id', 'data_baixa', 'baixa', 'longitud_cad', 'data_pm', 'circuits',
-            'id_regulatori'
+            'id_regulatori', self.compare_field,
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
 
@@ -544,7 +544,7 @@ class FB1(MultiprocessBased):
                     fields_to_read = ['name', 'cini', 'coeficient', 'municipi', 'voltatge', 'tensio_const',
                                       'coeficient', 'longitud_cad', 'punt_frontera', 'model', 'operacion',
                                       'propietari', 'edge_id', 'cable', 'tipus_instalacio_cnmc_id',
-                                      'data_pm', 'data_baixa', 'id_regulatori'
+                                      'data_pm', 'data_baixa', 'id_regulatori', self.compare_field
                                       ]
 
                     linia = O.GiscedataBtElement.read(item, fields_to_read)

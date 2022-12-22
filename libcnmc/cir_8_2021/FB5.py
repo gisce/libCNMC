@@ -70,7 +70,7 @@ class FB5(MultiprocessBased):
         fields_to_read_obra = [
             'subvenciones_europeas', 'subvenciones_nacionales', 'subvenciones_prtr', 'financiado',
             'fecha_aps', 'fecha_baja', 'causa_baja', 'cuenta_contable', 'im_ingenieria', 'im_materiales',
-            'im_obracivil', 'im_trabajos', 'motivacion', 'tipo_inversion', 'valor_residual'
+            'im_obracivil', 'im_trabajos', 'motivacion', 'tipo_inversion', 'valor_residual', self.compare_field,
         ]
 
         def get_inst_name(element_id):

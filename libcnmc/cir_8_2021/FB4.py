@@ -117,7 +117,7 @@ class FB4(MultiprocessBased):
             'nivel_tension_explotacion', 'financiado','planificacion','fecha_aps','fecha_baja','causa_baja',
             'im_ingenieria','im_materiales','im_obracivil','im_trabajos','subvenciones_europeas',
             'subvenciones_nacionales','subvenciones_prtr','valor_auditado','valor_residual','valor_contabilidad','cuenta_contable',
-            'porcentaje_modificacion','motivacion','obra_id','identificador_baja',
+            'porcentaje_modificacion','motivacion','obra_id','identificador_baja', self.compare_field,
         ]
 
         def get_inst_name(element_id):
