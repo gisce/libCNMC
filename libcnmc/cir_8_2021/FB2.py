@@ -213,19 +213,6 @@ class FB2(MultiprocessBased):
                     avifauna = ''
                     financiado = ''
 
-                # Fecha APS / Estado
-                if modelo == 'M':
-                    estado = ''
-                    fecha_aps = ''
-                else:
-                    # Fecha APS
-                    data_pm = ''
-                    if ct['data_pm']:
-                        data_pm_ct = datetime.strptime(str(ct['data_pm']),
-                                                       '%Y-%m-%d')
-                        data_pm = data_pm_ct.strftime('%d/%m/%Y')
-                    # Estado
-
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data IP sortirà en blanc
                 if data_ip:
@@ -267,45 +254,6 @@ class FB2(MultiprocessBased):
                 else:
                     fecha_baja = ''
                     causa_baja = 0;
-
-                #ESTADO
-                if ct[self.compare_field]:
-                    last_data = ct[self.compare_field]
-                    entregada = F8Res4666(**last_data)
-
-                    id_ti = ct['tipus_instalacio_cnmc_id'][0]
-                    ti = O.GiscedataTipusInstallacio.read(
-                        id_ti,
-                        ['name'])['name']
-
-                    actual = F8Res4666(
-                        ct['name'],
-                        ct['cini'],
-                        ct['descripcio'],
-                        ti,
-                        comunitat_codi,
-                        format_f(
-                            100.0 - ct.get('perc_financament', 0.0), 2
-                        ),
-                        data_pm,
-                        fecha_baja,
-                        0
-                    )
-                    if entregada == actual and fecha_baja == '':
-                        estado = '0'
-                    else:
-                        self.output_m.put("{} {}".format(ct["name"], adapt_diff(actual.diff(entregada))))
-                        estado = '1'
-                else:
-                    if ct['data_pm']:
-                        if ct['data_pm'][:4] != str(self.year):
-                            self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(ct["name"]))
-                            estado = '1'
-                        else:
-                            estado = '2'
-                    else:
-                        self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(ct["name"]))
-                        estado = '1'
 
                 #CCUU
                 if ct['tipus_instalacio_cnmc_id']:
@@ -384,6 +332,57 @@ class FB2(MultiprocessBased):
                 modelo = ''
                 if ct.get('model', False):
                     modelo = ct['model']
+
+                # Fecha APS / Estado
+                if modelo == 'M':
+                    estado = ''
+                    fecha_aps = ''
+                else:
+                    # Fecha APS
+                    data_pm = ''
+                    if ct['data_pm']:
+                        data_pm_ct = datetime.strptime(str(ct['data_pm']),
+                                                       '%Y-%m-%d')
+                        data_pm = data_pm_ct.strftime('%d/%m/%Y')
+                    # Estado
+                    if ct[self.compare_field]:
+                        last_data = ct[self.compare_field]
+                        entregada = F8Res4666(**last_data)
+
+                        id_ti = ct['tipus_instalacio_cnmc_id'][0]
+                        ti = O.GiscedataTipusInstallacio.read(
+                            id_ti,
+                            ['name'])['name']
+
+                        actual = F8Res4666(
+                            ct['name'],
+                            ct['cini'],
+                            ct['descripcio'],
+                            ti,
+                            comunitat_codi,
+                            '',
+                            data_pm,
+                            fecha_baja,
+                            0
+                        )
+                        if entregada == actual and fecha_baja == '':
+                            estado = '0'
+                        else:
+                            self.output_m.put("{} {}".format(ct["name"], adapt_diff(actual.diff(entregada))))
+                            estado = '1'
+                    else:
+                        if ct['data_pm']:
+                            if ct['data_pm'][:4] != str(self.year):
+                                self.output_m.put(
+                                    "Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(
+                                        ct["name"]))
+                                estado = '1'
+                            else:
+                                estado = '2'
+                        else:
+                            self.output_m.put(
+                                "Identificador:{} No estava en el fitxer carregat al any n-1".format(ct["name"]))
+                            estado = '1'
 
                 output = [
                     '{0}'.format(ct['name']),           # IDENTIFICADOR
