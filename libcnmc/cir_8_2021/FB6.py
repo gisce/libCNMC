@@ -6,9 +6,10 @@ INVENTARI DE CNMC Centres Transformadors
 """
 from datetime import datetime
 import traceback
-from libcnmc.utils import format_f, convert_srid, get_srid, get_name_ti, format_f_6181, format_ccaa_code, get_ine
+from libcnmc.utils import (format_f, convert_srid, get_srid, get_name_ti, format_f_6181, format_ccaa_code, get_ine,
+                           adapt_diff)
 from libcnmc.core import MultiprocessBased
-from libcnmc.models import F8Res4666
+from libcnmc.models import F7Res4666
 from shapely import wkt
 
 MODELO = {
@@ -40,6 +41,7 @@ class FB6(MultiprocessBased):
         self.cod_dis = 'R1-{}'.format(self.codi_r1[-3:])
         self.compare_field = "4666_entregada"
         self.prefix = kwargs.pop('prefix', 'A') or 'A'
+        self.compare_field = kwargs["compare_field"]
 
     def get_sequence(self):
         """
@@ -213,18 +215,12 @@ class FB6(MultiprocessBased):
                 else:
                     modelo = ''
 
-                # Fecha APS / Estado
-                if modelo == 'M':
-                    estado = ''
-                    fecha_aps = ''
-                else:
-                    # FECHA_APS
-                    data_pm = ''
-                    if cella['data_pm']:
-                        data_pm_ct = datetime.strptime(str(cella['data_pm']),
-                                                       '%Y-%m-%d')
-                        data_pm = data_pm_ct.strftime('%d/%m/%Y')
-                    # ESTADO
+                # FECHA_APS
+                data_pm = ''
+                if cella['data_pm']:
+                    data_pm_ct = datetime.strptime(str(cella['data_pm']),
+                                                   '%Y-%m-%d')
+                    data_pm = data_pm_ct.strftime('%d/%m/%Y')
 
                 # OBRES
 
@@ -385,8 +381,42 @@ class FB6(MultiprocessBased):
                     x = format_f(res_srid[0], decimals=3)
                     y = format_f(res_srid[1], decimals=3)
 
-                # TODO: Temporal
-                o_estat = 0
+                # ESTADO
+                if cella[self.compare_filed] and str(self.year + 1) not in str(data_pm):
+                    last_data = cella[self.compare_filed]
+                    entregada = F7Res4666(**last_data)
+                    actual = F7Res4666(
+                        cella['name'],
+                        cella['cini'],
+                        o_tram,
+                        str(ti),
+                        comunitat_codi,
+                        data_pm,
+                        fecha_baja,
+                        0
+                    )
+                    if entregada == actual and fecha_baja == '':
+                        estado = '0'
+                    else:
+                        self.output_m.put("{} {}".format(cella["name"], adapt_diff(actual.diff(entregada))))
+                        estado = '1'
+                else:
+                    if cella['data_pm']:
+                        if cella['data_pm'][:4] != str(self.year):
+                            self.output_m.put(
+                                "Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(
+                                    cella["name"]))
+                            estado = '1'
+                        else:
+                            estado = '2'
+                    else:
+                        self.output_m.put(
+                            "Identificador:{} No estava en el fitxer carregat al any n-1".format(cella["name"]))
+                        estado = '1'
+
+                if modelo == 'M':
+                    estado = ''
+                    fecha_aps = ''
 
                 self.output_q.put([
                     o_fiabilitat,   # ELEMENTO FIABILIDAD
@@ -405,7 +435,7 @@ class FB6(MultiprocessBased):
                     data_pm,        #FECHA_APS
                     fecha_baja,     #FECHA_BAJA
                     causa_baja,     #CAUSA_BAJA
-                    o_estat,     #ESTADO
+                    estado,     #ESTADO
                     modelo,      #MODELO
                     punto_frontera,  #PUNT_FRONTERA
                     tipo_inversion,     #TIPO_INVERSION

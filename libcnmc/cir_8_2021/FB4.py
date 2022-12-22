@@ -9,7 +9,8 @@ from datetime import datetime
 import traceback
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import format_f_6181, get_name_ti, get_codi_actuacio, \
-    format_ccaa_code, convert_spanish_date, format_f
+    format_ccaa_code, convert_spanish_date, format_f, adapt_diff
+from libcnmc.models import F4Res4666
 
 INTERRUPTOR = {
     '1': '0', #PARQUE
@@ -35,6 +36,7 @@ class FB4(MultiprocessBased):
             """
 
         self.year = kwargs.pop("year")
+        self.compare_field = kwargs["compare_field"]
 
         super(FB4, self).__init__(**kwargs)
         self.include_obres = False
@@ -137,20 +139,14 @@ class FB4(MultiprocessBased):
                 else:
                     modelo = ''
 
-                # Fecha APS / Estado
-                if modelo == 'M':
-                    estado = ''
-                    fecha_aps = ''
-                else:
-                    # Fecha APS
-                    data_pm = ''
-                    if pos['data_pm']:
-                        data_pm_ct = datetime.strptime(str(pos['data_pm']),
-                                                       '%Y-%m-%d')
-                        data_pm = data_pm_ct.strftime('%d/%m/%Y')
-                    # Estado
+                # Fecha APS
+                data_pm = ''
+                if pos['data_pm']:
+                    data_pm_ct = datetime.strptime(str(pos['data_pm']),
+                                                   '%Y-%m-%d')
+                    data_pm = data_pm_ct.strftime('%d/%m/%Y')
 
-                #FECHA_BAJA, CAUSA_BAJA
+                # FECHA_BAJA, CAUSA_BAJA
                 if pos['data_baixa']:
                     if pos['data_baixa'] < data_pm_limit:
                         tmp_date = datetime.strptime(
@@ -270,6 +266,8 @@ class FB4(MultiprocessBased):
                 #NODE
                 if pos['node_id']:
                     node = pos['node_id'][1]
+                else:
+                    node = ''
 
                 #PUNT_FRONTERA
                 punt_frontera = int(pos['punt_frontera'] == True)
@@ -278,9 +276,44 @@ class FB4(MultiprocessBased):
                 id_interruptor = pos['interruptor']
                 if id_interruptor:
                     equipada = INTERRUPTOR[id_interruptor]
+                else:
+                    equipada = ''
 
-                #TODO: Temporal
-                estado = 0;
+                if pos[self.compare_field]:
+                    last_data = pos[self.compare_field]
+                    entregada = F4Res4666(**last_data)
+                    actual = F4Res4666(
+                        pos['name'],
+                        pos['cini'],
+                        '',
+                        str(ti),
+                        '',
+                        '',
+                        '',
+                        data_pm,
+                        fecha_baja,
+                        0
+                    )
+                    if entregada == actual and fecha_baja == '':
+                        estado = 0
+                    else:
+                        self.output_m.put("{} {}".format(pos["name"], adapt_diff(actual.diff(entregada))))
+                        estado = 1
+                else:
+                    if pos['data_pm']:
+                        if pos['data_pm'][:4] != str(self.year):
+                            self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(pos["name"]))
+                            estado = '1'
+                        else:
+                            estado = '2'
+                    else:
+                        self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(pos["name"]))
+                        estado = '1'
+
+                # Si MODELO = 'M', ESTADO i FECHA_APS han d'estar buides
+                if modelo == 'M':
+                    estado = ''
+                    fecha_aps = ''
 
                 output = [
                     pos['name'],  #IDENTIFICADOR_POSICION

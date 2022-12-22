@@ -13,6 +13,7 @@ from libcnmc.utils import (
     format_f, get_id_municipi_from_company, get_forced_elements, adapt_diff, convert_srid, get_srid, format_f,
     convert_spanish_date, get_name_ti, format_f_6181, get_codi_actuacio, get_ine
 )
+from libcnmc.models import F6Res4666
 
 
 class FB8(MultiprocessBased):
@@ -26,6 +27,7 @@ class FB8(MultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.report_name = 'FB8 - Otros activos'
         self.base_object = 'Despatxos'
+        self.compare_field = kwargs["compare_field"]
 
     def get_sequence(self):
         data_pm = '{0}-01-01'.format(self.year + 1)
@@ -171,8 +173,34 @@ class FB8(MultiprocessBased):
                     if comunitat_vals:
                         comunitat_codi = comunitat_vals['codi']
 
-                # TODO: Temporal
-                estat = 0
+                if despatx[self.compare_field]:
+                    data_entregada = despatx[self.compare_field]
+                    entregada = F6Res4666(**data_entregada)
+                    actual = F6Res4666(
+                        despatx['name'],
+                        despatx['cini'],
+                        despatx['denominacio'],
+                        data_pm,
+                        fecha_baja,
+                        '',
+                        0
+                    )
+                    if actual == entregada:
+                        estado = '0'
+                    else:
+                        self.output_m.put("{} {}".format(despatx["name"], adapt_diff(actual.diff(entregada))))
+                        self.output_m.put("Identificador:{} diff:{}".format(despatx["name"], actual.diff(entregada)))
+                        estado = '1'
+                else:
+                    if despatx['data_apm']:
+                        if despatx['data_apm'][:4] != str(self.year):
+                            self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(despatx["name"]))
+                            estado = '1'
+                        else:
+                            estado = '2'
+                    else:
+                        self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(despatx["name"]))
+                        estado = '1'
 
                 descripcio = ''
 
@@ -180,7 +208,7 @@ class FB8(MultiprocessBased):
                     despatx['id'],                      # IDENTIFICADOR
                     despatx['cini'],                    # CINI
                     motivacion,                         # MOTIVACION
-                    estat,                              # ESTADO
+                    estado,                             # ESTADO
                     descripcio,                         # DESCRIPCION
                     comunitat_codi,                     # CCAA
                     data_pm,                            # FECHA_APS

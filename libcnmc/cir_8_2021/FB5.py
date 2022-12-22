@@ -13,7 +13,9 @@ from libcnmc.utils import (
     format_f, get_id_municipi_from_company, get_forced_elements, adapt_diff, convert_srid, get_srid, format_f,
     convert_spanish_date, get_name_ti, format_f_6181, get_codi_actuacio, get_ine
 )
+from libcnmc.models import F5Res4666
 from shapely import wkt
+
 
 class FB5(MultiprocessBased):
     def __init__(self, **kwargs):
@@ -21,6 +23,7 @@ class FB5(MultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.report_name = 'FB5 - TRAFOS-SE'
         self.base_object = 'TRAFOS'
+        self.compare_field = kwargs["compare_field"]
 
     def get_sequence(self):
         search_params = [
@@ -90,17 +93,11 @@ class FB5(MultiprocessBased):
                 else:
                     modelo = ''
 
-                # Fecha APS / Estado
-                if modelo == 'M':
-                    estado = ''
-                    fecha_aps = ''
-                else:
-                    # FECHA_APS
-                    if trafo['data_pm']:
-                        data_pm_trafo = datetime.strptime(str(trafo['data_pm']),
-                                                          '%Y-%m-%d')
-                        data_pm = data_pm_trafo.strftime('%d/%m/%Y')
-                    # ESTADO
+                # FECHA_APS
+                if trafo['data_pm']:
+                    data_pm_trafo = datetime.strptime(str(trafo['data_pm']),
+                                                      '%Y-%m-%d')
+                    data_pm = data_pm_trafo.strftime('%d/%m/%Y')
 
                 # OBRES
 
@@ -218,8 +215,46 @@ class FB5(MultiprocessBased):
                     id_ti,
                     ['name'])['name']
 
-                # TODO: Temporal
-                o_estat = 0
+                # ESTADO
+                if trafo[self.compare_field]:
+                    last_data = trafo[self.compare_field]
+                    entregada = F5Res4666(**last_data)
+                    actual = F5Res4666(
+                        trafo['name'],
+                        trafo['cini'],
+                        '',
+                        ti,
+                        '',
+                        '',
+                        '',
+                        '',
+                        data_pm,
+                        fecha_baja,
+                        '',
+                        0
+                    )
+                    if entregada == actual and fecha_baja == '':
+                        estado = '0'
+                    else:
+                        self.output_m.put("{} {}".format(trafo["name"], adapt_diff(actual.diff(entregada))))
+                        estado = '1'
+                else:
+                    if trafo['data_pm']:
+                        if trafo['data_pm'][:4] != str(self.year):
+                            self.output_m.put(
+                                "Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(
+                                    trafo["name"]))
+                            estado = '1'
+                        else:
+                            estado = '2'
+                    else:
+                        self.output_m.put(
+                            "Identificador:{} No estava en el fitxer carregat al any n-1".format(trafo["name"]))
+                        estado = '1'
+
+                if modelo == 'M':
+                    estado = ''
+                    fecha_aps = ''
 
                 self.output_q.put([
                     o_maquina,              # IDENTIFICADOR_MAQUINA

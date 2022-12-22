@@ -5,7 +5,8 @@ from datetime import datetime
 import traceback
 from libcnmc.core import MultiprocessBased
 from libcnmc.utils import (format_f, tallar_text, format_f_6181, get_codi_actuacio, convert_spanish_date,
-                           get_forced_elements)
+                           get_forced_elements, adapt_diff)
+from libcnmc.models import F1Res4666,F2Res4666
 
 class FB1(MultiprocessBased):
     """
@@ -29,6 +30,7 @@ class FB1(MultiprocessBased):
         self.forced_ids = {}
         self.prefix_AT = kwargs.pop('prefix_at', 'A') or 'A'
         self.prefix_BT = kwargs.pop('prefix_bt', 'B') or 'B'
+        self.compare_field = kwargs["compare_field"]
         self.dividir = kwargs.pop('div', False)
 
         O = self.connection
@@ -256,18 +258,6 @@ class FB1(MultiprocessBased):
                     else:
                         modelo = ''
 
-                    # Fecha APS / Estado
-                    if modelo == 'M':
-                        estado = ''
-                        fecha_aps = ''
-                    else:
-                        # Fecha APS
-                        if tram['data_pm']:
-                            data_pm_linia = datetime.strptime(str(tram['data_pm']),
-                                                              '%Y-%m-%d')
-                            fecha_aps = data_pm_linia.strftime('%d/%m/%Y')
-                        # Estado
-
                     # Punt frontera
                     punt_frontera = '0'
                     if tram.get('punto_frontera', False):
@@ -453,6 +443,62 @@ class FB1(MultiprocessBased):
                             fecha_baja = tmp_date.strftime('%d/%m/%Y')
                     else:
                         fecha_baja = ''
+
+                    # Fecha APS / Estado
+                    if modelo == 'M':
+                        estado = ''
+                        fecha_aps = ''
+                    else:
+                        # Fecha APS
+                        if tram['data_pm']:
+                            data_pm_linia = datetime.strptime(str(tram['data_pm']),
+                                                              '%Y-%m-%d')
+                            fecha_aps = data_pm_linia.strftime('%d/%m/%Y')
+                        # Estado
+                        if tram[self.compare_field]:
+                            data_entregada = tram[self.compare_field]
+                            entregada = F1Res4666(**data_entregada)
+                            actual = F1Res4666(
+                                o_tram,
+                                tram['cini'],
+                                node_inicial or edge['start_node'][1],
+                                node_final or edge['end_node'][1],
+                                codi_ccuu,
+                                comunitat,
+                                comunitat,
+                                # format_f(
+                                #     100.0 - tram.get('perc_financament', 0.0), 2
+                                # ),
+                                fecha_aps,
+                                fecha_baja,
+                                tram.get('circuits', 1) or 1,
+                                1,
+                                tension_explotacion,
+                                format_f(longitud, 3),
+                                intensitat,
+                                # format_f(float(cable.get('seccio', 0)), 2),
+                                # str(capacitat),
+                                0
+                            )
+                            if actual == entregada and fecha_baja == '':
+                                estado = 0
+                            else:
+                                self.output_m.put("{} {}".format(tram["name"], adapt_diff(actual.diff(entregada))))
+                                estado = 1
+                        else:
+                            if tram['data_pm']:
+                                if tram['data_pm'][:4] != str(self.year):
+                                    self.output_m.put(
+                                        "Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(
+                                            tram["name"]))
+                                    estado = '1'
+                                else:
+                                    estado = '2'
+                            else:
+                                self.output_m.put(
+                                    "Identificador:{} No estava en el fitxer carregat al any n-1".format(tram["name"]))
+                                estado = '1'
+
 
                     output = [
                         o_tram,  # IDENTIFICADOR
@@ -642,23 +688,6 @@ class FB1(MultiprocessBased):
                     if linia.get('punt_frontera', False):
                         punto_frontera = '1'
 
-                    # MODELO
-                    modelo = ''
-                    if linia.get('model', False):
-                        modelo = linia['model']
-
-                    # Fecha APS / Estado
-                    if modelo == 'M':
-                        estado = ''
-                        fecha_aps = ''
-                    else:
-                        # Fecha APS
-                        if tram['data_pm']:
-                            data_pm_linia = datetime.strptime(str(tram['data_pm']),
-                                                              '%Y-%m-%d')
-                            fecha_aps = data_pm_linia.strftime('%d/%m/%Y')
-                        # Estado
-
                     # OPERACION
                     operacion = '1'
                     if linia.get('operacion', False):
@@ -765,6 +794,66 @@ class FB1(MultiprocessBased):
                         cuenta_contable = ''
                         avifauna = ''
                         financiado = ''
+
+                    # MODELO
+                    modelo = ''
+                    if linia.get('model', False):
+                        modelo = linia['model']
+
+                    # Fecha APS
+                    if linia['data_pm']:
+                        data_pm_linia = datetime.strptime(str(linia['data_pm']),
+                                                          '%Y-%m-%d')
+                        fecha_aps = data_pm_linia.strftime('%d/%m/%Y')
+                    # Estado
+                    if linia[self.compare_field]:
+                        data_entregada = linia[self.compare_field]
+                        entregada = F2Res4666(**data_entregada)
+                        actual = F2Res4666(
+                            identificador_tramo,
+                            linia['cini'],
+                            node_inicial,
+                            node_final,
+                            codigo_ccuu,
+                            ccaa_1,
+                            ccaa_2,
+                            # format_f(
+                            #     100.0 - tram.get('perc_financament', 0.0), 2
+                            # ),
+                            fecha_aps,
+                            fecha_baja,
+                            1,
+                            1,
+                            tension_explotacion,
+                            format_f(longitud, 3),
+                            intensitat,
+                            # format_f(float(cable.get('seccio', 0)), 2),
+                            # str(capacitat),
+                            0
+                        )
+                        if actual == entregada and fecha_baja == '':
+                            estado = 0
+                        else:
+                            self.output_m.put("{} {}".format(tram["name"], adapt_diff(actual.diff(entregada))))
+                            estado = 1
+                    else:
+                        if tram['data_pm']:
+                            if tram['data_pm'][:4] != str(self.year):
+                                self.output_m.put(
+                                    "Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(
+                                        tram["name"]))
+                                estado = '1'
+                            else:
+                                estado = '2'
+                        else:
+                            self.output_m.put(
+                                "Identificador:{} No estava en el fitxer carregat al any n-1".format(tram["name"]))
+                            estado = '1'
+
+                    # Si MODELO = 'M', ESTADO i FECHA_APS han d'estar buides
+                    if modelo == 'M':
+                        estado = ''
+                        fecha_aps = ''
 
                     output = [
                         identificador_tramo,  # IDENTIFICADOR TRAMO
