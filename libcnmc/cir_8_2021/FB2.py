@@ -354,7 +354,7 @@ class FB2(MultiprocessBased):
                     actual = F8Res4666(
                         ct['name'],
                         ct['cini'],
-                        ct['descripcio'],
+                        '',
                         ti,
                         comunitat_codi,
                         '',

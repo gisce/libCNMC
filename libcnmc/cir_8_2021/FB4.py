@@ -36,7 +36,7 @@ class FB4(MultiprocessBased):
             """
 
         self.year = kwargs.pop("year")
-        self.compare_field = kwargs["compare_field"]
+        self.compare_field = '4666_entregada'
 
         super(FB4, self).__init__(**kwargs)
         self.include_obres = False

@@ -41,7 +41,7 @@ class FB6(MultiprocessBased):
         self.cod_dis = 'R1-{}'.format(self.codi_r1[-3:])
         self.compare_field = "4666_entregada"
         self.prefix = kwargs.pop('prefix', 'A') or 'A'
-        self.compare_field = kwargs["compare_field"]
+        self.compare_field = '4666_entregada'
 
     def get_sequence(self):
         """

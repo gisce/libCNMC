@@ -30,7 +30,7 @@ class FB1(MultiprocessBased):
         self.forced_ids = {}
         self.prefix_AT = kwargs.pop('prefix_at', 'A') or 'A'
         self.prefix_BT = kwargs.pop('prefix_bt', 'B') or 'B'
-        self.compare_field = kwargs["compare_field"]
+        self.compare_field = '4666_entregada'
         self.dividir = kwargs.pop('div', False)
 
         O = self.connection

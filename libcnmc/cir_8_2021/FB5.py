@@ -23,7 +23,7 @@ class FB5(MultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.report_name = 'FB5 - TRAFOS-SE'
         self.base_object = 'TRAFOS'
-        self.compare_field = kwargs["compare_field"]
+        self.compare_field = '4666_entregada'
 
     def get_sequence(self):
         search_params = [

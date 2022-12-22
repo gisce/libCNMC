@@ -27,7 +27,7 @@ class FB8(MultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.report_name = 'FB8 - Otros activos'
         self.base_object = 'Despatxos'
-        self.compare_field = kwargs["compare_field"]
+        self.compare_field = '4666_entregada'
 
     def get_sequence(self):
         data_pm = '{0}-01-01'.format(self.year + 1)
