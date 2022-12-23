@@ -382,8 +382,8 @@ class FB6(MultiprocessBased):
                     y = format_f(res_srid[1], decimals=3)
 
                 # ESTADO
-                if cella[self.compare_filed] and str(self.year + 1) not in str(data_pm):
-                    last_data = cella[self.compare_filed]
+                if cella[self.compare_field] and str(self.year + 1) not in str(data_pm):
+                    last_data = cella[self.compare_field]
                     entregada = F7Res4666(**last_data)
                     actual = F7Res4666(
                         cella['name'],
