@@ -64,13 +64,13 @@ class FB5(MultiprocessBased):
     def consumer(self):
         o = self.connection
         fields_to_read = [
-            'ct', 'name', 'cini', 'potencia_nominal', 'id_estat', 'node_id',
-            'data_pm', 'data_baixa', 'tipus_instalacio_cnmc_id', 'node_baixa', 'model'
+            'ct', 'name', 'cini', 'potencia_nominal', 'id_estat', 'node_id', 'data_pm', 'data_baixa',
+            'tipus_instalacio_cnmc_id', 'node_baixa', 'model', self.compare_field
         ]
         fields_to_read_obra = [
             'subvenciones_europeas', 'subvenciones_nacionales', 'subvenciones_prtr', 'financiado',
             'fecha_aps', 'fecha_baja', 'causa_baja', 'cuenta_contable', 'im_ingenieria', 'im_materiales',
-            'im_obracivil', 'im_trabajos', 'motivacion', 'tipo_inversion', 'valor_residual', self.compare_field,
+            'im_obracivil', 'im_trabajos', 'motivacion', 'tipo_inversion', 'valor_residual',
         ]
 
         def get_inst_name(element_id):
