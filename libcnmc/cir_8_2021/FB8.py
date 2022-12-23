@@ -205,7 +205,7 @@ class FB8(MultiprocessBased):
                 descripcio = ''
 
                 self.output_q.put([
-                    despatx['id'],                      # IDENTIFICADOR
+                    despatx['name'],                    # IDENTIFICADOR
                     despatx['cini'],                    # CINI
                     motivacion,                         # MOTIVACION
                     estado,                             # ESTADO
