@@ -179,7 +179,7 @@ class FB8(MultiprocessBased):
                     actual = F6Res4666(
                         despatx['name'],
                         despatx['cini'],
-                        despatx['denominacio'],
+                        '',
                         data_pm,
                         fecha_baja,
                         '',
