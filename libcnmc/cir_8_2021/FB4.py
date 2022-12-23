@@ -110,14 +110,14 @@ class FB4(MultiprocessBased):
 
         fields_to_read = [
             'name', 'cini', 'node_id', 'propietari', 'subestacio_id', 'data_pm', 'tensio', 'model',
-            'parc_id', 'data_baixa', 'interruptor', 'tipus_instalacio_cnmc_id', 'punt_frontera'
+            'parc_id', 'data_baixa', 'interruptor', 'tipus_instalacio_cnmc_id', 'punt_frontera', self.compare_field
         ]
         fields_to_read_obra = [
             'name', 'cini', 'tipo_inversion', 'denominacion', 'ccuu', 'codigo_ccaa', 'identificador_parque',
             'nivel_tension_explotacion', 'financiado','planificacion','fecha_aps','fecha_baja','causa_baja',
             'im_ingenieria','im_materiales','im_obracivil','im_trabajos','subvenciones_europeas',
             'subvenciones_nacionales','subvenciones_prtr','valor_auditado','valor_residual','valor_contabilidad','cuenta_contable',
-            'porcentaje_modificacion','motivacion','obra_id','identificador_baja', self.compare_field,
+            'porcentaje_modificacion','motivacion','obra_id','identificador_baja',
         ]
 
         def get_inst_name(element_id):
