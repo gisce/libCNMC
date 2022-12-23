@@ -466,9 +466,7 @@ class FB1(MultiprocessBased):
                                 codi_ccuu,
                                 comunitat,
                                 comunitat,
-                                # format_f(
-                                #     100.0 - tram.get('perc_financament', 0.0), 2
-                                # ),
+                                '',
                                 fecha_aps,
                                 fecha_baja,
                                 tram.get('circuits', 1) or 1,
@@ -476,8 +474,8 @@ class FB1(MultiprocessBased):
                                 tension_explotacion,
                                 format_f(longitud, 3),
                                 intensitat,
-                                # format_f(float(cable.get('seccio', 0)), 2),
-                                # str(capacitat),
+                                '',
+                                '',
                                 0
                             )
                             if actual == entregada and fecha_baja == '':
@@ -817,9 +815,7 @@ class FB1(MultiprocessBased):
                             codigo_ccuu,
                             ccaa_1,
                             ccaa_2,
-                            # format_f(
-                            #     100.0 - tram.get('perc_financament', 0.0), 2
-                            # ),
+                            '',
                             fecha_aps,
                             fecha_baja,
                             1,
@@ -827,27 +823,27 @@ class FB1(MultiprocessBased):
                             tension_explotacion,
                             format_f(longitud, 3),
                             intensitat,
-                            # format_f(float(cable.get('seccio', 0)), 2),
-                            # str(capacitat),
+                            '',
+                            '',
                             0
                         )
                         if actual == entregada and fecha_baja == '':
                             estado = 0
                         else:
-                            self.output_m.put("{} {}".format(tram["name"], adapt_diff(actual.diff(entregada))))
+                            self.output_m.put("{} {}".format(linia["name"], adapt_diff(actual.diff(entregada))))
                             estado = 1
                     else:
-                        if tram['data_pm']:
-                            if tram['data_pm'][:4] != str(self.year):
+                        if linia['data_pm']:
+                            if linia['data_pm'][:4] != str(self.year):
                                 self.output_m.put(
                                     "Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(
-                                        tram["name"]))
+                                        linia["name"]))
                                 estado = '1'
                             else:
                                 estado = '2'
                         else:
                             self.output_m.put(
-                                "Identificador:{} No estava en el fitxer carregat al any n-1".format(tram["name"]))
+                                "Identificador:{} No estava en el fitxer carregat al any n-1".format(linia["name"]))
                             estado = '1'
 
                     # Si MODELO = 'M', ESTADO i FECHA_APS han d'estar buides
