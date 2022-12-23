@@ -263,8 +263,8 @@ class FB5(MultiprocessBased):
                     o_node,             #NUDO_ALTA
                     o_node_baixa,       #NUDO_BAJA
                     o_pot_maquina,       # POTENCIA MAQUINA
-                    o_estat,                 # ESTADO
-                    o_modelo,             #MODELO
+                    estado,                 # ESTADO
+                    modelo,             #MODELO
                     data_pm,               #FECHA_APS
                     fecha_baja,            #FECHA_BAJA
                     causa_baja,            #CAUSA_BAJA
