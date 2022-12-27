@@ -65,7 +65,6 @@ class FB1_1(MultiprocessBased):
 
                 o_segmento = tramo['name']
 
-                o_identificador = '{}{}'.format(self.prefix, tramo['name']) 
                 geom = tramo['geom']
                 points = geom.replace('LINESTRING(', '')
                 points = points.replace(')', '')
