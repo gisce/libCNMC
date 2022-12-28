@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-INVENTARI DE CNMC Centres Transformadors
+INVENTARIO DE CNMC - Elementos de mejora de fiabilidad
 """
 from datetime import datetime
 import traceback
@@ -40,7 +40,7 @@ class FB6(MultiprocessBased):
         self.base_object = 'Elements de millora de fiabilitat'
         self.cod_dis = 'R1-{}'.format(self.codi_r1[-3:])
         self.compare_field = "4666_entregada"
-        self.prefix = kwargs.pop('prefix', 'A') or 'A'
+        self.prefix_AT = kwargs.pop('prefix_at', 'A') or 'A'
         self.compare_field = '4666_entregada'
 
     def get_sequence(self):
@@ -170,7 +170,7 @@ class FB6(MultiprocessBased):
                         tram_name = o.GiscedataAtTram.read(
                             tram_id, ['name']
                         )[0]['name']
-                        return "{}{}".format(self.prefix, tram_name)
+                        return "{}{}".format(self.prefix_AT, tram_name)
         return ""
 
     def consumer(self):
@@ -299,7 +299,7 @@ class FB6(MultiprocessBased):
                     if tram_data.get('id_regulatori', False):
                         o_tram = tram_data['id_regulatori']
                     else:
-                        o_tram = "{}{}".format(self.prefix, tram_data['name'])
+                        o_tram = "{}{}".format(self.prefix_AT, tram_data['name'])
                 else:
                     o_tram = self.get_node_vertex_tram(o_fiabilitat)
 
