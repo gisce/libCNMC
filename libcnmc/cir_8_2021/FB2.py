@@ -176,7 +176,7 @@ class FB2(MultiprocessBased):
                 #CAMPS OBRA
                 if ct_obra != '':
                     data_ip = convert_spanish_date(
-                            ct_obra['fecha_aps'] if not ct_obra['fecha_baja'] and ct_obra['tipo_inversion'] != '1' else ''
+                            ct_obra['fecha_aps'] if ct_obra['tipo_inversion'] != '0' else ''
                     )
                     identificador_baja = (
                         get_inst_name(ct_obra['identificador_baja']) if ct_obra['identificador_baja'] else ''
