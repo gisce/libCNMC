@@ -54,7 +54,7 @@ class FB3_3(MultiprocessBased):
         parc_obj = o.GiscedataParcs
         tensio_obj = o.GiscedataTensionsTensio
 
-        con_alta, con_baixa = False
+        con_alta, con_baixa = False, False
         for connexio_id in conexions_ids:
             con_data = con_obj.read(connexio_id)
             if con_data['conectada']:
@@ -69,21 +69,24 @@ class FB3_3(MultiprocessBased):
 
         if con_alta and con_baixa:
             tensions_ids = tensio_obj.search([('tipus', '=', 'AT')])
-            tensio_alta, tensio_baixa = False
+            tensio_alta, tensio_baixa = False, False
             for tensio_id in tensions_ids:
-                llindar_inf = tensio_obj.read(tensio_id, ['l_inferior'])
-                llindar_sup = tensio_obj.read(tensio_id, ['l_superior'])
+                llindar_inf = tensio_obj.read(tensio_id, ['l_inferior'])['l_inferior']
+                llindar_sup = tensio_obj.read(tensio_id, ['l_superior'])['l_superior']
                 if llindar_inf <= con_alta <= llindar_sup:
-                    tensio_alta = tensio_id[0]
+                    tensio_alta = tensio_id
                 elif llindar_inf <= con_baixa <= llindar_sup:
-                    tensio_baixa = tensio_id[0]
+                    tensio_baixa = tensio_id
 
             if tensio_alta and tensio_baixa:
-                se_id = trafo['ct'][0]
+                se_name = trafo['ct'][1]
+                se_id = se_obj.search([('name', '=', se_name)])
                 parc_id_alta = parc_obj.search([('subestacio_id', '=', se_id), ('tensio_id', '=', tensio_alta)])
-                res['o_costat_alta'] = parc_obj.read(parc_id_alta, ['name'])['name']
+                if parc_id_alta:
+                    res['o_costat_alta'] = parc_obj.read(parc_id_alta[0], ['name'])['name']
                 parc_id_baixa = parc_obj.search([('subestacio_id', '=', se_id), ('tensio_id', '=', tensio_baixa)])
-                res['o_costat_baixa'] = parc_obj.read(parc_id_baixa, ['name'])['name']
+                if parc_id_baixa:
+                    res['o_costat_baixa'] = parc_obj.read(parc_id_baixa[0], ['name'])['name']
 
         return res
 
