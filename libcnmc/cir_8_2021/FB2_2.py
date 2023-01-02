@@ -79,7 +79,8 @@ class FB2_2(MultiprocessBased):
     def get_codi_maquina(self, ct_id, o_id_cella):
         o = self.connection
         res = ''
-        tipus_pos_data = o.GiscedataCellesCella.read(o_id_cella, 'tipus_posicio')
+        cella_id = o.GiscedataCellesCella.search([('name', '=', o_id_cella)])
+        tipus_pos_data = o.GiscedataCellesCella.read(cella_id, 'tipus_posicio')
         if tipus_pos_data.get('tipus_posicio', False):
             tipus_pos_id = tipus_pos_data['tipus_posicio'][0]
             codi_pos = o.GiscedataCellesTipusPosicio.read(tipus_pos_id, 'codi')
