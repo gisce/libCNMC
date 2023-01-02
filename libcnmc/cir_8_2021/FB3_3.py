@@ -43,22 +43,48 @@ class FB3_3(MultiprocessBased):
         else:
             return 1
 
-    def get_costat_alta(self, trafo):
+    def get_parcs(self, trafo):
         o = self.connection
-        res = ''
-        if trafo['conexions']:
-            con = o.GiscedataTransformadorConnexio.read(trafo['conexions'][0])
-            tensio = con['tensio_primari']
-            tensio_n = get_norm_tension(o, tensio)
-            se_id = trafo['ct'][1]
-            parc_id = o.GiscedataParcs.search(
-                [
-                    ('subestacio_id', '=', se_id),
-                    ('tensio_id.tensio', '=', tensio_n)
-                ]
-            )
-            if parc_id:
-                res = o.GiscedataParcs.read(parc_id[0], ['name'])['name']
+        res = {'o_costat_alta': '',
+               'o_costat_baixa': ''}
+        conexions_ids = trafo['conexions']
+
+        con_obj = o.GiscedataTransformadorConnexio
+        se_obj = o.GiscedataCtsSubestacions
+        parc_obj = o.GiscedataParcs
+        tensio_obj = o.GiscedataTensionsTensio
+
+        con_alta, con_baixa = False
+        for connexio_id in conexions_ids:
+            con_data = con_obj.read(connexio_id)
+            if con_data['conectada']:
+                con_alta = con_data['tensio_primari']
+                if con_data['tensio_b1']:
+                    con_baixa = con_data['tensio_b1']
+                elif con_data['tensio_b2']:
+                    con_baixa = con_data['tensio_b2']
+                elif con_data['tensio_b3']:
+                    con_baixa = con_data['tensio_b3']
+                break
+
+        if con_alta and con_baixa:
+            tensions_ids = tensio_obj.search([('tipus', '=', 'AT')])
+            tensio_alta, tensio_baixa = False
+            for tensio_id in tensions_ids:
+                llindar_inf = tensio_obj.read(tensio_id, ['l_inferior'])
+                llindar_sup = tensio_obj.read(tensio_id, ['l_superior'])
+                if llindar_inf <= con_alta <= llindar_sup:
+                    tensio_alta = tensio_id[0]
+                elif llindar_inf <= con_baixa <= llindar_sup:
+                    tensio_baixa = tensio_id[0]
+
+            if tensio_alta and tensio_baixa:
+                se_id = trafo['ct'][0]
+                parc_id_alta = parc_obj.search([('subestacio_id', '=', se_id), ('tensio_id', '=', tensio_alta)])
+                res['o_costat_alta'] = parc_obj.read(parc_id_alta, ['name'])['name']
+                parc_id_baixa = parc_obj.search([('subestacio_id', '=', se_id), ('tensio_id', '=', tensio_baixa)])
+                res['o_costat_baixa'] = parc_obj.read(parc_id_baixa, ['name'])['name']
+
         return res
 
     def get_costat_baixa(self, trafo):
@@ -104,8 +130,12 @@ class FB3_3(MultiprocessBased):
                 o_subestacio = trafo['ct'][1]
                 o_maquina = trafo['name']
                 o_cini = trafo['cini']
-                o_costat_alta = self.get_costat_alta(trafo)
-                o_costat_baixa = self.get_costat_baixa(trafo)
+
+                # IDENTIFICADOR_PARQUE_ALTA / IDENTIFICADOR_PARQUE_BAJA
+                if trafo.get('conexions', False):
+                    o_costat_alta = self.get_parcs(trafo)['o_costat_alta']
+                    o_costat_baixa = self.get_parcs(trafo)['o_costat_baixa']
+
                 o_propietat = int(trafo['propietari'])
                 o_estat = self.get_estat(trafo['id_estat'][0])
 
