@@ -76,17 +76,23 @@ class FB2_2(MultiprocessBased):
             res = ct['name']
         return res
 
-    def get_codi_maquina(self, ct_id):
+    def get_codi_maquina(self, ct_id, o_id_cella):
         o = self.connection
-        trafos = o.GiscedataCts.read(
-            ct_id, ['transformadors'])['transformadors']
-        trafo_id = o.GiscedataTransformadorTrafo.search(
-            [('id', 'in', trafos), ('id_estat.codi', '=', 1)], 0, 1)
         res = ''
-        if trafo_id:
-            codi_maquina = o.GiscedataTransformadorTrafo.read(trafo_id[0],
-                                                              ['name'])
-            res = codi_maquina['name']
+        tipus_pos_data = o.GiscedataCellesCella.read(o_id_cella, 'tipus_posicio')
+        if tipus_pos_data.get('tipus_posicio', False):
+            tipus_pos_id = tipus_pos_data['tipus_posicio'][0]
+            codi_pos = o.GiscedataCellesTipusPosicio.read(tipus_pos_id, 'codi')
+            if codi_pos == 'P':
+                trafos = o.GiscedataCts.read(
+                    ct_id, ['transformadors'])['transformadors']
+                trafo_id = o.GiscedataTransformadorTrafo.search(
+                    [('id', 'in', trafos), ('id_estat.codi', '=', 1)], 0, 1)
+                res = ''
+                if trafo_id:
+                    codi_maquina = o.GiscedataTransformadorTrafo.read(trafo_id[0],
+                                                                      ['name'])
+                    res = codi_maquina['name']
         return res
 
     def get_tipus_inst(self, ti_cnmc_id):
@@ -112,8 +118,8 @@ class FB2_2(MultiprocessBased):
                 o_ct_id = int(celles['installacio'].split(',')[1])
                 o_ct = self.get_codi_ct(o_ct_id)
 
-                o_maquina = self.get_codi_maquina(o_ct_id)
                 o_id_cella = celles['name']
+                o_maquina = self.get_codi_maquina(o_ct_id, o_id_cella)
                 o_cini = celles['cini'] or ''
                 o_propietari = int(celles['propietari'])
 
