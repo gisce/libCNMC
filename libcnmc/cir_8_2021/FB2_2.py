@@ -80,11 +80,11 @@ class FB2_2(MultiprocessBased):
         o = self.connection
         res = ''
         cella_id = o.GiscedataCellesCella.search([('name', '=', o_id_cella)])
-        tipus_pos_data = o.GiscedataCellesCella.read(cella_id, 'tipus_posicio')
+        tipus_pos_data = o.GiscedataCellesCella.read(cella_id[0], ['tipus_posicio'])
         if tipus_pos_data.get('tipus_posicio', False):
             tipus_pos_id = tipus_pos_data['tipus_posicio'][0]
-            codi_pos = o.GiscedataCellesTipusPosicio.read(tipus_pos_id, 'codi')
-            if codi_pos == 'P':
+            codi_pos = o.GiscedataCellesTipusPosicio.read(tipus_pos_id, ['codi'])
+            if codi_pos['codi'] == 'P':
                 trafos = o.GiscedataCts.read(
                     ct_id, ['transformadors'])['transformadors']
                 trafo_id = o.GiscedataTransformadorTrafo.search(
