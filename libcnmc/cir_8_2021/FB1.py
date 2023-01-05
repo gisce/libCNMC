@@ -300,7 +300,7 @@ class FB1(MultiprocessBased):
                         obra_id_data = {}
 
                     # Filtre d'obres finalitzades
-                    pos_obra = ''
+                    tram_obra = ''
                     if obra_id_data.get('obra_id', False):
                         obra_id = obra_id_data['obra_id']
                         data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])

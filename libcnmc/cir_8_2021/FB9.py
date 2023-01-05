@@ -69,9 +69,154 @@ class FB9(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
-                ##############
-                # # Celles # #
-                ##############
+                ##################
+                # # Posiciones # #
+                ##################
+
+                file_path = '/home/paup/Documents/cir2021/B4_v8.txt'
+                columns = [str(x) for x in range(25)]
+                df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
+                trafo = OrderedDict()
+
+                # # EQUIPADAS CON INTERRUPTOR # #
+                df = df[df['6'] == 1]
+
+                # # FINANCIADO 0% # #
+                df_f0 = df[df['24'] == 0]
+
+                # TIPO 0
+                df_f0_to = df_f0[df_f0['14'] == 0]
+                trafo['1_E_18'] = df_f0_to.shape[0]
+                trafo['1_F_18'] = ''
+                trafo['1_G_18'] = df_f0_to['18'].sum()
+                trafo['1_H_18'] = trafo['1_G_18']
+
+                # TIPO 1
+                df_f0_t1 = df_f0[df_f0['14'] == 1]
+                trafo['1_I_18'] = df_f0_t1.shape[0]
+                trafo['1_J_18'] = ''
+                trafo['1_K_18'] = df_f0_t1['18'].sum()
+                trafo['1_L_18'] = trafo['1_K_18']
+
+                # TOTAL
+                trafo['1_M_18'] = trafo['1_E_18'] + trafo['1_I_18']
+                trafo['1_N_18'] = trafo['1_F_18'] + trafo['1_J_18']
+                trafo['1_O_18'] = trafo['1_G_18'] + trafo['1_K_18']
+                trafo['1_P_18'] = trafo['1_O_18']
+
+                # # 0% < FINANCIADO < 100% # #
+                df_f = df[(0 < df['24']) & (df['24'] < 100)]
+
+                # TIPO 0
+                df_f_to = df_f[df_f['14'] == 0]
+                trafo['2_E_18'] = df_f_to.shape[0]
+                trafo['2_F_18'] = ''
+                trafo['2_G_18'] = df_f_to['18'].sum()
+                trafo['2_H_18'] = trafo['2_G_18']
+
+                # TIPO 1
+                df_f_t1 = df_f[df_f['14'] == 1]
+                trafo['2_I_18'] = df_f_t1.shape[0]
+                trafo['2_J_18'] = ''
+                trafo['2_K_18'] = df_f_t1['18'].sum()
+                trafo['2_L_18'] = trafo['2_K_18']
+
+                # TOTAL
+                trafo['2_M_18'] = trafo['2_E_18'] + trafo['2_I_18']
+                trafo['2_N_18'] = trafo['2_F_18'] + trafo['2_J_18']
+                trafo['2_O_18'] = trafo['2_G_18'] + trafo['2_K_18']
+                trafo['2_P_18'] = trafo['2_O_18']
+
+                # # FINANCIADO 100% # #
+                df_f100 = df[df['24'] == 100]
+
+                trafo['3_E_18'] = df_f100.shape[0]
+                trafo['3_F_18'] = ''
+                trafo['3_G_18'] = df_f100['18'].sum()
+                trafo['3_H_18'] = trafo['3_G_18']
+
+                self.output_q.put(['-----', 'TRAFOS', '-----'])
+                for k, v in trafo.items():
+                    print(k, v)
+                    self.output_q.put([
+                        k,                                 # CODIGO_CELDA
+                        self.format_f(v, 2),               # IMPORTE
+                    ])
+
+                ################
+                # # Máquinas # #
+                ################
+
+                file_path = '/home/paup/Documents/cir2021/B5_v8.txt'
+                columns = [str(x) for x in range(25)]
+                df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
+                trafo = OrderedDict()
+
+                # # FINANCIADO 0% # #
+                df_f0 = df[df['21'] == 0]
+
+                # TIPO 0
+                df_f0_to = df_f0[df_f0['12'] == 0]
+                trafo['1_E_19'] = df_f0_to.shape[0]
+                trafo['1_F_19'] = df_f0_to['5'].sum()
+                trafo['1_G_19'] = df_f0_to['20'].sum()
+                trafo['1_H_19'] = trafo['1_G_19']
+
+                # TIPO 1
+                df_f0_t1 = df_f0[df_f0['12'] == 1]
+                trafo['1_I_19'] = df_f0_t1.shape[0]
+                trafo['1_J_19'] = df_f0_to['5'].sum()
+                trafo['1_K_19'] = df_f0_t1['20'].sum()
+                trafo['1_L_19'] = trafo['1_K_19']
+
+                # TOTAL
+                trafo['1_M_19'] = trafo['1_E_19'] + trafo['1_I_19']
+                trafo['1_N_19'] = trafo['1_F_19'] + trafo['1_J_19']
+                trafo['1_O_19'] = trafo['1_G_19'] + trafo['1_K_19']
+                trafo['1_P_19'] = trafo['1_O_19']
+
+                # # 0% < FINANCIADO < 100% # #
+                df_f = df[(0 < df['21']) & (df['21'] < 100)]
+
+                # TIPO 0
+                df_f_to = df_f[df_f['12'] == 0]
+                trafo['2_E_19'] = df_f_to.shape[0]
+                trafo['2_F_19'] = df_f0_to['5'].sum()
+                trafo['2_G_19'] = df_f_to['20'].sum()
+                trafo['2_H_19'] = trafo['2_G_19']
+
+                # TIPO 1
+                df_f_t1 = df_f[df_f['12'] == 1]
+                trafo['2_I_19'] = df_f_t1.shape[0]
+                trafo['2_J_19'] = df_f0_to['5'].sum()
+                trafo['2_K_19'] = df_f_t1['20'].sum()
+                trafo['2_L_19'] = trafo['2_K_19']
+
+                # TOTAL
+                trafo['2_M_19'] = trafo['2_E_19'] + trafo['2_I_19']
+                trafo['2_N_19'] = trafo['2_F_19'] + trafo['2_J_19']
+                trafo['2_O_19'] = trafo['2_G_19'] + trafo['2_K_19']
+                trafo['2_P_19'] = trafo['2_O_19']
+
+                # # FINANCIADO 100% # #
+                df_f100 = df[df['21'] == 100]
+
+                trafo['3_E_19'] = df_f100.shape[0]
+                trafo['3_F_19'] = df_f0_to['5'].sum()
+                trafo['3_G_19'] = df_f100['20'].sum()
+                trafo['3_H_19'] = trafo['3_G_19']
+
+                self.output_q.put(['-----', 'TRAFOS', '-----'])
+                for k, v in trafo.items():
+                    print(k, v)
+                    self.output_q.put([
+                        k,                                 # CODIGO_CELDA
+                        self.format_f(v, 2),               # IMPORTE
+                    ])
+
+                ##################
+                # # Fiabilidad # #
+                ##################
 
                 file_path = '/home/paup/Documents/cir2021/B6_2020_v8.txt'
                 columns = [str(x) for x in range(31)]
@@ -132,7 +277,7 @@ class FB9(MultiprocessBased):
                 cel['3_G_20'] = df_f100['26'].sum()
                 cel['3_H_20'] = cel['3_G_20']
 
-                self.output_q.put(['CELLES'])
+                self.output_q.put(['-----', 'FIABILIDAD', '-----'])
                 for k, v in cel.items():
                     print(k, v)
                     self.output_q.put([
@@ -203,7 +348,7 @@ class FB9(MultiprocessBased):
                 ct['3_G_21'] = df_f100['30'].sum()
                 ct['3_H_21'] = ct['3_G_21']
 
-                self.output_q.put(['CTs'])
+                self.output_q.put(['-----', 'CTs', '-----'])
                 for k, v in ct.items():
                     print(k, v)
                     self.output_q.put([
