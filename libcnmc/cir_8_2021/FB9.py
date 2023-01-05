@@ -69,6 +69,154 @@ class FB9(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
+                ##########
+                # # AT # #
+                ##########
+
+                file_path = '/home/paup/Documents/cir2021/B1_v8.txt'
+                columns = [str(x) for x in range(35)]
+                df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
+                trafo = OrderedDict()
+
+                # # AT # #
+                df = df[df['8'] >= 1]
+
+                # # FINANCIADO 0% # #
+                df_f0 = df[df['28'] == 0]
+
+                # TIPO 0
+                df_f0_to = df_f0[df_f0['22'] == 0]
+                trafo['1_E_16'] = df_f0_to.shape[0]
+                trafo['1_F_16'] = df_f0_to['10'].sum()
+                trafo['1_G_16'] = df_f0_to['27'].sum()
+                trafo['1_H_16'] = trafo['1_G_16']
+
+                # TIPO 1
+                df_f0_t1 = df_f0[df_f0['22'] == 1]
+                trafo['1_I_16'] = df_f0_t1.shape[0]
+                trafo['1_J_16'] = df_f0_t1['10'].sum()
+                trafo['1_K_16'] = df_f0_t1['27'].sum()
+                trafo['1_L_16'] = trafo['1_K_16']
+
+                # TOTAL
+                trafo['1_M_16'] = trafo['1_E_16'] + trafo['1_I_16']
+                trafo['1_N_16'] = trafo['1_F_16'] + trafo['1_J_16']
+                trafo['1_O_16'] = trafo['1_G_16'] + trafo['1_K_16']
+                trafo['1_P_16'] = trafo['1_O_16']
+
+                # # 0% < FINANCIADO < 100% # #
+                df_f = df[(0 < df['28']) & (df['28'] < 100)]
+
+                # TIPO 0
+                df_f_to = df_f[df_f['22'] == 0]
+                trafo['2_E_16'] = df_f_to.shape[0]
+                trafo['2_F_16'] = df_f_to['10'].sum()
+                trafo['2_G_16'] = df_f_to['27'].sum()
+                trafo['2_H_16'] = trafo['2_G_16']
+
+                # TIPO 1
+                df_f_t1 = df_f[df_f['22'] == 1]
+                trafo['2_I_16'] = df_f_t1.shape[0]
+                trafo['2_J_16'] = df_f_t1['10'].sum()
+                trafo['2_K_16'] = df_f_t1['27'].sum()
+                trafo['2_L_16'] = trafo['2_K_16']
+
+                # TOTAL
+                trafo['2_M_16'] = trafo['2_E_16'] + trafo['2_I_16']
+                trafo['2_N_16'] = trafo['2_F_16'] + trafo['2_J_16']
+                trafo['2_O_16'] = trafo['2_G_16'] + trafo['2_K_16']
+                trafo['2_P_16'] = trafo['2_O_16']
+
+                # # FINANCIADO 100% # #
+                df_f100 = df[df['28'] == 100]
+
+                trafo['3_E_16'] = df_f100.shape[0]
+                trafo['3_F_16'] = df_f100['10'].sum()
+                trafo['3_G_16'] = df_f100['27'].sum()
+                trafo['3_H_16'] = trafo['3_G_16']
+
+                self.output_q.put(['-----', 'AT', '-----'])
+                for k, v in trafo.items():
+                    print(k, v)
+                    self.output_q.put([
+                        k,                                 # CODIGO_CELDA
+                        self.format_f(v, 2),               # IMPORTE
+                    ])
+
+                ##########
+                # # BT # #
+                ##########
+
+                file_path = '/home/paup/Documents/cir2021/B1_v8.txt'
+                columns = [str(x) for x in range(35)]
+                df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
+                trafo = OrderedDict()
+
+                # # BT # #
+                df = df[df['8'] < 1]
+
+                # # FINANCIADO 0% # #
+                df_f0 = df[df['28'] == 0]
+
+                # TIPO 0
+                df_f0_to = df_f0[df_f0['22'] == 0]
+                trafo['1_E_17'] = df_f0_to.shape[0]
+                trafo['1_F_17'] = df_f0_to['10'].sum()
+                trafo['1_G_17'] = df_f0_to['27'].sum()
+                trafo['1_H_17'] = trafo['1_G_17']
+
+                # TIPO 1
+                df_f0_t1 = df_f0[df_f0['22'] == 1]
+                trafo['1_I_17'] = df_f0_t1.shape[0]
+                trafo['1_J_17'] = df_f0_t1['10'].sum()
+                trafo['1_K_17'] = df_f0_t1['27'].sum()
+                trafo['1_L_17'] = trafo['1_K_17']
+
+                # TOTAL
+                trafo['1_M_17'] = trafo['1_E_17'] + trafo['1_I_17']
+                trafo['1_N_17'] = trafo['1_F_17'] + trafo['1_J_17']
+                trafo['1_O_17'] = trafo['1_G_17'] + trafo['1_K_17']
+                trafo['1_P_17'] = trafo['1_O_17']
+
+                # # 0% < FINANCIADO < 100% # #
+                df_f = df[(0 < df['28']) & (df['28'] < 100)]
+
+                # TIPO 0
+                df_f_to = df_f[df_f['22'] == 0]
+                trafo['2_E_17'] = df_f_to.shape[0]
+                trafo['2_F_17'] = df_f_to['10'].sum()
+                trafo['2_G_17'] = df_f_to['27'].sum()
+                trafo['2_H_17'] = trafo['2_G_17']
+
+                # TIPO 1
+                df_f_t1 = df_f[df_f['22'] == 1]
+                trafo['2_I_17'] = df_f_t1.shape[0]
+                trafo['2_J_17'] = df_f_t1['10'].sum()
+                trafo['2_K_17'] = df_f_t1['27'].sum()
+                trafo['2_L_17'] = trafo['2_K_17']
+
+                # TOTAL
+                trafo['2_M_17'] = trafo['2_E_17'] + trafo['2_I_17']
+                trafo['2_N_17'] = trafo['2_F_17'] + trafo['2_J_17']
+                trafo['2_O_17'] = trafo['2_G_17'] + trafo['2_K_17']
+                trafo['2_P_17'] = trafo['2_O_17']
+
+                # # FINANCIADO 100% # #
+                df_f100 = df[df['28'] == 100]
+
+                trafo['3_E_17'] = df_f100.shape[0]
+                trafo['3_F_17'] = df_f100['10'].sum()
+                trafo['3_G_17'] = df_f100['27'].sum()
+                trafo['3_H_17'] = trafo['3_G_17']
+
+                self.output_q.put(['-----', 'BT', '-----'])
+                for k, v in trafo.items():
+                    print(k, v)
+                    self.output_q.put([
+                        k,                                 # CODIGO_CELDA
+                        self.format_f(v, 2),               # IMPORTE
+                    ])
+
                 ##################
                 # # Posiciones # #
                 ##################
@@ -135,7 +283,7 @@ class FB9(MultiprocessBased):
                 trafo['3_G_18'] = df_f100['18'].sum()
                 trafo['3_H_18'] = trafo['3_G_18']
 
-                self.output_q.put(['-----', 'TRAFOS', '-----'])
+                self.output_q.put(['-----', 'POSICIONES', '-----'])
                 for k, v in trafo.items():
                     print(k, v)
                     self.output_q.put([
@@ -165,7 +313,7 @@ class FB9(MultiprocessBased):
                 # TIPO 1
                 df_f0_t1 = df_f0[df_f0['12'] == 1]
                 trafo['1_I_19'] = df_f0_t1.shape[0]
-                trafo['1_J_19'] = df_f0_to['5'].sum()
+                trafo['1_J_19'] = df_f0_t1['5'].sum()
                 trafo['1_K_19'] = df_f0_t1['20'].sum()
                 trafo['1_L_19'] = trafo['1_K_19']
 
@@ -181,14 +329,14 @@ class FB9(MultiprocessBased):
                 # TIPO 0
                 df_f_to = df_f[df_f['12'] == 0]
                 trafo['2_E_19'] = df_f_to.shape[0]
-                trafo['2_F_19'] = df_f0_to['5'].sum()
+                trafo['2_F_19'] = df_f_to['5'].sum()
                 trafo['2_G_19'] = df_f_to['20'].sum()
                 trafo['2_H_19'] = trafo['2_G_19']
 
                 # TIPO 1
                 df_f_t1 = df_f[df_f['12'] == 1]
                 trafo['2_I_19'] = df_f_t1.shape[0]
-                trafo['2_J_19'] = df_f0_to['5'].sum()
+                trafo['2_J_19'] = df_f_t1['5'].sum()
                 trafo['2_K_19'] = df_f_t1['20'].sum()
                 trafo['2_L_19'] = trafo['2_K_19']
 
@@ -202,7 +350,7 @@ class FB9(MultiprocessBased):
                 df_f100 = df[df['21'] == 100]
 
                 trafo['3_E_19'] = df_f100.shape[0]
-                trafo['3_F_19'] = df_f0_to['5'].sum()
+                trafo['3_F_19'] = df_f100['5'].sum()
                 trafo['3_G_19'] = df_f100['20'].sum()
                 trafo['3_H_19'] = trafo['3_G_19']
 
