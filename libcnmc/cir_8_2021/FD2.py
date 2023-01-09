@@ -134,6 +134,8 @@ class FD2(MultiprocessBased):
                 else:
                     method = "get_time_delta"
                 time_spent = getattr(self, method)(start_case_id, end_case_id, context=context)
+                if isinstance(list, sw_id):
+                    sw_id = sw_id[0]
                 ref = ('giscedata.switching', sw_id)
                 self.compute_time(cod_gest_data, file_fields, time_spent, ref)
             else:
@@ -160,6 +162,8 @@ class FD2(MultiprocessBased):
             crm_data = atc_o.read(atc_id, ['crm_id', 'state'])
             if 'done' in crm_data['state']:
                 time_spent = self.get_atc_time_delta(crm_data['crm_id'][0], total_ts, context={})
+                if isinstance(list, atc_id):
+                    atc_id = atc_id[0]
                 ref = ('giscedata.atc', atc_id)
                 self.compute_time(cod_gest_data, file_fields, time_spent, ref)
             else:
@@ -372,6 +376,8 @@ class FD2(MultiprocessBased):
                     field_names = ['data_activacio', 'date_invoice']
                     context = {'model_names': model_names, 'field_names': field_names}
                     time_spent = self.get_time_delta(c105_id, invoice_id, context=context)
+                    if isinstance(list, sw_id):
+                        sw_id = sw_id[0]
                     ref = ('giscedata.switching', sw_id)
                     self.compute_time(cod_gest_data, file_fields, time_spent, ref)
                 else:
@@ -394,6 +400,8 @@ class FD2(MultiprocessBased):
                     field_names = ['data_activacio', 'date_invoice']
                     context = {'model_names': model_names, 'field_names': field_names}
                     time_spent = self.get_time_delta(c205_id, invoice_id, context=context)
+                    if isinstance(list, sw_id):
+                        sw_id = sw_id[0]
                     ref = ('giscedata.switching', sw_id)
                     self.compute_time(cod_gest_data, file_fields, time_spent, ref)
                 else:
@@ -543,6 +551,8 @@ class FD2(MultiprocessBased):
                     for atc_id in atc_ids:
                         crm_data = o.GiscedataAtc.read(atc_id, ['crm_id', 'state'])
                         if 'done' in crm_data['state']:
+                            if isinstance(list, atc_id):
+                                atc_id = atc_id[0]
                             if 'Z8_01' in cod_gest_data['name']:
                                 time_spent = self.get_atc_time_delta(crm_data['crm_id'][0], total_ts, context={})
                                 ref = ('giscedata.atc', atc_id)
