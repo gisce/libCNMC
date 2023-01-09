@@ -42,7 +42,7 @@ class FD2(MultiprocessBased):
 
     def compute_time(self, cod_gest_data, values, time_delta, ref):
         o = self.connection
-        create_vals = {'cod_gestio_id': cod_gest_data['id'], 'ref': '{},{}'.format(ref[0], [1])}
+        create_vals = {'cod_gestio_id': cod_gest_data['id'], 'ref': '{},{}'.format(ref[0], ref[1])}
         track_obj = o.model('giscedata.circular.82021.case.tracking')
         if time_delta > cod_gest_data['dies_limit']:
             values['fuera_plazo'] = values['fuera_plazo'] + 1
