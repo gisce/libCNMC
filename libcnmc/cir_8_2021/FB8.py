@@ -128,9 +128,8 @@ class FB8(MultiprocessBased):
                     cuenta_contable = ''
                     financiado = ''
 
-
                 if despatx['motivacion']:
-                    motivacion = get_codi_actuacio(O, despatx['motivacion'] and despatx['motivacion'][0])
+                    motivacion = despatx['motivacion']
                 else:
                     motivacion = ''
 
@@ -166,6 +165,7 @@ class FB8(MultiprocessBased):
                 else:
                     id_municipi = get_id_municipi_from_company(O)
 
+                comunitat_codi = ''
                 if id_municipi:
                     id_comunitat = fun_ccaa(id_municipi)
                     comunitat_vals = O.ResComunitat_autonoma.read(
