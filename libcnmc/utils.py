@@ -3,9 +3,10 @@ import os
 import multiprocessing
 import tempfile
 
-from pyproj import Proj
-from pyproj import transform
 from shapely import wkt
+from shapely.geometry import Point
+from shapely.ops import transform
+import pyproj
 
 AVAILABLE_CPUS = max(multiprocessing.cpu_count() - os.getloadavg()[0], 0) + 1
 
@@ -83,6 +84,23 @@ SUPPORTED_FORMS_CIR_8_2021 = [
     ('d2', 'D2')
 ]
 
+PROJS = {
+        '25829': pyproj.CRS('EPSG:25829'),
+        '25830': pyproj.CRS('EPSG:25830'),
+        '25831': pyproj.CRS('EPSG:25831'),
+}
+
+PROJ_TRANSFORMERS = {
+        '25829': pyproj.Transformer.from_crs(
+            PROJS['25829'], PROJS['25830']
+        ).transform,
+        '25830': pyproj.Transformer.from_crs(
+            PROJS['25830'], PROJS['25830']
+        ).transform,
+        '25831': pyproj.Transformer.from_crs(
+            PROJS['25831'], PROJS['25830']
+        ).transform,
+}
 
 def get_forced_elements(connection, model):
     """
@@ -411,12 +429,12 @@ def convert_srid(srid_source, point):
     :rtype: tuple
     """
     assert srid_source in ['25829', '25830', '25831']
-    if srid_source != '25830':
-        source = Proj(init='epsg:{0}'.format(srid_source))
-        dest = Proj(init='epsg:25830')
-        if point[0] and point[1]:
-            point = transform(source, dest, point[0], point[1])
-    return point
+    dpoint = Point(point[0], point[1])
+    transformer = PROJ_TRANSFORMERS[srid_source]
+
+    dpoint = transform(transformer, dpoint)
+
+    return (dpoint.x, dpoint.y)
 
 
 def get_srid(c):
