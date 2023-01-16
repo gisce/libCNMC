@@ -92,7 +92,7 @@ class LAT(MultiprocessBased):
             'propietari', 'tensio_max_disseny_id', 'name', 'origen', 'final',
             'perc_financament', 'circuits', 'longitud_cad', 'cable',
             'tipus_instalacio_cnmc_id', 'data_baixa', self.compare_field,
-            'baixa', 'data_baixa', 'conductors'
+            'baixa', 'data_baixa', 'conductors', 'id_regulatori'
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         data_baixa = '{0}-01-01'.format(self.year)
@@ -162,6 +162,12 @@ class LAT(MultiprocessBased):
                     else:
                         cable = O.GiscedataAtCables.read(
                             id_desconegut, ['tipus'])
+
+                    # Si hi ha 'id_regulatori' el posem
+                    if tram.get('id_regulatori', False):
+                        o_tram = tram['id_regulatori']
+                    else:
+                        o_tram = '{}{}'.format(self.prefix, tram['name'])
 
                     # Calculem any posada en marxa
                     data_pm = ''
@@ -323,7 +329,7 @@ class LAT(MultiprocessBased):
                     else:
                         conductors = 1
                     output = [
-                        '{}{}'.format(self.prefix, tram['name']),  # IDENTIFIC.
+                        o_tram,  # IDENTIFIC.
                         tram.get('cini', '') or '',         # CINI
                         origen or edge['start_node'][1],    # ORIGEN
                         final or edge['end_node'][1],       # DESTINO

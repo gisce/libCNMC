@@ -43,27 +43,26 @@ class F1(MultiprocessBased):
                         self.cts[codi_ct] = zona_qualitat
         return zona_qualitat
 
-    def get_tipus_connexio(self, id_escomesa):
-        O = self.connection
-        bloc = O.GiscegisBlocsEscomeses.search(
+    def get_tipus_connexio(o, id_escomesa):
+        bloc = o.GiscegisBlocsEscomeses.search(
             [('escomesa', '=', id_escomesa)]
         )
         tipus = ''
         if bloc:
-            bloc = O.GiscegisBlocsEscomeses.read(bloc[0], ['node'])
+            bloc = o.GiscegisBlocsEscomeses.read(bloc[0], ['node'])
             if bloc['node']:
                 node = bloc['node'][0]
-                edge = O.GiscegisEdge.search(
+                edge = o.GiscegisEdge.search(
                     ['|', ('start_node', '=', node), ('end_node', '=', node)]
                 )
                 if edge:
-                    edge = O.GiscegisEdge.read(edge[0], ['id_linktemplate'])
+                    edge = o.GiscegisEdge.read(edge[0], ['id_linktemplate'])
                     if edge['id_linktemplate']:
-                        bt = O.GiscedataBtElement.search(
+                        bt = o.GiscedataBtElement.search(
                             [('id', '=', edge['id_linktemplate'])]
                         )
                         if bt:
-                            bt = O.GiscedataBtElement.read(
+                            bt = o.GiscedataBtElement.read(
                                 bt[0], ['tipus_linia']
                             )
                             if bt['tipus_linia']:
@@ -120,7 +119,7 @@ class F1(MultiprocessBased):
                 o_tensio = ''
                 o_connexio = ''
                 if cups and cups['id_escomesa']:
-                    o_connexio = self.get_tipus_connexio(
+                    o_connexio = self.get_tipus_connexio(O,
                         cups['id_escomesa'][0]
                     )
                     search_params = [('escomesa', '=', cups['id_escomesa'][0])]

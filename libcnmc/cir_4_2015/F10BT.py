@@ -71,7 +71,7 @@ class F10BT(MultiprocessBased):
         o = self.connection
         fields_to_read = [
             'name', 'propietari', 'coeficient', 'cable', 'voltatge', 'cini',
-            'longitud_cad', 'municipi', 'longitud_cad', 'tipus_linia'
+            'longitud_cad', 'municipi', 'longitud_cad', 'tipus_linia', 'id_regulatori'
         ]
         while True:
             try:
@@ -97,7 +97,13 @@ class F10BT(MultiprocessBased):
                     )
                 except:
                     o_nivell_tensio = 0.0
-                o_tram = 'B%s' % linia['name']
+
+                # Si hi ha 'id_regulatori' el posem
+                if linia.get('id_regulatori', False):
+                    o_tram = linia['id_regulatori']
+                else:
+                    o_tram = 'B%s' % linia['name']
+
                 if 'edge_id' in o.GiscedataBtElement.fields_get().keys():
                     bt_edge = o.GiscedataBtElement.read(
                         linia['id'], ['edge_id']

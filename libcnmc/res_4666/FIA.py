@@ -115,10 +115,12 @@ class FIA(MultiprocessBased):
                 #Comprovo si la cella pertany a ct o lat per trobar la ccaa
                 if cll['tram_id']:
                     tram_id = cll['tram_id'][0]
-                    element_act = '{}{}'.format(
-                        self.prefix, O.GiscedataAtTram.read(
-                            tram_id, ['name'])['name']
-                    )
+                    tram_data = O.GiscedataAtTram.read(tram_id, ['name', 'id_regulatori'])
+                    if tram_data.get('id_regulatori', False):
+                        element_act = tram_data['id_regulatori']
+                    else:
+                        element_name = tram_data['name']
+                        element_act = '{}{}'.format(self.prefix, element_name)
                 else:
                     tram_id = False
 

@@ -86,7 +86,7 @@ class LBT(MultiprocessBased):
             'name', 'municipi', 'data_pm', 'ct', 'coeficient', 'cini',
             'perc_financament', 'longitud_cad', 'cable', 'voltatge',
             'data_alta', 'propietari', 'tipus_instalacio_cnmc_id', 'baixa',
-            'data_baixa', "edge_id", self.compare_field
+            'data_baixa', "edge_id", self.compare_field, 'id_regulatori'
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
         while True:
@@ -96,6 +96,12 @@ class LBT(MultiprocessBased):
                 self.progress_q.put(item)
 
                 linia = O.GiscedataBtElement.read(item, fields_to_read)
+
+                # Si hi ha 'id_regulatori' el posem
+                if linia.get('id_regulatori', False):
+                    o_linia = linia['id_regulatori']
+                else:
+                    o_linia = '{}{}'.format(self.prefix, linia['name'])
 
                 comunitat = ''
                 if linia['municipi']:
@@ -230,7 +236,7 @@ class LBT(MultiprocessBased):
                         final = str(linia['name']) + '_1'
 
                 output = [
-                    '{}{}'.format(self.prefix, linia['name']),  # IDENTIFICADOR
+                    o_linia,  # IDENTIFICADOR
                     linia['cini'] or '',            # CINI
                     origen or '',                   # ORIGEN
                     final or '',                    # DESTINO

@@ -1,105 +1,16 @@
 # -*- coding: utf-8 -*-
 import click
-from datetime import datetime
-
 from libcnmc.utils import N_PROC
-from libcnmc.core import UpdateCNMCStats, UpdateCINISComptador
 from libcnmc.core.backend import OOOPFactory
-from libcnmc.cir_4_2014 import F1, F1bis, F11
-from libcnmc import cir_3_2015
-
-from libcnmc.res_4603 import INV
-from libcnmc.res_4603 import CINIMAQ, CINIPOS, CreateCelles, UpdateCINISTrafo
-from libcnmc.res_4603 import UpdateCINISTrams, UpdateCINISCts
-from cli_4666 import cnmc_4666
-from cli_4667 import cnmc_4667
-from cli_4_2015 import cnmc_4_2015
-from cli_6181 import cnmc_6181
-from cli_8_2021 import cnmc_8_2021  
+from libcnmc import cir_8_2021
+from datetime import datetime
 
 
 @click.group()
-def cnmc():
+def cnmc_8_2021():
     pass
 
-
-@cnmc.command()
-@click.option('-q', '--quiet', default=False,
-              help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True,
-              help="Deshabilitar el mode interactiu")
-@click.option('-s', '--server', default='http://localhost',
-              help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP',
-              type=click.INT)
-@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
-@click.option('-w', '--password', default='admin',
-              help='Contrasenya usuari ERP')
-@click.option('-d', '--database', help='Nom de la base de dades')
-@click.option('--num-proc', default=N_PROC, type=click.INT)
-@click.option('-f', '--file-input', type=click.Path(exists=True))
-def update_cnmc_stats(**kwargs):
-    """
-    Click entry to update CNMC stats
-
-    :param kwargs:
-    :type kwargs: dict(str,str)
-    :return: None
-    :rtype: None
-    """
-
-    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-                    pwd=kwargs['password'], port=kwargs['port'],
-                    uri=kwargs['server'])
-    proc = UpdateCNMCStats(
-        quiet=kwargs['quiet'],
-        interactive=kwargs['interactive'],
-        connection=O,
-        num_proc=kwargs['num_proc'],
-        file_input=kwargs['file_input']
-    )
-    proc.execute()
-
-
-@cnmc.command()
-@click.option('-q', '--quiet', default=False,
-              help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True,
-              help="Deshabilitar el mode interactiu")
-@click.option('-s', '--server', default='http://localhost',
-              help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP',
-              type=click.INT)
-@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
-@click.option('-w', '--password', default='admin',
-              help='Contrasenya usuari ERP')
-@click.option('-d', '--database', help='Nom de la base de dades')
-@click.option('--num-proc', default=N_PROC, type=click.INT)
-@click.option('-f', '--file-input', type=click.Path(exists=True))
-def update_cinis_comptador(**kwargs):
-    """
-    Click entry to update CINI of comptador
-
-    :param kwargs: Parametrs to pass to the process
-    :type kwargs: dict(str, str)
-    :return: None
-    :rtype: None
-    """
-
-    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-                    pwd=kwargs['password'], port=kwargs['port'],
-                    uri=kwargs['server'])
-    proc = UpdateCINISComptador(
-        quiet=kwargs['quiet'],
-        interactive=kwargs['interactive'],
-        connection=O,
-        num_proc=kwargs['num_proc'],
-        file_input=kwargs['file_input']
-    )
-    proc.execute()
-
-
-@cnmc.command()
+@cnmc_8_2021.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -117,32 +28,130 @@ def update_cinis_comptador(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-def cir_4_2014_f1(**kwargs):
+@click.option('--derechos/--no-derechos', default=False)
+@click.option("--reducir-cups/--no-reducir-cups", default=False)
+@click.option("--allow-cna/--no-allow-cna", default=False)
+@click.option("--zona_qualitat",default="ct")
+def cir_8_2021_fa1(**kwargs):
     """
-    Click entry to generate the circular F1 of 4/2014
+    Click entry to generate the FA1 of 2021
 
     :param kwargs: Params to pass to the process
-    :type kwargs: dict(str, str)
+    :type kwargs: dict(str,str)
     :return: None
     :rtype: None
     """
-
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
                     pwd=kwargs['password'], port=kwargs['port'],
                     uri=kwargs['server'])
-    proc = F1(
+    proc = cir_8_2021.FA1(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
         output=kwargs['output'],
         connection=O,
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
-        year=kwargs['year']
+        year=kwargs['year'],
+        derechos=kwargs["derechos"],
+        reducir_cups=kwargs["reducir_cups"],
+        allow_cna=kwargs["allow_cna"],
+        zona_qualitat=kwargs["zona_qualitat"]
+    )
+    proc.calc()
+
+@cnmc_8_2021.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('--derechos/--no-derechos', default=False)
+@click.option("--reducir-cups/--no-reducir-cups", default=False)
+@click.option("--allow-cna/--no-allow-cna", default=False)
+@click.option("--zona_qualitat",default="ct")
+def cir_8_2021_fa2(**kwargs):
+    """
+    Click entry to generate the FA2 of 2021
+
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str,str)
+    :return: None
+    :rtype: None
+    """
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
+    proc = cir_8_2021.FA2(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year'],
+        derechos=kwargs["derechos"],
+        reducir_cups=kwargs["reducir_cups"],
+        allow_cna=kwargs["allow_cna"],
+        zona_qualitat=kwargs["zona_qualitat"]
     )
     proc.calc()
 
 
-@cnmc.command()
+@cnmc_8_2021.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def cir_8_2021_fa3(**kwargs):
+    """
+    Click entry to generate the FA3 of 2021
+
+    :param kwargs: Params to pass to the process
+    :type kwargs: dict(str,str)
+    :return: None
+    :rtype: None
+    """
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
+    proc = cir_8_2021.FA3(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year'],
+    )
+    proc.calc()
+
+
+@cnmc_8_2021.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -160,119 +169,21 @@ def cir_4_2014_f1(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-def cir_4_2014_f1bis(**kwargs):
+@click.option('--derechos/--no-derechos', default=False)
+@click.option("--reducir-cups/--no-reducir-cups",default=False)
+def cir_8_2021_fa4(**kwargs):
     """
-    Click entry to generate F1bis of 4/2014
+    Click entry to generate the FA4 file of 2021
 
     :param kwargs: Params to pass to the process
-    :type kwargs: dict(str, str)
+    :type kwargs:dict(str,str)
     :return: None
     :rtype: None
     """
-
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
                     pwd=kwargs['password'], port=kwargs['port'],
                     uri=kwargs['server'])
-    proc = F1bis(
-        quiet=kwargs['quiet'],
-        interactive=kwargs['interactive'],
-        output=kwargs['output'],
-        connection=O,
-        num_proc=kwargs['num_proc'],
-        codi_r1=kwargs['codi_r1'],
-        year=kwargs['year']
-    )
-    proc.calc()
-
-
-@cnmc.command()
-@click.option('-q', '--quiet', default=False,
-              help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True,
-              help="Deshabilitar el mode interactiu")
-@click.option('-o', '--output', help="Fitxer de sortida")
-@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
-@click.option('-y', '--year', default=(datetime.now().year - 1),
-              help=u"Any per càlculs")
-@click.option('-s', '--server', default='http://localhost',
-              help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP',
-              type=click.INT)
-@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
-@click.option('-w', '--password', default='admin',
-              help='Contrasenya usuari ERP')
-@click.option('-d', '--database', help='Nom de la base de dades')
-@click.option('--num-proc', default=N_PROC, type=click.INT)
-def cir_4_2014_f11(**kwargs):
-    """
-    Click entry to generate the F11 of 4/2014
-
-    :param kwargs: Params to pass to the process
-    :type kwargs: dict(str, str)
-    :return: None
-    :rtype: None
-    """
-
-    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-                    pwd=kwargs['password'], port=kwargs['port'],
-                    uri=kwargs['server'])
-    proc = F11(
-        quiet=kwargs['quiet'],
-        interactive=kwargs['interactive'],
-        output=kwargs['output'],
-        connection=O,
-        num_proc=kwargs['num_proc'],
-        codi_r1=kwargs['codi_r1'],
-        year=kwargs['year']
-    )
-    proc.calc()
-
-
-# CSV 4667
-def csv_4667(obj, **kwargs):
-    """
-    Starts the proces to generate the 4667
-
-    :param obj: Object of the process to generate
-    :param kwargs: kwargs to pass to the process
-    :type kwargs: dict(str,str)
-    :return: None
-    :rtype: None
-    """
-
-    con = OOOPFactory(
-        dbname=kwargs['database'], user=kwargs['user'],
-        pwd=kwargs['password'], port=kwargs['port'],
-        uri=kwargs['server'])
-    proc = obj(
-        quiet=kwargs['quiet'],
-        interactive=kwargs['interactive'],
-        output=kwargs['output'],
-        connection=con,
-        num_proc=kwargs['num_proc'],
-        codi_r1=kwargs['codi_r1'],
-        year=kwargs['year'],
-    )
-    proc.calc()
-
-
-# CSV LAT
-def res_lat(LAT, **kwargs):
-    """
-    Generates the CSV file for LAT process
-
-    :param LAT: process to generate
-    :type LAT: MultiprocessBased
-    :param kwargs: Parameters to generate the file, passed to the process
-    :type kwargs: dict(str,str)
-    :return: None
-    :rtype: None
-    """
-
-    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-                    pwd=kwargs['password'], port=kwargs['port'],
-                    uri=kwargs['server'])
-    proc = LAT(
+    proc = cir_8_2021.FA4(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
         output=kwargs['output'],
@@ -280,13 +191,13 @@ def res_lat(LAT, **kwargs):
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
-        embarrats=kwargs['embarrats'],
-        compare_field=kwargs["compare_field"]
+        derechos=kwargs['derechos'],
+        reducir_cupss=kwargs["reducir_cups"]
     )
     proc.calc()
 
 
-@cnmc.command()
+@cnmc_8_2021.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -297,67 +208,28 @@ def res_lat(LAT, **kwargs):
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
               help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP',
-              type=click.INT)
+@click.option('-p', '--port', default=8069,
+              help='Port servidor ERP', type=click.INT)
 @click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
 @click.option('-w', '--password', default='admin',
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-def res_4603_lat(**kwargs):
+@click.option('--derechos/--no-derechos', default=False)
+@click.option("--reducir-cups/--no-reducir-cups",default=False)
+def cir_8_2021_fa5(**kwargs):
     """
-    Click entry to generate the LAT file of the 4603
+    Click entry to generate the FA5 file of 2021
 
     :param kwargs: Params to pass to the process
-    :type kwargs: dict(str,str)
+    :type kwargs:dict(str,str)
     :return: None
     :rtype: None
     """
-
-    from libcnmc.res_4603 import LAT
-    res_lat(LAT, **kwargs)
-
-
-@cnmc.command()
-@click.option('-q', '--quiet', default=False,
-              help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True,
-              help="Deshabilitar el mode interactiu")
-@click.option('-o', '--output', help="Fitxer de sortida")
-@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
-@click.option('-y', '--year', default=(datetime.now().year - 1),
-              help=u"Any per càlculs")
-@click.option('-s', '--server', default='http://localhost',
-              help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP',
-              type=click.INT)
-@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
-@click.option('-w', '--password', default='admin',
-              help='Contrasenya usuari ERP')
-@click.option('-d', '--database', help='Nom de la base de dades')
-@click.option('--embarrats/--no-embarrats', default=False,
-              help="Afegir embarrats")
-@click.option('--num-proc', default=N_PROC, type=click.INT)
-def res_4771_lat(**kwargs):
-    """
-    Click entry to generate the LAT file of 4771
-
-    :param kwargs: Params to pass to the process
-    :type kwargs: dict(str,str)
-    :return: None
-    :rtype: None
-    """
-
-    from libcnmc.res_4771 import LAT
-    res_lat(LAT, **kwargs)
-
-
-# CSV LBT
-def res_lbt(LBT, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
                     pwd=kwargs['password'], port=kwargs['port'],
                     uri=kwargs['server'])
-    proc = LBT(
+    proc = cir_8_2021.FA5(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
         output=kwargs['output'],
@@ -365,12 +237,13 @@ def res_lbt(LBT, **kwargs):
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
-        embarrats=kwargs['embarrats']
+        derechos=kwargs['derechos'],
+        reducir_cupss=kwargs["reducir_cups"]
     )
     proc.calc()
 
 
-@cnmc.command()
+@cnmc_8_2021.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -381,226 +254,32 @@ def res_lbt(LBT, **kwargs):
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
               help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP',
-              type=click.INT)
+@click.option('-p', '--port', default=8069,
+              help='Port servidor ERP', type=click.INT)
 @click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
 @click.option('-w', '--password', default='admin',
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-def res_4603_lbt(**kwargs):
+@click.option('--derechos/--no-derechos', default=False)
+@click.option("--reducir-cups/--no-reducir-cups",default=False)
+@click.option('--prefix_at', help="Prefix dels Trams AT")
+@click.option('--prefix_bt', help="Prefix dels Trams BT")
+@click.option('--div/--no-div', default=False, help="Dividir la longitud dels Trams AT entre el núm. de circuits")
+def cir_8_2021_fb1(**kwargs):
     """
-    Click entry to generate the LBT file of the 4603
+    Click entry to generate the FB1 file of 2021
 
     :param kwargs: Params to pass to the process
-    :type kwargs: dict(str,str)
+    :type kwargs:dict(str,str)
     :return: None
     :rtype: None
     """
 
-    from libcnmc.res_4603 import LBT
-    res_lbt(LBT, **kwargs)
-
-
-@cnmc.command()
-@click.option('-q', '--quiet', default=False,
-              help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True,
-              help="Deshabilitar el mode interactiu")
-@click.option('-o', '--output', help="Fitxer de sortida")
-@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
-@click.option('-y', '--year', default=(datetime.now().year - 1),
-              help=u"Any per càlculs")
-@click.option('-s', '--server', default='http://localhost',
-              help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP',
-              type=click.INT)
-@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
-@click.option('-w', '--password', default='admin',
-              help='Contrasenya usuari ERP')
-@click.option('-d', '--database', help='Nom de la base de dades')
-@click.option('--embarrats/--no-embarrats', default=False,
-              help="Afegir embarrats")
-@click.option('--num-proc', default=N_PROC, type=click.INT)
-def res_4771_lbt(**kwargs):
-    """
-    Click entry to generate the LBT of 4771
-
-    :param kwargs:Params to pass to the process
-    :type kwargs: dict(str,str)
-    :return: None
-    :rtype: None
-    """
-
-    from libcnmc.res_4771 import LBT
-    res_lbt(LBT, **kwargs)
-
-
-# CSV SUB
-def res_sub(SUB, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
                     pwd=kwargs['password'], port=kwargs['port'],
                     uri=kwargs['server'])
-    proc = SUB(
-        quiet=kwargs['quiet'],
-        interactive=kwargs['interactive'],
-        output=kwargs['output'],
-        connection=O,
-        num_proc=kwargs['num_proc'],
-        codi_r1=kwargs['codi_r1'],
-        year=kwargs['year']
-    )
-    proc.calc()
-
-
-@cnmc.command()
-@click.option('-q', '--quiet', default=False,
-              help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True,
-              help="Deshabilitar el mode interactiu")
-@click.option('-o', '--output', help="Fitxer de sortida")
-@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
-@click.option('-y', '--year', default=(datetime.now().year - 1),
-              help=u"Any per càlculs")
-@click.option('-s', '--server', default='http://localhost',
-              help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP',
-              type=click.INT)
-@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
-@click.option('-w', '--password', default='admin',
-              help='Contrasenya usuari ERP')
-@click.option('-d', '--database', help='Nom de la base de dades')
-@click.option('--num-proc', default=N_PROC, type=click.INT)
-def res_4603_sub(**kwargs):
-    """
-    Click entry to generate the SUB file of the 4603
-
-    :param kwargs:Params to pass to the process
-    :type kwargs: dict(str, str)
-    :return: None
-    :rtype: None
-    """
-    from libcnmc.res_4603 import SUB
-    res_sub(SUB, **kwargs)
-
-
-@cnmc.command()
-@click.option('-q', '--quiet', default=False,
-              help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True,
-              help="Deshabilitar el mode interactiu")
-@click.option('-o', '--output', help="Fitxer de sortida")
-@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
-@click.option('-y', '--year', default=(datetime.now().year - 1),
-              help=u"Any per càlculs")
-@click.option('-s', '--server', default='http://localhost',
-              help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP',
-              type=click.INT)
-@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
-@click.option('-w', '--password', default='admin',
-              help='Contrasenya usuari ERP')
-@click.option('-d', '--database', help='Nom de la base de dades')
-@click.option('--num-proc', default=N_PROC, type=click.INT)
-def res_4771_sub(**kwargs):
-    """
-    Click entry to generate the SUB file of the 4771
-
-    :param kwargs: Params to pass to the process
-    :type kwargs: dict(str,str)
-    :return: None
-    :rtype: None
-    """
-    from libcnmc.res_4771 import SUB
-    res_sub(SUB, **kwargs)
-
-
-# CSV POS
-def res_pos(POS, **kwargs):
-    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-                    pwd=kwargs['password'], port=kwargs['port'],
-                    uri=kwargs['server'])
-    proc = POS(
-        quiet=kwargs['quiet'],
-        interactive=kwargs['interactive'],
-        output=kwargs['output'],
-        connection=O,
-        num_proc=kwargs['num_proc'],
-        codi_r1=kwargs['codi_r1'],
-        year=kwargs['year']
-    )
-    proc.calc()
-
-
-@cnmc.command()
-@click.option('-q', '--quiet', default=False,
-              help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True,
-              help="Deshabilitar el mode interactiu")
-@click.option('-o', '--output', help="Fitxer de sortida")
-@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
-@click.option('-y', '--year', default=(datetime.now().year - 1),
-              help=u"Any per càlculs")
-@click.option('-s', '--server', default='http://localhost',
-              help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP',
-              type=click.INT)
-@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
-@click.option('-w', '--password', default='admin',
-              help='Contrasenya usuari ERP')
-@click.option('-d', '--database', help='Nom de la base de dades')
-@click.option('--num-proc', default=N_PROC, type=click.INT)
-def res_4603_pos(**kwargs):
-    """
-    Click entry to generate the POS file of 4603
-
-    :param kwargs: Params to pass to the process
-    :type kwargs: dict(str, str)
-    :return: None
-    :rtype: None
-    """
-
-    from libcnmc.res_4603 import POS
-    res_pos(POS, **kwargs)
-
-
-@cnmc.command()
-@click.option('-q', '--quiet', default=False,
-              help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True,
-              help="Deshabilitar el mode interactiu")
-@click.option('-o', '--output', help="Fitxer de sortida")
-@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
-@click.option('-y', '--year', default=(datetime.now().year - 1),
-              help=u"Any per càlculs")
-@click.option('-s', '--server', default='http://localhost',
-              help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP',
-              type=click.INT)
-@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
-@click.option('-w', '--password', default='admin',
-              help='Contrasenya usuari ERP')
-@click.option('-d', '--database', help='Nom de la base de dades')
-@click.option('--num-proc', default=N_PROC, type=click.INT)
-def res_4771_pos(**kwargs):
-    """
-    Click entry to generate the POS file of 4771
-
-    :param kwargs: Parameters to pas to the process
-    :type kwargs: dict(str, str)
-    :return: None
-    :rtype: None
-    """
-    from libcnmc.res_4771 import POS
-    res_pos(POS, **kwargs)
-
-
-# CSV MAQ
-def res_maq(MAQ, **kwargs):
-    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-                    pwd=kwargs['password'], port=kwargs['port'],
-                    uri=kwargs['server'])
-    proc = MAQ(
+    proc = cir_8_2021.FB1(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
         output=kwargs['output'],
@@ -608,12 +287,16 @@ def res_maq(MAQ, **kwargs):
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
-        compare_field=kwargs["compare_field"]
+        derechos=kwargs['derechos'],
+        reducir_cupss=kwargs["reducir_cups"],
+        prefix_at=kwargs['prefix_at'],
+        prefix_bt=kwargs['prefix_bt'],
+        div=kwargs['div']
     )
     proc.calc()
 
 
-@cnmc.command()
+@cnmc_8_2021.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -624,64 +307,30 @@ def res_maq(MAQ, **kwargs):
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
               help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP',
-              type=click.INT)
+@click.option('-p', '--port', default=8069,
+              help='Port servidor ERP', type=click.INT)
 @click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
 @click.option('-w', '--password', default='admin',
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-def res_4603_maq(**kwargs):
+@click.option('--derechos/--no-derechos', default=False)
+@click.option('--prefix_at', help="Prefix dels Trams AT")
+@click.option('--prefix_bt', help="Prefix dels Trams BT")
+@click.option("--reducir-cups/--no-reducir-cups",default=False)
+def cir_8_2021_fb1_1(**kwargs):
     """
-    Click entry to generate the MAQ file of the 4603
+    Click entry to generate the FB1.1 file of 2021
 
     :param kwargs: Params to pass to the process
-    :type kwargs: dict(str, str)
-    :return:None
-    :rtype: None
-    """
-    from libcnmc.res_4603 import MAQ
-    res_maq(MAQ, **kwargs)
-
-
-@cnmc.command()
-@click.option('-q', '--quiet', default=False,
-              help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True,
-              help="Deshabilitar el mode interactiu")
-@click.option('-o', '--output', help="Fitxer de sortida")
-@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
-@click.option('-y', '--year', default=(datetime.now().year - 1),
-              help=u"Any per càlculs")
-@click.option('-s', '--server', default='http://localhost',
-              help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP',
-              type=click.INT)
-@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
-@click.option('-w', '--password', default='admin',
-              help='Contrasenya usuari ERP')
-@click.option('-d', '--database', help='Nom de la base de dades')
-@click.option('--num-proc', default=N_PROC, type=click.INT)
-def res_4771_maq(**kwargs):
-    """
-    Click entry to generate the MAQ file of 4771
-
-    :param kwargs: Params to pass to the process
-    :type kwargs: dict(str,str)
+    :type kwargs:dict(str,str)
     :return: None
     :rtype: None
     """
-
-    from libcnmc.res_4771 import MAQ
-    res_maq(MAQ, **kwargs)
-
-
-# CSV DES
-def res_des(DES, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
                     pwd=kwargs['password'], port=kwargs['port'],
                     uri=kwargs['server'])
-    proc = DES(
+    proc = cir_8_2021.FB1_1(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
         output=kwargs['output'],
@@ -689,12 +338,16 @@ def res_des(DES, **kwargs):
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
-        compare_field=kwargs["compare_field"]
+        derechos=kwargs['derechos'],
+        prefix_at=kwargs['prefix_at'],
+        prefix_bt=kwargs['prefix_bt'],
+        reducir_cupss=kwargs["reducir_cups"]
     )
     proc.calc()
 
 
-@cnmc.command()
+
+@cnmc_8_2021.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -712,21 +365,30 @@ def res_des(DES, **kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-def res_4603_des(**kwargs):
+def cir_8_2021_fb2(**kwargs):
     """
-    Click entry to generate the DES file of 4603
+    Click entry to generate the B2: CTS
 
-    :param kwargs: Params to pass to the process
-    :type kwargs: dict(str,str)
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str) 
     :return: None
-    :rtype: None
+    :rtype: None 
     """
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
+    proc = cir_8_2021.FB2(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year'],
+    )
+    proc.calc()
 
-    from libcnmc.res_4603 import DES
-    res_des(DES, **kwargs)
-
-
-@cnmc.command()
+@cnmc_8_2021.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -744,38 +406,30 @@ def res_4603_des(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-def res_4771_des(**kwargs):
+def cir_8_2021_fb2_1(**kwargs):
     """
-    Click entry to generate the DES file of 4771
+    Click entry to generate the B2_1: CTS TRAFOS
 
-    :param kwargs: Params to pass to the process
+    :param kwargs: Params to pas to the process
     :type kwargs: dict(str, str)
     :return: None
     :rtype: None
     """
-
-    from libcnmc.res_4771 import DES
-    res_des(DES, **kwargs)
-
-
-# CSV FIA
-def res_fia(FIA, **kwargs):
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
                     pwd=kwargs['password'], port=kwargs['port'],
                     uri=kwargs['server'])
-    proc = FIA(
+    proc = cir_8_2021.FB2_1(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
         output=kwargs['output'],
         connection=O,
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
-        year=kwargs['year']
+        year=kwargs['year'],
     )
     proc.calc()
 
-
-@cnmc.command()
+@cnmc_8_2021.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -793,177 +447,30 @@ def res_fia(FIA, **kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-def res_4603_fia(**kwargs):
+def cir_8_2021_fb2_2(**kwargs):
     """
-    Click entry to generate the FIA file of 4603
+    Click entry to generate the B2_2: CELDAS EN CTS
 
-    :param kwargs: Params to pass to the process
-    :type kwargs: dict(str,str)
-    :return: None
-    :rtype: None
-    """
-
-    from libcnmc.res_4603 import FIA
-    res_fia(FIA, **kwargs)
-
-
-@cnmc.command()
-@click.option('-q', '--quiet', default=False,
-              help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True,
-              help="Deshabilitar el mode interactiu")
-@click.option('-o', '--output', help="Fitxer de sortida")
-@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
-@click.option('-y', '--year', default=(datetime.now().year - 1),
-              help=u"Any per càlculs")
-@click.option('-s', '--server', default='http://localhost',
-              help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP',
-              type=click.INT)
-@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
-@click.option('-w', '--password', default='admin',
-              help='Contrasenya usuari ERP')
-@click.option('-d', '--database', help='Nom de la base de dades')
-@click.option('--num-proc', default=N_PROC, type=click.INT)
-def res_4771_fia(**kwargs):
-    """
-    Click entry to generate the FIA file of 4771
-
-    :param kwargs: Parameters to pass to the process
-    :type kwargs: dict(str,str)
-    :return: None
-    :rtype: None
-    """
-    from libcnmc.res_4771 import FIA
-    res_fia(FIA, **kwargs)
-
-
-# CSV CTS
-def res_cts(CTS, **kwargs):
-    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-                    pwd=kwargs['password'], port=kwargs['port'],
-                    uri=kwargs['server'])
-    proc = CTS(
-        quiet=kwargs['quiet'],
-        interactive=kwargs['interactive'],
-        output=kwargs['output'],
-        connection=O,
-        num_proc=kwargs['num_proc'],
-        codi_r1=kwargs['codi_r1'],
-        year=kwargs['year']
-    )
-    proc.calc()
-
-
-@cnmc.command()
-@click.option('-q', '--quiet', default=False,
-              help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True,
-              help="Deshabilitar el mode interactiu")
-@click.option('-o', '--output', help="Fitxer de sortida")
-@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
-@click.option('-y', '--year', default=(datetime.now().year - 1),
-              help=u"Any per càlculs")
-@click.option('-s', '--server', default='http://localhost',
-              help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP',
-              type=click.INT)
-@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
-@click.option('-w', '--password', default='admin',
-              help='Contrasenya usuari ERP')
-@click.option('-d', '--database', help='Nom de la base de dades')
-@click.option('--num-proc', default=N_PROC, type=click.INT)
-def res_4603_cts(**kwargs):
-    """
-    Click entry to generate the CTs file of 4603
-
-    :param kwargs: Parameters to pass to the process
-    :type kwargs: dict(str,str)
-    :return: None
-    :rtype: None
-    """
-    from libcnmc.res_4603 import CTS
-    res_cts(CTS, **kwargs)
-
-
-@cnmc.command()
-@click.option('-q', '--quiet', default=False,
-              help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True,
-              help="Deshabilitar el mode interactiu")
-@click.option('-o', '--output', help="Fitxer de sortida")
-@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
-@click.option('-y', '--year', default=(datetime.now().year - 1),
-              help=u"Any per càlculs")
-@click.option('-s', '--server', default='http://localhost',
-              help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP',
-              type=click.INT)
-@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
-@click.option('-w', '--password', default='admin',
-              help='Contrasenya usuari ERP')
-@click.option('-d', '--database', help='Nom de la base de dades')
-@click.option('--num-proc', default=N_PROC, type=click.INT)
-def res_4771_cts(**kwargs):
-    """
-    Click entry to generate the CT file of 4771
-
-    :param kwargs: Parameters to pass to the process
+    :param kwargs: Params to pas to the process
     :type kwargs: dict(str, str)
     :return: None
     :rtype: None
     """
-    from libcnmc.res_4771 import CTS
-    res_cts(CTS, **kwargs)
-
-
-# CSV INV
-@cnmc.command()
-@click.option('-o', '--output', help="Fitxer de sortida")
-@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
-@click.option("-l", "--liniesat", help="Fitxers CSV de linies AT",
-              type=click.Path(exists=True))
-@click.option("-b", "--liniesbt", help="Fitxers CSV de linies BT",
-              type=click.Path(exists=True))
-@click.option("-e", "--subestacions", help="Fitxers CSV de subestacions",
-              type=click.Path(exists=True))
-@click.option("-z", "--posicions", help="Fitxers CSV de posicions",
-              type=click.Path(exists=True))
-@click.option("-m", "--maquines", help="Fitxers CSV de maquines",
-              type=click.Path(exists=True))
-@click.option("-x", "--despatxos", help="Fitxers CSV de despatxos",
-              type=click.Path(exists=True))
-@click.option("-f", "--fiabilitat", help="Fitxers CSV de fiabilitat",
-              type=click.Path(exists=True))
-@click.option("-t", "--transformacio", help="Fitxers CSV de transformacio",
-              type=click.Path(exists=True))
-def res_4603_inv(**kwargs):
-    """
-    Click entry to generate the INV file of the 4603
-
-    :param kwargs: Params to pass to the process
-    :type kwargs: dict(str,str)
-    :return: None
-    :rtype: None
-    """
-
-    proc = INV(
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
+    proc = cir_8_2021.FB2_2(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
         output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
-        liniesat=kwargs['liniesat'],
-        liniesbt=kwargs['liniesbt'],
-        subestacions=kwargs['subestacions'],
-        posicions=kwargs['posicions'],
-        maquinas=kwargs['maquines'],
-        despatxos=kwargs['despatxos'],
-        fiabilidad=kwargs['fiabilitat'],
-        transformacion=kwargs['transformacio'],
+        year=kwargs['year'],
     )
     proc.calc()
 
-
-# CINIS Maquines
-@cnmc.command()
+@cnmc_8_2021.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -981,24 +488,31 @@ def res_4603_inv(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-def res_4603_cinimaq(**kwargs):
+def cir_8_2021_fb3(**kwargs):
+    """
+    Click entry to generate the B3: SUBESTACIONES
+
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str)
+    :return: None
+    :rtype: None
+    """
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
                     pwd=kwargs['password'], port=kwargs['port'],
                     uri=kwargs['server'])
-    proc = CINIMAQ(
+    proc = cir_8_2021.FB3(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
         output=kwargs['output'],
         connection=O,
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
-        year=kwargs['year']
+        year=kwargs['year'],
     )
     proc.calc()
 
 
-# CINIS Posicions
-@cnmc.command()
+@cnmc_8_2021.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
@@ -1016,165 +530,37 @@ def res_4603_cinimaq(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-def res_4603_cinipos(**kwargs):
+def cir_8_2021_fb3_1(**kwargs):
+    """
+    Click entry to generate the B3_1: PARQUES
+
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str)
+    :return: None
+    :rtype: None
+    """
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
                     pwd=kwargs['password'], port=kwargs['port'],
                     uri=kwargs['server'])
-    proc = CINIPOS(
+    proc = cir_8_2021.FB3_1(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
         output=kwargs['output'],
         connection=O,
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
-        year=kwargs['year']
+        year=kwargs['year'],
     )
     proc.calc()
 
 
-@cnmc.command()
-@click.option('-q', '--quiet', default=False,
-              help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True,
-              help="Deshabilitar el mode interactiu")
-@click.option('-s', '--server', default='http://localhost',
-              help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP',
-              type=click.INT)
-@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
-@click.option('-w', '--password', default='admin',
-              help='Contrasenya usuari ERP')
-@click.option('-d', '--database', help='Nom de la base de dades')
-@click.option('--num-proc', default=N_PROC, type=click.INT)
-@click.option('-f', '--file-input', type=click.Path(exists=True))
-def create_celles(**kwargs):
-    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-                    pwd=kwargs['password'], port=kwargs['port'],
-                    uri=kwargs['server'])
-    proc = CreateCelles(
-        quiet=kwargs['quiet'],
-        interactive=kwargs['interactive'],
-        connection=O,
-        num_proc=kwargs['num_proc'],
-        file_input=kwargs['file_input'])
-    proc.calc()
-
-
-@cnmc.command()
-@click.option('-q', '--quiet', default=False,
-              help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True,
-              help="Deshabilitar el mode interactiu")
-@click.option('-s', '--server', default='http://localhost',
-              help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP',
-              type=click.INT)
-@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
-@click.option('-w', '--password', default='admin',
-              help='Contrasenya usuari ERP')
-@click.option('-d', '--database', help='Nom de la base de dades')
-@click.option('--num-proc', default=N_PROC, type=click.INT)
-@click.option('-f', '--file-input', type=click.Path(exists=True))
-def update_cinis_trafo(**kwargs):
-    """
-    Click entry to update cinis of trafos
-
-    :param kwargs: Params to pass to the process
-    :type kwargs:
-    :return: None
-    :rtype: None
-    """
-    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-                    pwd=kwargs['password'], port=kwargs['port'],
-                    uri=kwargs['server'])
-    proc = UpdateCINISTrafo(
-        quiet=kwargs['quiet'],
-        interactive=kwargs['interactive'],
-        connection=O,
-        num_proc=kwargs['num_proc'],
-        file_input=kwargs['file_input'])
-    proc.calc()
-
-
-@cnmc.command()
-@click.option('-q', '--quiet', default=False,
-              help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True,
-              help="Deshabilitar el mode interactiu")
-@click.option('-s', '--server', default='http://localhost',
-              help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP',
-              type=click.INT)
-@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
-@click.option('-w', '--password', default='admin',
-              help='Contrasenya usuari ERP')
-@click.option('-d', '--database', help='Nom de la base de dades')
-@click.option('--num-proc', default=N_PROC, type=click.INT)
-@click.option('-f', '--file-input', type=click.Path(exists=True))
-def update_cinis_trams(**kwargs):
-    """
-    Click entry to update the CINI of trams
-
-    :param kwargs: Params to pass to the process
-    :type kwargs: dict(str,str)
-    :return:
-    :rtype:
-    """
-    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-                    pwd=kwargs['password'], port=kwargs['port'],
-                    uri=kwargs['server'])
-    proc = UpdateCINISTrams(
-        quiet=kwargs['quiet'],
-        interactive=kwargs['interactive'],
-        connection=O,
-        num_proc=kwargs['num_proc'],
-        file_input=kwargs['file_input'])
-    proc.calc()
-
-
-@cnmc.command()
-@click.option('-q', '--quiet', default=False,
-              help="No mostrar missatges de status per stderr")
-@click.option('--interactive/--no-interactive', default=True,
-              help="Deshabilitar el mode interactiu")
-@click.option('-s', '--server', default='http://localhost',
-              help=u'Adreça servidor ERP')
-@click.option('-p', '--port', default=8069, help='Port servidor ERP',
-              type=click.INT)
-@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
-@click.option('-w', '--password', default='admin',
-              help='Contrasenya usuari ERP')
-@click.option('-d', '--database', help='Nom de la base de dades')
-@click.option('--num-proc', default=N_PROC, type=click.INT)
-@click.option('-f', '--file-input', type=click.Path(exists=True))
-def update_cinis_cts(**kwargs):
-    """
-    Click entry to update CINI of CT
-
-    :param kwargs: Params to pass to the process
-    :type kwargs: dict(str,str)
-    :return: None
-    :rtype: None
-    """
-
-    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
-                    pwd=kwargs['password'], port=kwargs['port'],
-                    uri=kwargs['server'])
-    proc = UpdateCINISCts(
-        quiet=kwargs['quiet'],
-        interactive=kwargs['interactive'],
-        connection=O,
-        num_proc=kwargs['num_proc'],
-        file_input=kwargs['file_input'])
-    proc.calc()
-
-
-@cnmc.command()
+@cnmc_8_2021.command()
 @click.option('-q', '--quiet', default=False,
               help="No mostrar missatges de status per stderr")
 @click.option('--interactive/--no-interactive', default=True,
               help="Deshabilitar el mode interactiu")
 @click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
 @click.option('-y', '--year', default=(datetime.now().year - 1),
               help=u"Any per càlculs")
 @click.option('-s', '--server', default='http://localhost',
@@ -1186,30 +572,404 @@ def update_cinis_cts(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-def cir_3_2015_f3(**kwargs):
+@click.option('--all_int', default=True)
+def cir_8_2021_fb3_2(**kwargs):
     """
-    Click entry to generate the F3 of the 3/2015
+    Click entry to generate the B3_2: POSICIONES
 
-    :param kwargs: Params to pass to the process
-    :type kwargs: dict(str,str)
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str)
     :return: None
     :rtype: None
     """
-
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
                     pwd=kwargs['password'], port=kwargs['port'],
                     uri=kwargs['server'])
-    proc = cir_3_2015.F3(
+    proc = cir_8_2021.FB3_2(
         quiet=kwargs['quiet'],
         interactive=kwargs['interactive'],
         output=kwargs['output'],
         connection=O,
         num_proc=kwargs['num_proc'],
-        year=kwargs['year']
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year'],
+        all_int=kwargs['all_int'],
+    )
+    proc.calc()
+
+@cnmc_8_2021.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def cir_8_2021_fb3_3(**kwargs):
+    """
+    Click entry to generate the B3_2: POSICIONES
+
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str)
+    :return: None
+    :rtype: None
+    """
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
+    proc = cir_8_2021.FB3_3(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year'],
+    )
+    proc.calc()
+
+@cnmc_8_2021.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('--all_int', default=True)
+def cir_8_2021_fb4(**kwargs):
+    """
+    Click entry to generate the B3_2: POSICIONES
+
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str)
+    :return: None
+    :rtype: None
+    """
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
+    proc = cir_8_2021.FB4(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year'],
+        all_int=kwargs['all_int'],
     )
     proc.calc()
 
 
-cli = click.CommandCollection(sources=[
-    cnmc, cnmc_4666, cnmc_4667, cnmc_4_2015, cnmc_6181, cnmc_8_2021
-])
+@cnmc_8_2021.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def cir_8_2021_fb5(**kwargs):
+    """
+    Click entry to generate the B5: MÁQUINAS
+
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str)
+    :return: None
+    :rtype: None
+    """
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
+    proc = cir_8_2021.FB5(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year'],
+    )
+    proc.calc()
+
+
+@cnmc_8_2021.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def cir_8_2021_fb5_2(**kwargs):
+    """
+    Click entry to generate the B5: MÁQUINAS CONDENSADORES
+
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str)
+    :return: None
+    :rtype: None
+    """
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
+    proc = cir_8_2021.FB5_2(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year'],
+    )
+    proc.calc()
+
+@cnmc_8_2021.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('--prefix_at', help="Prefix dels Trams AT")
+def cir_8_2021_fb6(**kwargs):
+    """
+    Click entry to generate the B3_2: POSICIONES
+
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str)
+    :return: None
+    :rtype: None
+    """
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
+    proc = cir_8_2021.FB6(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year'],
+        prefix_at=kwargs['prefix_at'],
+    )
+    proc.calc()
+
+@cnmc_8_2021.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def cir_8_2021_fb7(**kwargs):
+    """
+    Click entry to generate the B7: NODOS TOPOLÓGICOS
+
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str)
+    :return: None
+    :rtype: None
+    """
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
+    proc = cir_8_2021.FB7(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year'],
+    )
+    proc.calc()
+
+
+@cnmc_8_2021.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def cir_8_2021_fb8(**kwargs):
+    """
+    Click entry to generate the B8: OTROS ACTIVOS
+
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str)
+    :return: None
+    :rtype: None
+    """
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
+    proc = cir_8_2021.FB8(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year'],
+    )
+    proc.calc()
+
+
+@cnmc_8_2021.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def cir_8_2021_fb9(**kwargs):
+    """
+    Click entry to generate the B9: CUADRO RESUMEN DE INVERSIONES EFECTUADAS
+
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str)
+    :return: None
+    :rtype: None
+    """
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
+    proc = cir_8_2021.FB9(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year'],
+    )
+    proc.calc()
+
+@cnmc_8_2021.command()
+@click.option('-q', '--quiet', default=False,
+              help="No mostrar missatges de status per stderr")
+@click.option('--interactive/--no-interactive', default=True,
+              help="Deshabilitar el mode interactiu")
+@click.option('-o', '--output', help="Fitxer de sortida")
+@click.option('-c', '--codi-r1', help='Codi R1 de la distribuidora')
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              help=u"Any per càlculs")
+@click.option('-s', '--server', default='http://localhost',
+              help=u'Adreça servidor ERP')
+@click.option('-p', '--port', default=8069, help='Port servidor ERP',
+              type=click.INT)
+@click.option('-u', '--user', default='admin', help='Usuari servidor ERP')
+@click.option('-w', '--password', default='admin',
+              help='Contrasenya usuari ERP')
+@click.option('-d', '--database', help='Nom de la base de dades')
+@click.option('--num-proc', default=N_PROC, type=click.INT)
+def cir_8_2021_fd2(**kwargs):
+    """
+    Click entry to generate the B8: OTROS ACTIVOS
+
+    :param kwargs: Params to pas to the process
+    :type kwargs: dict(str, str)
+    :return: None
+    :rtype: None
+    """
+    O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
+                    pwd=kwargs['password'], port=kwargs['port'],
+                    uri=kwargs['server'])
+    proc = cir_8_2021.FD2(
+        quiet=kwargs['quiet'],
+        interactive=kwargs['interactive'],
+        output=kwargs['output'],
+        connection=O,
+        num_proc=kwargs['num_proc'],
+        codi_r1=kwargs['codi_r1'],
+        year=kwargs['year'],
+    )
+    proc.calc()

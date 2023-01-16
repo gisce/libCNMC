@@ -60,6 +60,30 @@ TARIFAS_BT = [
     '2.0A', '2.0DHA', '2.1A', '2.1DHA', '2.0DHS', '2.1DHS', '3.0A'
 ]
 
+SUPPORTED_FORMS_CIR_8_2021 = [
+    ('a1', 'A1'),
+    ('a2', 'A2'),
+    ('a3', 'A3'),
+    ('a4', 'A4'),
+    ('a5', 'A5'),
+    ('b1', 'B1'),
+    ('b1_1', 'B1.1'),
+    ('b2', 'B2'),
+    ('b2_1', 'B2.1'),
+    ('b2_2', 'B2.2'),
+    ('b3', 'B3'),
+    ('b3_1', 'B3.1'),
+    ('b3_2', 'B3.2'),
+    ('b3_3', 'B3.3'),
+    ('b4', 'B4'),
+    ('b5', 'B5'),
+    ('b6', 'B6'),
+    ('b7', 'B7'),
+    ('b8', 'B8'),
+    ('b9', 'B9'),
+    ('d2', 'D2')
+]
+
 PROJS = {
         '25829': pyproj.CRS('EPSG:25829'),
         '25830': pyproj.CRS('EPSG:25830'),
@@ -503,3 +527,99 @@ def parse_geom(geom):
         points = []
 
     return points
+
+
+def get_ines(o, ids):
+    """
+    Gets de INE code of 'provincia' and 'municipi' by its ids
+    :param o: OpenERP connection
+    :param ids: A single 'provincia' id and 'municipi' id
+    :type ids: dict
+    :return: The INE code of each id
+    :rtype: dict
+    """
+    res = {'ine_municipi': 0, 'ine_provincia': 0}
+    if ids.get('id_municipi', False):
+        municipi_dict = o.ResMunicipi.read(ids['id_municipi'][0],
+                                           ['ine', 'dc'])
+        res['ine_municipi'] = '{0}{1}'.format(municipi_dict['ine'][-3:],
+                                              municipi_dict['dc'])
+    if ids.get('id_provincia', False):
+        res['ine_provincia'] = o.ResCountryState.read(
+            ids['id_provincia'][0], ['code']
+        )['code']
+    return res
+
+
+def get_tipus_connexio(o, id_escomesa):
+    """
+    Gets the tipus of connexio of an escomesa. If it's a BT escomesa we
+    check the TramBT that suplies it to see if its aerial or underground.
+    If it's not a BT escomesa we directly set the tipus of connexio to
+    aerial.
+    :param id_escomesa: Id of the escomesa
+    :type id_escomesa: int
+    :return: A or S depending on if the linia that suplies the escomesa
+             is aerial or underground
+    :rtype: str
+    """
+
+    tipus = 'A'
+    if 'node_id' in o.GiscedataCupsEscomesa.fields_get().keys() and 'edge_id' in o.GiscedataBtElement.fields_get().keys():
+        node_id = o.GiscedataCupsEscomesa.read(
+            id_escomesa, ['node_id']
+        )['node_id']
+        if node_id:
+            edge_id = o.GiscegisEdge.search(
+                [
+                    '|',
+                    ('start_node', '=', node_id[0]),
+                    ('end_node', '=', node_id[0])
+                ]
+            )
+            if edge_id:
+                tram_bt = o.GiscedataBtElement.search(
+                    [('edge_id', '=', edge_id[0])]
+                )
+                if tram_bt:
+                    tram_bt = o.GiscedataBtElement.read(
+                        tram_bt[0], ['tipus_linia']
+                    )
+                    if tram_bt['tipus_linia']:
+                        tipus = tram_bt['tipus_linia'][1][0]
+    else:
+        bloc = o.GiscegisBlocsEscomeses.search(
+            [('escomesa', '=', id_escomesa)]
+        )
+        if bloc:
+            bloc = o.GiscegisBlocsEscomeses.read(bloc[0], ['node'])
+            if bloc['node']:
+                node = bloc['node'][0]
+                edge_bt = o.GiscegisEdge.search(
+                    [
+                        '|',
+                        ('start_node', '=', node),
+                        ('end_node', '=', node),
+                        '|',
+                        ('layer', 'ilike', self.layer),
+                        ('layer', 'ilike', 'EMBARRA%BT%')
+                    ]
+                )
+                edge = o.GiscegisEdge.read(
+                    edge_bt[0], ['id_linktemplate']
+                )
+                if edge['id_linktemplate']:
+                    tram_bt = o.GiscedataBtElement.search(
+                        [
+                            ('name', '=', edge['id_linktemplate'])
+                        ]
+                    )
+                    if tram_bt:
+                        tram_bt = o.GiscedataBtElement.read(
+                            tram_bt[0], ['tipus_linia']
+                        )
+                        if tram_bt:
+                            if tram_bt['tipus_linia']:
+                                tipus = tram_bt['tipus_linia'][1][0]
+
+    return tipus

@@ -59,7 +59,7 @@ class F10AT(MultiprocessBased):
         o = self.connection
         fields_to_read = [
             'name', 'cini', 'circuits', 'longitud_cad', 'linia', 'origen',
-            'final', 'coeficient', 'cable', 'tensio_max_disseny','tensio_max_disseny_id'
+            'final', 'coeficient', 'cable', 'tensio_max_disseny_id', 'id_regulatori'
         ]
         data_pm_limit = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
@@ -118,7 +118,13 @@ class F10AT(MultiprocessBased):
                         o_nivell_tensio = linia["tensio"]
                     o_nivell_tensio = format_f(
                         float(o_nivell_tensio) / 1000.0, 3)
-                    o_tram = 'A%s' % at['name']
+
+                    # Si hi ha 'id_regulatori' el posem
+                    if at.get('id_regulatori', False):
+                        o_tram = at['id_regulatori']
+                    else:
+                        o_tram = 'A%s' % at['name']
+
                     if 'edge_id' in o.GiscedataAtTram.fields_get().keys():
                         at_edge = o.GiscedataAtTram.read(
                             at['id'], ['edge_id']
