@@ -21,6 +21,8 @@ class FB9(MultiprocessBased):
         self.report_name = 'FB9 - Inversiones efectuadas'
         self.base_object = 'Inversiones'
         self.compare_field = '4666_entregada'
+        self.prefix_AT = kwargs.pop('prefix_at', 'A') or 'A'
+        self.prefix_BT = kwargs.pop('prefix_bt', 'B') or 'B'
 
     def get_sequence(self):
 
@@ -42,16 +44,6 @@ class FB9(MultiprocessBased):
 
     def consumer(self):
         O = self.connection
-        data_pm_limit = '{0}-01-01'.format(self.year + 1)
-        data_baixa_limit = '{0}-01-01'.format(self.year)
-        fields_to_read = [
-            'id', 'cini', 'name', 'geom', 'vertex', 'data_apm', 'data_baixa', 'municipi', 'data_baixa_parcial',
-            'valor_baixa_parcial', 'motivacion', self.compare_field,
-        ]
-        fields_to_read_obra = [
-            'subvenciones_europeas', 'subvenciones_nacionales', 'subvenciones_prtr', 'financiado', 'fecha_baja',
-            'cuenta_contable', 'im_ingenieria', 'im_materiales', 'im_obracivil', 'im_trabajos'
-        ]
 
         while True:
             try:
@@ -59,11 +51,38 @@ class FB9(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
 
+                print('EI---------------')
+
+                # RESUMEN
+
+                resumen = OrderedDict()
+                resumen['5_G_6'] = 0
+                resumen['5_G_8'] = 0
+                resumen['5_G_7'] = 0
+
+                at_obj = O.GiscedataAtTram
+                bt_obj = O.GiscedataBtElement
+                pos_obj = O.GiscedataCtsSubestacionsPosicio
+                cella_obj = O.GiscedataCellesCella
+                ct_obj = O.GiscedataCts
+                models = [at_obj, bt_obj, pos_obj, cella_obj, ct_obj]
+
+                names = {}
+                for model in models:
+                    model_ids = model.search([('cedida', '=', True)])
+                    names_data = model.read(model_ids, ['name'])
+
+                    names[model._name] = []
+                    for name_data in names_data:
+                        names[model._name].append(name_data['name'])
+
+                print(names)
+
                 ##########
                 # # AT # #
                 ##########
 
-                file_path = '/home/paup/Documents/cir2021/B1_v8.txt'
+                file_path = '/tmp/8_2021_loaded_b1.txt'
                 columns = [str(x) for x in range(35)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns,
                                  dtype={'0': 'object', '21': 'object', '23': 'object', '34': 'object'})
@@ -71,6 +90,17 @@ class FB9(MultiprocessBased):
 
                 # # AT # #
                 df = df[df['8'] >= 1]
+
+                # CUADRO 5
+                resumen['5_G_6'] += df['29'].sum()
+                resumen['5_G_7'] += df['31'].sum()
+                resumen['5_G_8'] += df['30'].sum()
+
+                names_at_prefix = []
+                for name in names['giscedata.at.tram']:
+                    names_at_prefix.append('{}{}'.format(self.prefix_AT, name))
+                df_5_g_10 = df[df['0'].isin(names_at_prefix)]
+                resumen['5_G_10'] = df_5_g_10['27'].sum()
 
                 # # FINANCIADO 0% # #
                 df_f0 = df[df['28'] == 0]
@@ -137,7 +167,7 @@ class FB9(MultiprocessBased):
                 # # BT # #
                 ##########
 
-                file_path = '/home/paup/Documents/cir2021/B1_v8.txt'
+                file_path = '/tmp/8_2021_loaded_b1.txt'
                 columns = [str(x) for x in range(35)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns,
                                  dtype={'0': 'object', '21': 'object', '23': 'object', '34': 'object'})
@@ -145,6 +175,17 @@ class FB9(MultiprocessBased):
 
                 # # BT # #
                 df = df[df['8'] < 1]
+
+                # CUADRO 5
+                resumen['5_G_6'] += df['29'].sum()
+                resumen['5_G_7'] += df['31'].sum()
+                resumen['5_G_8'] += df['30'].sum()
+
+                names_bt_prefix = []
+                for name in names['giscedata.bt.element']:
+                    names_bt_prefix.append('{}{}'.format(self.prefix_BT, name))
+                df_5_g_10 = df[df['0'].isin(names_bt_prefix)]
+                resumen['5_G_10'] += df_5_g_10['27'].sum()
 
                 # # FINANCIADO 0% # #
                 df_f0 = df[df['28'] == 0]
@@ -211,13 +252,22 @@ class FB9(MultiprocessBased):
                 # # Posiciones # #
                 ##################
 
-                file_path = '/home/paup/Documents/cir2021/B4_v8.txt'
-                columns = [str(x) for x in range(25)]
+                file_path = '/tmp/8_2021_loaded_b4.txt'
+                columns = [str(x) for x in range(27)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
                 pos = OrderedDict()
 
                 # # EQUIPADAS CON INTERRUPTOR # #
-                df = df[df['6'] == 1]
+                df = df[df['6'].isin([1, 2])]
+
+                # CUADRO 5
+                resumen['5_G_6'] += df['20'].sum()
+                resumen['5_G_7'] += df['22'].sum()
+                resumen['5_G_8'] += df['21'].sum()
+
+                pos_names = names['giscedata.cts.subestacions.posicio']
+                df_5_g_10 = df[df['0'].isin(pos_names)]
+                resumen['5_G_10'] += df_5_g_10['18'].sum()
 
                 # # FINANCIADO 0% # #
                 df_f0 = df[df['24'] == 0]
@@ -284,10 +334,14 @@ class FB9(MultiprocessBased):
                 # # Máquinas # #
                 ################
 
-                file_path = '/home/paup/Documents/cir2021/B5_v8.txt'
+                file_path = '/tmp/8_2021_loaded_b5.txt'
                 columns = [str(x) for x in range(25)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
                 trafo = OrderedDict()
+
+                resumen['5_G_6'] += df['17'].sum()
+                resumen['5_G_7'] += df['19'].sum()
+                resumen['5_G_8'] += df['18'].sum()
 
                 # # FINANCIADO 0% # #
                 df_f0 = df[df['21'] == 0]
@@ -354,10 +408,19 @@ class FB9(MultiprocessBased):
                 # # Fiabilidad # #
                 ##################
 
-                file_path = '/home/paup/Documents/cir2021/B6_2020_v8.txt'
+                file_path = '/tmp/8_2021_loaded_b6.txt'
                 columns = [str(x) for x in range(31)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
                 cel = OrderedDict()
+
+                # CUADRO 5
+                resumen['5_G_6'] += df['23'].sum()
+                resumen['5_G_7'] += df['25'].sum()
+                resumen['5_G_8'] += df['24'].sum()
+
+                cella_names = names['giscedata.celles.cella']
+                df_5_g_10 = df[df['0'].isin(cella_names)]
+                resumen['5_G_10'] += df_5_g_10['26'].sum()
 
                 # # FINANCIADO 0% # #
                 df_f0 = df[df['27'] == 0]
@@ -424,10 +487,19 @@ class FB9(MultiprocessBased):
                 # # CTs # #
                 ###########
 
-                file_path = '/home/paup/Documents/cir2021/B2_v8.txt'
+                file_path = '/tmp/8_2021_loaded_b2.txt'
                 columns = [str(x) for x in range(36)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
                 ct = OrderedDict()
+
+                # CUADRO 5
+                resumen['5_G_6'] += df['27'].sum()
+                resumen['5_G_7'] += df['29'].sum()
+                resumen['5_G_8'] += df['28'].sum()
+
+                ct_names = names['giscedata.cts']
+                df_5_g_10 = df[df['0'].isin(ct_names)]
+                resumen['5_G_10'] += df_5_g_10['30'].sum()
 
                 # # FINANCIADO 0% # #
                 df_f0 = df[df['31'] == 0]
@@ -549,6 +621,7 @@ class FB9(MultiprocessBased):
                         self.format_f(v, 2),               # IMPORTE
                     ])
 
+
                 #########################
                 # # EQUIPOS DE MEDIDA # #
                 #########################
@@ -597,10 +670,10 @@ class FB9(MultiprocessBased):
                 equipos['1A_D_16'] = equipos_data['1a_d_16']
                 equipos['1A_E_16'] = equipos_data['1a_e_16']
                 # TODOS #
-                equipos['1A_D_17'] = equipos['1A_D_10'] + equipos['1A_D_11'] + equipos['1A_D_12'] + equipos['1A_D_13']
-                equipos['1A_D_17'] += equipos['1A_D_14'] + equipos['1A_D_15'] + equipos['1A_D_16']
-                equipos['1A_E_17'] = equipos['1A_E_10'] + equipos['1A_E_11'] + equipos['1A_E_12'] + equipos['1A_E_13']
-                equipos['1A_E_17'] += equipos['1A_E_14'] + equipos['1A_E_15'] + equipos['1A_E_16']
+                equipos['1A_D_17'] = equipos['1A_D_10'] + equipos['1A_D_11'] + equipos['1A_D_12'] + equipos['1A_D_13'] \
+                                     + equipos['1A_D_14'] + equipos['1A_D_15'] + equipos['1A_D_16']
+                equipos['1A_E_17'] = equipos['1A_E_10'] + equipos['1A_E_11'] + equipos['1A_E_12'] + equipos['1A_E_13'] \
+                                     + equipos['1A_E_14'] + equipos['1A_E_15'] + equipos['1A_E_16']
 
                 # # EN RED # #
 
@@ -711,10 +784,14 @@ class FB9(MultiprocessBased):
                 # # OTROS INMOVILIZADOS # #
                 ###########################
 
-                file_path = '/home/paup/Documents/cir2021/B8_v8.txt'
+                file_path = '/tmp/8_2021_loaded_b8.txt'
                 columns = [str(x) for x in range(17)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns, dtype={'2': 'object'})
                 desp = OrderedDict()
+
+                resumen['5_G_6'] += df['11'].sum()
+                resumen['5_G_7'] += df['13'].sum()
+                resumen['5_G_8'] += df['12'].sum()
 
                 # # # CUADRO 1B # # #
 
@@ -889,6 +966,86 @@ class FB9(MultiprocessBased):
 
                 self.output_q.put(['-----', 'TOTAL INVERSIONES', '-----'])
                 for k, v in inv.items():
+                    self.output_q.put([
+                        k,                                 # CODIGO_CELDA
+                        self.format_f(v, 2),               # IMPORTE
+                    ])
+
+                ################
+                # # CUADRO 4 # #
+                ################
+
+                autonomica = OrderedDict()
+
+                autonomica['4_E_17'] = ''
+                autonomica['4_F_17'] = ''
+                autonomica['4_G_17'] = ''
+                autonomica['4_H_17'] = ''
+                autonomica['4_E_18'] = ''
+                autonomica['4_F_18'] = ''
+                autonomica['4_G_18'] = ''
+                autonomica['4_H_18'] = ''
+                autonomica['4_E_19'] = ''
+                autonomica['4_F_19'] = ''
+                autonomica['4_G_19'] = ''
+                autonomica['4_H_19'] = ''
+                autonomica['4_E_20'] = ''
+                autonomica['4_F_20'] = ''
+                autonomica['4_G_20'] = ''
+                autonomica['4_H_20'] = ''
+                autonomica['4_E_21'] = ''
+                autonomica['4_F_21'] = ''
+                autonomica['4_G_21'] = ''
+                autonomica['4_H_21'] = ''
+                autonomica['4_E_22'] = ''
+                autonomica['4_F_22'] = ''
+                autonomica['4_G_22'] = ''
+                autonomica['4_H_22'] = ''
+                autonomica['4_E_23'] = ''
+                autonomica['4_F_23'] = ''
+                autonomica['4_G_23'] = ''
+                autonomica['4_H_23'] = ''
+                autonomica['4_E_24'] = ''
+                autonomica['4_F_24'] = ''
+                autonomica['4_G_24'] = ''
+                autonomica['4_H_24'] = ''
+                autonomica['4_E_25'] = ''
+                autonomica['4_F_25'] = ''
+                autonomica['4_G_25'] = ''
+                autonomica['4_H_25'] = ''
+                autonomica['4_E_26'] = ''
+                autonomica['4_F_26'] = ''
+                autonomica['4_G_26'] = ''
+                autonomica['4_H_26'] = ''
+
+                self.output_q.put(['-----', 'NORMATIVA AUTONOMICA', '-----'])
+                for k, v in autonomica.items():
+                    self.output_q.put([
+                        k,                                 # CODIGO_CELDA
+                        self.format_f(v, 2),               # IMPORTE
+                    ])
+
+                ###############
+                # # RESUMEN # #
+                ###############
+
+                # INVERSIÓN BRUTA
+                resumen['5_G_5'] = inv['1_O_25'] + inv['2_O_25'] + inv['3_G_25']
+
+                # INVERSIÓN INSTALACIONES FINANCIADAS
+                resumen['5_G_9'] = inv['3_G_25']
+
+                # INVERSIÓN EQUIPOS MEDIDA
+                resumen['5_G_11'] = equipos['1A_E_17']
+
+                # INVERSIÓN NETA TOTAL
+                resumen['5_G_12'] = resumen['5_G_5'] - resumen['5_G_6'] - resumen['5_G_7'] - resumen['5_G_8'] \
+                                    - resumen['5_G_9'] - resumen['5_G_10'] - resumen['5_G_11']
+
+                # INGRESOS PERCIBIDOS
+
+                self.output_q.put(['-----', 'RESUMEN DE INVERSIONES', '-----'])
+                for k, v in resumen.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
                         self.format_f(v, 2),               # IMPORTE
