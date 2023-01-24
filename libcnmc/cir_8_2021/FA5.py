@@ -23,7 +23,7 @@ class FA5(MultiprocessBased):
 
     def get_sequence(self):
         O = self.connection
-        ids_tipus = O.GiscedataPuntFronteraTipus.search([('retribucions', '=', True)])
+        ids_tipus = O.GiscedataPuntFronteraTipus.search([('retribucio', '=', True)])
         ids = O.GiscedataPuntFrontera.search([('tipus', 'in', ids_tipus), ('any_publicacio', '=', self.year)])
         return ids
 
