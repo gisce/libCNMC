@@ -7,7 +7,7 @@ Informe de la CNMC relatiu a la generació conectada de les xarxes de distribuci
 from __future__ import absolute_import
 from datetime import datetime
 import traceback
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import parse_geom, get_tipus_connexio, format_f, get_ine, convert_srid, get_srid
 from shapely import wkt
 
@@ -19,7 +19,7 @@ ZONA = {
 }
 
 
-class FA2(MultiprocessBased):
+class FA2(StopMultiprocessBased):
 
     def __init__(self, **kwargs):
         super(FA2, self).__init__(**kwargs)
@@ -154,6 +154,9 @@ class FA2(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 model = item.split('.')[0]
                 id_ = int(item.split('.')[1])
@@ -254,9 +257,10 @@ class FA2(MultiprocessBased):
                     o_cau,  # CAU
                     o_cups_servicios_auxiliares  # Serveis auxiliars
                 ])
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()
+

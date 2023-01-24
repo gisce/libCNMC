@@ -9,7 +9,7 @@ from datetime import datetime
 import traceback
 
 from libcnmc.utils import format_f
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 
 TIPUS_INST = {
     'TI-174': 1,
@@ -23,7 +23,7 @@ TIPUS_INST = {
     'TI-102V': 0,
 }
 
-class FB2_2(MultiprocessBased):
+class FB2_2(StopMultiprocessBased):
     """
     Class that generates the CT file of the 4666
     """
@@ -111,6 +111,9 @@ class FB2_2(MultiprocessBased):
             try:
                 # generar linies
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 celles = o.GiscedataCellesCella.read(
                     item, fields_to_read
@@ -142,9 +145,9 @@ class FB2_2(MultiprocessBased):
                     o_propietari,        # PROPIEDAD
                     o_data,              # FECHA PUESTA EN SERVICIO
                 ])
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

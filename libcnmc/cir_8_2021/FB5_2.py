@@ -8,7 +8,7 @@ from __future__ import absolute_import
 from datetime import datetime
 import traceback, psycopg2.extras
 from libcnmc.utils import format_f, convert_srid, get_srid, get_norm_tension
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import (
     format_f, get_id_municipi_from_company, get_forced_elements, adapt_diff, convert_srid, get_srid, format_f,
     convert_spanish_date, get_name_ti, format_f_6181, get_codi_actuacio, get_ine
@@ -22,7 +22,7 @@ MODELO = {
     '4': 'E'
 }
 
-class FB5_2(MultiprocessBased):
+class FB5_2(StopMultiprocessBased):
     def __init__(self, **kwargs):
         super(FB5_2, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
@@ -88,6 +88,9 @@ class FB5_2(MultiprocessBased):
             try:
                 # generar linies
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 cond = o.GiscedataCondensadors.read(
                     item, fields_to_read
@@ -229,9 +232,9 @@ class FB5_2(MultiprocessBased):
                     motivacion,         #MOTIVACION
                     identificador_baja,     #IDENTIFICADOR BAJA
                 ])
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

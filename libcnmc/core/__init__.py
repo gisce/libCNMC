@@ -212,6 +212,13 @@ class MultiprocessBased(object):
         self.output_m.close()
 
 
+class StopMultiprocessBased(MultiprocessBased):
+    def producer(self, sequence):
+        super(StopMultiprocessBased, self).producer(sequence)
+        for _ in range(0, self.num_proc):
+            self.input_q.put('STOP')
+
+
 class UpdateFile(MultiprocessBased):
     def __init__(self, **kwargs):
         super(UpdateFile, self).__init__(**kwargs)

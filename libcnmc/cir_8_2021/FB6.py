@@ -8,7 +8,7 @@ from datetime import datetime
 import traceback
 from libcnmc.utils import (format_f, convert_srid, get_srid, get_name_ti, format_f_6181, format_ccaa_code, get_ine,
                            adapt_diff)
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from libcnmc.models import F7Res4666
 from shapely import wkt
 
@@ -19,7 +19,7 @@ MODELO = {
     '4': 'E'
 }
 
-class FB6(MultiprocessBased):
+class FB6(StopMultiprocessBased):
 
     """
     Class that generates the CT file of the 4666
@@ -204,6 +204,9 @@ class FB6(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 cella = O.GiscedataCellesCella.read(
                     item, fields_to_read
@@ -451,9 +454,9 @@ class FB6(MultiprocessBased):
                     avifauna,   #AVIFAUNA
                     identificador_baja,     #IDENTIFICADOR_BAJA
                 ])
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

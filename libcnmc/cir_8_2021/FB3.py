@@ -8,7 +8,7 @@ from __future__ import absolute_import
 from datetime import datetime
 import traceback, psycopg2.extras
 from libcnmc.utils import format_f, convert_srid, get_srid, get_ine
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 
 ZONA = {
     'RURAL CONCENTRADA': 'RC',
@@ -17,7 +17,7 @@ ZONA = {
     'SEMIURBANA': 'SU'
 }
 
-class FB3(MultiprocessBased):
+class FB3(StopMultiprocessBased):
 
     """
     Class that generates the CT file of the 4666
@@ -84,6 +84,9 @@ class FB3(MultiprocessBased):
             try:
                 # generar linies
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 sub = o.GiscedataCtsSubestacions.read(
                     item, fields_to_read
@@ -136,9 +139,9 @@ class FB3(MultiprocessBased):
                     o_zona,                             # ZONA
                     o_prop,                             # PROPIEDAD
                 ])
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

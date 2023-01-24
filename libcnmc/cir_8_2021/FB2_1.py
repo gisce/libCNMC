@@ -9,14 +9,14 @@ from datetime import datetime
 import traceback
 
 from libcnmc.utils import format_f
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 
 OPERACIO = {
     'Reserva': '0',
     'Operativo': '1',
 }
 
-class FB2_1(MultiprocessBased):
+class FB2_1(StopMultiprocessBased):
     """
     Class that generates the CT file of the 4666
     """
@@ -83,6 +83,9 @@ class FB2_1(MultiprocessBased):
             try:
                 # generar linies
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 trafo = o.GiscedataTransformadorTrafo.read(
                     item, fields_to_read
@@ -115,9 +118,9 @@ class FB2_1(MultiprocessBased):
                     o_any,          # AÑO INFORMACION
                     o_operacio     # OPERACION
                 ])
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()
