@@ -7,12 +7,12 @@ Informe de la CNMC relatiu a la generació conectada de les xarxes de distribuci
 from __future__ import absolute_import
 from datetime import datetime
 import traceback
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from workalendar.europe import Spain
 
 
 
-class FD2(MultiprocessBased):
+class FD2(StopMultiprocessBased):
 
     def __init__(self, **kwargs):
         super(FD2, self).__init__(**kwargs)
@@ -514,6 +514,9 @@ class FD2(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
 
                 file_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0,
@@ -594,10 +597,9 @@ class FD2(MultiprocessBased):
                     ]
                     self.output_q.put(output)
 
-
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

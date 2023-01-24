@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import traceback
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import TARIFAS_BT, TARIFAS_AT
 
 
-class FA4(MultiprocessBased):
+class FA4(StopMultiprocessBased):
     def __init__(self, **kwargs):
         super(FA4, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
@@ -141,6 +141,9 @@ class FA4(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 cups = o.GiscedataCupsPs.read(
                     item, fields_to_read
@@ -159,9 +162,9 @@ class FA4(MultiprocessBased):
                     o_cini,         # CINI
                     o_codi_ct       # CODIGO SUBESTACION
                 ])
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

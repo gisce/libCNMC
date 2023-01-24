@@ -7,9 +7,9 @@ INVENTARI DE CNMC Centres Transformadors
 from __future__ import absolute_import
 from datetime import datetime
 import traceback
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 
-class FB3_2(MultiprocessBased):
+class FB3_2(StopMultiprocessBased):
 
     """
     Class that generates the CT file of the 4666
@@ -72,6 +72,9 @@ class FB3_2(MultiprocessBased):
             try:
                 # generar linies
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 sub = o.GiscedataCtsSubestacionsPosicio.read(
                     item, fields_to_read
@@ -101,9 +104,9 @@ class FB3_2(MultiprocessBased):
                     o_prop,         # PROPIEDAD
                     o_data,         # FECHA PUESTA EN SERVICIO
                 ])
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

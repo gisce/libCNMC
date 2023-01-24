@@ -8,9 +8,9 @@ from __future__ import absolute_import
 from datetime import datetime
 import traceback, psycopg2.extras
 from libcnmc.utils import format_f, convert_srid, get_srid
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 
-class FB3_1(MultiprocessBased):
+class FB3_1(StopMultiprocessBased):
 
     """
     Class that generates the CT file of the 4666
@@ -85,6 +85,9 @@ class FB3_1(MultiprocessBased):
             try:
                 # generar linies
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 parc = o.GiscedataParcs.read(
                     item, fields_to_read
@@ -134,9 +137,9 @@ class FB3_1(MultiprocessBased):
                     o_tensio_const, #TENSION DE CONSTRUCCION DEL PARQUE
                     o_prop,  # PROPIEDAD
                 ])
+                self.input_q.task_done()
             except Exception as e:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

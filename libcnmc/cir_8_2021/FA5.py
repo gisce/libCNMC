@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import tallar_text, format_f
 from datetime import datetime
 import traceback
@@ -12,7 +12,7 @@ ZONA = {
 }
 
 
-class FA5(MultiprocessBased):
+class FA5(StopMultiprocessBased):
 
     def __init__(self, **kwargs):
         super(FA5, self).__init__(**kwargs)
@@ -34,6 +34,9 @@ class FA5(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 punt_frontera = O.GiscedataPuntFrontera.read(fields_to_read)
 
@@ -99,10 +102,9 @@ class FA5(MultiprocessBased):
                     o_codigo_empresa,                   # CÓDIGO EMPRESA
                     o_codigo_frontera_dt,               # CÓDIGO EMPRESA
                 ])
-
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

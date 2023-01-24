@@ -8,11 +8,11 @@ from __future__ import absolute_import
 from datetime import datetime
 import traceback, psycopg2.extras
 from libcnmc.utils import format_f, convert_srid, get_srid, get_ine
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from shapely import wkt
 
 
-class FB7(MultiprocessBased):
+class FB7(StopMultiprocessBased):
 
     """
     Class that generates the CT file of the 4666
@@ -50,6 +50,9 @@ class FB7(MultiprocessBased):
             try:
                 # generar linies
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 node = O.GiscegisNodes.read(
                     item, fields_to_read
@@ -85,9 +88,9 @@ class FB7(MultiprocessBased):
                     o_municipi,                         # MUNICIPIO
                     o_provincia,                        # PROVINCIA
                 ])
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

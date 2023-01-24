@@ -8,7 +8,7 @@ from __future__ import absolute_import
 from datetime import datetime
 import traceback
 
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import (
     get_id_municipi_from_company, get_forced_elements, adapt_diff, convert_srid, get_srid, format_f,
     convert_spanish_date, format_f_6181, get_codi_actuacio, get_ine
@@ -24,7 +24,7 @@ ZONA = {
 }
 
 
-class FB2(MultiprocessBased):
+class FB2(StopMultiprocessBased):
     """
     Class that generates the CT file of the 4666
     """
@@ -144,6 +144,9 @@ class FB2(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
 
                 ct = O.GiscedataCts.read(item, fields_to_read)
@@ -425,9 +428,9 @@ class FB2(MultiprocessBased):
                     identificador_baja,                 # ID_BAJA
                 ]
                 self.output_q.put(output)
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()
