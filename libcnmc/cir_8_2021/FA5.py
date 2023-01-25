@@ -74,10 +74,31 @@ class FA5(StopMultiprocessBased):
                     o_tension = format_f(float(punt_frontera['tensio_id'][1]) / 1000, 3)
 
                 # ENERGIA ACTIVA ENTRANTE
-                o_energia_activa_entrante = ''
-                o_energia_activa_saliente = ''
-                o_energia_reactiva_entrante = ''
-                o_energia_reactiva_saliente = ''
+                fields_to_read_energia = [
+                    'data_inicial', 'data_final', 'activa_entrant', 'activa_sortint', 'reactiva_entrant',
+                    'reactiva_sortint'
+                ]
+                energia_obj = O.GiscedataPuntFronteraMesures
+                energia_ids = energia_obj.search([('punt_frontera_id', '=', item)])
+                energia_data = energia_obj.read(energia_ids, fields_to_read_energia)
+
+                o_energia_activa_entrante = 0
+                o_energia_activa_saliente = 0
+                o_energia_reactiva_entrante = 0
+                o_energia_reactiva_saliente = 0
+                inici_any = '{}-01-01'.format(self.year)
+                fi_any = '{}-12-31'.format(self.year)
+
+                for energia in energia_data:
+                    if inici_any <= energia['data_inicial'] <= fi_any and inici_any <= energia['data_final'] <= fi_any:
+                        if energia.get('activa_entrant', False):
+                            o_energia_activa_entrante += energia['activa_entrant']
+                        if energia.get('activa_sortint', False):
+                            o_energia_activa_saliente += energia['activa_sortint']
+                        if energia.get('reactiva_entrant', False):
+                            o_energia_reactiva_entrante += energia['reactiva_entrant']
+                        if energia.get('reactiva_sortint', False):
+                            o_energia_reactiva_saliente += energia['reactiva_sortint']
 
                 # CÓDIGO EMPRESA
                 o_codigo_empresa = ''
