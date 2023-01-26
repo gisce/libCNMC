@@ -23,8 +23,8 @@ class FA5(StopMultiprocessBased):
 
     def get_sequence(self):
         O = self.connection
-        ids_tipus = O.GiscedataPuntFronteraTipus.search([('retribucions', '=', True)])
-        ids = O.GiscedataPuntFrontera.search([('tipus', 'in', ids_tipus), ('any_publicacio', '=', self.year)])
+        ids_tipus = O.GiscedataPuntFronteraTipus.search([('retribucio', '=', True)])
+        ids = O.GiscedataPuntFrontera.search([('tipus', 'in', ids_tipus)])
         return ids
 
     def consumer(self):
@@ -66,7 +66,7 @@ class FA5(StopMultiprocessBased):
                 # TIPO FRONTERA
                 o_tipo_frontera = ''
                 if punt_frontera.get('tipus_frontera', False):
-                    o_tipo_frontera = punt_frontera['tipus_frontera'].upper
+                    o_tipo_frontera = punt_frontera['tipus_frontera'].upper()
 
                 # TENSIÓN
                 o_tension = ''
@@ -103,7 +103,11 @@ class FA5(StopMultiprocessBased):
                 # CÓDIGO EMPRESA
                 o_codigo_empresa = ''
                 if punt_frontera.get('codigo_empresa', False):
-                    o_codigo_empresa = punt_frontera['codigo_empresa']
+                    empresa_obj = O.ResPartner
+                    empresa_id = punt_frontera['codigo_empresa'][0]
+                    empresa_data = empresa_obj.read(empresa_id, ['ref2'])
+                    if empresa_data.get('ref2', False):
+                        o_codigo_empresa = empresa_data['ref2']
 
                 # CÓDIGO FRONTERA DT
                 o_codigo_frontera_dt = ''
