@@ -38,7 +38,7 @@ class FA5(StopMultiprocessBased):
                     self.input_q.task_done()
                     break
                 self.progress_q.put(item)
-                punt_frontera = O.GiscedataPuntFrontera.read(fields_to_read)
+                punt_frontera = O.GiscedataPuntFrontera.read(item, fields_to_read)
 
                 # IDENTIFICADOR
                 o_identificador = ''
