@@ -23,8 +23,8 @@ class FA5(StopMultiprocessBased):
 
     def get_sequence(self):
         O = self.connection
-        ids_tipus = O.GiscedataPuntFronteraTipus.search([('retribucions', '=', True)])
-        ids = O.GiscedataPuntFrontera.search([('tipus', 'in', ids_tipus), ('any_publicacio', '=', self.year)])
+        ids_tipus = O.GiscedataPuntFronteraTipus.search([('retribucio', '=', True)])
+        ids = O.GiscedataPuntFrontera.search([('tipus', 'in', ids_tipus)])
         return ids
 
     def consumer(self):
@@ -38,7 +38,7 @@ class FA5(StopMultiprocessBased):
                     self.input_q.task_done()
                     break
                 self.progress_q.put(item)
-                punt_frontera = O.GiscedataPuntFrontera.read(fields_to_read)
+                punt_frontera = O.GiscedataPuntFrontera.read(item, fields_to_read)
 
                 # IDENTIFICADOR
                 o_identificador = ''
@@ -66,7 +66,7 @@ class FA5(StopMultiprocessBased):
                 # TIPO FRONTERA
                 o_tipo_frontera = ''
                 if punt_frontera.get('tipus_frontera', False):
-                    o_tipo_frontera = punt_frontera['tipus_frontera'].upper
+                    o_tipo_frontera = punt_frontera['tipus_frontera'].upper()
 
                 # TENSIÓN
                 o_tension = ''
@@ -74,15 +74,40 @@ class FA5(StopMultiprocessBased):
                     o_tension = format_f(float(punt_frontera['tensio_id'][1]) / 1000, 3)
 
                 # ENERGIA ACTIVA ENTRANTE
-                o_energia_activa_entrante = ''
-                o_energia_activa_saliente = ''
-                o_energia_reactiva_entrante = ''
-                o_energia_reactiva_saliente = ''
+                fields_to_read_energia = [
+                    'data_inicial', 'data_final', 'activa_entrant', 'activa_sortint', 'reactiva_entrant',
+                    'reactiva_sortint'
+                ]
+                energia_obj = O.GiscedataPuntFronteraMesures
+                energia_ids = energia_obj.search([('punt_frontera_id', '=', item)])
+                energia_data = energia_obj.read(energia_ids, fields_to_read_energia)
+
+                o_energia_activa_entrante = 0
+                o_energia_activa_saliente = 0
+                o_energia_reactiva_entrante = 0
+                o_energia_reactiva_saliente = 0
+                inici_any = '{}-01-01'.format(self.year)
+                fi_any = '{}-12-31'.format(self.year)
+
+                for energia in energia_data:
+                    if inici_any <= energia['data_inicial'] <= fi_any and inici_any <= energia['data_final'] <= fi_any:
+                        if energia.get('activa_entrant', False):
+                            o_energia_activa_entrante += energia['activa_entrant']
+                        if energia.get('activa_sortint', False):
+                            o_energia_activa_saliente += energia['activa_sortint']
+                        if energia.get('reactiva_entrant', False):
+                            o_energia_reactiva_entrante += energia['reactiva_entrant']
+                        if energia.get('reactiva_sortint', False):
+                            o_energia_reactiva_saliente += energia['reactiva_sortint']
 
                 # CÓDIGO EMPRESA
                 o_codigo_empresa = ''
                 if punt_frontera.get('codigo_empresa', False):
-                    o_codigo_empresa = punt_frontera['codigo_empresa']
+                    empresa_obj = O.ResPartner
+                    empresa_id = punt_frontera['codigo_empresa'][0]
+                    empresa_data = empresa_obj.read(empresa_id, ['ref2'])
+                    if empresa_data.get('ref2', False):
+                        o_codigo_empresa = empresa_data['ref2']
 
                 # CÓDIGO FRONTERA DT
                 o_codigo_frontera_dt = ''
