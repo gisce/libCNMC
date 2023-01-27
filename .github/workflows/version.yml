@@ -50,9 +50,9 @@ jobs:
           if [[ $is_major == true ]]; then
             VERSION_TYPE="major"
           elif [[ $is_minor == true ]]; then
-            VERSION_TYPE="major"
+            VERSION_TYPE="minor"
           elif [[ $is_patch == true ]]; then
-            VERSION_TYPE="major"
+            VERSION_TYPE="patch"
           fi
           if [[ $VERSION_TYPE != false ]]; then
             bump2version $VERSION_TYPE --tag --commit -m "Bump to v{new_version}" setup.py
