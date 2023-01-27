@@ -15,8 +15,8 @@ jobs:
           python-version: '3.11'
       - name: Setup git
         run: |
-          git config --global user.email "giscegit@gisce.net"
-          git config --global user.name "Release Bot"
+          git config --global user.email "devel@gisce.net"
+          git config --global user.name "giscegit"
       - name: Install python packages
         run: |
           pip install bump2version
