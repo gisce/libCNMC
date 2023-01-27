@@ -33,6 +33,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_GIT_TOKEN }}
         run: |
+          eval `ssh-agent -s`
+          ssh-add - <<< '${{ secrets.SSH_PRIVATE }}'
           pr_labels=$( echo '${{ env.PR_INFO }}' | jq -r '.pullRequest.labels' )
           is_minor=false
           is_major=false
