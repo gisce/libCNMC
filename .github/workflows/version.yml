@@ -9,6 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+#          persist-credentials: false
+#          token: ${{ secrets.GH_GIT_TOKEN }}
+          ssh-key: ${{ secrets.SSH_PRIVATE }}
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
