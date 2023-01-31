@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import traceback
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import convert_srid, get_srid, format_f
 
-class FB1_1(MultiprocessBased):
+class FB1_1(StopMultiprocessBased):
     def __init__(self, **kwargs):
         super(FB1_1, self).__init__(**kwargs)
         self.codi_r1 = kwargs.pop('codi_r1')
@@ -44,6 +44,9 @@ class FB1_1(MultiprocessBased):
             try:
                 # generar tramos
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 if item[1] == 'at':
                     tramo = o.GiscedataAtTram.read(item[0], fields_to_read)
@@ -112,10 +115,9 @@ class FB1_1(MultiprocessBased):
                     except:
                         pass
 
-
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

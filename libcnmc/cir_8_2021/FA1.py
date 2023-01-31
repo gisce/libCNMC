@@ -7,13 +7,13 @@ from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP, \
     TARIFAS_AT, TARIFAS_BT
 from libcnmc.utils import get_ine, get_comptador, format_f, get_srid,\
     convert_srid, get_tipus_connexio
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from ast import literal_eval
 import logging
 from shapely import wkt
 
 
-class FA1(MultiprocessBased):
+class FA1(StopMultiprocessBased):
     def __init__(self, **kwargs):
         """
         FA1 class constructor
@@ -399,6 +399,9 @@ class FA1(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 fields_to_read = [
                     'name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
@@ -696,9 +699,9 @@ class FA1(MultiprocessBased):
                     '',
                     '',
                 ])
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

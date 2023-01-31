@@ -7,7 +7,7 @@ INVENTARI DE CNMC Centres Transformadors
 from __future__ import absolute_import
 from datetime import datetime
 import traceback
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import format_f_6181, get_name_ti, get_codi_actuacio, \
     format_ccaa_code, convert_spanish_date, format_f, adapt_diff
 from libcnmc.models import F4Res4666
@@ -24,7 +24,7 @@ MODELO = {
     '3': 'D',
     '4': 'E'
 }
-class FB4(MultiprocessBased):
+class FB4(StopMultiprocessBased):
 
     """
     Class that generates the CT file of the 4666
@@ -128,6 +128,9 @@ class FB4(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 pos = O.GiscedataCtsSubestacionsPosicio.read(
                     item, fields_to_read
@@ -348,10 +351,9 @@ class FB4(MultiprocessBased):
                     output.insert(0, pos_obra['obra_id'][1])
                 output = map(lambda e: '' if e is False or e is None else e, output)
                 self.output_q.put(output)
-
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

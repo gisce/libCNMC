@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import format_f, convert_srid, get_srid, get_ine
 from datetime import datetime
 from shapely import wkt
 import traceback
 
 
-class FA3(MultiprocessBased):
+class FA3(StopMultiprocessBased):
 
     def __init__(self, **kwargs):
         super(FA3, self).__init__(**kwargs)
@@ -39,6 +39,9 @@ class FA3(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
 
                 prevision = O.GiscedataPrevisioCreixement.read(item, fields_to_read)
@@ -120,10 +123,9 @@ class FA3(MultiprocessBased):
                     o_suministros_mt,                               # SUMINISTROS MT
                     o_suministros_at,                               # SUMINISTROS AT
                 ])
-
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

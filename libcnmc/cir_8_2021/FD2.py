@@ -7,12 +7,12 @@ Informe de la CNMC relatiu a la generació conectada de les xarxes de distribuci
 from __future__ import absolute_import
 from datetime import datetime
 import traceback
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from workalendar.europe import Spain
 
 
 
-class FD2(MultiprocessBased):
+class FD2(StopMultiprocessBased):
 
     def __init__(self, **kwargs):
         super(FD2, self).__init__(**kwargs)
@@ -43,15 +43,18 @@ class FD2(MultiprocessBased):
     def compute_time(self, cod_gest_data, values, time_delta, ref):
         o = self.connection
         create_vals = {'cod_gestio_id': cod_gest_data['id'], 'ref': '{},{}'.format(ref[0], ref[1])}
+        track_obj_installed = o.IrModel.search([('model', '=', 'giscedata.circular.82021.case.tracking')])
         track_obj = o.model('giscedata.circular.82021.case.tracking')
         if time_delta > cod_gest_data['dies_limit']:
             values['fuera_plazo'] = values['fuera_plazo'] + 1
-            create_vals.update({'on_time': False})
-            track_obj.create(create_vals)
+            if track_obj_installed:
+                create_vals.update({'on_time': False})
+                track_obj.create(create_vals)
         else:
             values['dentro_plazo'] = values['dentro_plazo'] + 1
-            create_vals.update({'on_time': True})
-            track_obj.create(create_vals)
+            if track_obj_installed:
+                create_vals.update({'on_time': True})
+                track_obj.create(create_vals)
         values['totals'] = values['totals'] + 1
 
     def get_atc_time_delta(self, crm_id, total_ts, context=None):
@@ -514,6 +517,9 @@ class FD2(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
 
                 file_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0,
@@ -594,10 +600,9 @@ class FD2(MultiprocessBased):
                     ]
                     self.output_q.put(output)
 
-
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

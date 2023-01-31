@@ -4,12 +4,12 @@
 from __future__ import absolute_import
 from datetime import datetime
 import traceback
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 import pandas as pd
 from collections import OrderedDict
 
 
-class FB9(MultiprocessBased):
+class FB9(StopMultiprocessBased):
 
     """
     Class that generates the B9 file of circular 8/2021
@@ -49,6 +49,9 @@ class FB9(MultiprocessBased):
             try:
                 # generar linies
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
 
                 print('EI---------------')
@@ -1051,9 +1054,9 @@ class FB9(MultiprocessBased):
                         self.format_f(v, 2),               # IMPORTE
                     ])
 
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

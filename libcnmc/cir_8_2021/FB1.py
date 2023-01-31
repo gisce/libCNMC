@@ -3,12 +3,12 @@
 from __future__ import absolute_import
 from datetime import datetime
 import traceback
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import (format_f, tallar_text, format_f_6181, get_codi_actuacio, convert_spanish_date,
                            get_forced_elements, adapt_diff)
 from libcnmc.models import F1Res4666,F2Res4666
 
-class FB1(MultiprocessBased):
+class FB1(StopMultiprocessBased):
     """
     Class that generates the FB1(1) file of  4666
     """
@@ -157,6 +157,9 @@ class FB1(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 model = item.split('.')[0]
                 item = int(item.split('.')[1])
@@ -890,10 +893,9 @@ class FB1(MultiprocessBased):
                     ]
 
                     self.output_q.put(output)
-
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()
