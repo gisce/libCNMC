@@ -2,16 +2,13 @@ name: GISCE_LIBCNMC_VERION
 on:
   push:
     branches: [ master ]
-# bump2version minor --tag --commit -m "Bump to v{new_version}" setup.py
-# "major", "minor", "patch"
 jobs:
   bump:
     runs-on: ubuntu-latest
+    if: ${{ !startsWith(github.event.head_commit.message, 'Bump to v') }}
     steps:
       - uses: actions/checkout@v3
         with:
-#          persist-credentials: false
-#          token: ${{ secrets.GH_GIT_TOKEN }}
           ssh-key: ${{ secrets.SSH_PRIVATE }}
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
