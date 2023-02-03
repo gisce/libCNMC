@@ -408,7 +408,8 @@ class FA1(StopMultiprocessBased):
                     'cne_anual_reactiva', 'cnmc_potencia_facturada', 'et',
                     'polisses', 'potencia_conveni', 'potencia_adscrita',
                     "node_id", 'autoconsum_id', 'cnmc_numero_lectures',
-                    'cnmc_factures_estimades', 'cnmc_factures_total'
+                    'cnmc_factures_estimades', 'cnmc_factures_total',
+                    'force_potencia_adscrita',
                 ]
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 if not cups or not cups.get('name'):
@@ -649,10 +650,27 @@ class FA1(StopMultiprocessBased):
                             o_cod_tfa = self.default_o_cod_tfa
 
                 # potencia adscrita
-                if cups.get('potencia_adscrita', False) != 0:
-                    o_pot_ads = cups['potencia_adscrita']
+
+                if cups['force_potencia_adscrita']:
+                    if cups.get('potencia_adscrita', False) != 0:
+                        o_pot_ads = cups['potencia_adscrita']
+                    else:
+                        o_pot_ads = o_potencia
+
                 else:
-                    o_pot_ads = o_potencia
+                    but_obj = O.GiscedataButlleti
+                    but_ids = but_obj.search([('cups_id', '=', item)])
+                    if but_ids:
+                        but_data = but_obj.read(but_ids, ['data', 'pot_max_admisible'])
+                        data_anterior = '1990-01-01'
+                        fi_any = '{}-12-31'.format(self.year)
+                        for but_d in but_data:
+                            if data_anterior < but_d['data'] <= fi_any:
+                                potencia = but_d['pot_max_admisible']
+                                data_anterior = but_d['data']
+                        o_pot_ads = potencia
+                    else:
+                        o_pot_ads = o_potencia
 
                 res_srid = ['', '']
                 if vertex:
