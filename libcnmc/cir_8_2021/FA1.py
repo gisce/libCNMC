@@ -437,10 +437,13 @@ class FA1(StopMultiprocessBased):
                 o_cod_generacio_auto = ''
                 o_conexion_autoconsumo = ''
 
-                if cups.get('autoconsum_id', False):
+                cups_obj = O.GiscedataCupsPs
+                autoconsum_id_data = cups_obj.get_autoconsum_on_date(item, ultim_dia_any)
+
+                if autoconsum_id_data:
                     # AUTOCONSUMO
                     o_autoconsumo = 1
-                    autoconsum_id = cups['autoconsum_id'][0]
+                    autoconsum_id = autoconsum_id_data[0]
                     autoconsum_data = O.GiscedataAutoconsum.read(autoconsum_id, ['cau', 'tipus_autoconsum',
                                                                                  'generador_id', 'codi_cnmc'])
                     # CAU
