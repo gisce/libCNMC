@@ -85,7 +85,7 @@ class FB9(StopMultiprocessBased):
                 # # AT # #
                 ##########
 
-                file_path = '/tmp/8_2021_loaded_b1.txt'
+                file_path = '/tmp/8_2021_loaded_or_generated_b1.txt'
                 columns = [str(x) for x in range(35)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns,
                                  dtype={'0': 'object', '21': 'object', '23': 'object', '34': 'object'})
@@ -170,7 +170,7 @@ class FB9(StopMultiprocessBased):
                 # # BT # #
                 ##########
 
-                file_path = '/tmp/8_2021_loaded_b1.txt'
+                file_path = '/tmp/8_2021_loaded_or_generated_b1.txt'
                 columns = [str(x) for x in range(35)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns,
                                  dtype={'0': 'object', '21': 'object', '23': 'object', '34': 'object'})
@@ -255,7 +255,7 @@ class FB9(StopMultiprocessBased):
                 # # Posiciones # #
                 ##################
 
-                file_path = '/tmp/8_2021_loaded_b4.txt'
+                file_path = '/tmp/8_2021_loaded_or_generated_b4.txt'
                 columns = [str(x) for x in range(27)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
                 pos = OrderedDict()
@@ -337,7 +337,7 @@ class FB9(StopMultiprocessBased):
                 # # Máquinas # #
                 ################
 
-                file_path = '/tmp/8_2021_loaded_b5.txt'
+                file_path = '/tmp/8_2021_loaded_or_generated_b5.txt'
                 columns = [str(x) for x in range(25)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
                 trafo = OrderedDict()
@@ -411,7 +411,7 @@ class FB9(StopMultiprocessBased):
                 # # Fiabilidad # #
                 ##################
 
-                file_path = '/tmp/8_2021_loaded_b6.txt'
+                file_path = '/tmp/8_2021_loaded_or_generated_b6.txt'
                 columns = [str(x) for x in range(31)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
                 cel = OrderedDict()
@@ -490,7 +490,7 @@ class FB9(StopMultiprocessBased):
                 # # CTs # #
                 ###########
 
-                file_path = '/tmp/8_2021_loaded_b2.txt'
+                file_path = '/tmp/8_2021_loaded_or_generated_b2.txt'
                 columns = [str(x) for x in range(36)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
                 ct = OrderedDict()
@@ -787,7 +787,7 @@ class FB9(StopMultiprocessBased):
                 # # OTROS INMOVILIZADOS # #
                 ###########################
 
-                file_path = '/tmp/8_2021_loaded_b8.txt'
+                file_path = '/tmp/8_2021_loaded_or_generated_b8.txt'
                 columns = [str(x) for x in range(17)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns, dtype={'2': 'object'})
                 desp = OrderedDict()
