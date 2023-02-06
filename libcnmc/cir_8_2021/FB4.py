@@ -9,7 +9,7 @@ from datetime import datetime
 import traceback
 from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import format_f_6181, get_name_ti, get_codi_actuacio, \
-    format_ccaa_code, convert_spanish_date, format_f, adapt_diff
+    format_ccaa_code, convert_spanish_date, format_f, adapt_diff, get_forced_elements
 from libcnmc.models import F4Res4666
 
 INTERRUPTOR = {
@@ -87,8 +87,16 @@ class FB4(StopMultiprocessBased):
                           '&', ('active', '=', False),
                           ('data_baixa', '!=', False),
                           ('active', '=', True)]
-        return self.connection.GiscedataCtsSubestacionsPosicio.search(
+
+        forced_ids = get_forced_elements(self.connection, "giscedata.cts.subestacions.posicio")
+
+        ids = self.connection.GiscedataCtsSubestacionsPosicio.search(
             search_params, 0, 0, False, {'active_test': False})
+
+        ids = ids + forced_ids["include"]
+        ids = list(set(ids) - set(forced_ids["exclude"]))
+
+        return list(set(ids))
 
     def get_cts_data(self, sub_id):
         o = self.connection
