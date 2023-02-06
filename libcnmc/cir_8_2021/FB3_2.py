@@ -8,6 +8,8 @@ from __future__ import absolute_import
 from datetime import datetime
 import traceback
 from libcnmc.core import StopMultiprocessBased
+from libcnmc.utils import get_forced_elements
+
 
 class FB3_2(StopMultiprocessBased):
 
@@ -43,8 +45,16 @@ class FB3_2(StopMultiprocessBased):
                           '&', ('active', '=', False),
                           ('data_baixa', '!=', False),
                           ('active', '=', True)]
-        return self.connection.GiscedataCtsSubestacionsPosicio.search(
+        
+        forced_ids = get_forced_elements(self.connection, "giscedata.cts.subestacions.posicio")
+        
+        ids = self.connection.GiscedataCtsSubestacionsPosicio.search(
             search_params, 0, 0, False, {'active_test': False})
+
+        ids = ids + forced_ids["include"]
+        ids = list(set(ids) - set(forced_ids["exclude"]))
+
+        return list(set(ids))
 
     def get_tensio(self, sub):
         o = self.connection
