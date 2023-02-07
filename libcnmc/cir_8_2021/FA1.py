@@ -409,6 +409,7 @@ class FA1(StopMultiprocessBased):
                     'polisses', 'potencia_conveni', 'potencia_adscrita',
                     "node_id", 'autoconsum_id', 'cnmc_numero_lectures',
                     'cnmc_factures_estimades', 'cnmc_factures_total',
+                    'cnmc_energia_autoconsumida', 'cnmc_energia_excedentaria',
                     'force_potencia_adscrita',
                 ]
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
@@ -429,6 +430,16 @@ class FA1(StopMultiprocessBased):
                 o_facturas_total = ''
                 if cups.get('cnmc_factures_total', False):
                     o_facturas_total = cups['cnmc_factures_total']
+
+                # ENERGIA_AUTOCONSUMIDA
+                o_energia_autoconsumida = ''
+                if cups.get('cnmc_energia_autoconsumida', False):
+                    o_energia_autoconsumida = cups['cnmc_energia_autoconsumida']
+
+                # ENERGIA_EXCEDENTARIA
+                o_energia_excedentaria = ''
+                if cups.get('cnmc_energia_excedentaria', False):
+                    o_energia_excedentaria = cups['cnmc_energia_excedentaria']
 
                 # AUTOCONSUMO, CAU, COD_AUTO, COD_GENERACION_AUTO I CONEXION_AUTOCONSUMO
                 o_autoconsumo = 0
@@ -717,8 +728,8 @@ class FA1(StopMultiprocessBased):
                     o_cod_auto,
                     o_cod_generacio_auto,
                     o_conexion_autoconsumo,
-                    '',
-                    '',
+                    o_energia_autoconsumida,
+                    o_energia_excedentaria,
                 ])
                 self.input_q.task_done()
             except Exception:
