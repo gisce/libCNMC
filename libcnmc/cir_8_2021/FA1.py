@@ -519,7 +519,10 @@ class FA1(StopMultiprocessBased):
                                     [bloc_escomesa['node'][0]], ['name'])
                                 o_nom_node = node[0]['name']
                 o_nom_node = o_nom_node.replace('*', '')
-                polissa_id = self.get_polissa(cups['id'])
+                search_params = [('cups', '=', cups['id'])] + search_glob
+                polissa_id = O.GiscedataPolissa.search(
+                    search_params, 0, 1, 'data_alta desc', context_glob)
+
                 o_potencia = ''
                 o_cnae = ''
                 o_cod_tfa = ''
