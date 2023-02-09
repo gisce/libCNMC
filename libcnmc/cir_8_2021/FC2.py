@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-INVENTARI DE CNMC Centres Transformadors
+INVENTARI DE CNMC - TOVP
 """
 from __future__ import absolute_import
 from datetime import datetime
@@ -25,7 +25,13 @@ class FC2(StopMultiprocessBased):
         self.compare_field = '4666_entregada'
 
     def get_sequence(self):
-        search_params = [('data_inici', '=', self.year), ('data_final', '=', self.year)]
+        inici_any = '{}-01-01'.format(self.year)
+        fi_any = '{}-12-31'.format(self.year)
+        search_params = [('data_inici', '>=', inici_any),
+                         ('data_inici', '<=', fi_any),
+                         ('data_final', '>=', inici_any),
+                         ('data_final', '<=', fi_any),
+                         ]
         return self.connection.GiscedataTasaOcupacioVp.search(search_params)
 
     def get_ine(self, municipi_id):
