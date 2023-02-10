@@ -45,6 +45,8 @@ class OpenERPService(object):
         # Disable cron
         default_config['cron'] = False
         self.config = default_config
+        # Ignore PubSub
+        self.config['ignore_pubsub'] = True
         import pooler
         import workflow
         self.pooler = pooler
