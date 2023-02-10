@@ -10,14 +10,14 @@ import traceback
 import math
 import sys
 
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import format_f, tallar_text
 from libcnmc.models import F2Res4666
 
 QUIET = False
 
 
-class LBT(MultiprocessBased):
+class LBT(StopMultiprocessBased):
     """
     Class that generates the LBT(2) file of the 4666
     """
@@ -80,6 +80,9 @@ class LBT(MultiprocessBased):
             try:
                 count += 1
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
 
                 linia = O.GiscedataBtElement.read(item, fields_to_read)
@@ -235,9 +238,9 @@ class LBT(MultiprocessBased):
                 ]
 
                 self.output_q.put(output)
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()
