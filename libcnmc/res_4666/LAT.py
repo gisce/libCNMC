@@ -9,12 +9,12 @@ from datetime import datetime
 import traceback
 import math
 
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import format_f, tallar_text, get_forced_elements, adapt_diff
 from libcnmc.models import F1Res4666
 
 
-class LAT(MultiprocessBased):
+class LAT(StopMultiprocessBased):
     """
     Class that generates the LAT(1) file of  4666
     """
@@ -119,6 +119,9 @@ class LAT(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
 
                 linia = O.GiscedataAtLinia.read(
@@ -369,10 +372,9 @@ class LAT(MultiprocessBased):
                             output.append("")
 
                     self.output_q.put(output)
-
+                    self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

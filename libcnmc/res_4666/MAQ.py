@@ -10,13 +10,13 @@ from datetime import datetime
 import traceback
 from operator import itemgetter
 
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import \
     (get_id_municipi_from_company, format_f, get_forced_elements, adapt_diff)
 from libcnmc.models import F5Res4666
 
 
-class MAQ(MultiprocessBased):
+class MAQ(StopMultiprocessBased):
     """
     Class that generates the Maquinas/Transofrmadores(5) file of the 4666
     """
@@ -135,6 +135,9 @@ class MAQ(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
 
                 trafo = O.GiscedataTransformadorTrafo.read(
@@ -256,9 +259,9 @@ class MAQ(MultiprocessBased):
                 ]
 
                 self.output_q.put(output)
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()
