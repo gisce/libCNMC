@@ -8,12 +8,12 @@ from __future__ import absolute_import
 from datetime import datetime
 import traceback
 
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import format_f, get_id_municipi_from_company
 from libcnmc.models import F8Res4666
 
 
-class CTS(MultiprocessBased):
+class CTS(StopMultiprocessBased):
     """
     Class that generates the CT file of the 4666
     """
@@ -70,6 +70,9 @@ class CTS(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
 
                 ct = O.GiscedataCts.read(item, fields_to_read)
@@ -162,9 +165,9 @@ class CTS(MultiprocessBased):
                 ]
 
                 self.output_q.put(output)
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

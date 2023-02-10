@@ -9,7 +9,7 @@ from datetime import datetime
 import traceback
 import sys
 
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import \
     (get_id_municipi_from_company, format_f, get_forced_elements, adapt_diff)
 from libcnmc.models import F3Res4666
@@ -17,7 +17,7 @@ from libcnmc.models import F3Res4666
 QUIET = False
 
 
-class SUB(MultiprocessBased):
+class SUB(StopMultiprocessBased):
     """
     Class that generates the SUB(3) report of the 4666
     """
@@ -92,6 +92,9 @@ class SUB(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
 
                 sub = O.GiscedataCtsSubestacions.read(item, fields_to_read)
@@ -192,9 +195,9 @@ class SUB(MultiprocessBased):
                 ]
 
                 self.output_q.put(output)
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()
