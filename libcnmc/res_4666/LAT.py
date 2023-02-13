@@ -372,7 +372,7 @@ class LAT(StopMultiprocessBased):
                             output.append("")
 
                     self.output_q.put(output)
-                    self.input_q.task_done()
+                self.input_q.task_done()
             except Exception:
                 self.input_q.task_done()
                 traceback.print_exc()
