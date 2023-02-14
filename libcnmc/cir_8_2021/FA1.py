@@ -408,7 +408,9 @@ class FA1(StopMultiprocessBased):
                     'cne_anual_reactiva', 'cnmc_potencia_facturada', 'et',
                     'polisses', 'potencia_conveni', 'potencia_adscrita',
                     "node_id", 'autoconsum_id', 'cnmc_numero_lectures',
-                    'cnmc_factures_estimades', 'cnmc_factures_total'
+                    'cnmc_factures_estimades', 'cnmc_factures_total',
+                    'cnmc_energia_autoconsumida', 'cnmc_energia_excedentaria',
+                    'force_potencia_adscrita',
                 ]
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 if not cups or not cups.get('name'):
@@ -429,6 +431,16 @@ class FA1(StopMultiprocessBased):
                 if cups.get('cnmc_factures_total', False):
                     o_facturas_total = cups['cnmc_factures_total']
 
+                # ENERGIA_AUTOCONSUMIDA
+                o_energia_autoconsumida = ''
+                if cups.get('cnmc_energia_autoconsumida', False):
+                    o_energia_autoconsumida = cups['cnmc_energia_autoconsumida']
+
+                # ENERGIA_EXCEDENTARIA
+                o_energia_excedentaria = ''
+                if cups.get('cnmc_energia_excedentaria', False):
+                    o_energia_excedentaria = cups['cnmc_energia_excedentaria']
+
                 # AUTOCONSUMO, CAU, COD_AUTO, COD_GENERACION_AUTO I CONEXION_AUTOCONSUMO
                 o_autoconsumo = 0
                 o_cau = ''
@@ -436,10 +448,13 @@ class FA1(StopMultiprocessBased):
                 o_cod_generacio_auto = ''
                 o_conexion_autoconsumo = ''
 
-                if cups.get('autoconsum_id', False):
+                cups_obj = O.GiscedataCupsPs
+                autoconsum_id_data = cups_obj.get_autoconsum_on_date(item, ultim_dia_any)
+
+                if autoconsum_id_data:
                     # AUTOCONSUMO
                     o_autoconsumo = 1
-                    autoconsum_id = cups['autoconsum_id'][0]
+                    autoconsum_id = autoconsum_id_data[0]
                     autoconsum_data = O.GiscedataAutoconsum.read(autoconsum_id, ['cau', 'tipus_autoconsum',
                                                                                  'generador_id', 'codi_cnmc'])
                     # CAU
@@ -504,11 +519,14 @@ class FA1(StopMultiprocessBased):
                                     [bloc_escomesa['node'][0]], ['name'])
                                 o_nom_node = node[0]['name']
                 o_nom_node = o_nom_node.replace('*', '')
-                polissa_id = self.get_polissa(cups['id'])
+                search_params = [('cups', '=', cups['id'])] + search_glob
+                polissa_id = O.GiscedataPolissa.search(
+                    search_params, 0, 1, 'data_alta desc', context_glob)
+
                 o_potencia = ''
                 o_cnae = ''
                 o_cod_tfa = ''
-                o_estat_contracte = 0
+
                 # energies consumides
                 o_anual_activa = format_f(
                     cups['cne_anual_activa'] or 0.0, decimals=3)
@@ -575,6 +593,19 @@ class FA1(StopMultiprocessBased):
 
                     if polissa['tarifa']:
                         o_cod_tfa = self.get_codi_tarifa(polissa['tarifa'][1])
+
+                    # ESTADO CONTRATO
+                    contracte_obj = O.GiscedataPolissaModcontractual
+                    date_mod = '{}-12-31'.format(self.year)
+                    search_params = [('data_inici', '<=', date_mod),
+                                     ('data_final', '>=', date_mod),
+                                     ('polissa_id', '=', polissa_id)]
+                    modcon_id = contracte_obj.search(search_params, 1, 0, False, {'active_test': False})
+                    if modcon_id:
+                        o_estat_contracte = 0
+                    else:
+                        o_estat_contracte = 1
+
                 else:
                     o_comptador_cini = ''
                     o_comptador_data = ''
@@ -649,10 +680,27 @@ class FA1(StopMultiprocessBased):
                             o_cod_tfa = self.default_o_cod_tfa
 
                 # potencia adscrita
-                if cups.get('potencia_adscrita', False) != 0:
-                    o_pot_ads = cups['potencia_adscrita']
+
+                if cups['force_potencia_adscrita']:
+                    if cups.get('potencia_adscrita', False) != 0:
+                        o_pot_ads = cups['potencia_adscrita']
+                    else:
+                        o_pot_ads = o_potencia
+
                 else:
-                    o_pot_ads = o_potencia
+                    but_obj = O.GiscedataButlleti
+                    but_ids = but_obj.search([('cups_id', '=', item)])
+                    if but_ids:
+                        but_data = but_obj.read(but_ids, ['data', 'pot_max_admisible'])
+                        data_anterior = '1990-01-01'
+                        fi_any = '{}-12-31'.format(self.year)
+                        for but_d in but_data:
+                            if data_anterior < but_d['data'] <= fi_any:
+                                potencia = but_d['pot_max_admisible']
+                                data_anterior = but_d['data']
+                        o_pot_ads = potencia
+                    else:
+                        o_pot_ads = o_potencia
 
                 res_srid = ['', '']
                 if vertex:
@@ -696,8 +744,8 @@ class FA1(StopMultiprocessBased):
                     o_cod_auto,
                     o_cod_generacio_auto,
                     o_conexion_autoconsumo,
-                    '',
-                    '',
+                    o_energia_autoconsumida,
+                    o_energia_excedentaria,
                 ])
                 self.input_q.task_done()
             except Exception:

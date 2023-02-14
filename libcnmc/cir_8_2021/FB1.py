@@ -22,7 +22,7 @@ class FB1(StopMultiprocessBased):
         self.extended = kwargs.get("extended", False)
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
-        self.base_object = 'Línies AT'
+        self.base_object = 'Linies AT'
         self.report_name = 'CNMC INVENTARI AT'
         self.layer = 'LBT\_%'
         self.embarrats = kwargs.pop('embarrats', False)
@@ -448,6 +448,7 @@ class FB1(StopMultiprocessBased):
                         fecha_baja = ''
 
                     # Fecha APS / Estado
+                    fecha_aps = ''
                     if modelo == 'M':
                         estado = ''
                         fecha_aps = ''
@@ -801,58 +802,59 @@ class FB1(StopMultiprocessBased):
                     if linia.get('model', False):
                         modelo = linia['model']
 
-                    # Fecha APS
-                    if linia['data_pm']:
-                        data_pm_linia = datetime.strptime(str(linia['data_pm']),
-                                                          '%Y-%m-%d')
-                        fecha_aps = data_pm_linia.strftime('%d/%m/%Y')
-                    # Estado
-                    if linia[self.compare_field]:
-                        data_entregada = linia[self.compare_field]
-                        entregada = F2Res4666(**data_entregada)
-                        actual = F2Res4666(
-                            identificador_tramo,
-                            linia['cini'],
-                            node_inicial,
-                            node_final,
-                            codigo_ccuu,
-                            ccaa_1,
-                            ccaa_2,
-                            '',
-                            fecha_aps,
-                            fecha_baja,
-                            1,
-                            1,
-                            tension_explotacion*1000,
-                            format_f(longitud, 3),
-                            intensitat,
-                            '',
-                            '',
-                            0
-                        )
-                        if actual == entregada and fecha_baja == '':
-                            estado = 0
-                        else:
-                            self.output_m.put("{} {}".format(linia["name"], adapt_diff(actual.diff(entregada))))
-                            estado = 1
-                    else:
-                        if linia['data_pm']:
-                            if linia['data_pm'][:4] != str(self.year):
-                                self.output_m.put(
-                                    "Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(
-                                        linia["name"]))
-                                estado = '1'
-                            else:
-                                estado = '2'
-                        else:
-                            self.output_m.put(
-                                "Identificador:{} No estava en el fitxer carregat al any n-1".format(linia["name"]))
-                            estado = '1'
-
-                    # Si MODELO = 'M', ESTADO i FECHA_APS han d'estar buides
+                    # Fecha APS / Estado
+                    fecha_aps = ''
                     if modelo == 'M':
                         estado = ''
                         fecha_aps = ''
+                    else:
+                        # Fecha APS
+                        if linia['data_pm']:
+                            data_pm_linia = datetime.strptime(str(linia['data_pm']),
+                                                              '%Y-%m-%d')
+                            fecha_aps = data_pm_linia.strftime('%d/%m/%Y')
+                        # Estado
+                        if linia[self.compare_field]:
+                            data_entregada = linia[self.compare_field]
+                            entregada = F2Res4666(**data_entregada)
+                            actual = F2Res4666(
+                                identificador_tramo,
+                                linia['cini'],
+                                node_inicial,
+                                node_final,
+                                codigo_ccuu,
+                                ccaa_1,
+                                ccaa_2,
+                                '',
+                                fecha_aps,
+                                fecha_baja,
+                                1,
+                                1,
+                                tension_explotacion*1000,
+                                format_f(longitud, 3),
+                                intensitat,
+                                '',
+                                '',
+                                0
+                            )
+                            if actual == entregada and fecha_baja == '':
+                                estado = 0
+                            else:
+                                self.output_m.put("{} {}".format(linia["name"], adapt_diff(actual.diff(entregada))))
+                                estado = 1
+                        else:
+                            if linia['data_pm']:
+                                if linia['data_pm'][:4] != str(self.year):
+                                    self.output_m.put(
+                                        "Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(
+                                            linia["name"]))
+                                    estado = '1'
+                                else:
+                                    estado = '2'
+                            else:
+                                self.output_m.put(
+                                    "Identificador:{} No estava en el fitxer carregat al any n-1".format(linia["name"]))
+                                estado = '1'
 
                     output = [
                         identificador_tramo,  # IDENTIFICADOR TRAMO

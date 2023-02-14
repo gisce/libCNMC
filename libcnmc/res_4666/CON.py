@@ -10,11 +10,11 @@ from datetime import datetime
 import traceback
 from operator import itemgetter
 
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import format_f, get_forced_elements
 
 
-class CON(MultiprocessBased):
+class CON(StopMultiprocessBased):
     """
     Class that generates the Maquinas/Condensadores(5) file of the 4666
     """
@@ -110,6 +110,9 @@ class CON(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
 
                 cond = O.GiscedataCondensadors.read(item, fields_to_read)
@@ -176,9 +179,9 @@ class CON(MultiprocessBased):
                 ]
 
                 self.output_q.put(output)
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

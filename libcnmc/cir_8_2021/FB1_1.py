@@ -84,8 +84,8 @@ class FB1_1(StopMultiprocessBased):
                             o_inicio = '{} 0'.format(p)
                             inicio = o_inicio.split(' ')
                             vertex_inicio = {
-                                'x': inicio[0],
-                                'y': inicio[1]
+                                'x': float(inicio[0]),
+                                'y': float(inicio[1])
                             }
                             res_srid_inicio = convert_srid(get_srid(o), (vertex_inicio['x'], vertex_inicio['y']))
                             o_inicio_z = ''
@@ -94,8 +94,8 @@ class FB1_1(StopMultiprocessBased):
                             o_final = '{} 0'.format(dest)
                             final = o_final.split(' ')
                             vertex_final = {
-                                'x': final[0],
-                                'y': final[1]
+                                'x': float(final[0]),
+                                'y': float(final[1])
                             }
                             res_srid_final = convert_srid(get_srid(o), (vertex_final['x'], vertex_final['y']))
                             o_final_z = ''

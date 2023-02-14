@@ -10,7 +10,7 @@ from datetime import datetime
 import traceback
 import sys
 
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import \
     (get_id_municipi_from_company, format_f, get_forced_elements, adapt_diff)
 from libcnmc.models import F4Res4666
@@ -18,7 +18,7 @@ from libcnmc.models import F4Res4666
 QUIET = False
 
 
-class POS(MultiprocessBased):
+class POS(StopMultiprocessBased):
     """
     Class that generates the POS/Interruptores(4) of 4666 report
     """
@@ -122,6 +122,9 @@ class POS(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 pos = O.GiscedataCtsSubestacionsPosicio.read(
                     item, fields_to_read)
@@ -258,15 +261,15 @@ class POS(MultiprocessBased):
                         output.append(["", ""])
 
                 self.output_q.put(output)
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()
 
 
-class POS_INT(MultiprocessBased):
+class POS_INT(StopMultiprocessBased):
     """
     Class that generates the POS/Cel·les(4) of 4666 report
     """
@@ -368,6 +371,9 @@ class POS_INT(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 cel = O.GiscedataCellesCella.read(
                     item, fields_to_read)
@@ -478,9 +484,9 @@ class POS_INT(MultiprocessBased):
                         output.append(["", ""])
 
                 self.output_q.put(output)
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

@@ -4,7 +4,7 @@
 from __future__ import absolute_import
 from datetime import datetime
 import traceback
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 
 
 def get_ti_name(connection, ti_id):
@@ -25,7 +25,7 @@ def get_ti_name(connection, ti_id):
         return ""
 
 
-class ModCts(MultiprocessBased):
+class ModCts(StopMultiprocessBased):
     """
     Class that generates the modification file of CT
     """
@@ -85,6 +85,9 @@ class ModCts(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
 
                 fields_to_read = [
@@ -109,15 +112,15 @@ class ModCts(MultiprocessBased):
                         ti
                     ]
                     self.output_q.put(output)
+                    self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()
 
 
-class ModFia(MultiprocessBased):
+class ModFia(StopMultiprocessBased):
     """
     Class that generates the modifications of fiabilidad(7)
     """
@@ -173,6 +176,9 @@ class ModFia(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
 
                 fields_to_read = [
@@ -198,15 +204,15 @@ class ModFia(MultiprocessBased):
                         ti
                     ]
                     self.output_q.put(output)
+                    self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()
 
 
-class ModLat(MultiprocessBased):
+class ModLat(StopMultiprocessBased):
     """
     Class that generates modifications of the LAT(1)
     """
@@ -271,6 +277,9 @@ class ModLat(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
 
                 linia = O.GiscedataAtLinia.read(item, ['trams'])
@@ -304,16 +313,15 @@ class ModLat(MultiprocessBased):
                             ti
                         ]
                         self.output_q.put(output)
-
+                        self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()
 
 
-class ModLbt(MultiprocessBased):
+class ModLbt(StopMultiprocessBased):
     """
     Class that generates the modifications of LBT(2)
     """
@@ -376,6 +384,9 @@ class ModLbt(MultiprocessBased):
             try:
                 count += 1
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
 
                 linia = O.GiscedataBtElement.read(item, fields_to_read)
@@ -398,15 +409,15 @@ class ModLbt(MultiprocessBased):
                     ]
 
                     self.output_q.put(output)
+                    self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()
 
 
-class ModMaq(MultiprocessBased):
+class ModMaq(StopMultiprocessBased):
     """
     Class that generates the modifications of Maquinas/Transofrmadores(5)
     """
@@ -478,6 +489,9 @@ class ModMaq(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
 
                 trafo = O.GiscedataTransformadorTrafo.read(item, fields_to_read)
@@ -499,15 +513,15 @@ class ModMaq(MultiprocessBased):
                         ti
                     ]
                     self.output_q.put(output)
+                    self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()
 
 
-class ModPos(MultiprocessBased):
+class ModPos(StopMultiprocessBased):
     """
     Class that generates the modifications of POS/Interruptores(4)
     """
@@ -567,6 +581,9 @@ class ModPos(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 pos = O.GiscedataCtsSubestacionsPosicio.read(item, fields_to_read)
 
@@ -588,10 +605,9 @@ class ModPos(MultiprocessBased):
                         ti
                     ]
                     self.output_q.put(output)
-
+                    self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()
