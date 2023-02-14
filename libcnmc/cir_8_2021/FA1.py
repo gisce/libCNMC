@@ -533,8 +533,8 @@ class FA1(StopMultiprocessBased):
                 search_params = [('data_inici', '<=', date_mod),
                                  ('data_final', '>=', date_mod),
                                  ('polissa_id.id', '=', polissa_id)]
-                id_modcon = contracte_obj.search(search_params, limit=1, context={'active_test': False})
-                if id_modcon:
+                modcon_id = contracte_obj.search(search_params, limit=1, context={'active_test': False})
+                if modcon_id:
                     o_estat_contracte = 0
                 else:
                     o_estat_contracte = 1
@@ -608,7 +608,6 @@ class FA1(StopMultiprocessBased):
                 else:
                     o_comptador_cini = ''
                     o_comptador_data = ''
-                    o_estat_contracte = 1
 
                     search_modcon = [
                         ('id', 'in', cups['polisses']),
