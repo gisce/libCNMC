@@ -526,7 +526,19 @@ class FA1(StopMultiprocessBased):
                 o_potencia = ''
                 o_cnae = ''
                 o_cod_tfa = ''
-                o_estat_contracte = 0
+
+                # ESTADO CONTRATO
+                contracte_obj = O.GiscedataPolissaModcontractual
+                date_mod = '{}-12-31'.format(self.year)
+                search_params = [('data_inici', '<=', date_mod),
+                                 ('data_final', '>=', date_mod),
+                                 ('polissa_id.id', '=', polissa_id)]
+                id_modcon = contracte_obj.search(search_params, limit=1, context={'active_test': False})
+                if id_modcon:
+                    o_estat_contracte = 0
+                else:
+                    o_estat_contracte = 1
+
                 # energies consumides
                 o_anual_activa = format_f(
                     cups['cne_anual_activa'] or 0.0, decimals=3)
