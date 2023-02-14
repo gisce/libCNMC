@@ -49,12 +49,12 @@ class FD2(StopMultiprocessBased):
             values['fuera_plazo'] = values['fuera_plazo'] + 1
             if track_obj_installed:
                 create_vals.update({'on_time': False})
-                track_obj.create(create_vals)
+                track_obj.create_async(create_vals)
         else:
             values['dentro_plazo'] = values['dentro_plazo'] + 1
             if track_obj_installed:
                 create_vals.update({'on_time': True})
-                track_obj.create(create_vals)
+                track_obj.create_async(create_vals)
         values['totals'] = values['totals'] + 1
 
     def get_atc_time_delta(self, crm_id, total_ts, context=None):
