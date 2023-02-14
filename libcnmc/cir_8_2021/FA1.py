@@ -527,18 +527,6 @@ class FA1(StopMultiprocessBased):
                 o_cnae = ''
                 o_cod_tfa = ''
 
-                # ESTADO CONTRATO
-                contracte_obj = O.GiscedataPolissaModcontractual
-                date_mod = '{}-12-31'.format(self.year)
-                search_params = [('data_inici', '<=', date_mod),
-                                 ('data_final', '>=', date_mod),
-                                 ('polissa_id.id', '=', polissa_id)]
-                modcon_id = contracte_obj.search(search_params, 1, 0, False, {'active_test': False})
-                if modcon_id:
-                    o_estat_contracte = 0
-                else:
-                    o_estat_contracte = 1
-
                 # energies consumides
                 o_anual_activa = format_f(
                     cups['cne_anual_activa'] or 0.0, decimals=3)
@@ -605,9 +593,23 @@ class FA1(StopMultiprocessBased):
 
                     if polissa['tarifa']:
                         o_cod_tfa = self.get_codi_tarifa(polissa['tarifa'][1])
+
+                    # ESTADO CONTRATO
+                    contracte_obj = O.GiscedataPolissaModcontractual
+                    date_mod = '{}-12-31'.format(self.year)
+                    search_params = [('data_inici', '<=', date_mod),
+                                     ('data_final', '>=', date_mod),
+                                     ('polissa_id', '=', polissa_id)]
+                    modcon_id = contracte_obj.search(search_params, 1, 0, False, {'active_test': False})
+                    if modcon_id:
+                        o_estat_contracte = 0
+                    else:
+                        o_estat_contracte = 1
+
                 else:
                     o_comptador_cini = ''
                     o_comptador_data = ''
+                    o_estat_contracte = 1
 
                     search_modcon = [
                         ('id', 'in', cups['polisses']),
