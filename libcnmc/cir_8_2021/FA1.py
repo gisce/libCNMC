@@ -600,7 +600,7 @@ class FA1(StopMultiprocessBased):
                     search_params = [('data_inici', '<=', date_mod),
                                      ('data_final', '>=', date_mod),
                                      ('polissa_id', '=', polissa_id)]
-                    modcon_id = contracte_obj.search(search_params, 1, 0, False, {'active_test': False})
+                    modcon_id = contracte_obj.search(search_params, 0, 0, False, {'active_test': False})
                     if modcon_id:
                         o_estat_contracte = 0
                     else:
