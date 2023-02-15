@@ -19,7 +19,7 @@ class FD2(StopMultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1') or ''
         self.year = kwargs.pop('year', datetime.now().year - 2)
         self.report_name = 'FD2 - Calidad Comercial'
-        self.base_object = 'Despatxos'
+        self.base_object = 'Códigos de gestión de Calidad'
 
     def get_sequence(self):
 
