@@ -42,19 +42,19 @@ class FD2(StopMultiprocessBased):
 
     def compute_time(self, cod_gest_data, values, time_delta, ref):
         o = self.connection
-        create_vals = {'cod_gestio_id': cod_gest_data['id'], 'ref': '{},{}'.format(ref[0], ref[1])}
+        create_vals = {'cod_gestio_id': cod_gest_data['name'], 'ref': '{},{}'.format(ref[0], ref[1])}
         track_obj_installed = o.IrModel.search([('model', '=', 'giscedata.circular.82021.case.tracking')])
         track_obj = o.model('giscedata.circular.82021.case.tracking')
         if time_delta > cod_gest_data['dies_limit']:
             values['fuera_plazo'] = values['fuera_plazo'] + 1
             if track_obj_installed:
                 create_vals.update({'on_time': False})
-                track_obj.create_async(create_vals)
+                track_obj.create(create_vals)
         else:
             values['dentro_plazo'] = values['dentro_plazo'] + 1
             if track_obj_installed:
                 create_vals.update({'on_time': True})
-                track_obj.create_async(create_vals)
+                track_obj.create(create_vals)
         values['totals'] = values['totals'] + 1
 
     def get_atc_time_delta(self, crm_id, total_ts, context=None):
