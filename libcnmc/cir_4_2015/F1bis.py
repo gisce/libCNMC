@@ -3,10 +3,10 @@ from datetime import datetime, timedelta
 import traceback
 
 from libcnmc.utils import get_comptador, format_f, TARIFAS_AT, TARIFAS_BT
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 
 
-class F1bis(MultiprocessBased):
+class F1bis(StopMultiprocessBased):
     def __init__(self, **kwargs):
         super(F1bis, self).__init__(**kwargs)
         self.codi_r1 = kwargs.pop('codi_r1')
@@ -244,6 +244,9 @@ class F1bis(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 fields_to_read = [
                     'name', 'polissa_polissa', 'cnmc_numero_lectures',
@@ -276,9 +279,9 @@ class F1bis(MultiprocessBased):
                     o_baixa,            # BAJA SUMINISTRO
                     o_year              # AÑO INFORMACION
                 ])
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

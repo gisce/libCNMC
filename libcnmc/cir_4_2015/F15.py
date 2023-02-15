@@ -2,11 +2,11 @@
 from datetime import datetime
 import traceback
 from libcnmc.utils import format_f, convert_srid, get_srid
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from shapely import wkt
 
 
-class F15(MultiprocessBased):
+class F15(StopMultiprocessBased):
     """
     Class to generate the F15 (Celdas)
     """
@@ -170,6 +170,9 @@ class F15(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 cella = o.GiscedataCellesCella.read(
                     item, fields_to_read
@@ -228,9 +231,9 @@ class F15(MultiprocessBased):
                     o_prop,         # PROPIEDAD
                     o_any           # AÑO INFORMACION
                 ])
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

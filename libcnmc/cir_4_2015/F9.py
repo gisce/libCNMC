@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import traceback
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import get_srid, convert_srid, format_f, parse_geom
 
 try:
@@ -10,7 +10,7 @@ except:
     from StringIO import StringIO
 
 
-class F9(MultiprocessBased):
+class F9(StopMultiprocessBased):
     def __init__(self, **kwargs):
         super(F9, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
@@ -179,6 +179,9 @@ class F9(MultiprocessBased):
             try:
                 # generar linies
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 if item[1] == 'at':
                     if 'geom' in o.GiscedataAtTram.fields_get().keys():
@@ -215,13 +218,12 @@ class F9(MultiprocessBased):
                         data = self.conv_text(data)
                         linia = 'B{0}\n{1}\nEND'.format(bt['name'], data)
                 self.output_q.put([linia])
+                self.input_q.task_done()
             except:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                # print contents
-                self.input_q.task_done()
 
     def writer(self):
         if self.file_output:
@@ -263,10 +265,10 @@ class F9(MultiprocessBased):
                 if val == 'STOP':
                     break
                 fio_mod.writelines(val + "\n")
+                self.output_m.task_done()
             except:
+                self.output_m.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.output_m.task_done()
         fio_mod.close()

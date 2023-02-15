@@ -8,13 +8,13 @@ from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP, \
     TARIFAS_AT, TARIFAS_BT
 from libcnmc.utils import get_ine, get_comptador, format_f, get_srid,\
     convert_srid
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from ast import literal_eval
 import logging
 from shapely import wkt
 
 
-class F1(MultiprocessBased):
+class F1(StopMultiprocessBased):
     def __init__(self, **kwargs):
         """
         F1 class constructor
@@ -340,6 +340,9 @@ class F1(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 fields_to_read = [
                     'name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
@@ -622,9 +625,9 @@ class F1(MultiprocessBased):
                     format_f(o_anual_reactiva, decimals=3), # Energia reactiva anual consumida
                     o_any_incorporacio  # Año informacion
                 ])
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()
