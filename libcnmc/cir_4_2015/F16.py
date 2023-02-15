@@ -3,11 +3,11 @@ from datetime import datetime
 import traceback
 
 from libcnmc.utils import get_ine, format_f, convert_srid, get_srid
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from shapely import wkt
 
 
-class F16(MultiprocessBased):
+class F16(StopMultiprocessBased):
     def __init__(self, **kwargs):
         super(F16, self).__init__(**kwargs)
         self.codi_r1 = kwargs.pop('codi_r1')
@@ -84,6 +84,9 @@ class F16(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 condensador = O.GiscedataCondensadors.read(item, fields_to_read)
                 o_cond = condensador['name']
@@ -130,9 +133,9 @@ class F16(MultiprocessBased):
                     o_propietari,                       # PROPIETARIO
                     o_any                               # AÑO INFORMACION
                 ])
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

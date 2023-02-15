@@ -3,12 +3,12 @@ from datetime import datetime
 import traceback
 
 from libcnmc.utils import get_ine, format_f, convert_srid, get_srid
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from libcnmc.cir_4_2015.F1 import TARIFAS_AT, TARIFAS_BT
 from shapely import wkt
 
 
-class F11(MultiprocessBased):
+class F11(StopMultiprocessBased):
     def __init__(self, **kwargs):
         super(F11, self).__init__(**kwargs)
         self.codi_r1 = kwargs.pop('codi_r1')
@@ -275,6 +275,9 @@ class F11(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 ct = O.GiscedataCts.read(item, fields_to_read)
                 if ct.get("node_id"):
@@ -344,9 +347,9 @@ class F11(MultiprocessBased):
                     o_num_max_maquines,                 # NUM MAX MAQUINAS
                     o_incorporacio                      # AÑO INFORMACION
                 ])
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

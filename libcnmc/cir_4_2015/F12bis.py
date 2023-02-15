@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 import traceback
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 
 
-class F12bis(MultiprocessBased):
+class F12bis(StopMultiprocessBased):
     def __init__(self, **kwargs):
         super(F12bis, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
@@ -96,6 +96,9 @@ class F12bis(MultiprocessBased):
             try:
                 # generar linies
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 celles = o.GiscedataCellesCella.read(
                     item, fields_to_read
@@ -123,9 +126,9 @@ class F12bis(MultiprocessBased):
                     o_data,         # FECHA PUESTA EN SERVICIO
                     o_any           # AÑO INFORMACION
                 ])
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

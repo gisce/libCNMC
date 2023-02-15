@@ -2,10 +2,10 @@
 from datetime import datetime
 import traceback
 from libcnmc.utils import format_f, get_norm_tension
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 
 
-class F14(MultiprocessBased):
+class F14(StopMultiprocessBased):
     def __init__(self, **kwargs):
         super(F14, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
@@ -77,6 +77,9 @@ class F14(MultiprocessBased):
             try:
                 # generar linies
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 trafo = o.GiscedataTransformadorTrafo.read(
                     item, fields_to_read
@@ -120,9 +123,9 @@ class F14(MultiprocessBased):
                     o_estat,                # ESTADO
                     o_any                   # AÑO INFORMACION
                 ])
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

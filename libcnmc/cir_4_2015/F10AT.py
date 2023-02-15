@@ -2,10 +2,10 @@
 from datetime import datetime
 import traceback
 from libcnmc.utils import format_f, tallar_text
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 
 
-class F10AT(MultiprocessBased):
+class F10AT(StopMultiprocessBased):
     def __init__(self, **kwargs):
         super(F10AT, self).__init__(**kwargs)
         self.codi_r1 = kwargs.pop('codi_r1')
@@ -81,6 +81,9 @@ class F10AT(MultiprocessBased):
             try:
                 # generar linies
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 linia = o.GiscedataAtLinia.read(
                     item, ['trams', 'tensio', 'municipi', 'propietari',
@@ -219,9 +222,9 @@ class F10AT(MultiprocessBased):
                         o_prop,             # PROPIEDAD
                         o_any               # AÑO INFORMACION
                     ])
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

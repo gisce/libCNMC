@@ -2,10 +2,10 @@
 from datetime import datetime
 import traceback
 from libcnmc.utils import format_f, convert_srid, get_srid, get_ines
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 
 
-class F13(MultiprocessBased):
+class F13(StopMultiprocessBased):
     def __init__(self, **kwargs):
         super(F13, self).__init__(**kwargs)
         self.codi_r1 = kwargs.pop('codi_r1')
@@ -52,6 +52,9 @@ class F13(MultiprocessBased):
             try:
                 # generar linies
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 sub = o.GiscedataCtsSubestacions.read(
                     item, fields_to_read
@@ -89,9 +92,9 @@ class F13(MultiprocessBased):
                     o_prop,                             # PROPIEDAD
                     o_any                               # AÑO INFORMACION
                 ])
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

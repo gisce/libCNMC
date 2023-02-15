@@ -6,10 +6,10 @@ import traceback
 
 from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP
 from libcnmc.utils import get_ine, get_comptador
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 
 
-class F13c(MultiprocessBased):
+class F13c(StopMultiprocessBased):
     def __init__(self, **kwargs):
         super(F13c, self).__init__(**kwargs)
         self.year = kwargs.pop('year', datetime.now().year - 1)
@@ -69,6 +69,9 @@ class F13c(MultiprocessBased):
             try:
                 # generar linies
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 sub = o.GiscedataCtsSubestacionsPosicio.read(
                     item, fields_to_read
@@ -98,9 +101,9 @@ class F13c(MultiprocessBased):
                     o_data,         # FECHA PUESTA EN SERVICIO
                     o_any           # AÑO INFORMACION
                 ])
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()
