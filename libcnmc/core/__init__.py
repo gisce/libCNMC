@@ -113,12 +113,12 @@ class MultiprocessBased(object):
                     break
                 msg = map(lambda x: type(x)==unicode and x.encode('utf-8') or x, item)
                 fitxer.writerow(msg)
+                self.output_q.task_done()
             except:
+                self.output_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.output_q.task_done()
 
         if not self.file_output:
             self.content = fio.getvalue()
@@ -138,12 +138,12 @@ class MultiprocessBased(object):
                 if item == 'STOP':
                     break
                 fio_mod.writelines(item + "\n")
+                self.output_m.task_done()
             except:
+                self.output_m.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.output_m.task_done()
         fio_mod.close()
 
     def consumer(self):
