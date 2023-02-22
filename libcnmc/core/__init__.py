@@ -137,7 +137,7 @@ class MultiprocessBased(object):
             try:
                 item = self.output_m.get()
                 if item == 'STOP':
-                    self.output_q.task_done()
+                    self.output_m.task_done()
                     break
                 fio_mod.writelines(item + "\n")
                 self.output_m.task_done()
