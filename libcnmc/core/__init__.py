@@ -110,6 +110,7 @@ class MultiprocessBased(object):
             try:
                 item = self.output_q.get()
                 if item == 'STOP':
+                    self.output_q.task_done()
                     break
                 msg = map(lambda x: type(x)==unicode and x.encode('utf-8') or x, item)
                 fitxer.writerow(msg)
@@ -136,6 +137,7 @@ class MultiprocessBased(object):
             try:
                 item = self.output_m.get()
                 if item == 'STOP':
+                    self.output_q.task_done()
                     break
                 fio_mod.writelines(item + "\n")
                 self.output_m.task_done()
