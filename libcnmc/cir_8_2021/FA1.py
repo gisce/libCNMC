@@ -686,7 +686,7 @@ class FA1(StopMultiprocessBased):
                             o_cod_tfa = self.default_o_cod_tfa
 
                 # potencia adscrita
-                o_pot_ads = ''
+                o_pot_ads = 0
                 if cups.get('potencia_adscrita', False):
                     o_pot_ads = cups['potencia_adscrita']
                 if o_pot_ads < o_potencia:
