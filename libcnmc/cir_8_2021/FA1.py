@@ -344,7 +344,8 @@ class FA1(StopMultiprocessBased):
         search_params = [
             ('cups', '=', cups_id),
             ('data_baixa', '>=', data_inici),
-            ('data_baixa', '<', data_fi)
+            ('data_baixa', '<', data_fi),
+            ('state', 'in', ['tall', 'activa', 'baixa']),
         ]
         polisses_baixa_ids = polissa_obj.search(
             search_params, 0, False, False, {'active_test': False})
@@ -410,7 +411,7 @@ class FA1(StopMultiprocessBased):
                     "node_id", 'autoconsum_id', 'cnmc_numero_lectures',
                     'cnmc_factures_estimades', 'cnmc_factures_total',
                     'cnmc_energia_autoconsumida', 'cnmc_energia_excedentaria',
-                    'force_potencia_adscrita',
+                    'force_potencia_adscrita', 'cnmc_conexion_autoconsumo',
                 ]
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 if not cups or not cups.get('name'):
@@ -474,6 +475,8 @@ class FA1(StopMultiprocessBased):
                             o_cod_generacio_auto = cini[4]
 
                     # CONEXION_AUTOCONSUMO
+                    if cups.get('cnmc_conexion_autoconsumo', False):
+                        o_conexion_autoconsumo = cups['cnmc_conexion_autoconsumo']
 
                 o_codi_ine_mun = ''
                 o_codi_ine_prov = ''
@@ -680,27 +683,12 @@ class FA1(StopMultiprocessBased):
                             o_cod_tfa = self.default_o_cod_tfa
 
                 # potencia adscrita
+                o_pot_ads = ''
+                if cups.get('potencia_adscrita', False):
+                    o_pot_ads = cups['potencia_adscrita']
+                if o_pot_ads < o_potencia:
+                    o_pot_ads = o_potencia
 
-                if cups['force_potencia_adscrita']:
-                    if cups.get('potencia_adscrita', False) != 0:
-                        o_pot_ads = cups['potencia_adscrita']
-                    else:
-                        o_pot_ads = o_potencia
-
-                else:
-                    but_obj = O.GiscedataButlleti
-                    but_ids = but_obj.search([('cups_id', '=', item)])
-                    if but_ids:
-                        but_data = but_obj.read(but_ids, ['data', 'pot_max_admisible'])
-                        data_anterior = '1990-01-01'
-                        fi_any = '{}-12-31'.format(self.year)
-                        for but_d in but_data:
-                            if data_anterior < but_d['data'] <= fi_any:
-                                potencia = but_d['pot_max_admisible']
-                                data_anterior = but_d['data']
-                        o_pot_ads = potencia
-                    else:
-                        o_pot_ads = o_potencia
 
                 res_srid = ['', '']
                 if vertex:
