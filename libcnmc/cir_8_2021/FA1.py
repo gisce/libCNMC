@@ -367,7 +367,10 @@ class FA1(StopMultiprocessBased):
 
         # Busquem pòlisses on la data d'alta estigui en les dates d'alta
         polisses_alta_ids = polissa_obj.search(
-            [('cups', '=', cups_id), ('data_alta', 'in', dates_alta)],
+            [('cups', '=', cups_id),
+             ('data_alta', 'in', dates_alta),
+             ('state', 'in', ['tall', 'activa', 'baixa']),
+             ],
             0, False, False, {'active_test': False}
         )
 
