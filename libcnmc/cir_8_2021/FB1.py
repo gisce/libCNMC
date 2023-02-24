@@ -145,7 +145,7 @@ class FB1(StopMultiprocessBased):
             'baixa', 'data_pm', 'data_industria', 'coeficient', 'cini', 'propietari', 'tensio_max_disseny_id', 'name',
             'origen', 'final', 'perc_financament', 'longitud_cad', 'cable', 'linia', 'model', 'model', 'punt_frontera',
             'tipus_instalacio_cnmc_id', 'data_baixa', 'baixa', 'longitud_cad', 'data_pm', 'circuits',
-            'id_regulatori', self.compare_field,
+            'id_regulatori', self.compare_field, 'municipi',
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
 
@@ -181,16 +181,12 @@ class FB1(StopMultiprocessBased):
                     # Comunitat
                     comunitat = ''
                     fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
-                    if tram.get('linia', False):
-                        linia_id = O.GiscedataAtLinia.search([('name', '=', tram['linia'][1])])
-                        if linia_id:
-                            municipi_data = O.GiscedataAtLinia.read(linia_id, ['municipi'])[0]
-                            if municipi_data.get('municipi', False):
-                                municipi_id = municipi_data['municipi'][0]
-                                id_comunitat = fun_ccaa(municipi_id)
-                                comunitat_vals = O.ResComunitat_autonoma.read(id_comunitat[0], ['codi'])
-                                if comunitat_vals:
-                                    comunitat = comunitat_vals['codi']
+                    if tram.get('municipi', False):
+                        municipi_id = tram['municipi'][0]
+                        id_comunitat = fun_ccaa(municipi_id)
+                        comunitat_vals = O.ResComunitat_autonoma.read(id_comunitat[0], ['codi'])
+                        if comunitat_vals:
+                            comunitat = comunitat_vals['codi']
 
                     # Propietari
                     if tram.get('propietari', False):

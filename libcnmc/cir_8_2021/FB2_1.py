@@ -45,7 +45,8 @@ class FB2_1(StopMultiprocessBased):
         data_baixa = '%s-12-31' % self.year
         search_params = [
             ('reductor', '=', False),
-            ('id_estat.cnmc_inventari', '=', True)
+            ('id_estat.cnmc_inventari', '=', True),
+            ('propietari', '=', True),
         ]
         search_params += ['|', ('data_pm', '=', False),
                           ('data_pm', '<', data_pm),
