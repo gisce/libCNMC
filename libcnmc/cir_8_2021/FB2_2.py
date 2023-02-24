@@ -126,7 +126,8 @@ class FB2_2(StopMultiprocessBased):
                 o_maquina = self.get_codi_maquina(o_ct_id, o_id_cella)
                 o_cini = celles['cini'] or ''
                 o_propietari = int(celles['propietari'])
-
+                if o_propietari == 0:
+                    o_maquina = ''
                 o_interruptor = self.get_tipus_inst(celles['tipus_instalacio_cnmc_id'])
                 o_interruptor_val = TIPUS_INST[o_interruptor]
 

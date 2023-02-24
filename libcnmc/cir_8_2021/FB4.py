@@ -118,7 +118,8 @@ class FB4(StopMultiprocessBased):
 
         fields_to_read = [
             'name', 'cini', 'node_id', 'propietari', 'subestacio_id', 'data_pm', 'tensio', 'model',
-            'parc_id', 'data_baixa', 'interruptor', 'tipus_instalacio_cnmc_id', 'punt_frontera', self.compare_field
+            'parc_id', 'data_baixa', 'interruptor', 'tipus_instalacio_cnmc_id', 'punt_frontera', self.compare_field,
+            'tipus_interruptor',
         ]
         fields_to_read_obra = [
             'name', 'cini', 'tipo_inversion', 'denominacion', 'ccuu', 'codigo_ccaa', 'identificador_parque',
@@ -284,11 +285,13 @@ class FB4(StopMultiprocessBased):
                 punt_frontera = int(pos['punt_frontera'] == True)
 
                 #EQUIPADA
-                id_interruptor = pos['interruptor']
-                if id_interruptor:
-                    equipada = INTERRUPTOR[id_interruptor]
-                else:
-                    equipada = ''
+                equipada = ''
+                if pos.get('tipus_interruptor', False):
+                    interruptor = pos['tipus_interruptor']
+                    if interruptor == 'P':
+                        equipada = '0'
+                    else:
+                        equipada = interruptor
 
                 if pos[self.compare_field]:
                     last_data = pos[self.compare_field]
