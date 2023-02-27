@@ -443,7 +443,7 @@ class FA1(StopMultiprocessBased):
                 # ENERGIA_EXCEDENTARIA
                 o_energia_excedentaria = ''
                 if cups.get('cnmc_energia_excedentaria', False):
-                    o_energia_excedentaria = cups['cnmc_energia_excedentaria']
+                    o_energia_excedentaria = abs(cups['cnmc_energia_excedentaria'])
 
                 # AUTOCONSUMO, CAU, COD_AUTO, COD_GENERACION_AUTO I CONEXION_AUTOCONSUMO
                 o_autoconsumo = 0
