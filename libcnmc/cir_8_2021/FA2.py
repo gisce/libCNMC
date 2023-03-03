@@ -124,15 +124,24 @@ class FA2(StopMultiprocessBased):
                 res['cau'] = cau_data['cau']
         return res
 
-    def get_serveis_aux(self, item):
+    def get_serveis_aux(self, cups, item):
         o = self.connection
         serveis_aux = ''
-        polissa_obj = o.GiscedataPolissa
-        polissa_id = polissa_obj.search([('re_installation_id', '=', item)])
-        if polissa_id:
-            polissa_data = polissa_obj.read(polissa_id[0], ['cups'])
-            if polissa_data.get('cups', False):
-                serveis_aux = polissa_data['cups'][1]
+
+        cups_20 = cups[1][0:20]
+        cups_id = o.GiscedataCupsPs.search([('name', 'ilike', cups_20), ('name', '!=', cups)])
+        if cups_id:
+            cups_name = o.GiscedataCupsPs.read(cups_id, ['name'])
+            if cups_name:
+                if cups_name[0].get('name', False):
+                    serveis_aux = cups_name[0]['name']
+        else:
+            polissa_obj = o.GiscedataPolissa
+            polissa_id = polissa_obj.search([('re_installation_id', '=', item)])
+            if polissa_id:
+                polissa_data = polissa_obj.read(polissa_id[0], ['cups'])
+                if polissa_data.get('cups', False):
+                    serveis_aux = polissa_data['cups'][1]
 
         return serveis_aux
 
@@ -235,7 +244,7 @@ class FA2(StopMultiprocessBased):
                 o_cau = autoconsum['cau']
 
                 # Serveis auxiliars
-                o_cups_servicios_auxiliares = self.get_serveis_aux(item)
+                o_cups_servicios_auxiliares = self.get_serveis_aux(cups, item)
 
                 self.output_q.put([
                     o_nudo,  # Node
