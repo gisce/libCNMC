@@ -127,7 +127,7 @@ class FB2(StopMultiprocessBased):
             'id', 'name', 'cini', 'data_pm', 'tipus_instalacio_cnmc_id', 'tensio_p',
             'id_municipi', 'perc_financament', 'descripcio', 'data_baixa', 'tensio_const',
             self.compare_field, 'node_baixa', 'zona_id', 'node_id', 'potencia',
-            'model','punt_frontera'
+            'model','punt_frontera', 'id_regulatori'
         ]
 
         fields_to_read_obra = [
@@ -150,6 +150,12 @@ class FB2(StopMultiprocessBased):
                 self.progress_q.put(item)
 
                 ct = O.GiscedataCts.read(item, fields_to_read)
+
+                # IDENTIFICADOR_CT
+                if tram.get('id_regulatori', False):
+                    o_identificador_ct = ct['id_regulatori']
+                else:
+                    o_identificador_ct = ct['name']
 
                 # OBRES
 
@@ -390,7 +396,7 @@ class FB2(StopMultiprocessBased):
                     fecha_aps = ''
 
                 output = [
-                    '{0}'.format(ct['name']),           # IDENTIFICADOR
+                    o_identificador_ct,           # IDENTIFICADOR
                     ct['cini'] or '',                   # CINI
                     ct['descripcio'] or '',             # DENOMINACION
                     str(ti),                            # CODIGO_CCUU
