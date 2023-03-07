@@ -200,7 +200,7 @@ class FA2(StopMultiprocessBased):
                     )
 
                 # CIL
-                o_cil = '{}{}'.format(cups, '001')
+                o_cil = '{}{}'.format(cups[1], '001')
 
                 # CINI
                 o_cini = ''
