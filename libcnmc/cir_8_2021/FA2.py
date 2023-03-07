@@ -200,9 +200,7 @@ class FA2(StopMultiprocessBased):
                     )
 
                 # CIL
-                o_cil = ''
-                if recore.get('cil', False):
-                    o_cil = recore['cil'][1]
+                o_cil = '{}{}'.format(cups[1], '001')
 
                 # CINI
                 o_cini = ''
