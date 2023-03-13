@@ -51,7 +51,7 @@ class FA5(StopMultiprocessBased):
 
                     identificador = model_obj.read(obj_id, ['name'])
                     if identificador.get('name', False):
-                        o_identificador = identificador['name']
+                        o_identificador = str(identificador['name'])
 
                 # DENOMINACIÓN
                 o_denominacion = ''
@@ -115,17 +115,17 @@ class FA5(StopMultiprocessBased):
                     o_codigo_frontera_dt = punt_frontera['codigo_frontera_dt']
 
                 self.output_q.put([
-                    tallar_text(o_identificador, 22),   # IDENTIFICADOR
-                    o_denominacion,                     # DENOMINACIÓN
-                    o_zona,                             # ZONA
-                    o_tipo_frontera,                    # TIPO FRONTERA
-                    o_tension,                          # TENSIÓN
-                    o_energia_activa_entrante,          # ENERGIA ACTIVA ENTRANTE
-                    o_energia_activa_saliente,          # ENERGIA ACTIVA SALIENTE
-                    o_energia_reactiva_entrante,        # ENERGIA REACTIVA ENTRANTE
-                    o_energia_reactiva_saliente,        # ENERGIA REACTIVA SALIENTE
-                    o_codigo_empresa,                   # CÓDIGO EMPRESA
-                    o_codigo_frontera_dt,               # CÓDIGO EMPRESA
+                    tallar_text(o_identificador, 22),                   # IDENTIFICADOR
+                    o_denominacion,                                     # DENOMINACIÓN
+                    o_zona,                                             # ZONA
+                    o_tipo_frontera,                                    # TIPO FRONTERA
+                    o_tension,                                          # TENSIÓN
+                    format_f(o_energia_activa_entrante, decimals=3),    # ENERGIA ACTIVA ENTRANTE
+                    format_f(o_energia_activa_saliente, decimals=3),    # ENERGIA ACTIVA SALIENTE
+                    format_f(o_energia_reactiva_entrante, decimals=3),  # ENERGIA REACTIVA ENTRANTE
+                    format_f(o_energia_reactiva_saliente, decimals=3),  # ENERGIA REACTIVA SALIENTE
+                    o_codigo_empresa,                                   # CÓDIGO EMPRESA
+                    o_codigo_frontera_dt,                               # CÓDIGO EMPRESA
                 ])
                 self.input_q.task_done()
             except Exception:
