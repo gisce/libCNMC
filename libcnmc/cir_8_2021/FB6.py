@@ -50,8 +50,7 @@ class FB6(StopMultiprocessBased):
                 :rtype: list(int)
                 """
         search_params = [
-            ("installacio", "like", "giscedata.at.suport"),
-            ("tipus_element.codi_cnmc", "!=", "T")
+            ("tipus_element.codi_cnmc", "!=", "T"),
         ]
         return self.connection.GiscedataCellesCella.search(search_params)
 
