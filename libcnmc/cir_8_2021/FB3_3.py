@@ -148,7 +148,9 @@ class FB3_3(StopMultiprocessBased):
                 # AÑO_PS
                 o_any_ps = ''
                 if trafo.get('data_pm', False):
-                    o_any_ps= trafo['data_pm']
+                    o_any_data = str(trafo['data_pm'])
+                    o_any_ps = o_any_data.split('-')[0]
+
 
                 id_estat = trafo['id_estat']
                 if id_estat:
