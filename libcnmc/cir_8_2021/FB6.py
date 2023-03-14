@@ -302,14 +302,13 @@ class FB6(StopMultiprocessBased):
                     inst_id = installacio_data.split(',')[1]
                     model_obj = O.model(inst_model)
 
-                    if inst_model == 'giscedata.at.tram':
-                        tram_data = model_obj.read(inst_id, ['name', 'id_regulatori'])
-                        if tram_data.get('id_regulatori', False):
-                            o_identificador_elemento = tram_data['id_regulatori']
-                        else:
-                            o_identificador_elemento = "{}{}".format(self.prefix_AT, tram_data['name'])
-                    else:
-                        o_identificador_elemento = self.get_node_vertex_tram(o_fiabilitat)
+                    if inst_model == 'giscedata.at.suport':
+                        if cella.get('tram_id', False):
+                            tram_data = O.GiscedataAtTram.read(cella['tram_id'][0], ['name', 'id_regulatori'])
+                            if tram_data.get('id_regulatori', False):
+                                o_identificador_elemento = tram_data['id_regulatori']
+                            else:
+                                o_identificador_elemento = "{}{}".format(self.prefix_AT, tram_data['name'])
 
                     if inst_model == 'giscedata.cts':
                         ct_data = model_obj.read(inst_id, ['name', 'id_regulatori'])
@@ -317,7 +316,6 @@ class FB6(StopMultiprocessBased):
                             o_identificador_elemento = ct_data['id_regulatori']
                         else:
                             o_identificador_elemento = ct_data['name']
-
                 else:
                     o_identificador_elemento = self.get_node_vertex_tram(o_fiabilitat)
 
