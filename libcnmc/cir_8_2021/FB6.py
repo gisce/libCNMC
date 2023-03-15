@@ -63,7 +63,7 @@ class FB6(StopMultiprocessBased):
             ('inventari', '=', 'fiabilitat'),
         ]
 
-        return self.connection.GiscedataCellesCella.search(search_params)
+        return self.connection.GiscedataCellesCella.search(search_params, 0, 0, False, {'active_test': False})
 
     def get_node_vertex(self, element_name):
         """
