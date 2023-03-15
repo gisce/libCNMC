@@ -49,10 +49,20 @@ class FB6(StopMultiprocessBased):
                 :return: List of ids to generate the
                 :rtype: list(int)
                 """
-        search_params = [
+        data_pm = '%s-01-01' % (self.year + 1)
+        data_baixa = '%s-01-01' % self.year
+
+        search_params = [('criteri_regulatori', '!=', 'excloure'),
+                         '|', ('data_pm', '=', False),
+                              ('data_pm', '<', data_pm),
+                         '|', ('data_baixa', '>=', data_baixa),
+                              ('data_baixa', '=', False)]
+
+        search_params += [
             ("tipus_element.codi_cnmc", "!=", "T"),
             ('inventari', '=', 'fiabilitat'),
         ]
+
         return self.connection.GiscedataCellesCella.search(search_params)
 
     def get_node_vertex(self, element_name):
