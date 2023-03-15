@@ -299,7 +299,7 @@ class FB6(StopMultiprocessBased):
                 if cella.get('installacio', False):
                     installacio_data = cella['installacio']
                     inst_model = installacio_data.split(',')[0]
-                    inst_id = installacio_data.split(',')[1]
+                    inst_id = int(installacio_data.split(',')[1])
                     model_obj = O.model(inst_model)
 
                     if inst_model == 'giscedata.at.suport':
