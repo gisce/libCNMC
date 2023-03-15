@@ -51,6 +51,7 @@ class FB6(StopMultiprocessBased):
                 """
         search_params = [
             ("tipus_element.codi_cnmc", "!=", "T"),
+            ('inventari', '=', 'fiabilitat'),
         ]
         return self.connection.GiscedataCellesCella.search(search_params)
 
