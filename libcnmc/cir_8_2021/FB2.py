@@ -152,7 +152,7 @@ class FB2(StopMultiprocessBased):
                 ct = O.GiscedataCts.read(item, fields_to_read)
 
                 # IDENTIFICADOR_CT
-                if tram.get('id_regulatori', False):
+                if ct.get('id_regulatori', False):
                     o_identificador_ct = ct['id_regulatori']
                 else:
                     o_identificador_ct = ct['name']
