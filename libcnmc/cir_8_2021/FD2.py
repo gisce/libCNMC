@@ -5,7 +5,7 @@
 Informe de la CNMC relatiu a la generació conectada de les xarxes de distribució
 """
 from __future__ import absolute_import
-from datetime import datetime
+from datetime import datetime, timedelta
 import traceback
 from libcnmc.core import StopMultiprocessBased
 from workalendar.europe import Spain
@@ -492,11 +492,11 @@ class FD2(StopMultiprocessBased):
                 ('date_created', '>=', year_start),
                 ('date_created', '<=', year_end)
             ]
-            c102_ids = o.model("giscedata.switching.c1.01").search(search_params)
+            c101_ids = o.model("giscedata.switching.c1.01").search(search_params)
 
             ## Tractem els c1 i comptabilitzem els que escau
-            for c102_id in c102_ids:
-                c1_header_id = o.model("giscedata.switching.c1.01").read(c102_id, ['header_id'])[
+            for c101_id in c101_ids:
+                c1_header_id = o.model("giscedata.switching.c1.01").read(c101_id, ['header_id'])[
                     'header_id']
                 sw_id = o.GiscedataSwitchingStepHeader.read(c1_header_id[0], ['sw_id'])['sw_id'][0]
                 step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])['step_id'][0]
@@ -505,13 +505,13 @@ class FD2(StopMultiprocessBased):
                     model_names = ['giscedata.switching.c1.01', 'giscedata.switching.c1.05']
                     field_names = ['date_created', 'data_activacio']
                     context = {'model_names': model_names, 'field_names': field_names}
-                    self.manage_switching_cases(cod_gest_data, file_fields, sw_id, c102_id, context=context)
+                    self.manage_switching_cases(cod_gest_data, file_fields, sw_id, c101_id, context=context)
 
-            c202_ids = o.model("giscedata.switching.c2.01").search(search_params)
+            c201_ids = o.model("giscedata.switching.c2.01").search(search_params)
 
             ## Tractem els c2 i comptabilitzem els que escau
-            for c202_id in c202_ids:
-                c2_header_id = o.model("giscedata.switching.c2.01").read(c202_id, ['header_id'])[
+            for c201_id in c201_ids:
+                c2_header_id = o.model("giscedata.switching.c2.01").read(c201_id, ['header_id'])[
                     'header_id']
                 sw_id = o.GiscedataSwitchingStepHeader.read(c2_header_id[0], ['sw_id'])['sw_id'][0]
                 step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])['step_id'][0]
@@ -520,7 +520,7 @@ class FD2(StopMultiprocessBased):
                     model_names = ['giscedata.switching.c2.01', 'giscedata.switching.c2.05']
                     field_names = ['date_created', 'data_activacio']
                     context = {'model_names': model_names, 'field_names': field_names}
-                    self.manage_switching_cases(cod_gest_data, file_fields, sw_id, c202_id, context=context)
+                    self.manage_switching_cases(cod_gest_data, file_fields, sw_id, c201_id, context=context)
 
         else:
             search_params = [
@@ -538,7 +538,14 @@ class FD2(StopMultiprocessBased):
                 proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
                 if '05' in proces_name:
                     comer_sortint_id = o.GiscedataSwitching.read(sw_id, ['comer_sortint_id'])['comer_sortint_id'][0]
-                    invoice_id = o.AccountInvoice.search([('partner_id', '=', comer_sortint_id)], 0, None, 'date_invoice asc')[0]
+                    polissa_id = o.GiscedataSwitching.read(sw_id, ['cups_polissa_id'])['cups_polissa_id'][0]
+                    data_act = o.model('giscedata.switching.c1.05').read(c105_id, ['data_activacio'])['data_activacio']
+                    data_act = datetime.strftime(datetime.strptime(data_act, "%Y-%m-%d") - timedelta(1), "%Y-%m-%d")
+                    fact_id = o.GiscedataPolissa.get_last_invoice_by_partner(polissa_id, comer_sortint_id,
+                                                                             {'data_act': data_act})
+                    if not fact_id:
+                        continue
+                    invoice_id = o.GiscedataFacturacioFactura.read(fact_id, ['invoice_id'])['invoice_id'][0]
                     model_names = ['giscedata.switching.c1.05', 'account.invoice']
                     field_names = ['data_activacio', 'date_invoice']
                     context = {'model_names': model_names, 'field_names': field_names}
@@ -562,7 +569,14 @@ class FD2(StopMultiprocessBased):
                 proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
                 if '05' in proces_name:
                     comer_sortint_id = o.GiscedataSwitching.read(sw_id, ['comer_sortint_id'])['comer_sortint_id'][0]
-                    invoice_id = o.AccountInvoice.search([('partner_id', '=', comer_sortint_id)], 0, None, 'date_invoice asc', )[0]
+                    polissa_id = o.GiscedataSwitching.read(sw_id, ['cups_polissa_id'])['cups_polissa_id'][0]
+                    data_act = o.model('giscedata.switching.c2.05').read(c205_id, ['data_activacio'])['data_activacio']
+                    data_act = datetime.strftime(datetime.strptime(data_act, "%Y-%m-%d") - timedelta(1), "%Y-%m-%d")
+                    fact_id = o.GiscedataPolissa.get_last_invoice_by_partner(polissa_id, comer_sortint_id,
+                                                                             {'data_act': data_act})
+                    if not fact_id:
+                        continue
+                    invoice_id = o.GiscedataFacturacioFactura.read(fact_id, ['invoice_id'])['invoice_id'][0]
                     model_names = ['giscedata.switching.c2.05', 'account.invoice']
                     field_names = ['data_activacio', 'date_invoice']
                     context = {'model_names': model_names, 'field_names': field_names}
@@ -734,7 +748,7 @@ class FD2(StopMultiprocessBased):
                         ('state', '!=', 'cancel')
                     ]
                     atc_ids = o.GiscedataAtc.search(search_params_atc)
-                    cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name', 'id'])
+                    cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name', 'id', 'dies_post_acceptacio'])
                     total_ts = 0
                     for atc_id in atc_ids:
                         crm_data = o.GiscedataAtc.read(atc_id, ['crm_id', 'state'])
