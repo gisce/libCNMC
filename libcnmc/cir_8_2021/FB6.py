@@ -49,11 +49,21 @@ class FB6(StopMultiprocessBased):
                 :return: List of ids to generate the
                 :rtype: list(int)
                 """
-        search_params = [
-            ("installacio", "like", "giscedata.at.suport"),
-            ("tipus_element.codi_cnmc", "!=", "T")
+        data_pm = '%s-01-01' % (self.year + 1)
+        data_baixa = '%s-01-01' % self.year
+
+        search_params = [('criteri_regulatori', '!=', 'excloure'),
+                         '|', ('data_pm', '=', False),
+                              ('data_pm', '<', data_pm),
+                         '|', ('data_baixa', '>=', data_baixa),
+                              ('data_baixa', '=', False)]
+
+        search_params += [
+            ("tipus_element.codi_cnmc", "!=", "T"),
+            ('inventari', '=', 'fiabilitat'),
         ]
-        return self.connection.GiscedataCellesCella.search(search_params)
+
+        return self.connection.GiscedataCellesCella.search(search_params, 0, 0, False, {'active_test': False})
 
     def get_node_vertex(self, element_name):
         """
@@ -296,15 +306,29 @@ class FB6(StopMultiprocessBased):
                 o_prop = int(cella['propietari'])
 
                 #TRAM
-                o_tram = ""
-                if cella['tram_id']:
-                    tram_data = O.GiscedataAtTram.read(cella['tram_id'][0], ['name', 'id_regulatori'])
-                    if tram_data.get('id_regulatori', False):
-                        o_tram = tram_data['id_regulatori']
-                    else:
-                        o_tram = "{}{}".format(self.prefix_AT, tram_data['name'])
+                o_identificador_elemento = ""
+                if cella.get('installacio', False):
+                    installacio_data = cella['installacio']
+                    inst_model = installacio_data.split(',')[0]
+                    inst_id = int(installacio_data.split(',')[1])
+                    model_obj = O.model(inst_model)
+
+                    if inst_model == 'giscedata.at.suport':
+                        if cella.get('tram_id', False):
+                            tram_data = O.GiscedataAtTram.read(cella['tram_id'][0], ['name', 'id_regulatori'])
+                            if tram_data.get('id_regulatori', False):
+                                o_identificador_elemento = tram_data['id_regulatori']
+                            else:
+                                o_identificador_elemento = "{}{}".format(self.prefix_AT, tram_data['name'])
+
+                    if inst_model == 'giscedata.cts':
+                        ct_data = model_obj.read(inst_id, ['name', 'id_regulatori'])
+                        if ct_data.get('id_regulatori', False):
+                            o_identificador_elemento = ct_data['id_regulatori']
+                        else:
+                            o_identificador_elemento = ct_data['name']
                 else:
-                    o_tram = self.get_node_vertex_tram(o_fiabilitat)
+                    o_identificador_elemento = self.get_node_vertex_tram(o_fiabilitat)
 
                 #FECHA BAJA, CAUSA_BAJA
                 if cella['data_baixa']:
@@ -391,7 +415,7 @@ class FB6(StopMultiprocessBased):
                     actual = F7Res4666(
                         cella['name'],
                         cella['cini'],
-                        o_tram,
+                        o_identificador_elemento,
                         str(ti),
                         comunitat_codi,
                         data_pm,
@@ -424,7 +448,7 @@ class FB6(StopMultiprocessBased):
                 self.output_q.put([
                     o_fiabilitat,   # ELEMENTO FIABILIDAD
                     o_cini,  # CINI
-                    o_tram,  #IDENTIFICADOR_ELEMENTO
+                    o_identificador_elemento,  #IDENTIFICADOR_ELEMENTO
                     o_node,  # NUDO
                     x,              # X
                     y,              # Y
