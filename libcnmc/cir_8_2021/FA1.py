@@ -304,14 +304,14 @@ class FA1(StopMultiprocessBased):
     def get_data_comptador(self, polissa_id):
         comp_obj = self.connection.GiscedataLecturesComptador
         comp_id = get_comptador(self.connection, polissa_id, self.year)
-        data = ''
+        o_fecha_ins = ''
         if comp_id:
             comp_id = comp_id[0]
             comp = comp_obj.read(comp_id, ['data_alta'])
-            data = comp['data_alta'].split('-')
-            # Format MM/YYYY
-            data = '%s/%s' % (data[1], data[0])
-        return data
+            data = comp['data_alta']
+            data_format = datetime.strptime(str(data), '%Y-%m-%d')
+            o_fecha_ins = data_format.strftime('%d/%m/%Y')
+        return o_fecha_ins
 
     def get_cambio_titularidad(self, cups_id):
         O = self.connection
@@ -538,12 +538,21 @@ class FA1(StopMultiprocessBased):
                     cups['cne_anual_activa'] or 0.0, decimals=3)
                 o_anual_reactiva = format_f(
                     cups['cne_anual_reactiva'] or 0.0, decimals=3)
+
+                # CINI_EQUIPO_MEDIDA / FECHA_INSTALACION
+                polissa_id_equipos = self.get_polissa(cups['id'])
+                if polissa_id_equipos:
+                    polissa_id_equipos = polissa_id_equipos[0]
+                    o_comptador_cini = self.get_comptador_cini(polissa_id_equipos)
+                    o_comptador_data = self.get_data_comptador(polissa_id_equipos)
+                else:
+                    o_comptador_cini = ''
+                    o_comptador_data = ''
+
                 if polissa_id:
                     fields_to_read = [
                         'potencia', 'cnae', 'tarifa', 'butlletins', 'tensio'
                     ]
-                    o_comptador_cini = self.get_comptador_cini(polissa_id)
-                    o_comptador_data = self.get_data_comptador(polissa_id)
                     polissa_id = polissa_id[0]
                     polissa = O.GiscedataPolissa.read(
                         polissa_id, fields_to_read, context_glob
@@ -613,8 +622,6 @@ class FA1(StopMultiprocessBased):
                         o_estat_contracte = 1
 
                 else:
-                    o_comptador_cini = ''
-                    o_comptador_data = ''
                     o_estat_contracte = 1
 
                     search_modcon = [
@@ -691,7 +698,6 @@ class FA1(StopMultiprocessBased):
                     o_pot_ads = cups['potencia_adscrita']
                 if o_pot_ads < o_potencia:
                     o_pot_ads = o_potencia
-
 
                 res_srid = ['', '']
                 if vertex:
