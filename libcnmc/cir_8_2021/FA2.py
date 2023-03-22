@@ -118,7 +118,7 @@ class FA2(StopMultiprocessBased):
         autoconsum_data = o.GiscedataCupsPs.read(cups[0], ['autoconsum_id'])
         if autoconsum_data.get('autoconsum_id', False):
             res['autoconsum'] = '1'
-            autoconsum_id = autoconsum_data['autoconsum_id']
+            autoconsum_id = autoconsum_data['autoconsum_id'][0]
             cau_data = o.GiscedataAutoconsum.read(autoconsum_id, ['cau'])
             if cau_data.get('cau', False):
                 res['cau'] = cau_data['cau']
