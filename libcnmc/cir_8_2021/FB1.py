@@ -316,9 +316,14 @@ class FB1(StopMultiprocessBased):
 
                     # CAMPS OBRA
                     if tram_obra != '':
-                        data_ip = convert_spanish_date(
-                            tram_obra['fecha_aps'] if not tram_obra['fecha_baja'] and tram_obra['tipo_inversion'] != '1' else ''
-                        )
+                        obra_year_data = tram_obra['fecha_aps']
+                        obra_year = obra_year_data.split('-')[0]
+                        if obra_year == self.year:
+                            data_ip = ''
+                        else:
+                            data_ip = convert_spanish_date(
+                                tram_obra['fecha_aps'] if not tram_obra['fecha_baja'] and tram_obra['tipo_inversion'] != '1' else ''
+                            )
                         if tram_obra.get('identificador_baja', False):
                             identificador_baja = tram_obra['identificador_baja']
                         else:
@@ -750,6 +755,14 @@ class FB1(StopMultiprocessBased):
 
                     # CAMPS OBRA
                     if linia_obra != '':
+                        obra_year_data = linia_obra['fecha_aps']
+                        obra_year = obra_year_data.split('-')[0]
+                        if obra_year == self.year:
+                            data_ip = ''
+                        else:
+                            data_ip = convert_spanish_date(
+                                tram_obra['fecha_aps'] if not tram_obra['fecha_baja'] and tram_obra['tipo_inversion'] != '1' else ''
+                            )
                         data_ip = convert_spanish_date(
                             linia_obra['fecha_aps'] if not linia_obra['fecha_baja'] and linia_obra[
                                 'tipo_inversion'] != '1' else ''
