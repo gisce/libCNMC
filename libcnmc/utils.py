@@ -624,3 +624,27 @@ def get_tipus_connexio(o, id_escomesa):
                                 tipus = tram_bt['tipus_linia'][1][0]
 
     return tipus
+
+
+def get_serveis_aux(o, cups_serveis_aux_id, cups, item):
+    serveis_aux = ''
+
+    if cups_serveis_aux_id:
+        serveis_aux = cups_serveis_aux_id[1]
+    else:
+        polissa_obj = o.GiscedataPolissa
+        polissa_id = polissa_obj.search([('re_installation_id', '=', item)])
+        if polissa_id:
+            polissa_data = polissa_obj.read(polissa_id[0], ['cups'])
+            if polissa_data.get('cups', False):
+                serveis_aux = polissa_data['cups'][1]
+        else:
+            cups_20 = cups[1][0:20]
+            cups_id = o.GiscedataCupsPs.search([('name', 'ilike', cups_20), ('name', '!=', cups)])
+            if cups_id:
+                cups_name = o.GiscedataCupsPs.read(cups_id, ['name'])
+                if cups_name:
+                    if cups_name[0].get('name', False):
+                        serveis_aux = cups_name[0]['name']
+
+    return serveis_aux
