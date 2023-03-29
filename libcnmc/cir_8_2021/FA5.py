@@ -103,11 +103,11 @@ class FA5(StopMultiprocessBased):
                 # CÓDIGO EMPRESA
                 o_codigo_empresa = ''
                 if punt_frontera.get('codigo_empresa', False):
-                    empresa_obj = O.ResPartner
-                    empresa_id = punt_frontera['codigo_empresa'][0]
-                    empresa_data = empresa_obj.read(empresa_id, ['ref2'])
-                    if empresa_data.get('ref2', False):
-                        o_codigo_empresa = empresa_data['ref2']
+                    participant_obj = O.GiscemiscParticipant
+                    participant_id = punt_frontera['codigo_empresa'][0]
+                    participant_data = participant_obj.read(participant_id, ['ref2'])
+                    if participant_data.get('ref2', False):
+                        o_codigo_empresa = participant_data['ref2']
 
                 # CÓDIGO FRONTERA DT
                 o_codigo_frontera_dt = ''
