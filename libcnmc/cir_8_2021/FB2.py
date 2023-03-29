@@ -307,13 +307,11 @@ class FB2(StopMultiprocessBased):
                     o_tensio_p = ''
 
                 #TENSIO_CONST
-                if ct['tensio_const']:
-                    try:
-                        o_tensio_const = format_f(
-                            float(ct['tensio_const']) / 1000.0, decimals=3) or ''
-                    except:
-                        o_tensio_const = ''
-                else:
+                o_tensio_const = ''
+                if ct.get('tensio_const', False):
+                    o_tensio_const = format_f(float(ct['tensio_const'][1]) / 1000.0, decimals=3) or ''
+
+                if o_tensio_const == o_tensio_p:
                     o_tensio_const = ''
 
                 #POTENCIA
