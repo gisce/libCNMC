@@ -151,7 +151,7 @@ class FB5(StopMultiprocessBased):
                         float(im_construccion.replace(",", ".")) +
                         float(im_ingenieria.replace(",", ".")) + float(im_trabajos.replace(",", "."))
                     ).replace(".", ",")
-                    valor_residual = trafo_obra['valor_residual']
+                    valor_residual = format_f(trafo_obra.get('valor_residual', 0.0), 2)
                     cuenta_contable = trafo_obra['cuenta_contable']
                     financiado = format_f(trafo_obra.get('financiado', 0.0), 2)
                     motivacion = get_codi_actuacio(o, trafo_obra['motivacion'] and trafo_obra['motivacion'][0])
