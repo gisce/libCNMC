@@ -154,7 +154,7 @@ class FB5(StopMultiprocessBased):
                     valor_residual = trafo_obra['valor_residual']
                     cuenta_contable = trafo_obra['cuenta_contable']
                     financiado = format_f(trafo_obra.get('financiado', 0.0), 2)
-                    motivacion = trafo_obra['motivacion']
+                    motivacion = get_codi_actuacio(o, trafo_obra['motivacion'] and trafo_obra['motivacion'][0])
                 else:
                     data_ip = ''
                     identificador_baja = ''
