@@ -635,11 +635,11 @@ def get_serveis_aux(o, re_id):
     '''
     serveis_aux = ''
     re_obj = o.GiscedataRe
-    re_cups = re_obj.read(re_id, ['cups'])
+    re_cups = re_obj.read(re_id, ['cups'])['cups']
     re_ssaa = re_obj.read(re_id, ['cups_serveis_aux_id'])
 
-    if re_ssaa:
-        serveis_aux = re_ssaa
+    if re_ssaa.get('cups_serveis_aux_id', False):
+        serveis_aux = re_ssaa['cups_serveis_aux_id']
     else:
         polissa_obj = o.GiscedataPolissa
         polissa_id = polissa_obj.search([('re_installation_id', '=', re_id)])
