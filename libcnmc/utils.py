@@ -631,7 +631,7 @@ def get_serveis_aux(o, re_id):
     Retorna el SSAA de una instal·lació RECORE. Primer mira si en té alguna associada, sinó la busca
     :param o: Connexió
     :param re_id: ID Instal·lació RECORE
-    :return: Tupla (id, name)
+    :return: Tupla (id, name) del CUPS SSAA
     '''
     serveis_aux = ''
     re_obj = o.GiscedataRe
