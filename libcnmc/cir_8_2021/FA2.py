@@ -79,10 +79,10 @@ class FA2(StopMultiprocessBased):
     def get_energies(self, cups):
         o = self.connection
         res = {
-            'energia_activa_producida': '',
-            'energia_activa_consumida': '',
-            'energia_reactiva_producida': '',
-            'energia_reactiva_consumida': '',
+            'energia_activa_producida': '0,000',
+            'energia_activa_consumida': '0,000',
+            'energia_reactiva_producida': '0,000',
+            'energia_reactiva_consumida': '0,000',
         }
         # Energia activa producida
         energia_activa_prod_data = o.GiscedataCupsPs.read(
