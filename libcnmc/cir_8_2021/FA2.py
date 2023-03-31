@@ -214,7 +214,7 @@ class FA2(StopMultiprocessBased):
                 o_cau = autoconsum['cau']
 
                 # Serveis auxiliars
-                o_cups_servicios_auxiliares = get_serveis_aux(o, item)
+                o_cups_servicios_auxiliares = get_serveis_aux(o, id_)
 
                 # Energia consumida
                 energies = self.get_energies(o_cups_servicios_auxiliares)
