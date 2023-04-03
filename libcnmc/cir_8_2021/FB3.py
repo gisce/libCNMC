@@ -30,7 +30,8 @@ class FB3(StopMultiprocessBased):
     def get_sequence(self):
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
-        search_params = ['|', ('ct_id.data_pm', '=', False),
+        search_params = [('criteri_regulatori', '!=', 'excloure'),
+                         '|', ('ct_id.data_pm', '=', False),
                          ('ct_id.data_pm', '<', data_pm),
                          '|', ('ct_id.data_baixa', '>', data_baixa),
                          ('ct_id.data_baixa', '=', False),
