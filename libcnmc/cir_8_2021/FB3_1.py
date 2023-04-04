@@ -23,7 +23,8 @@ class FB3_1(StopMultiprocessBased):
 
     def get_sequence(self):
         # Revisem que estigui actiu
-        search_params = [('active', '!=', False)]
+        search_params = [('criteri_regulatori', '!=', 'excloure'),
+                         ('active', '!=', False)]
         return self.connection.GiscedataParcs.search(
             search_params, 0, 0, False, {'active_test': False})
 
