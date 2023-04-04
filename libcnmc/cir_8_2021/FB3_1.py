@@ -23,7 +23,8 @@ class FB3_1(StopMultiprocessBased):
 
     def get_sequence(self):
         # Revisem que estigui actiu
-        search_params = [('active', '!=', False)]
+        search_params = [('criteri_regulatori', '!=', 'excloure'),
+                         ('active', '!=', False)]
         return self.connection.GiscedataParcs.search(
             search_params, 0, 0, False, {'active_test': False})
 
@@ -116,6 +117,7 @@ class FB3_1(StopMultiprocessBased):
                 o_tensio_const = parc['tensio_const']
 
                 if o_tensio_const:
+                    o_tensio_const = o_tensio_const[1]
                     if tensio != o_tensio_const:
                         o_tensio_const = format_f(
                             float(o_tensio_const) / 1000.0, decimals=3)
