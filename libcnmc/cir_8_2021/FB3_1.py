@@ -117,6 +117,7 @@ class FB3_1(StopMultiprocessBased):
                 o_tensio_const = parc['tensio_const']
 
                 if o_tensio_const:
+                    o_tensio_const = o_tensio_const[1]
                     if tensio != o_tensio_const:
                         o_tensio_const = format_f(
                             float(o_tensio_const) / 1000.0, decimals=3)
