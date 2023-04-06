@@ -351,8 +351,9 @@ class FB1(StopMultiprocessBased):
 
                     # CAUSA_BAJA
                     causa_baja = '0'
-                    if tram_obra.get('causa_baja', False):
-                        causa_baja = tram_obra['causa_baja']
+                    if tram_obra:
+                        if tram_obra.get('causa_baja', False):
+                            causa_baja = tram_obra['causa_baja']
 
                     # Node inicial / Node final
                     o_nivell_tensio = ''
@@ -787,8 +788,9 @@ class FB1(StopMultiprocessBased):
 
                     # CAUSA_BAJA
                     causa_baja = '0'
-                    if linia_obra.get('causa_baja', False):
-                        causa_baja = linia_obra['causa_baja']
+                    if linia_obra:
+                        if linia_obra.get('causa_baja', False):
+                            causa_baja = linia_obra['causa_baja']
 
                     # MODELO
                     modelo = ''
