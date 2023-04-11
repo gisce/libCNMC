@@ -334,7 +334,7 @@ class FB6(StopMultiprocessBased):
                 if cella['data_baixa']:
                     if cella['data_baixa'] < data_pm_limit:
                         tmp_date = datetime.strptime(
-                            cella['data_baixa'], '%Y-%m-%d %H:%M:%S')
+                            cella['data_baixa'], '%Y-%m-%d')
                         fecha_baja = tmp_date.strftime('%d/%m/%Y')
                         if int(fecha_baja.split("/")[2]) - int(data_pm.split("/")[2]) >= 40:
                             if identificador_baja != '':
@@ -351,10 +351,10 @@ class FB6(StopMultiprocessBased):
                     causa_baja = 0
 
                 #CODIGO CCUU
-                id_ti = cella['tipus_instalacio_cnmc_id'][0]
-                ti = O.GiscedataTipusInstallacio.read(
-                    id_ti,
-                    ['name'])['name']
+                ti = ''
+                if cella.get('tipus_instalacio_cnmc_id', False):
+                    id_ti = cella['tipus_instalacio_cnmc_id'][0]
+                    ti = O.GiscedataTipusInstallacio.read(id_ti, ['name'])['name']
 
                 #NODE
                 if cella.get('node_id'):
