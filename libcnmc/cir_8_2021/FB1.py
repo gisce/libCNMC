@@ -281,6 +281,12 @@ class FB1(StopMultiprocessBased):
                     else:
                         causa_baja = '0'
 
+                    # Fecha APS
+                    if tram['data_pm']:
+                        data_pm_linia = datetime.strptime(str(tram['data_pm']),
+                                                          '%Y-%m-%d')
+                        fecha_aps = data_pm_linia.strftime('%d/%m/%Y')
+
                     # OBRES
 
                     fields_to_read_obra = [
@@ -316,14 +322,12 @@ class FB1(StopMultiprocessBased):
 
                     # CAMPS OBRA
                     if tram_obra != '':
-                        obra_year_data = tram_obra['fecha_aps']
-                        obra_year = obra_year_data.split('-')[0]
-                        if obra_year == self.year:
-                            data_ip = ''
+                        obra_year = data_finalitzacio.split('-')[0]
+                        data_pm_year = fecha_aps.split('/')[2]
+                        if tram_obra['tipo_inversion'] != '0' and obra_year != data_pm_year:
+                            data_ip = convert_spanish_date(data_finalitzacio)
                         else:
-                            data_ip = convert_spanish_date(
-                                tram_obra['fecha_aps'] if not tram_obra['fecha_baja'] and tram_obra['tipo_inversion'] != '1' else ''
-                            )
+                            data_ip = ''
                         if tram_obra.get('identificador_baja', False):
                             identificador_baja = tram_obra['identificador_baja']
                         else:
@@ -449,16 +453,10 @@ class FB1(StopMultiprocessBased):
                         fecha_baja = ''
 
                     # Fecha APS / Estado
-                    fecha_aps = ''
                     if modelo == 'M':
                         estado = ''
                         fecha_aps = ''
                     else:
-                        # Fecha APS
-                        if tram['data_pm']:
-                            data_pm_linia = datetime.strptime(str(tram['data_pm']),
-                                                              '%Y-%m-%d')
-                            fecha_aps = data_pm_linia.strftime('%d/%m/%Y')
                         # Estado
                         if tram[self.compare_field]:
                             data_entregada = tram[self.compare_field]
@@ -721,6 +719,12 @@ class FB1(StopMultiprocessBased):
                     else:
                         fecha_baja = ''
 
+                    # Fecha APS
+                    if linia['data_pm']:
+                        data_pm_linia = datetime.strptime(str(linia['data_pm']),
+                                                          '%Y-%m-%d')
+                        fecha_aps = data_pm_linia.strftime('%d/%m/%Y')
+
                     # OBRES
                     fields_to_read_obra = [
                         'name', 'cini', 'tipo_inversion', 'ccuu', 'codigo_ccaa', 'nivel_tension_explotacion',
@@ -755,18 +759,12 @@ class FB1(StopMultiprocessBased):
 
                     # CAMPS OBRA
                     if linia_obra != '':
-                        obra_year_data = linia_obra['fecha_aps']
-                        obra_year = obra_year_data.split('-')[0]
-                        if obra_year == self.year:
-                            data_ip = ''
+                        obra_year = data_finalitzacio.split('-')[0]
+                        data_pm_year = fecha_aps.split('/')[2]
+                        if linia_obra['tipo_inversion'] != '0' and obra_year != data_pm_year:
+                            data_ip = convert_spanish_date(data_finalitzacio)
                         else:
-                            data_ip = convert_spanish_date(
-                                tram_obra['fecha_aps'] if not tram_obra['fecha_baja'] and tram_obra['tipo_inversion'] != '1' else ''
-                            )
-                        data_ip = convert_spanish_date(
-                            linia_obra['fecha_aps'] if not linia_obra['fecha_baja'] and linia_obra[
-                                'tipo_inversion'] != '1' else ''
-                        )
+                            data_ip = ''
                         if linia_obra.get('identificador_baja', False):
                             identificador_baja = linia_obra['identificador_baja']
                         else:
@@ -812,16 +810,10 @@ class FB1(StopMultiprocessBased):
                         modelo = linia['model']
 
                     # Fecha APS / Estado
-                    fecha_aps = ''
                     if modelo == 'M':
                         estado = ''
                         fecha_aps = ''
                     else:
-                        # Fecha APS
-                        if linia['data_pm']:
-                            data_pm_linia = datetime.strptime(str(linia['data_pm']),
-                                                              '%Y-%m-%d')
-                            fecha_aps = data_pm_linia.strftime('%d/%m/%Y')
                         # Estado
                         if linia[self.compare_field]:
                             data_entregada = linia[self.compare_field]

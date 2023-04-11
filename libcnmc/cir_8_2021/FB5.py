@@ -130,9 +130,12 @@ class FB5(StopMultiprocessBased):
 
                 #CAMPS OBRES
                 if trafo_obra != '':
-                    data_ip = convert_spanish_date(
-                            trafo_obra['fecha_aps'] if not trafo_obra['fecha_baja'] and trafo_obra['tipo_inversion'] != '1' else ''
-                    )
+                    obra_year = data_finalitzacio.split('-')[0]
+                    data_pm_year = data_pm.split('/')[2]
+                    if trafo_obra['tipo_inversion'] != '0' and obra_year != data_pm_year:
+                        data_ip = convert_spanish_date(data_finalitzacio)
+                    else:
+                        data_ip = ''
                     identificador_baja = (
                         get_inst_name(trafo_obra['identificador_baja']) if trafo_obra['identificador_baja'] else ''
                     )

@@ -206,9 +206,12 @@ class FB4(StopMultiprocessBased):
 
                 #CAMPS OBRES
                 if pos_obra != '':
-                    data_ip = convert_spanish_date(
-                        data_pm if not fecha_baja and pos_obra['tipo_inversion'] != '1' else ''
-                    )
+                    obra_year = data_finalitzacio.split('-')[0]
+                    data_pm_year = data_pm.split('/')[2]
+                    if pos_obra['tipo_inversion'] != '0' and obra_year != data_pm_year:
+                        data_ip = convert_spanish_date(data_finalitzacio)
+                    else:
+                        data_ip = ''
                     im_materiales = format_f_6181(pos_obra['im_materiales'] or 0.0, float_type='euro')
                     im_obracivil = format_f_6181(pos_obra['im_obracivil'] or 0.0, float_type='euro')
                     im_construccion = str(format_f(
