@@ -195,7 +195,7 @@ class FB1(StopMultiprocessBased):
                         else:
                             propietari = '0'
                     else:
-                        propietari = ''
+                        propietari = '0'
 
                     # Tensión_explotación
                     tension_explotacion = ''
@@ -620,7 +620,7 @@ class FB1(StopMultiprocessBased):
                             ccaa_1 = ccaa_2 = comunidad['codi']
 
                     # PROPIEDAD
-                    propiedad = ''
+                    propiedad = '0'
                     if linia.get('propietari', False):
                         if linia['propietari']:
                             propiedad = '1'
