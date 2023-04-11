@@ -312,7 +312,9 @@ class FB1(StopMultiprocessBased):
                                 tram_obra['fecha_aps'] if not tram_obra['fecha_baja'] and tram_obra['tipo_inversion'] != '1' else ''
                             )
                         if tram_obra.get('identificador_baja', False):
-                            identificador_baja = tram_obra['identificador_baja']
+                            tram_id = tram_obra['identificador_baja'][0]
+                            tram_name = O.GiscedataAtTram.read(tram_id, ['name'])['name']
+                            identificador_baja = '{}{}'.format(self.prefix_AT, tram_name)
                         else:
                             identificador_baja = ''
                         tipo_inversion = (tram_obra['tipo_inversion'] or '0') if not tram_obra['fecha_baja'] else '1'
@@ -748,7 +750,9 @@ class FB1(StopMultiprocessBased):
                                 'tipo_inversion'] != '1' else ''
                         )
                         if linia_obra.get('identificador_baja', False):
-                            identificador_baja = linia_obra['identificador_baja']
+                            elem_id = linia_obra['identificador_baja'][0]
+                            elem_name = O.GiscedataBtElement.read(elem_id, ['name'])['name']
+                            identificador_baja = '{}{}'.format(self.prefix_BT, elem_name)
                         else:
                             identificador_baja = ''
                         tipo_inversion = (linia_obra['tipo_inversion'] or '0') if not linia_obra['fecha_baja'] else '1'
