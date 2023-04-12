@@ -390,11 +390,13 @@ class FB2(StopMultiprocessBased):
                         self.output_m.put(
                             "Identificador:{} No estava en el fitxer carregat al any n-1".format(ct["name"]))
                         estado = '1'
+                if ct_obra:
+                    estado = '1'
 
                 # Fecha APS / Estado
                 if modelo == 'M':
                     estado = ''
-                    fecha_aps = ''
+                    data_pm = ''
 
                 output = [
                     o_identificador_ct,           # IDENTIFICADOR

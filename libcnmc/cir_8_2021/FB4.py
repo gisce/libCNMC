@@ -327,10 +327,13 @@ class FB4(StopMultiprocessBased):
                         self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(pos["name"]))
                         estado = '1'
 
+                if pos_obra:
+                    estado = '1'
+
                 # Si MODELO = 'M', ESTADO i FECHA_APS han d'estar buides
                 if modelo == 'M':
                     estado = ''
-                    fecha_aps = ''
+                    data_pm = ''
 
                 output = [
                     pos['name'],  #IDENTIFICADOR_POSICION

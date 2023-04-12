@@ -441,6 +441,9 @@ class FB6(StopMultiprocessBased):
                             "Identificador:{} No estava en el fitxer carregat al any n-1".format(cella["name"]))
                         estado = '1'
 
+                if cella_obra:
+                    estado = '1'
+
                 if modelo == 'M':
                     estado = ''
                     fecha_aps = ''

@@ -499,7 +499,8 @@ class FB1(StopMultiprocessBased):
                                 self.output_m.put(
                                     "Identificador:{} No estava en el fitxer carregat al any n-1".format(tram["name"]))
                                 estado = '1'
-
+                        if tram_obra:
+                            estado = '1'
 
                     output = [
                         o_tram,  # IDENTIFICADOR
@@ -856,6 +857,9 @@ class FB1(StopMultiprocessBased):
                                 self.output_m.put(
                                     "Identificador:{} No estava en el fitxer carregat al any n-1".format(linia["name"]))
                                 estado = '1'
+
+                        if linia_obra:
+                            estado = '1'
 
                     output = [
                         identificador_tramo,  # IDENTIFICADOR TRAMO
