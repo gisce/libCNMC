@@ -157,6 +157,13 @@ class FB2(StopMultiprocessBased):
                 else:
                     o_identificador_ct = ct['name']
 
+                # Fecha APS
+                data_pm = ''
+                if ct['data_pm']:
+                    data_pm_ct = datetime.strptime(str(ct['data_pm']),
+                                                   '%Y-%m-%d')
+                    data_pm = data_pm_ct.strftime('%d/%m/%Y')
+
                 # OBRES
 
                 obra_ti_ct_obj = O.GiscedataProjecteObraTiCts
@@ -184,9 +191,12 @@ class FB2(StopMultiprocessBased):
 
                 #CAMPS OBRA
                 if ct_obra != '':
-                    data_ip = convert_spanish_date(
-                            ct_obra['fecha_aps'] if ct_obra['tipo_inversion'] != '0' else ''
-                    )
+                    obra_year = data_finalitzacio.split('-')[0]
+                    data_pm_year = data_pm.split('/')[2]
+                    if ct_obra['tipo_inversion'] != '0' and obra_year != data_pm_year:
+                        data_ip = convert_spanish_date(data_finalitzacio)
+                    else:
+                        data_ip = ''
                     identificador_baja = (
                         get_inst_name(ct_obra['identificador_baja']) if ct_obra['identificador_baja'] else ''
                     )
@@ -222,13 +232,6 @@ class FB2(StopMultiprocessBased):
                     cuenta_contable = ''
                     avifauna = ''
                     financiado = ''
-
-                # Fecha APS
-                data_pm = ''
-                if ct['data_pm']:
-                    data_pm_ct = datetime.strptime(str(ct['data_pm']),
-                                                   '%Y-%m-%d')
-                    data_pm = data_pm_ct.strftime('%d/%m/%Y')
 
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data IP sortirà en blanc
@@ -387,11 +390,13 @@ class FB2(StopMultiprocessBased):
                         self.output_m.put(
                             "Identificador:{} No estava en el fitxer carregat al any n-1".format(ct["name"]))
                         estado = '1'
+                if ct_obra:
+                    estado = '1'
 
                 # Fecha APS / Estado
                 if modelo == 'M':
                     estado = ''
-                    fecha_aps = ''
+                    data_pm = ''
 
                 output = [
                     o_identificador_ct,           # IDENTIFICADOR

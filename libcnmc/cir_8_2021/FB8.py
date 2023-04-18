@@ -205,6 +205,9 @@ class FB8(StopMultiprocessBased):
                         self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(despatx["name"]))
                         estado = '1'
 
+                if despatx_obra:
+                    estado = '1'
+
                 descripcio = ''
 
                 self.output_q.put([

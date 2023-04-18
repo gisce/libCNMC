@@ -268,6 +268,24 @@ class FB1(StopMultiprocessBased):
                         else:
                             operacion = '0'
 
+                    # Causa baja
+                    if tram.get('obra_id', False):
+                        causa_baja = '0'
+                        obra_id = tram['obra_id']
+                        obra_at_obj = O.GiscedataProjecteObraTiAt
+                        causa_baja_data = obra_at_obj.read(obra_id, ['causa_baja'])
+                        if causa_baja_data.get('causa_baja', False):
+                            causa_baja = causa_baja_data['causa_baja']
+                    else:
+                        causa_baja = '0'
+
+                    # Fecha APS
+                    if tram['data_pm']:
+                        data_pm_linia = datetime.strptime(str(tram['data_pm']),
+                                                          '%Y-%m-%d')
+                        fecha_aps = data_pm_linia.strftime('%d/%m/%Y')
+
+
                     # OBRES
 
                     fields_to_read_obra = [
@@ -303,14 +321,12 @@ class FB1(StopMultiprocessBased):
 
                     # CAMPS OBRA
                     if tram_obra != '':
-                        obra_year_data = tram_obra['fecha_aps']
-                        obra_year = obra_year_data.split('-')[0]
-                        if obra_year == self.year:
-                            data_ip = ''
+                        obra_year = data_finalitzacio.split('-')[0]
+                        data_pm_year = fecha_aps.split('/')[2]
+                        if tram_obra['tipo_inversion'] != '0' and obra_year != data_pm_year:
+                            data_ip = convert_spanish_date(data_finalitzacio)
                         else:
-                            data_ip = convert_spanish_date(
-                                tram_obra['fecha_aps'] if not tram_obra['fecha_baja'] and tram_obra['tipo_inversion'] != '1' else ''
-                            )
+                            data_ip = ''
                         if tram_obra.get('identificador_baja', False):
                             tram_id = tram_obra['identificador_baja'][0]
                             tram_name = O.GiscedataAtTram.read(tram_id, ['name'])['name']
@@ -444,16 +460,10 @@ class FB1(StopMultiprocessBased):
                         fecha_baja = ''
 
                     # Fecha APS / Estado
-                    fecha_aps = ''
                     if modelo == 'M':
                         estado = ''
                         fecha_aps = ''
                     else:
-                        # Fecha APS
-                        if tram['data_pm']:
-                            data_pm_linia = datetime.strptime(str(tram['data_pm']),
-                                                              '%Y-%m-%d')
-                            fecha_aps = data_pm_linia.strftime('%d/%m/%Y')
                         # Estado
                         if tram[self.compare_field]:
                             data_entregada = tram[self.compare_field]
@@ -496,7 +506,8 @@ class FB1(StopMultiprocessBased):
                                 self.output_m.put(
                                     "Identificador:{} No estava en el fitxer carregat al any n-1".format(tram["name"]))
                                 estado = '1'
-
+                        if tram_obra:
+                            estado = '1'
 
                     output = [
                         o_tram,  # IDENTIFICADOR
@@ -703,6 +714,12 @@ class FB1(StopMultiprocessBased):
                     else:
                         fecha_baja = ''
 
+                    # Fecha APS
+                    if linia['data_pm']:
+                        data_pm_linia = datetime.strptime(str(linia['data_pm']),
+                                                          '%Y-%m-%d')
+                        fecha_aps = data_pm_linia.strftime('%d/%m/%Y')
+
                     # OBRES
                     fields_to_read_obra = [
                         'name', 'cini', 'tipo_inversion', 'ccuu', 'codigo_ccaa', 'nivel_tension_explotacion',
@@ -737,18 +754,12 @@ class FB1(StopMultiprocessBased):
 
                     # CAMPS OBRA
                     if linia_obra != '':
-                        obra_year_data = linia_obra['fecha_aps']
-                        obra_year = obra_year_data.split('-')[0]
-                        if obra_year == self.year:
-                            data_ip = ''
+                        obra_year = data_finalitzacio.split('-')[0]
+                        data_pm_year = fecha_aps.split('/')[2]
+                        if linia_obra['tipo_inversion'] != '0' and obra_year != data_pm_year:
+                            data_ip = convert_spanish_date(data_finalitzacio)
                         else:
-                            data_ip = convert_spanish_date(
-                                linia_obra['fecha_aps'] if not linia_obra['fecha_baja'] and linia_obra['tipo_inversion'] != '1' else ''
-                            )
-                        data_ip = convert_spanish_date(
-                            linia_obra['fecha_aps'] if not linia_obra['fecha_baja'] and linia_obra[
-                                'tipo_inversion'] != '1' else ''
-                        )
+                            data_ip = ''
                         if linia_obra.get('identificador_baja', False):
                             elem_id = linia_obra['identificador_baja'][0]
                             elem_name = O.GiscedataBtElement.read(elem_id, ['name'])['name']
@@ -802,16 +813,10 @@ class FB1(StopMultiprocessBased):
                         modelo = linia['model']
 
                     # Fecha APS / Estado
-                    fecha_aps = ''
                     if modelo == 'M':
                         estado = ''
                         fecha_aps = ''
                     else:
-                        # Fecha APS
-                        if linia['data_pm']:
-                            data_pm_linia = datetime.strptime(str(linia['data_pm']),
-                                                              '%Y-%m-%d')
-                            fecha_aps = data_pm_linia.strftime('%d/%m/%Y')
                         # Estado
                         if linia[self.compare_field]:
                             data_entregada = linia[self.compare_field]
@@ -854,6 +859,9 @@ class FB1(StopMultiprocessBased):
                                 self.output_m.put(
                                     "Identificador:{} No estava en el fitxer carregat al any n-1".format(linia["name"]))
                                 estado = '1'
+
+                        if linia_obra:
+                            estado = '1'
 
                     output = [
                         identificador_tramo,  # IDENTIFICADOR TRAMO
