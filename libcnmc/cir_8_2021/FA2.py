@@ -66,8 +66,12 @@ class FA2(StopMultiprocessBased):
 
     def get_tension(self, cups):
         o = self.connection
-        tensio = ''
-        polissa = o.GiscedataCupsPs.read(cups[0], ['polissa_polissa'])['polissa_polissa']
+        polissa_obj = o.GiscedataPolissa
+        tensio = 0
+        cups_20 = cups[1][0:20]
+        search_params = [('cups', 'like', cups_20), ('tarifa.name', 'like', 'RE')]
+        polissa = polissa_obj.search(search_params, context={'active_test': False}, order='data_alta desc')
+
         if polissa:
             polissa_id = polissa[0]
             tensio = o.GiscedataPolissa.read(polissa_id, ['tensio_normalitzada'])['tensio_normalitzada']
