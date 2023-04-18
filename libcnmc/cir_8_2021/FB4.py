@@ -329,6 +329,8 @@ class FB4(StopMultiprocessBased):
 
                 if pos_obra:
                     estado = '1'
+                if pos['cini'][4] == '3' and data_pm < data_baixa_limit and pos_obra == '':
+                    estado = 0
 
                 # Si MODELO = 'M', ESTADO i FECHA_APS han d'estar buides
                 if modelo == 'M':

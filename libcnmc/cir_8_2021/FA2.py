@@ -66,8 +66,12 @@ class FA2(StopMultiprocessBased):
 
     def get_tension(self, cups):
         o = self.connection
-        tensio = ''
-        polissa = o.GiscedataCupsPs.read(cups[0], ['polissa_polissa'])['polissa_polissa']
+        polissa_obj = o.GiscedataPolissa
+        tensio = 0
+        cups_20 = cups[1][0:20]
+        search_params = [('cups', 'like', cups_20), ('tarifa.name', 'like', 'RE')]
+        polissa = polissa_obj.search(search_params, context={'active_test': False}, order='data_alta desc')
+
         if polissa:
             polissa_id = polissa[0]
             tensio = o.GiscedataPolissa.read(polissa_id, ['tensio_normalitzada'])['tensio_normalitzada']
@@ -79,10 +83,10 @@ class FA2(StopMultiprocessBased):
     def get_energies(self, cups):
         o = self.connection
         res = {
-            'energia_activa_producida': '',
-            'energia_activa_consumida': '',
-            'energia_reactiva_producida': '',
-            'energia_reactiva_consumida': '',
+            'energia_activa_producida': '0,000',
+            'energia_activa_consumida': '0,000',
+            'energia_reactiva_producida': '0,000',
+            'energia_reactiva_consumida': '0,000',
         }
         # Energia activa producida
         energia_activa_prod_data = o.GiscedataCupsPs.read(
@@ -208,23 +212,23 @@ class FA2(StopMultiprocessBased):
                 # Potència instalada
                 o_potencia_instalada = format_f(recore['potencia_nominal'], decimals=3)
 
-                # Energia produïda/consumida
-                energies = self.get_energies(cups)
-                o_energia_activa_producida = energies['energia_activa_producida']
-                o_energia_activa_consumida = energies['energia_activa_consumida']
-                o_energia_reactiva_producida = energies['energia_reactiva_producida']
-                o_energia_reactiva_consumida = energies['energia_reactiva_consumida']
-
                 # Autoconsum + CAU
                 autoconsum = self.get_autoconsum(cups)
                 o_autoconsum = autoconsum['autoconsum']
                 o_cau = autoconsum['cau']
 
                 # Serveis auxiliars
-                cups_serveis_aux_id = ''
-                if recore.get('cups_serveis_aux_id', False):
-                    cups_serveis_aux_id = recore['cups_serveis_aux_id']
-                o_cups_servicios_auxiliares = get_serveis_aux(o, cups_serveis_aux_id, cups, item)
+                o_cups_servicios_auxiliares = get_serveis_aux(o, id_)
+
+                # Energia consumida
+                energies = self.get_energies(o_cups_servicios_auxiliares)
+                o_energia_activa_consumida = energies['energia_activa_consumida']
+                o_energia_reactiva_consumida = energies['energia_reactiva_consumida']
+
+                # Energia produïda
+                energies = self.get_energies(cups)
+                o_energia_activa_producida = energies['energia_activa_producida']
+                o_energia_reactiva_producida = energies['energia_reactiva_producida']
 
                 self.output_q.put([
                     o_nudo,  # Node
@@ -245,7 +249,7 @@ class FA2(StopMultiprocessBased):
                     o_energia_reactiva_consumida,  # Energia reactiva consumida
                     o_autoconsum,  # Autoconsum
                     o_cau,  # CAU
-                    o_cups_servicios_auxiliares  # Serveis auxiliars
+                    o_cups_servicios_auxiliares[1]  # Serveis auxiliars
                 ])
                 self.input_q.task_done()
             except Exception:

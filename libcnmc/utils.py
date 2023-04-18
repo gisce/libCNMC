@@ -626,25 +626,32 @@ def get_tipus_connexio(o, id_escomesa):
     return tipus
 
 
-def get_serveis_aux(o, cups_serveis_aux_id, cups, item):
+def get_serveis_aux(o, re_id):
+    '''
+    Retorna el SSAA de una instal·lació RECORE. Primer mira si en té alguna associada, sinó la busca
+    :param o: Connexió
+    :param re_id: ID Instal·lació RECORE
+    :return: Tupla (id, name) del CUPS SSAA
+    '''
     serveis_aux = ''
+    re_obj = o.GiscedataRe
+    re_cups = re_obj.read(re_id, ['cups'])['cups']
+    re_ssaa = re_obj.read(re_id, ['cups_serveis_aux_id'])
 
-    if cups_serveis_aux_id:
-        serveis_aux = cups_serveis_aux_id[1]
+    if re_ssaa.get('cups_serveis_aux_id', False):
+        serveis_aux = re_ssaa['cups_serveis_aux_id']
     else:
         polissa_obj = o.GiscedataPolissa
-        polissa_id = polissa_obj.search([('re_installation_id', '=', item)])
+        polissa_id = polissa_obj.search([('re_installation_id', '=', re_id)])
         if polissa_id:
             polissa_data = polissa_obj.read(polissa_id[0], ['cups'])
             if polissa_data.get('cups', False):
-                serveis_aux = polissa_data['cups'][1]
+                serveis_aux = polissa_data['cups']
         else:
-            cups_20 = cups[1][0:20]
-            cups_id = o.GiscedataCupsPs.search([('name', 'ilike', cups_20), ('name', '!=', cups)])
+            cups_20 = re_cups[1][0:20]
+            cups_id = o.GiscedataCupsPs.search([('name', 'ilike', cups_20), ('name', '!=', re_cups)])
             if cups_id:
-                cups_name = o.GiscedataCupsPs.read(cups_id, ['name'])
-                if cups_name:
-                    if cups_name[0].get('name', False):
-                        serveis_aux = cups_name[0]['name']
+                cups_name = o.GiscedataCupsPs.read(cups_id[0], ['name'])
+                serveis_aux = (cups_id, cups_name['name'])
 
     return serveis_aux
