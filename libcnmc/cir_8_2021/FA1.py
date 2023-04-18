@@ -426,12 +426,12 @@ class FA1(StopMultiprocessBased):
                     o_name = cups['name'][:22]
 
                 # FACTURAS ESTIMADAS
-                o_facturas_estimadas = ''
+                o_facturas_estimadas = 0
                 if cups.get('cnmc_factures_estimades', False):
                     o_facturas_estimadas = cups['cnmc_factures_estimades']
 
                 # FACTURAS TOTAL
-                o_facturas_total = ''
+                o_facturas_total = 0
                 if cups.get('cnmc_factures_total', False):
                     o_facturas_total = cups['cnmc_factures_total']
 
