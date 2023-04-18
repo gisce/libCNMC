@@ -195,7 +195,7 @@ class FB1(StopMultiprocessBased):
                         else:
                             propietari = '0'
                     else:
-                        propietari = ''
+                        propietari = '0'
 
                     # Tensión_explotación
                     tension_explotacion = ''
@@ -211,8 +211,6 @@ class FB1(StopMultiprocessBased):
                     if tram.get('tensio_max_disseny_id', False):
                         tension_construccion = format_f(float(tram['tensio_max_disseny_id'][1])/1000, 3)
                         if str(tension_construccion) == str(tension_explotacion):
-                            tension_construccion = ''
-                        else:
                             tension_construccion = ''
 
                     # Longitud
@@ -270,17 +268,6 @@ class FB1(StopMultiprocessBased):
                         else:
                             operacion = '0'
 
-                    # Causa baja
-                    if tram.get('obra_id', False):
-                        causa_baja = '0'
-                        obra_id = tram['obra_id']
-                        obra_at_obj = O.GiscedataProjecteObraTiAt
-                        causa_baja_data = obra_at_obj.read(obra_id, ['causa_baja'])
-                        if causa_baja_data.get('causa_baja', False):
-                            causa_baja = causa_baja_data['causa_baja']
-                    else:
-                        causa_baja = '0'
-
                     # OBRES
 
                     fields_to_read_obra = [
@@ -325,7 +312,9 @@ class FB1(StopMultiprocessBased):
                                 tram_obra['fecha_aps'] if not tram_obra['fecha_baja'] and tram_obra['tipo_inversion'] != '1' else ''
                             )
                         if tram_obra.get('identificador_baja', False):
-                            identificador_baja = tram_obra['identificador_baja']
+                            tram_id = tram_obra['identificador_baja'][0]
+                            tram_name = O.GiscedataAtTram.read(tram_id, ['name'])['name']
+                            identificador_baja = '{}{}'.format(self.prefix_AT, tram_name)
                         else:
                             identificador_baja = ''
                         tipo_inversion = (tram_obra['tipo_inversion'] or '0') if not tram_obra['fecha_baja'] else '1'
@@ -361,6 +350,12 @@ class FB1(StopMultiprocessBased):
                         cuenta_contable = ''
                         avifauna = ''
                         financiado = ''
+
+                    # CAUSA_BAJA
+                    causa_baja = '0'
+                    if tram_obra:
+                        if tram_obra.get('causa_baja', False):
+                            causa_baja = tram_obra['causa_baja']
 
                     # Node inicial / Node final
                     o_nivell_tensio = ''
@@ -625,7 +620,7 @@ class FB1(StopMultiprocessBased):
                             ccaa_1 = ccaa_2 = comunidad['codi']
 
                     # PROPIEDAD
-                    propiedad = ''
+                    propiedad = '0'
                     if linia.get('propietari', False):
                         if linia['propietari']:
                             propiedad = '1'
@@ -642,8 +637,6 @@ class FB1(StopMultiprocessBased):
                     if linia.get('tensio_const', False):
                         tension_construccion = format_f(float(linia['tensio_max_disseny_id'][1])/1000, 3)
                         if str(tension_construccion) == str(tension_explotacion):
-                            tension_construccion = ''
-                        else:
                             tension_construccion = ''
 
                     # LONGITUD
@@ -699,17 +692,6 @@ class FB1(StopMultiprocessBased):
                         else:    
                             operacion = '0'
 
-                    # CAUSA BAJA
-                    if linia.get('obra_id', False):
-                        causa_baja = '0'
-                        obra_id = linia['obra_id']
-                        obra_at_obj = O.GiscedataProjecteObraTiAt
-                        causa_baja_data = obra_at_obj.read(obra_id, ['causa_baja'])
-                        if causa_baja_data.get('causa_baja', False):
-                            causa_baja = causa_baja_data['causa_baja']
-                    else:
-                        causa_baja = '0'
-
                     # FECHA BAJA
                     if linia.get('data_baixa'):
                         if linia.get('data_baixa') > data_pm_limit:
@@ -761,14 +743,16 @@ class FB1(StopMultiprocessBased):
                             data_ip = ''
                         else:
                             data_ip = convert_spanish_date(
-                                tram_obra['fecha_aps'] if not tram_obra['fecha_baja'] and tram_obra['tipo_inversion'] != '1' else ''
+                                linia_obra['fecha_aps'] if not linia_obra['fecha_baja'] and linia_obra['tipo_inversion'] != '1' else ''
                             )
                         data_ip = convert_spanish_date(
                             linia_obra['fecha_aps'] if not linia_obra['fecha_baja'] and linia_obra[
                                 'tipo_inversion'] != '1' else ''
                         )
                         if linia_obra.get('identificador_baja', False):
-                            identificador_baja = linia_obra['identificador_baja']
+                            elem_id = linia_obra['identificador_baja'][0]
+                            elem_name = O.GiscedataBtElement.read(elem_id, ['name'])['name']
+                            identificador_baja = '{}{}'.format(self.prefix_BT, elem_name)
                         else:
                             identificador_baja = ''
                         tipo_inversion = (linia_obra['tipo_inversion'] or '0') if not linia_obra['fecha_baja'] else '1'
@@ -805,6 +789,12 @@ class FB1(StopMultiprocessBased):
                         cuenta_contable = ''
                         avifauna = ''
                         financiado = ''
+
+                    # CAUSA_BAJA
+                    causa_baja = '0'
+                    if linia_obra:
+                        if linia_obra.get('causa_baja', False):
+                            causa_baja = linia_obra['causa_baja']
 
                     # MODELO
                     modelo = ''
