@@ -741,8 +741,8 @@ class FA1(StopMultiprocessBased):
                     o_cod_auto,
                     o_cod_generacio_auto,
                     o_conexion_autoconsumo,
-                    o_energia_autoconsumida,
-                    o_energia_excedentaria,
+                    format_f(o_energia_autoconsumida, decimals=3),
+                    format_f(o_energia_excedentaria, decimals=3)
                 ])
                 self.input_q.task_done()
             except Exception:
