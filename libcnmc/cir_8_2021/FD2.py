@@ -421,8 +421,11 @@ class FD2(StopMultiprocessBased):
             sw_id = o.GiscedataSwitchingStepHeader.read(b3_header_id[0], ['sw_id'])['sw_id'][0]
             b101_id = o.model('giscedata.switching.b1.01').search([('sw_id', '=', sw_id)])
             b104_id = o.model('giscedata.switching.b1.04').search([('sw_id', '=', sw_id)])
-            data_rebuig_04 = o.model('giscedata.switching.b1.04').read(b104_id, ['data_rebuig'])['data_rebuig']
-            if b101_id and not data_rebuig_04:
+            rebuig = False
+            if b104_id:
+                b104_id = b104_id[0]
+                rebuig = o.model('giscedata.switching.b1.04').read(b104_id, ['rebuig'])['rebuig']
+            if b101_id and not rebuig:
                 b101_id = b101_id[0]
                 motiu_b1 = o.model('giscedata.switching.b1.01').read(b101_id, ['motiu'])['motiu']
                 if motiu_b1 == '03':
