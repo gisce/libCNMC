@@ -649,9 +649,10 @@ def get_serveis_aux(o, re_id):
                 serveis_aux = polissa_data['cups']
         else:
             cups_20 = re_cups[1][0:20]
-            cups_id = o.GiscedataCupsPs.search([('name', 'ilike', cups_20), ('name', '!=', re_cups)])
-            if cups_id:
-                cups_name = o.GiscedataCupsPs.read(cups_id[0], ['name'])
-                serveis_aux = (cups_id, cups_name['name'])
+            polissa_id_20 = polissa_obj.search([('cups', 'like', cups_20), ('contract_type', '=', '05')])
+            if polissa_id_20:
+                cups_data = polissa_obj.read(polissa_id_20[0], ['cups'])
+                if cups_data.get('cups', False):
+                    serveis_aux = cups_data['cups']
 
     return serveis_aux

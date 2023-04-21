@@ -70,7 +70,7 @@ class FA2(StopMultiprocessBased):
         tensio = 0
         cups_20 = cups[1][0:20]
         search_params = [('cups', 'like', cups_20), ('tarifa.name', 'like', 'RE')]
-        polissa = polissa_obj.search(search_params, context={'active_test': False}, order='data_alta desc')
+        polissa = polissa_obj.search(search_params, 0, 0, 'data_alta desc', {'active_test': False})
 
         if polissa:
             polissa_id = polissa[0]
