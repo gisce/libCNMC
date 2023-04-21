@@ -219,8 +219,6 @@ class FA2(StopMultiprocessBased):
 
                 # Serveis auxiliars
                 o_cups_servicios_auxiliares = get_serveis_aux(o, id_)
-                if o_cups_servicios_auxiliares:
-                    o_cups_servicios_auxiliares = o_cups_servicios_auxiliares[1]
 
                 # Energia consumida
                 o_energia_activa_consumida = '0,000'
@@ -254,7 +252,7 @@ class FA2(StopMultiprocessBased):
                     o_energia_reactiva_consumida,  # Energia reactiva consumida
                     o_autoconsum,  # Autoconsum
                     o_cau,  # CAU
-                    o_cups_servicios_auxiliares  # Serveis auxiliars
+                    o_cups_servicios_auxiliares[1] if o_cups_servicios_auxiliares else ''  # Serveis auxiliars
                 ])
                 self.input_q.task_done()
             except Exception:
