@@ -221,9 +221,12 @@ class FA2(StopMultiprocessBased):
                 o_cups_servicios_auxiliares = get_serveis_aux(o, id_)
 
                 # Energia consumida
-                energies = self.get_energies(o_cups_servicios_auxiliares)
-                o_energia_activa_consumida = energies['energia_activa_consumida']
-                o_energia_reactiva_consumida = energies['energia_reactiva_consumida']
+                o_energia_activa_consumida = '0,000'
+                o_energia_reactiva_consumida = '0,000'
+                if o_cups_servicios_auxiliares:
+                    energies = self.get_energies(o_cups_servicios_auxiliares)
+                    o_energia_activa_consumida = energies['energia_activa_consumida']
+                    o_energia_reactiva_consumida = energies['energia_reactiva_consumida']
 
                 # Energia produïda
                 energies = self.get_energies(cups)
