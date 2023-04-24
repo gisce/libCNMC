@@ -542,6 +542,7 @@ class FD2(StopMultiprocessBased):
                 c1_header_id = o.model("giscedata.switching.c1.05").read(c105_id, ['header_id'])[
                     'header_id']
                 sw_id = o.GiscedataSwitchingStepHeader.read(c1_header_id[0], ['sw_id'])['sw_id'][0]
+                ref = ('giscedata.switching', sw_id)
                 step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])['step_id'][0]
                 proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
                 if '05' in proces_name:
@@ -552,7 +553,15 @@ class FD2(StopMultiprocessBased):
                     fact_id = o.GiscedataPolissa.get_last_invoice_by_partner(polissa_id, comer_sortint_id,
                                                                              {'data_act': data_act})
                     if not fact_id:
-                        continue
+                        erros_msg = "Error, no s'ha trobat l'última factura de la comer: "+str(comer_sortint_id)+"en data: " + str(data_act)
+                        create_vals = {
+                            'cod_gestio_id': cod_gest_data['name'],
+                            'atesa': False,
+                            'on_time': False,
+                            'errors': erros_msg,
+                        }
+                        self.create_logs(create_vals, ref)
+
                     invoice_id = o.GiscedataFacturacioFactura.read(fact_id, ['invoice_id'])['invoice_id'][0]
                     model_names = ['giscedata.switching.c1.05', 'account.invoice']
                     field_names = ['data_activacio', 'date_invoice']
@@ -560,7 +569,6 @@ class FD2(StopMultiprocessBased):
                     time_spent = self.get_time_delta(c105_id, invoice_id, context=context)
                     if isinstance(sw_id, list):
                         sw_id = sw_id[0]
-                    ref = ('giscedata.switching', sw_id)
                     self.compute_time(cod_gest_data, file_fields, time_spent, ref)
                 else:
                     file_fields['no_tramitadas'] += 1
