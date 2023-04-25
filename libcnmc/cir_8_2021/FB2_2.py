@@ -55,7 +55,8 @@ class FB2_2(StopMultiprocessBased):
 
         data_pm = '{}-01-01'.format(self.year + 1)
         data_baixa = '{}-12-31'.format(self.year)
-        search_params += ['|', ('data_pm', '=', False),
+        search_params += [('criteri_regulatori', '!=', 'excloure'),
+                          '|', ('data_pm', '=', False),
                           ('data_pm', '<', data_pm),
                           '|', ('data_baixa', '>', data_baixa),
                           ('data_baixa', '=', False)
