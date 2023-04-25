@@ -6,7 +6,7 @@ import traceback
 from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP, \
     TARIFAS_AT, TARIFAS_BT
 from libcnmc.utils import get_ine, get_comptador, format_f, get_srid,\
-    convert_srid, get_tipus_connexio
+    convert_srid, get_tipus_connexio, get_zona_qualitat_municipi
 from libcnmc.core import StopMultiprocessBased
 from ast import literal_eval
 import logging
@@ -234,13 +234,14 @@ class FA1(StopMultiprocessBased):
         return polissa_id
 
     def get_zona_qualitat(self, tipus_zona, codi_ct, id_municipi):
+        O = self.connection
         zona_q = False
         if tipus_zona == 'ct':
             if codi_ct:
                 zona_q = self.get_zona_qualitat_ct(codi_ct)
         elif tipus_zona == 'municipi':
             if id_municipi:
-                zona_q = self.get_zona_qualitat_municipi(id_municipi)
+                zona_q = get_zona_qualitat_municipi(O, id_municipi)
         return zona_q
 
     def get_zona_qualitat_ct(self, codi_ct):
@@ -271,25 +272,6 @@ class FA1(StopMultiprocessBased):
                         if zona_desc in CODIS_ZONA:
                             zona_qualitat = CODIS_ZONA[zona_desc]
                             self.cts[codi_ct] = zona_qualitat
-        return zona_qualitat
-
-    def get_zona_qualitat_municipi(self, id_municipi):
-        """
-        Returns the quality zone of a given municipi
-        :param id_municipi: identificador del municipi
-        :type id_municipi: int
-        :return: Quality zone
-        :rtype: str
-        """
-        conn = self.connection
-        zona_qualitat = ''
-
-        if id_municipi:
-            zona = conn.ResMunicipi.read(id_municipi[0], ["zona"])
-            if zona.get('zona'):
-                zona_desc = zona.get('zona')[1].upper().replace(' ', '')
-                if zona_desc in CODIS_ZONA:
-                    zona_qualitat = CODIS_ZONA[zona_desc]
         return zona_qualitat
 
     def get_comptador_cini(self, polissa_id):

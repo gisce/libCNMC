@@ -8,7 +8,8 @@ from __future__ import absolute_import
 from datetime import datetime
 import traceback
 from libcnmc.core import StopMultiprocessBased
-from libcnmc.utils import get_tipus_connexio, format_f, get_ine, convert_srid, get_srid, get_serveis_aux
+from libcnmc.utils import get_tipus_connexio, format_f, get_ine, convert_srid, get_srid, get_serveis_aux, \
+    get_zona_qualitat_municipi
 from shapely import wkt
 
 ZONA = {
@@ -26,6 +27,7 @@ class FA2(StopMultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.codi_r1 = kwargs.pop('codi_r1')
         self.report_name = 'Formulario A2: Información relativa a la generación conectada a sus redes de distribución'
+        self.zona_qualitat = kwargs.get("zona_qualitat", "ct")
         self.base_object = 'RE'
 
     def get_sequence(self):
@@ -128,17 +130,22 @@ class FA2(StopMultiprocessBased):
                 res['cau'] = cau_data['cau']
         return res
 
-    def get_zona(self, cups):
+    def get_zona(self, tipus_zona, cups, id_municipi):
         o = self.connection
         zona = ''
-        ct_name = o.GiscedataCupsPs.read(cups[0], ['et'])['et']
-        if ct_name:
-            ct_id = o.GiscedataCts.search([('name', '=', ct_name)])
-            if ct_id:
-                zona_id = o.GiscedataCts.read(ct_id, ['zona_id'])[0]['zona_id']
-                if zona_id:
-                    zona_data = zona_id[1].upper()
-                    zona = ZONA[zona_data]
+        if tipus_zona == 'ct':
+            ct_name = o.GiscedataCupsPs.read(cups[0], ['et'])['et']
+            if ct_name:
+                ct_id = o.GiscedataCts.search([('name', '=', ct_name)])
+                if ct_id:
+                    zona_id = o.GiscedataCts.read(ct_id, ['zona_id'])[0]['zona_id']
+                    if zona_id:
+                        zona_data = zona_id[1].upper()
+                        zona = ZONA[zona_data]
+        elif tipus_zona == 'municipi':
+            if id_municipi:
+                zona = get_zona_qualitat_municipi(o, id_municipi)
+
         return zona
 
     def consumer(self):
@@ -194,11 +201,11 @@ class FA2(StopMultiprocessBased):
                 if cups_id:
                     municipi_data = o.GiscedataCupsPs.read(cups_id, ['id_municipi'])[0]
                     if municipi_data.get('id_municipi', False):
-                        municipi_id = municipi_data['id_municipi'][0]
-                        o_provincia, o_municipio = self.get_ine(municipi_id)
+                        municipi_id = municipi_data['id_municipi']
+                        o_provincia, o_municipio = self.get_ine(municipi_id[0])
 
                 # Zona
-                o_zona = self.get_zona(cups)
+                o_zona = self.get_zona(self.zona_qualitat, cups, municipi_id)
 
                 # Connexió
                 o_connexion = ''

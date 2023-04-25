@@ -656,3 +656,24 @@ def get_serveis_aux(o, re_id):
                     serveis_aux = cups_data['cups']
 
     return serveis_aux
+
+
+def get_zona_qualitat_municipi(o, id_municipi):
+    """
+    Returns the quality zone of a given municipi
+    :param o: Connexió
+    :param id_municipi: identificador del municipi
+    :type id_municipi: int
+    :return: Quality zone
+    :rtype: str
+    """
+    conn = o
+    zona_qualitat = ''
+
+    if id_municipi:
+        zona = conn.ResMunicipi.read(id_municipi[0], ["zona"])
+        if zona.get('zona'):
+            zona_desc = zona.get('zona')[1].upper().replace(' ', '')
+            if zona_desc in CODIS_ZONA:
+                zona_qualitat = CODIS_ZONA[zona_desc]
+    return zona_qualitat
