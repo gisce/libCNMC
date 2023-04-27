@@ -393,9 +393,12 @@ class FB6(StopMultiprocessBased):
                 else:
                     o_tensio = dict_linia.get('tensio')
 
-                if cella['tensio_const']:
-                    o_tensio_const = cella['tensio_const']
-                else:
+                # TENSIO_CONST
+                o_tensio_const = ''
+                if cella.get('tensio_const', False):
+                    o_tensio_const = format_f(float(cella['tensio_const'][1]) / 1000.0, decimals=3) or ''
+
+                if o_tensio_const == o_tensio:
                     o_tensio_const = ''
 
                 punto_frontera = int(cella['punt_frontera'] == True)
