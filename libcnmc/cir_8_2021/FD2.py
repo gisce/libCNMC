@@ -15,6 +15,7 @@ ACCEPTED_STATES = [
     'pending'
 ]
 
+
 class FD2(StopMultiprocessBased):
 
     def __init__(self, **kwargs):
@@ -93,12 +94,12 @@ class FD2(StopMultiprocessBased):
         if time_delta > dies_limit:
             values['fuera_plazo'] = values['fuera_plazo'] + 1
             if track_obj_installed:
-                create_vals.update({'on_time': True})
+                create_vals.update({'on_time': True, 'atesa': True})
                 self.create_logs(create_vals, ref)
         else:
             values['dentro_plazo'] = values['dentro_plazo'] + 1
             if track_obj_installed:
-                create_vals.update({'on_time': False})
+                create_vals.update({'on_time': False, 'atesa': True})
                 self.create_logs(create_vals, ref)
 
         # Afegim el cas als totals.
@@ -257,14 +258,16 @@ class FD2(StopMultiprocessBased):
         #     Altrament calculem el temps empleat en tramitar i determinem si ha quedat dins o fora de plaç
         for atc_id in atc_ids:
             crm_data = atc_o.read(atc_id, ['crm_id', 'state'])
+            ref = ('giscedata.atc', atc_id)
             if crm_data['state'] in ACCEPTED_STATES:
                 ctx = {'dies_post_acceptacio': cod_gest_data['dies_post_acceptacio']}
                 time_spent = self.get_atc_time_delta(crm_data['crm_id'][0], total_ts, context=ctx)
                 if isinstance(atc_id, list):
                     atc_id = atc_id[0]
-                ref = ('giscedata.atc', atc_id)
                 self.compute_time(cod_gest_data, file_fields, time_spent, ref)
             else:
+                create_vals = {'cod_gestio_id': cod_gest_data['name']}
+                self.create_logs(create_vals, ref)
                 file_fields['no_tramitadas'] += 1
                 file_fields['totals'] += 1
 
@@ -417,7 +420,12 @@ class FD2(StopMultiprocessBased):
             b3_header_id = o.model("giscedata.switching.b1.03").read(b103_id, ['header_id'])['header_id']
             sw_id = o.GiscedataSwitchingStepHeader.read(b3_header_id[0], ['sw_id'])['sw_id'][0]
             b101_id = o.model('giscedata.switching.b1.01').search([('sw_id', '=', sw_id)])
-            if b101_id:
+            b104_id = o.model('giscedata.switching.b1.04').search([('sw_id', '=', sw_id)])
+            rebuig = False
+            if b104_id:
+                b104_id = b104_id[0]
+                rebuig = o.model('giscedata.switching.b1.04').read(b104_id, ['rebuig'])['rebuig']
+            if b101_id and not rebuig:
                 b101_id = b101_id[0]
                 motiu_b1 = o.model('giscedata.switching.b1.01').read(b101_id, ['motiu'])['motiu']
                 if motiu_b1 == '03':
@@ -486,7 +494,7 @@ class FD2(StopMultiprocessBased):
         """
 
         o = self.connection
-        
+
         if '01' in cod_gest_data['name']:
             search_params = [
                 ('date_created', '>=', year_start),
@@ -534,6 +542,7 @@ class FD2(StopMultiprocessBased):
                 c1_header_id = o.model("giscedata.switching.c1.05").read(c105_id, ['header_id'])[
                     'header_id']
                 sw_id = o.GiscedataSwitchingStepHeader.read(c1_header_id[0], ['sw_id'])['sw_id'][0]
+                ref = ('giscedata.switching', sw_id)
                 step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])['step_id'][0]
                 proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
                 if '05' in proces_name:
@@ -544,7 +553,15 @@ class FD2(StopMultiprocessBased):
                     fact_id = o.GiscedataPolissa.get_last_invoice_by_partner(polissa_id, comer_sortint_id,
                                                                              {'data_act': data_act})
                     if not fact_id:
-                        continue
+                        erros_msg = "Error, no s'ha trobat l'última factura de la comer: "+str(comer_sortint_id)+"en data: " + str(data_act)
+                        create_vals = {
+                            'cod_gestio_id': cod_gest_data['name'],
+                            'atesa': False,
+                            'on_time': False,
+                            'errors': erros_msg,
+                        }
+                        self.create_logs(create_vals, ref)
+
                     invoice_id = o.GiscedataFacturacioFactura.read(fact_id, ['invoice_id'])['invoice_id'][0]
                     model_names = ['giscedata.switching.c1.05', 'account.invoice']
                     field_names = ['data_activacio', 'date_invoice']
@@ -552,12 +569,11 @@ class FD2(StopMultiprocessBased):
                     time_spent = self.get_time_delta(c105_id, invoice_id, context=context)
                     if isinstance(sw_id, list):
                         sw_id = sw_id[0]
-                    ref = ('giscedata.switching', sw_id)
                     self.compute_time(cod_gest_data, file_fields, time_spent, ref)
                 else:
                     file_fields['no_tramitadas'] += 1
                     file_fields['totals'] += 1
-                    
+
             c205_ids = o.model("giscedata.switching.c2.05").search(search_params)
 
             ## Tractem els c2 i comptabilitzem els que escau
@@ -630,7 +646,7 @@ class FD2(StopMultiprocessBased):
                     field_names = ['date_created', 'date_created']
                     context = {'model_names': model_names, 'field_names': field_names}
                     self.manage_switching_cases(cod_gest_data, file_fields, sw_id, r101_id, context=context)
-        
+
         # Obtenim els R1 amb els subtipus adients i els tractem.
         elif '09' in cod_gest_data['name']:
             subtipus_list = ['003', '004']
@@ -652,7 +668,7 @@ class FD2(StopMultiprocessBased):
                     field_names = ['date_created', 'date_created']
                     context = {'model_names': model_names, 'field_names': field_names}
                     self.manage_switching_cases(cod_gest_data, file_fields, sw_id, r101_id, context=context)
-        
+
         # Obtenim els ATR del tipus adient amb treball de camp i els tractem
         elif '10' in cod_gest_data['name']:
             search_params = [
@@ -723,7 +739,8 @@ class FD2(StopMultiprocessBased):
                 z8_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0}
                 year_start = '01-01-' + str(self.year)
                 year_end = '12-31-' + str(self.year)
-                cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name', 'id', 'dies_post_acceptacio'])
+                cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name', 'id',
+                                                                              'dies_post_acceptacio'])
 
                 ## Tractem el codi de gestio Z4
                 if 'Z3' in cod_gest_data['name']:
@@ -748,7 +765,8 @@ class FD2(StopMultiprocessBased):
                         ('state', '!=', 'cancel')
                     ]
                     atc_ids = o.GiscedataAtc.search(search_params_atc)
-                    cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name', 'id', 'dies_post_acceptacio'])
+                    cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name', 'id',
+                                                                                  'dies_post_acceptacio'])
                     total_ts = 0
                     for atc_id in atc_ids:
                         crm_data = o.GiscedataAtc.read(atc_id, ['crm_id', 'state'])
