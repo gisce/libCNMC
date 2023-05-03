@@ -257,7 +257,7 @@ class FB1(StopMultiprocessBased):
 
                     # Punt frontera
                     punt_frontera = '0'
-                    if tram.get('punto_frontera', False):
+                    if tram.get('punt_frontera', False):
                         punt_frontera = '1'
 
                     # Operación
