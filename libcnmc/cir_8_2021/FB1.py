@@ -349,7 +349,6 @@ class FB1(StopMultiprocessBased):
                         motivacion = get_codi_actuacio(O, tram_obra['motivacion'] and tram_obra['motivacion'][0]) if not \
                             tram_obra['fecha_baja'] else ''
                         cuenta_contable = tram_obra['cuenta_contable'] or ''
-                        financiado = format_f(tram_obra.get('financiado') or 0.0, 2)
                         avifauna = int(tram_obra['avifauna'] == True)
                     else:
                         data_ip = ''
@@ -365,7 +364,11 @@ class FB1(StopMultiprocessBased):
                         motivacion = ''
                         cuenta_contable = ''
                         avifauna = ''
-                        financiado = ''
+
+                    # FINANCIADO
+                    financiado = ''
+                    if tram.get('perc_financament', False):
+                        financiado = 100 - tram['perc_financament']
 
                     # CAUSA_BAJA
                     causa_baja = '0'
@@ -553,7 +556,8 @@ class FB1(StopMultiprocessBased):
                     fields_to_read = ['name', 'cini', 'coeficient', 'municipi', 'voltatge', 'tensio_const',
                                       'coeficient', 'longitud_cad', 'punt_frontera', 'model', 'operacion',
                                       'propietari', 'edge_id', 'cable', 'tipus_instalacio_cnmc_id',
-                                      'data_pm', 'data_baixa', 'id_regulatori', self.compare_field
+                                      'data_pm', 'data_baixa', 'id_regulatori', self.compare_field,
+                                      'perc_financament',
                                       ]
 
                     linia = O.GiscedataBtElement.read(item, fields_to_read)
@@ -783,7 +787,6 @@ class FB1(StopMultiprocessBased):
                         motivacion = get_codi_actuacio(O, linia_obra['motivacion'] and linia_obra['motivacion'][0]) if not \
                             linia_obra['fecha_baja'] else ''
                         cuenta_contable = linia_obra['cuenta_contable'] or ''
-                        financiado = format_f(linia_obra.get('financiado') or 0.0, 2)
                         avifauna = int(linia_obra['avifauna'] == True)
                     else:
                         data_ip = ''
@@ -799,7 +802,11 @@ class FB1(StopMultiprocessBased):
                         motivacion = ''
                         cuenta_contable = ''
                         avifauna = ''
-                        financiado = ''
+
+                    # FINANCIADO
+                    financiado = ''
+                    if linia.get('perc_financament', False):
+                        financiado = 100 - linia['perc_financament']
 
                     # CAUSA_BAJA
                     causa_baja = '0'
