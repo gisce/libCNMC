@@ -127,7 +127,7 @@ class FB2(StopMultiprocessBased):
             'id', 'name', 'cini', 'data_pm', 'tipus_instalacio_cnmc_id', 'tensio_p',
             'id_municipi', 'perc_financament', 'descripcio', 'data_baixa', 'tensio_const',
             self.compare_field, 'node_baixa', 'zona_id', 'node_id', 'potencia',
-            'model','punt_frontera', 'id_regulatori'
+            'model', 'punt_frontera', 'id_regulatori', 'perc_financament',
         ]
 
         fields_to_read_obra = [
@@ -215,7 +215,6 @@ class FB2(StopMultiprocessBased):
                     motivacion = get_codi_actuacio(O, ct_obra['motivacion'] and ct_obra['motivacion'][0]) if not \
                         ct_obra['fecha_baja'] else ''
                     cuenta_contable = ct_obra['cuenta_contable'] or ''
-                    financiado = format_f(ct_obra.get('financiado', 0.0), 2)
                     avifauna = int(ct_obra['avifauna'] == True)
                 else:
                     data_ip = ''
@@ -231,13 +230,17 @@ class FB2(StopMultiprocessBased):
                     motivacion = ''
                     cuenta_contable = ''
                     avifauna = ''
-                    financiado = ''
 
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data IP sortirà en blanc
                 if data_ip:
                     data_ip = '' if data_pm and int(data_pm.split('/')[2]) == int(data_ip.split('/')[2]) \
                     else data_ip
+
+                # FINANCIADO
+                financiado = ''
+                if ct.get('perc_financament', False):
+                    financiado = 100 - ct['perc_financament']
 
                 #CCAA
                 #funció per trobar la ccaa desde el municipi
