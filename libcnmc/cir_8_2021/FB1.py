@@ -466,6 +466,7 @@ class FB1(StopMultiprocessBased):
                     if modelo == 'M':
                         estado = ''
                         fecha_aps = ''
+                        operacion = ''
                     else:
                         # Estado
                         if tram[self.compare_field]:
