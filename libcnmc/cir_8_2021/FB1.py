@@ -230,7 +230,7 @@ class FB1(StopMultiprocessBased):
                         longitud = 0
 
                     # Resistencia, Reactancia, Intensitat
-                    resistencia, reactancia, intensitat = ['', '', '']
+                    resistencia, reactancia, intensitat = ['0,001', '0,001', '0,001']
                     if tram.get('cable', False):
                         cable_obj = O.GiscedataAtCables
                         cable_id = tram['cable'][0]
@@ -248,6 +248,12 @@ class FB1(StopMultiprocessBased):
                         if cable_data.get('resistencia', False):    
                             intensitat = format_f(
                                 cable_data['intensitat_admisible'] or 0.0, decimals=3)
+
+                    cable_data_val = [resistencia, reactancia, intensitat]
+                    for index, val in enumerate(cable_data_val):
+                        if val == '0,000':
+                            cable_data_val[index] = '0,001'
+                    resistencia, reactancia, intensitat = cable_data_val
 
                     # Modelo
                     if tram.get('model', False):
@@ -673,7 +679,7 @@ class FB1(StopMultiprocessBased):
                         longitud = 0
 
                     # RESISTENCIA, REACTANCIA, INTENSITAT
-                    resistencia, reactancia, intensitat = ['', '', '']
+                    resistencia, reactancia, intensitat = ['0,001', '0,001', '0,001']
                     if linia.get('cable', False):
                         cable_obj = O.GiscedataBtCables
                         cable_id = linia['cable'][0]
@@ -694,6 +700,12 @@ class FB1(StopMultiprocessBased):
                         if cable_data.get('resistencia', False):    
                             intensitat = format_f(
                                 cable_data['intensitat_admisible'] or 0.0, decimals=3)
+
+                    cable_data_val = [resistencia, reactancia, intensitat]
+                    for index, val in enumerate(cable_data_val):
+                        if val == '0,000':
+                            cable_data_val[index] = '0,001'
+                    resistencia, reactancia, intensitat = cable_data_val
 
                     # PUNTO FRONTERA
                     punto_frontera = '0'
