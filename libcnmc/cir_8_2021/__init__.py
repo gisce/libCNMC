@@ -19,4 +19,5 @@ from FB7 import FB7
 from FB8 import FB8
 from FB9 import FB9
 from FC2 import FC2
+from FC7 import FC7
 from FD2 import FD2
