@@ -48,8 +48,8 @@ class FC7(StopMultiprocessBased):
 
                 # cuenta
                 o_cuenta = ''
-                if c7['o_cuenta']:
-                    o_cuenta = c7['o_cuenta']
+                if c7['cuenta']:
+                    o_cuenta = c7['cuenta']
 
                 # cuenta_pgc
                 o_cuenta_pgc = ''
