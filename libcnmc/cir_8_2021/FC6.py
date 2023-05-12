@@ -18,7 +18,7 @@ class FC6(StopMultiprocessBased):
 
     def get_sequence(self):
         c6_ids = self.connection.model('cir8.2021.c6').search(
-            [('formulario_year', '=', self.year)]
+            [('year', '=', self.year)]
         )
         return c6_ids
 
