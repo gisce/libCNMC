@@ -507,9 +507,8 @@ class FD2(StopMultiprocessBased):
                 c1_header_id = o.model("giscedata.switching.c1.01").read(c101_id, ['header_id'])[
                     'header_id']
                 sw_id = o.GiscedataSwitchingStepHeader.read(c1_header_id[0], ['sw_id'])['sw_id'][0]
-                step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])['step_id'][0]
-                proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
-                if '05' in proces_name:
+                sw_data = o.GiscedataSwitching.read(sw_id, ['rebuig', 'state'])
+                if not sw_data['rebuig'] and sw_data['state'] not in ['cancel', 'draft']:
                     model_names = ['giscedata.switching.c1.01', 'giscedata.switching.c1.05']
                     field_names = ['date_created', 'data_activacio']
                     context = {'model_names': model_names, 'field_names': field_names}
@@ -522,9 +521,8 @@ class FD2(StopMultiprocessBased):
                 c2_header_id = o.model("giscedata.switching.c2.01").read(c201_id, ['header_id'])[
                     'header_id']
                 sw_id = o.GiscedataSwitchingStepHeader.read(c2_header_id[0], ['sw_id'])['sw_id'][0]
-                step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])['step_id'][0]
-                proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
-                if '05' in proces_name:
+                sw_data = o.GiscedataSwitching.read(sw_id, ['rebuig', 'state'])
+                if not sw_data['rebuig'] and sw_data['state'] not in ['cancel', 'draft']:
                     model_names = ['giscedata.switching.c2.01', 'giscedata.switching.c2.05']
                     field_names = ['date_created', 'data_activacio']
                     context = {'model_names': model_names, 'field_names': field_names}
@@ -532,8 +530,8 @@ class FD2(StopMultiprocessBased):
 
         else:
             search_params = [
-                ('date_created', '>=', year_start),
-                ('date_created', '<=', year_end)
+                ('data_activacio', '>=', year_start),
+                ('data_activacio', '<=', year_end)
             ]
             c105_ids = o.model("giscedata.switching.c1.05").search(search_params)
 
@@ -545,34 +543,32 @@ class FD2(StopMultiprocessBased):
                 ref = ('giscedata.switching', sw_id)
                 step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])['step_id'][0]
                 proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
-                if '05' in proces_name:
-                    comer_sortint_id = o.GiscedataSwitching.read(sw_id, ['comer_sortint_id'])['comer_sortint_id'][0]
-                    polissa_id = o.GiscedataSwitching.read(sw_id, ['cups_polissa_id'])['cups_polissa_id'][0]
-                    data_act = o.model('giscedata.switching.c1.05').read(c105_id, ['data_activacio'])['data_activacio']
-                    data_act = datetime.strftime(datetime.strptime(data_act, "%Y-%m-%d") - timedelta(1), "%Y-%m-%d")
-                    fact_id = o.GiscedataPolissa.get_last_invoice_by_partner(polissa_id, comer_sortint_id,
-                                                                             {'data_act': data_act})
-                    if not fact_id:
-                        erros_msg = "Error, no s'ha trobat l'última factura de la comer: "+str(comer_sortint_id)+"en data: " + str(data_act)
-                        create_vals = {
-                            'cod_gestio_id': cod_gest_data['name'],
-                            'atesa': False,
-                            'on_time': False,
-                            'errors': erros_msg,
-                        }
-                        self.create_logs(create_vals, ref)
-
-                    invoice_id = o.GiscedataFacturacioFactura.read(fact_id, ['invoice_id'])['invoice_id'][0]
-                    model_names = ['giscedata.switching.c1.05', 'account.invoice']
-                    field_names = ['data_activacio', 'date_invoice']
-                    context = {'model_names': model_names, 'field_names': field_names}
-                    time_spent = self.get_time_delta(c105_id, invoice_id, context=context)
-                    if isinstance(sw_id, list):
-                        sw_id = sw_id[0]
-                    self.compute_time(cod_gest_data, file_fields, time_spent, ref)
-                else:
-                    file_fields['no_tramitadas'] += 1
-                    file_fields['totals'] += 1
+                comer_sortint_id = o.GiscedataSwitching.read(sw_id, ['comer_sortint_id'])['comer_sortint_id'][0]
+                polissa_id = o.GiscedataSwitching.read(sw_id, ['cups_polissa_id'])['cups_polissa_id'][0]
+                data_act = o.model('giscedata.switching.c1.05').read(c105_id, ['data_activacio'])['data_activacio']
+                data_act = datetime.strftime(datetime.strptime(data_act, "%Y-%m-%d") - timedelta(1), "%Y-%m-%d")
+                fact_id = o.GiscedataPolissa.get_last_invoice_by_partner(polissa_id, comer_sortint_id,
+                                                                         {'data_act': data_act})
+                if not fact_id:
+                    erros_msg = "Error, no s'ha trobat l'última factura de la comer: "+str(comer_sortint_id)+"en data: " + str(data_act)
+                    create_vals = {
+                        'cod_gestio_id': cod_gest_data['name'],
+                        'atesa': False,
+                        'on_time': False,
+                        'errors': erros_msg,
+                    }
+                    self.create_logs(create_vals, ref)
+                    continue
+                if isinstance(fact_id, (list, tuple)):
+                    fact_id = fact_id[0]
+                invoice_id = o.GiscedataFacturacioFactura.read(fact_id, ['invoice_id'])['invoice_id'][0]
+                model_names = ['giscedata.switching.c1.05', 'account.invoice']
+                field_names = ['data_activacio', 'date_invoice']
+                context = {'model_names': model_names, 'field_names': field_names}
+                time_spent = self.get_time_delta(c105_id, invoice_id, context=context)
+                if isinstance(sw_id, list):
+                    sw_id = sw_id[0]
+                self.compute_time(cod_gest_data, file_fields, time_spent, ref)
 
             c205_ids = o.model("giscedata.switching.c2.05").search(search_params)
 
@@ -581,30 +577,37 @@ class FD2(StopMultiprocessBased):
                 c2_header_id = o.model("giscedata.switching.c2.05").read(c205_id, ['header_id'])[
                     'header_id']
                 sw_id = o.GiscedataSwitchingStepHeader.read(c2_header_id[0], ['sw_id'])['sw_id'][0]
+                ref = ('giscedata.switching', sw_id)
                 step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])['step_id'][0]
                 proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
-                if '05' in proces_name:
-                    comer_sortint_id = o.GiscedataSwitching.read(sw_id, ['comer_sortint_id'])['comer_sortint_id'][0]
-                    polissa_id = o.GiscedataSwitching.read(sw_id, ['cups_polissa_id'])['cups_polissa_id'][0]
-                    data_act = o.model('giscedata.switching.c2.05').read(c205_id, ['data_activacio'])['data_activacio']
-                    data_act = datetime.strftime(datetime.strptime(data_act, "%Y-%m-%d") - timedelta(1), "%Y-%m-%d")
-                    fact_id = o.GiscedataPolissa.get_last_invoice_by_partner(polissa_id, comer_sortint_id,
-                                                                             {'data_act': data_act})
-                    if not fact_id:
-                        continue
-                    invoice_id = o.GiscedataFacturacioFactura.read(fact_id, ['invoice_id'])['invoice_id'][0]
-                    model_names = ['giscedata.switching.c2.05', 'account.invoice']
-                    field_names = ['data_activacio', 'date_invoice']
-                    context = {'model_names': model_names, 'field_names': field_names}
-                    time_spent = self.get_time_delta(c205_id, invoice_id, context=context)
-                    if isinstance(sw_id, list):
-                        sw_id = sw_id[0]
-                    ref = ('giscedata.switching', sw_id)
-                    self.compute_time(cod_gest_data, file_fields, time_spent, ref)
-                else:
-                    file_fields['no_tramitadas'] += 1
-
-                    file_fields['totals'] += 1
+                comer_sortint_id = o.GiscedataSwitching.read(sw_id, ['comer_sortint_id'])['comer_sortint_id'][0]
+                polissa_id = o.GiscedataSwitching.read(sw_id, ['cups_polissa_id'])['cups_polissa_id'][0]
+                data_act = o.model('giscedata.switching.c2.05').read(c205_id, ['data_activacio'])['data_activacio']
+                data_act = datetime.strftime(datetime.strptime(data_act, "%Y-%m-%d") - timedelta(1), "%Y-%m-%d")
+                fact_id = o.GiscedataPolissa.get_last_invoice_by_partner(polissa_id, comer_sortint_id,
+                                                                         {'data_act': data_act})
+                if not fact_id:
+                    erros_msg = "Error, no s'ha trobat l'última factura de la comer: " + str(
+                        comer_sortint_id) + "en data: " + str(data_act)
+                    create_vals = {
+                        'cod_gestio_id': cod_gest_data['name'],
+                        'atesa': False,
+                        'on_time': False,
+                        'errors': erros_msg,
+                    }
+                    self.create_logs(create_vals, ref)
+                    continue
+                if isinstance(fact_id, (list, tuple)):
+                    fact_id = fact_id[0]
+                invoice_id = o.GiscedataFacturacioFactura.read(fact_id, ['invoice_id'])['invoice_id'][0]
+                model_names = ['giscedata.switching.c2.05', 'account.invoice']
+                field_names = ['data_activacio', 'date_invoice']
+                context = {'model_names': model_names, 'field_names': field_names}
+                time_spent = self.get_time_delta(c205_id, invoice_id, context=context)
+                if isinstance(sw_id, list):
+                    sw_id = sw_id[0]
+                ref = ('giscedata.switching', sw_id)
+                self.compute_time(cod_gest_data, file_fields, time_spent, ref)
 
         ## Tractem els atcs adients
         self.process_atcs(item, cod_gest_data, file_fields, year_start, year_end)
