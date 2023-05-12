@@ -529,7 +529,7 @@ class FA1(StopMultiprocessBased):
                 polissa_id = O.GiscedataPolissa.search(
                     search_params, 0, 1, 'data_alta desc', context_glob)
 
-                o_potencia = ''
+                o_potencia = 0
                 o_cnae = ''
                 o_cod_tfa = ''
 
@@ -666,8 +666,7 @@ class FA1(StopMultiprocessBased):
                             o_tensio = format_f(
                                 float(modcon['tensio']) / 1000.0, decimals=3)
                         if modcon['potencia']:
-                            o_potencia = format_f(
-                                float(modcon['potencia']), decimals=3)
+                            o_potencia = modcon['potencia']
                     else:
                         # No existeix modificació contractual per el CUPS
                         o_potencia = cups['potencia_conveni']
