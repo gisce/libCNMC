@@ -46,7 +46,7 @@ class FC6(StopMultiprocessBased):
 
                 # TIPO OPERACION
                 o_tipo_operacion = ''
-                if c6.get('o_tipo_operacion', False):
+                if c6.get('tipo_operacion', False):
                     o_tipo_operacion = c6['tipo_operacion']
 
                 # COCO
