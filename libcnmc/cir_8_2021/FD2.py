@@ -507,8 +507,8 @@ class FD2(StopMultiprocessBased):
                 c1_header_id = o.model("giscedata.switching.c1.01").read(c101_id, ['header_id'])[
                     'header_id']
                 sw_id = o.GiscedataSwitchingStepHeader.read(c1_header_id[0], ['sw_id'])['sw_id'][0]
-                sw_data = o.GiscedataSwitching.read(sw_id, ['rebuig', 'state'])
-                if not sw_data['rebuig'] and sw_data['state'] not in ['cancel', 'draft']:
+                sw_data = o.GiscedataSwitching.read(sw_id, ['rebuig', 'state', 'step_id'])
+                if not sw_data['rebuig'] and sw_data['state'] not in ['cancel', 'draft'] and sw_data['step_id'][1] != '01':
                     model_names = ['giscedata.switching.c1.01', 'giscedata.switching.c1.05']
                     field_names = ['date_created', 'data_activacio']
                     context = {'model_names': model_names, 'field_names': field_names}
@@ -521,8 +521,8 @@ class FD2(StopMultiprocessBased):
                 c2_header_id = o.model("giscedata.switching.c2.01").read(c201_id, ['header_id'])[
                     'header_id']
                 sw_id = o.GiscedataSwitchingStepHeader.read(c2_header_id[0], ['sw_id'])['sw_id'][0]
-                sw_data = o.GiscedataSwitching.read(sw_id, ['rebuig', 'state'])
-                if not sw_data['rebuig'] and sw_data['state'] not in ['cancel', 'draft']:
+                sw_data = o.GiscedataSwitching.read(sw_id, ['rebuig', 'state', 'step_id'])
+                if not sw_data['rebuig'] and sw_data['state'] not in ['cancel', 'draft'] and sw_data['step_id'][1] != '01':
                     model_names = ['giscedata.switching.c2.01', 'giscedata.switching.c2.05']
                     field_names = ['date_created', 'data_activacio']
                     context = {'model_names': model_names, 'field_names': field_names}
