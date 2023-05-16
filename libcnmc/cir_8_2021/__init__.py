@@ -23,3 +23,4 @@ from FC5 import FC5
 from FC7 import FC7
 from FD1 import FD1
 from FD2 import FD2
+from FC6 import FC6
