@@ -15,7 +15,7 @@ class FD1(StopMultiprocessBased):
         self.base_object = 'D1'
 
     def get_sequence(self):
-        prevision_ids = self.connection.Cir82021D1.search(
+        prevision_ids = self.connection.model('cir8.2021.d1').search(
             [('year', '=', self.year)]
         )
         return prevision_ids
@@ -30,10 +30,10 @@ class FD1(StopMultiprocessBased):
                     self.input_q.task_done()
                     break
                 self.progress_q.put(item)
-                d1 = O.Cir82021D1.read(item, fields_to_read)
+                d1 = O.model('cir8.2021.d1').read(item, fields_to_read)
                 o_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi(
                     d1['municipio'][0]
-                )
+                )[0]
                 ine = O.ResMunicipi.read(d1['municipio'][0], ['ine'])['ine']
                 o_municipio, o_provincia = get_ine(O, ine)
                 self.output_q.put([
