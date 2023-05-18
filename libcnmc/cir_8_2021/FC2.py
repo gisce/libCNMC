@@ -50,13 +50,13 @@ class FC2(StopMultiprocessBased):
                 # MUNICIPIO I PROVINCIA
                 municipio = ''
                 provincia = ''
-                if c2.get('municipi_id', False):
+                if c2.get('municipio', False):
                     provincia, municipio = self.get_ine(c2['municipio'][0])
 
                 # CCAA
                 fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
                 if c2['municipio']:
-                    id_municipi = c2['municipi_id'][0]
+                    id_municipi = c2['municipio'][0]
                 else:
                     id_municipi = get_id_municipi_from_company(O)
 
