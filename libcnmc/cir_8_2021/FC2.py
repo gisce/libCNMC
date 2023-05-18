@@ -25,14 +25,8 @@ class FC2(StopMultiprocessBased):
         self.compare_field = '4666_entregada'
 
     def get_sequence(self):
-        inici_any = '{}-01-01'.format(self.year)
-        fi_any = '{}-12-31'.format(self.year)
-        search_params = [('data_inici', '>=', inici_any),
-                         ('data_inici', '<=', fi_any),
-                         ('data_final', '>=', inici_any),
-                         ('data_final', '<=', fi_any),
-                         ]
-        return self.connection.GiscedataTasaOcupacioVp.search(search_params)
+        c2_ids = self.connection.model('cir8.2021.c2').search([('year', '=', self.year)])
+        return c2_ids
 
     def get_ine(self, municipi_id):
         O = self.connection
@@ -42,7 +36,7 @@ class FC2(StopMultiprocessBased):
     def consumer(self):
         O = self.connection
 
-        fields_to_read = ['municipi_id', 'imu_total_anual']
+        fields_to_read = ['municipio', 'tovp']
 
         while True:
             try:
@@ -51,20 +45,18 @@ class FC2(StopMultiprocessBased):
                     self.input_q.task_done()
                     break
                 self.progress_q.put(item)
-                tovp = O.GiscedataTasaOcupacioVp.read(item, fields_to_read)
+                c2 = O.model('cir8.2021.c2').read(item, fields_to_read)
 
                 # MUNICIPIO I PROVINCIA
                 municipio = ''
                 provincia = ''
-                if tovp.get('municipi_id', False):
-                    provincia, municipio = self.get_ine(tovp['municipi_id'][0])
+                if c2.get('municipi_id', False):
+                    provincia, municipio = self.get_ine(c2['municipio'][0])
 
                 # CCAA
-                # funció per trobar la ccaa desde el municipi
-                id_municipi = ''
                 fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
-                if tovp['municipi_id']:
-                    id_municipi = tovp['municipi_id'][0]
+                if c2['municipio']:
+                    id_municipi = c2['municipi_id'][0]
                 else:
                     id_municipi = get_id_municipi_from_company(O)
 
@@ -77,15 +69,15 @@ class FC2(StopMultiprocessBased):
                         comunitat_codi = comunitat_vals['codi']
 
                 # TOVP
-                imu_total_anual = ''
-                if tovp.get('imu_total_anual', False):
-                    imu_total_anual = tovp['imu_total_anual']
+                tovp = '0,000'
+                if c2.get('tovp', False):
+                    tovp = c2['tovp']
 
                 self.output_q.put([
                     municipio,                                  # MUNICIPIO
                     provincia,                                  # PROVINCIA
                     comunitat_codi,                             # CCAA
-                    format_f(imu_total_anual, decimals=2),      # TOVP
+                    format_f(tovp, decimals=2),                 # TOVP
                 ])
                 self.input_q.task_done()
             except Exception:
