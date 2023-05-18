@@ -318,7 +318,7 @@ def cir_8_2021_fb1(**kwargs):
 @click.option('--prefix_at', help="Prefix dels Trams AT")
 @click.option('--prefix_bt', help="Prefix dels Trams BT")
 @click.option("--reducir-cups/--no-reducir-cups",default=False)
-def cir_8_2021_fb1_1(**kwargs):
+def cir_8_2021_fb11(**kwargs):
     """
     Click entry to generate the FB1.1 file of 2021
 
@@ -406,7 +406,7 @@ def cir_8_2021_fb2(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-def cir_8_2021_fb2_1(**kwargs):
+def cir_8_2021_fb21(**kwargs):
     """
     Click entry to generate the B2_1: CTS TRAFOS
 
@@ -447,7 +447,7 @@ def cir_8_2021_fb2_1(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-def cir_8_2021_fb2_2(**kwargs):
+def cir_8_2021_fb22(**kwargs):
     """
     Click entry to generate the B2_2: CELDAS EN CTS
 
@@ -530,7 +530,7 @@ def cir_8_2021_fb3(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-def cir_8_2021_fb3_1(**kwargs):
+def cir_8_2021_fb31(**kwargs):
     """
     Click entry to generate the B3_1: PARQUES
 
@@ -573,7 +573,7 @@ def cir_8_2021_fb3_1(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('--all_int', default=True)
-def cir_8_2021_fb3_2(**kwargs):
+def cir_8_2021_fb32(**kwargs):
     """
     Click entry to generate the B3_2: POSICIONES
 
@@ -615,7 +615,7 @@ def cir_8_2021_fb3_2(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
-def cir_8_2021_fb3_3(**kwargs):
+def cir_8_2021_fb33(**kwargs):
     """
     Click entry to generate the B3_2: POSICIONES
 
