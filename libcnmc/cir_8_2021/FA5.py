@@ -20,6 +20,8 @@ class FA5(StopMultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1')
         self.report_name = 'Formulario A5: Información relativa a la energia intercambiada en los puntos frontera'
         self.base_object = 'Punt frontera'
+        self.prefix_AT = kwargs.pop('prefix_at', 'A') or 'A'
+        self.prefix_BT = kwargs.pop('prefix_bt', 'B') or 'B'
 
     def get_sequence(self):
         O = self.connection
@@ -49,9 +51,24 @@ class FA5(StopMultiprocessBased):
                     obj_id = int(element[1])
                     model_obj = O.model(model)
 
-                    identificador = model_obj.read(obj_id, ['name'])
-                    if identificador.get('name', False):
-                        o_identificador = str(identificador['name'])
+                    if model == 'giscedata.at.tram':
+                        identificador_data = model_obj.read(obj_id, ['name', 'id_regulatori'])
+                        if identificador_data.get('id_regulatori', False):
+                            o_identificador = identificador_data['id_regulatori']
+                        else:
+                            o_identificador = "{}{}".format(self.prefix_AT, identificador_data['name'])
+
+                    elif model == 'giscedata.bt.element':
+                        identificador_data = model_obj.read(obj_id, ['name', 'id_regulatori'])
+                        if identificador_data.get('id_regulatori', False):
+                            o_identificador = identificador_data['id_regulatori']
+                        else:
+                            o_identificador = "{}{}".format(self.prefix_BT, identificador_data['name'])
+
+                    else:
+                        identificador_data = model_obj.read(obj_id, ['name'])
+                        if identificador_data.get('name', False):
+                            o_identificador = str(identificador_data['name'])
 
                 # DENOMINACIÓN
                 o_denominacion = ''
