@@ -84,15 +84,6 @@ class FB1(StopMultiprocessBased):
                                ('data_baixa', '!=', False),
                           ('active', '=', True)]
 
-        # No han d'aparèixer si la data_pm i la data_baixa són del mateix any que el formulari
-        search_params += ['!',
-                          '&',
-                          '&', ('data_pm', '>', data_baixa),
-                          '&', ('data_pm', '<', data_pm),
-                               ('data_baixa', '!=', False),
-                          '&', ('data_baixa', '>', data_baixa),
-                               ('data_baixa', '<', data_pm)]
-
         obj_lat = self.connection.GiscedataAtTram
         ids = obj_lat.search(
             search_params, 0, 0, False, {'active_test': False})
@@ -113,15 +104,6 @@ class FB1(StopMultiprocessBased):
                           '&', ('active', '=', False),
                                ('data_baixa', '!=', False),
                           ('active', '=', True)]
-
-        # No han d'aparèixer si la data_pm i la data_baixa són del mateix any que el formulari
-        search_params += ['!',
-                          '&',
-                          '&', ('data_pm', '>', data_baixa),
-                          '&', ('data_pm', '<', data_pm),
-                               ('data_baixa', '!=', False),
-                          '&', ('data_baixa', '>', data_baixa),
-                               ('data_baixa', '<', data_pm)]
 
         obj_lbt = self.connection.GiscedataBtElement
         ids = obj_lbt.search(
