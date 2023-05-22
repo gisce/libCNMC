@@ -149,7 +149,7 @@ class FB6(StopMultiprocessBased):
                 tensio_id = linia_data['tensio_id'][0]
                 tensio_data = tensio_obj.read(tensio_id, ['tensio'])
                 if tensio_data.get('tensio', False):
-                    res['tensio'] = format_f(float(tensio_data['tensio_id']) / 1000.0, decimals=3)
+                    res['tensio'] = format_f(float(tensio_data['tensio']) / 1000.0, decimals=3)
             if linia_data.get('name', False):
                 res['name'] = linia_data['name'][0]
 
