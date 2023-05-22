@@ -128,22 +128,27 @@ class FB6(StopMultiprocessBased):
         o = self.connection
         id_tram = int(installacio.split(',')[1])
 
-        tram = o.GiscedataAtSuport.read(id_tram, ['linia'])
-        linia_id = tram['linia']
-        fields_to_read = [
-            'municipi', 'provincia', 'tensio', 'name'
-        ]
-        linia = o.GiscedataAtLinia.read(int(linia_id[0]), fields_to_read)
-        municipi = ''
-        id_municipi = linia['municipi'][0]
-        name = linia['name']
-        tensio = format_f(float(linia['tensio']) / 1000.0, decimals=3)
-
         res = {
-            'id_municipi': id_municipi,
-            'tensio': tensio,
-            'name': name
+            'id_municipi': '',
+            'tensio': '',
+            'name': ''
         }
+
+        suport_data = o.GiscedataAtSuport.read(id_tram, ['linies_at_ids'])
+        if suport_data.get('linies_at_ids', False):
+            linia_id = suport_data['linies_at_ids'][0]
+            fields_to_read = [
+                'municipi', 'tensio_id', 'name',
+            ]
+
+            linia_data = o.GiscedataAtLinia.read(linia_id, fields_to_read)
+            if linia_data.get('municipi', False):
+                res['id_municipi'] = linia_data['municipi'][0]
+            if linia_data.get('tensio_id', False):
+                res['tensio'] = format_f(float(linia_data['tensio_id']) / 1000.0, decimals=3)
+            if linia_data.get('name', False):
+                res['name'] = linia_data['name'][0]
+
         return res
 
     def get_node_vertex_tram(self, element_name):
