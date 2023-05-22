@@ -499,19 +499,9 @@ class FD2(StopMultiprocessBased):
             ('date_created', '<=', year_end)
         ]
         c101_ids = o.model("giscedata.switching.c1.01").search(search_params)
-        sw_c1_ids = []
-        sw_c2_ids = []
+        sw_c1_ids = o.model('giscedata.switching').get_sw_id_from_proces_step([], search_params, 'c1')
+        sw_c2_ids = o.model('giscedata.switching').get_sw_id_from_proces_step([], search_params, 'c2')
         ## Tractem els c1 i comptabilitzem els que escau
-        for c101_id in c101_ids:
-            c1_header_id = o.model("giscedata.switching.c1.01").read(c101_id, ['header_id'])['header_id']
-            sw_c1_ids.append((o.GiscedataSwitchingStepHeader.read(c1_header_id[0], ['sw_id'])['sw_id'][0], c101_id))
-
-        c201_ids = o.model("giscedata.switching.c2.01").search(search_params)
-
-        for c201_id in c201_ids:
-            c2_header_id = o.model("giscedata.switching.c2.01").read(c201_id, ['header_id'])['header_id']
-            sw_c2_ids.append((o.GiscedataSwitchingStepHeader.read(c2_header_id[0], ['sw_id'])['sw_id'][0], c201_id))
-
         if '01' in cod_gest_data['name']:
 
             for sw_id in sw_c1_ids:
@@ -541,11 +531,19 @@ class FD2(StopMultiprocessBased):
             ## Tractem els c1 i comptabilitzem els que escau
             for sw_id in sw_c1_ids:
                 c105_id = o.model('giscedata.switching.c1.05').search([('header_id.sw_id', '=', sw_id[0])])
+                ref = ('giscedata.switching', sw_id[0])
                 if not c105_id:
+                    error_msg = "Error, no se ha encontrado paso 05 para el c1 con sw_id {}.".format(sw_id[0])
+                    create_vals = {
+                        'cod_gestio_id': cod_gest_data['name'],
+                        'atesa': False,
+                        'on_time': False,
+                        'errors': error_msg
+                    }
+                    self.create_logs(create_vals, ref)
                     continue
                 else:
                     c105_id = c105_id[0]
-                ref = ('giscedata.switching', sw_id[0])
                 comer_sortint_id = o.GiscedataSwitching.read(sw_id[0], ['comer_sortint_id'])['comer_sortint_id'][0]
                 polissa_id = o.GiscedataSwitching.read(sw_id[0], ['cups_polissa_id'])['cups_polissa_id'][0]
                 data_act = o.model('giscedata.switching.c1.05').read(c105_id, ['data_activacio'])['data_activacio']
@@ -574,11 +572,19 @@ class FD2(StopMultiprocessBased):
             ## Tractem els c2 i comptabilitzem els que escau
             for sw_id in sw_c2_ids:
                 c205_id = o.model('giscedata.switching.c2.05').search([('header_id.sw_id', '=', sw_id[0])])
+                ref = ('giscedata.switching', sw_id[0])
                 if not c205_id:
+                    error_msg = "Error, no se ha encontrado paso 05 para el c2 con sw_id {}.".format(sw_id[0])
+                    create_vals = {
+                        'cod_gestio_id': cod_gest_data['name'],
+                        'atesa': False,
+                        'on_time': False,
+                        'errors': error_msg
+                    }
+                    self.create_logs(create_vals, ref)
                     continue
                 else:
                     c205_id = c205_id[0]
-                ref = ('giscedata.switching', sw_id[0])
                 comer_sortint_id = o.GiscedataSwitching.read(sw_id[0], ['comer_sortint_id'])['comer_sortint_id'][0]
                 polissa_id = o.GiscedataSwitching.read(sw_id[0], ['cups_polissa_id'])['cups_polissa_id'][0]
                 data_act = o.model('giscedata.switching.c2.05').read(c205_id, ['data_activacio'])['data_activacio']
