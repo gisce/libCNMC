@@ -126,6 +126,7 @@ class FB6(StopMultiprocessBased):
         """
 
         o = self.connection
+        tensio_obj = o.GiscedataTensionsTensio
         id_tram = int(installacio.split(',')[1])
 
         res = {
@@ -145,7 +146,10 @@ class FB6(StopMultiprocessBased):
             if linia_data.get('municipi', False):
                 res['id_municipi'] = linia_data['municipi'][0]
             if linia_data.get('tensio_id', False):
-                res['tensio'] = format_f(float(linia_data['tensio_id']) / 1000.0, decimals=3)
+                tensio_id = linia_data['tensio_id'][0]
+                tensio_data = tensio_obj.read(tensio_id, ['tensio'])
+                if tensio_data.get('tensio', False):
+                    res['tensio'] = format_f(float(tensio_data['tensio_id']) / 1000.0, decimals=3)
             if linia_data.get('name', False):
                 res['name'] = linia_data['name'][0]
 
