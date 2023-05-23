@@ -69,7 +69,7 @@ class FA5(StopMultiprocessBased):
                     o_tipo_frontera = punt_frontera['tipus_frontera'].upper()
 
                 # TENSIÓN
-                o_tension = ''
+                o_tension = '0,000'
                 if punt_frontera.get('tensio_id', False):
                     o_tension = format_f(float(punt_frontera['tensio_id'][1]) / 1000, 3)
 
@@ -82,10 +82,10 @@ class FA5(StopMultiprocessBased):
                 energia_ids = energia_obj.search([('punt_frontera_id', '=', item)])
                 energia_data = energia_obj.read(energia_ids, fields_to_read_energia)
 
-                o_energia_activa_entrante = 0
-                o_energia_activa_saliente = 0
-                o_energia_reactiva_entrante = 0
-                o_energia_reactiva_saliente = 0
+                o_energia_activa_entrante = '0,000'
+                o_energia_activa_saliente = '0,000'
+                o_energia_reactiva_entrante = '0,000'
+                o_energia_reactiva_saliente = '0,000'
                 inici_any = '{}-01-01'.format(self.year)
                 fi_any = '{}-12-31'.format(self.year)
 
