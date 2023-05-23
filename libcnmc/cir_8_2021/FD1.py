@@ -35,7 +35,7 @@ class FD1(StopMultiprocessBased):
                     d1['municipio'][0]
                 )[0]
                 ine = O.ResMunicipi.read(d1['municipio'][0], ['ine'])['ine']
-                o_municipio, o_provincia = get_ine(O, ine)
+                o_provincia, o_municipio = get_ine(O, ine)
                 self.output_q.put([
                     d1['tipo'],
                     o_municipio,
