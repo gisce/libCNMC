@@ -461,13 +461,16 @@ class FA1(StopMultiprocessBased):
                     autoconsum_id = autoconsum_id_data[0]
                     autoconsum_data = O.GiscedataAutoconsum.read(autoconsum_id, ['cau', 'tipus_autoconsum',
                                                                                  'generador_id', 'codi_cnmc'])
+                    # COD_AUTO
+                    if autoconsum_data.get('codi_cnmc', False):
+                        o_cod_auto = autoconsum_data['codi_cnmc']
+
                     # CAU
                     if autoconsum_data.get('cau', False):
                         o_cau = autoconsum_data['cau']
 
-                    # COD_AUTO
-                    if autoconsum_data.get('codi_cnmc', False):
-                        o_cod_auto = autoconsum_data['codi_cnmc']
+                    if o_cod_auto in ['002', '003', '005', '007']:
+                        o_cau = ''
 
                     # COD_GENERACION_AUTO
                     if autoconsum_data.get('generador_id', False):
