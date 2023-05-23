@@ -481,25 +481,14 @@ class FB1(StopMultiprocessBased):
                                 0
                             )
                             if actual == entregada and fecha_baja == '':
-                                estado = 0
+                                estado = '0'
+                                if tram_obra:
+                                    estado = '1'
                             else:
                                 self.output_m.put("{} {}".format(tram["name"], adapt_diff(actual.diff(entregada))))
                                 estado = 1
                         else:
-                            if tram['data_pm']:
-                                if tram['data_pm'][:4] != str(self.year):
-                                    self.output_m.put(
-                                        "Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(
-                                            tram["name"]))
-                                    estado = '1'
-                                else:
-                                    estado = '2'
-                            else:
-                                self.output_m.put(
-                                    "Identificador:{} No estava en el fitxer carregat al any n-1".format(tram["name"]))
-                                estado = '1'
-                        if tram_obra:
-                            estado = '1'
+                            estado = '2'
 
                         if fecha_baja:
                             motivacion = ''
@@ -849,26 +838,14 @@ class FB1(StopMultiprocessBased):
                                 0
                             )
                             if actual == entregada and fecha_baja == '':
-                                estado = 0
+                                estado = '0'
+                                if linia_obra:
+                                    estado = '1'
                             else:
                                 self.output_m.put("{} {}".format(linia["name"], adapt_diff(actual.diff(entregada))))
-                                estado = 1
-                        else:
-                            if linia['data_pm']:
-                                if linia['data_pm'][:4] != str(self.year):
-                                    self.output_m.put(
-                                        "Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(
-                                            linia["name"]))
-                                    estado = '1'
-                                else:
-                                    estado = '2'
-                            else:
-                                self.output_m.put(
-                                    "Identificador:{} No estava en el fitxer carregat al any n-1".format(linia["name"]))
                                 estado = '1'
-
-                        if linia_obra:
-                            estado = '1'
+                        else:
+                            estado = '2'
 
                         if fecha_baja:
                             motivacion = ''
