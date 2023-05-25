@@ -3,7 +3,12 @@ import os
 import logging
 
 from osconf import config_from_environment
-from ooop import OOOP
+from ooop import OOOP as BaseOOOP
+
+
+class OOOP(BaseOOOP):
+    def model(self, name):
+        return getattr(self, self.normalize_model_name(name))
 
 
 def camel2dot(name):

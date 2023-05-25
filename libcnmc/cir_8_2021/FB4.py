@@ -312,25 +312,17 @@ class FB4(StopMultiprocessBased):
                         0
                     )
                     if entregada == actual and fecha_baja == '':
-                        estado = 0
+                        estado = '0'
+                        if pos_obra:
+                            estado = '1'
                     else:
                         self.output_m.put("{} {}".format(pos["name"], adapt_diff(actual.diff(entregada))))
-                        estado = 1
-                else:
-                    if pos['data_pm']:
-                        if pos['data_pm'][:4] != str(self.year):
-                            self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(pos["name"]))
-                            estado = '1'
-                        else:
-                            estado = '2'
-                    else:
-                        self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(pos["name"]))
                         estado = '1'
+                else:
+                    estado = '2'
 
-                if pos_obra:
-                    estado = '1'
                 if pos['cini'][4] == '3' and data_pm < data_baixa_limit and pos_obra == '':
-                    estado = 0
+                    estado = '0'
 
                 # Si MODELO = 'M', ESTADO i FECHA_APS han d'estar buides
                 if modelo == 'M':
