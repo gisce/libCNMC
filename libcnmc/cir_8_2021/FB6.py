@@ -116,7 +116,7 @@ class FB6(StopMultiprocessBased):
         muni = O.ResMunicipi.read(municipi_id, ['ine'])
         return get_ine(O, muni['ine'])
 
-    def obtenir_camps_linia_at(self, installacio):
+    def obtenir_camps_linia_at(self, linia_id):
         """
         Gets the data of the line where the cel·la is placed
 
@@ -127,7 +127,6 @@ class FB6(StopMultiprocessBased):
 
         o = self.connection
         tensio_obj = o.GiscedataTensionsTensio
-        id_tram = int(installacio.split(',')[1])
 
         res = {
             'id_municipi': '',
@@ -135,23 +134,18 @@ class FB6(StopMultiprocessBased):
             'name': ''
         }
 
-        suport_data = o.GiscedataAtSuport.read(id_tram, ['linies_at_ids'])
-        if suport_data.get('linies_at_ids', False):
-            linia_id = suport_data['linies_at_ids'][0]
-            fields_to_read = [
-                'municipi', 'tensio_id', 'name',
-            ]
+        fields_to_read = ['municipi', 'tensio_id', 'name']
+        linia_data = o.GiscedataAtLinia.read(linia_id, fields_to_read)
 
-            linia_data = o.GiscedataAtLinia.read(linia_id, fields_to_read)
-            if linia_data.get('municipi', False):
-                res['id_municipi'] = linia_data['municipi'][0]
-            if linia_data.get('tensio_id', False):
-                tensio_id = linia_data['tensio_id'][0]
-                tensio_data = tensio_obj.read(tensio_id, ['tensio'])
-                if tensio_data.get('tensio', False):
-                    res['tensio'] = format_f(float(tensio_data['tensio']) / 1000.0, decimals=3)
-            if linia_data.get('name', False):
-                res['name'] = linia_data['name'][0]
+        if linia_data.get('municipi', False):
+            res['id_municipi'] = linia_data['municipi'][0]
+        if linia_data.get('tensio_id', False):
+            tensio_id = linia_data['tensio_id'][0]
+            tensio_data = tensio_obj.read(tensio_id, ['tensio'])
+            if tensio_data.get('tensio', False):
+                res['tensio'] = format_f(float(tensio_data['tensio']) / 1000.0, decimals=3)
+        if linia_data.get('name', False):
+            res['name'] = linia_data['name'][0]
 
         return res
 
@@ -314,8 +308,11 @@ class FB6(StopMultiprocessBased):
                 o_cini = cella['cini']
                 o_prop = int(cella['propietari'])
 
-                #TRAM
-                o_identificador_elemento = ""
+                # TRAM, MUNICIPI I PROVINCIA
+                o_identificador_elemento = ''
+                id_municipi = ''
+                linia_data = ''
+                ct_data = ''
                 if cella.get('installacio', False):
                     installacio_data = cella['installacio']
                     inst_model = installacio_data.split(',')[0]
@@ -329,15 +326,39 @@ class FB6(StopMultiprocessBased):
                                 o_identificador_elemento = tram_data['id_regulatori']
                             else:
                                 o_identificador_elemento = "{}{}".format(self.prefix_AT, tram_data['name'])
+                        suport_data = O.GiscedataAtSuport.read(inst_id, ['linies_at_ids'])
+                        if suport_data.get('linies_at_ids', False):
+                            linia_id = suport_data['linies_at_ids'][0]
+                            linia_data = self.obtenir_camps_linia_at(linia_id)
 
-                    if inst_model == 'giscedata.cts':
-                        ct_data = model_obj.read(inst_id, ['name', 'id_regulatori'])
+                    elif inst_model == 'giscedata.cts':
+                        ct_data = model_obj.read(inst_id, ['name', 'id_regulatori', 'id_municipi'])
                         if ct_data.get('id_regulatori', False):
                             o_identificador_elemento = ct_data['id_regulatori']
                         else:
                             o_identificador_elemento = ct_data['name']
+
+                        if ct_data.get('id_municipi'):
+                            id_municipi = ct_data['id_municipi'][0]
                 else:
                     o_identificador_elemento = self.get_node_vertex_tram(o_fiabilitat)
+
+                o_municipi = ''
+                o_provincia = ''
+                if linia_data.get('id_municipi', False):
+                    id_municipi = linia_data['id_municipi']
+                    o_provincia, o_municipi = self.get_ine(id_municipi)
+                elif ct_data.get('id_municipi'):
+                    id_municipi = ct_data['id_municipi'][0]
+
+                # funció per trobar la ccaa desde el municipi
+                fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
+                if id_municipi:
+                    id_comunitat = fun_ccaa(id_municipi)
+                    comunitat_vals = O.ResComunitat_autonoma.read(
+                        id_comunitat[0], ['codi'])
+                    if comunitat_vals:
+                        comunitat_codi = comunitat_vals['codi']
 
                 #FECHA BAJA, CAUSA_BAJA
                 if cella['data_baixa']:
@@ -376,31 +397,13 @@ class FB6(StopMultiprocessBased):
                 element =  cella['installacio'].split(',')[0]
                 dict_linia = self.obtenir_camps_linia_at(cella['installacio'])
 
-                # MUNICIPI I PROVINCIA
-                o_municipi = ''
-                o_provincia = ''
-                if dict_linia.get('id_municipi', False):
-                    id_municipi = dict_linia['id_municipi']
-                    o_provincia, o_municipi = self.get_ine(id_municipi)
-
-                o_name = dict_linia.get('name')
-
-                # funció per trobar la ccaa desde el municipi
-                fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
-                if id_municipi:
-                    id_comunitat = fun_ccaa(id_municipi)
-                    comunitat_vals = O.ResComunitat_autonoma.read(
-                        id_comunitat[0], ['codi'])
-                    if comunitat_vals:
-                        comunitat_codi = comunitat_vals['codi']
-
                 if cella['tensio']:
                     tensio = O.GiscedataTensionsTensio.read(
                         cella['tensio'][0], ['tensio']
                     )
                     o_tensio = format_f(int(tensio['tensio'])/1000.0, decimals=3)
                 else:
-                    o_tensio = dict_linia.get('tensio')
+                    o_tensio = linia_data.get('tensio', '0,000')
 
                 # TENSIO_CONST
                 o_tensio_const = ''
