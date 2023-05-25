@@ -422,7 +422,7 @@ class FB2(StopMultiprocessBased):
                     subvenciones_nacionales,            # SUBVENCIONES NACIONALES
                     subvenciones_prtr,                  # SUBVENCIONES PRTR
                     valor_auditado,                     # VALOR AUDITADO
-                    financiado,                         # FINANCIADO
+                    format_f(financiado, decimals=2),   # FINANCIADO
                     cuenta_contable,                    # CUENTA CONTABLE
                     motivacion,                         # MOTIVACION
                     avifauna,                           # AVIFAUNA
