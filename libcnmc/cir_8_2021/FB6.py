@@ -311,8 +311,8 @@ class FB6(StopMultiprocessBased):
                 # TRAM, MUNICIPI I PROVINCIA
                 o_identificador_elemento = ''
                 id_municipi = ''
-                linia_data = ''
-                ct_data = ''
+                linia_data = {}
+                ct_data = {}
                 if cella.get('installacio', False):
                     installacio_data = cella['installacio']
                     inst_model = installacio_data.split(',')[0]
@@ -338,18 +338,18 @@ class FB6(StopMultiprocessBased):
                         else:
                             o_identificador_elemento = ct_data['name']
 
-                        if ct_data.get('id_municipi'):
-                            id_municipi = ct_data['id_municipi'][0]
                 else:
                     o_identificador_elemento = self.get_node_vertex_tram(o_fiabilitat)
 
                 o_municipi = ''
                 o_provincia = ''
+                comunitat_codi = ''
                 if linia_data.get('id_municipi', False):
                     id_municipi = linia_data['id_municipi']
                     o_provincia, o_municipi = self.get_ine(id_municipi)
                 elif ct_data.get('id_municipi'):
                     id_municipi = ct_data['id_municipi'][0]
+                    o_provincia, o_municipi = self.get_ine(id_municipi)
 
                 # funció per trobar la ccaa desde el municipi
                 fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
@@ -393,9 +393,6 @@ class FB6(StopMultiprocessBased):
                 else:
                     o_node, vertex = self.get_node_vertex(o_fiabilitat)
                 o_node = o_node.replace('*', '')
-
-                element =  cella['installacio'].split(',')[0]
-                dict_linia = self.obtenir_camps_linia_at(cella['installacio'])
 
                 if cella['tensio']:
                     tensio = O.GiscedataTensionsTensio.read(
