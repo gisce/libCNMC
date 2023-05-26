@@ -89,6 +89,8 @@ class FB9(StopMultiprocessBased):
                 columns = [str(x) for x in range(35)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns,
                                  dtype={'0': 'object', '21': 'object', '23': 'object', '34': 'object'})
+                df['28'] = pd.to_numeric(df['28'], errors='coerce').astype(float)
+                df['22'] = pd.to_numeric(df['22'], errors='coerce').astype(float)
                 at = OrderedDict()
 
                 # # AT # #
@@ -174,6 +176,8 @@ class FB9(StopMultiprocessBased):
                 columns = [str(x) for x in range(35)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns,
                                  dtype={'0': 'object', '21': 'object', '23': 'object', '34': 'object'})
+                df['28'] = pd.to_numeric(df['28'], errors='coerce').astype(float)
+                df['22'] = pd.to_numeric(df['22'], errors='coerce').astype(float)
                 bt = OrderedDict()
 
                 # # BT # #
@@ -258,6 +262,8 @@ class FB9(StopMultiprocessBased):
                 file_path = '/tmp/8_2021_loaded_or_generated_b4.txt'
                 columns = [str(x) for x in range(27)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
+                df['24'] = pd.to_numeric(df['24'], errors='coerce').astype(float)
+                df['14'] = pd.to_numeric(df['14'], errors='coerce').astype(float)
                 pos = OrderedDict()
 
                 # # EQUIPADAS CON INTERRUPTOR # #
@@ -340,6 +346,8 @@ class FB9(StopMultiprocessBased):
                 file_path = '/tmp/8_2021_loaded_or_generated_b5.txt'
                 columns = [str(x) for x in range(25)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
+                df['21'] = pd.to_numeric(df['21'], errors='coerce').astype(float)
+                df['12'] = pd.to_numeric(df['12'], errors='coerce').astype(float)
                 trafo = OrderedDict()
 
                 resumen['5_G_6'] += df['17'].sum()
@@ -414,6 +422,8 @@ class FB9(StopMultiprocessBased):
                 file_path = '/tmp/8_2021_loaded_or_generated_b6.txt'
                 columns = [str(x) for x in range(31)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
+                df['27'] = pd.to_numeric(df['27'], errors='coerce').astype(float)
+                df['19'] = pd.to_numeric(df['19'], errors='coerce').astype(float)
                 cel = OrderedDict()
 
                 # CUADRO 5
@@ -493,6 +503,8 @@ class FB9(StopMultiprocessBased):
                 file_path = '/tmp/8_2021_loaded_or_generated_b2.txt'
                 columns = [str(x) for x in range(36)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
+                df['31'] = pd.to_numeric(df['31'], errors='coerce').astype(float)
+                df['23'] = pd.to_numeric(df['23'], errors='coerce').astype(float)
                 ct = OrderedDict()
 
                 # CUADRO 5
@@ -863,6 +875,7 @@ class FB9(StopMultiprocessBased):
                 file_path = '/tmp/8_2021_loaded_or_generated_b8.txt'
                 columns = [str(x) for x in range(17)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns, dtype={'2': 'object'})
+                df['15'] = pd.to_numeric(df['15'], errors='coerce').astype(float)
                 desp = OrderedDict()
 
                 resumen['5_G_6'] += df['11'].sum()
