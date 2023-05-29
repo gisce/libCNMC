@@ -112,7 +112,6 @@ class FB3(StopMultiprocessBased):
                 if sub.get('id_municipi', False):
                     o_provincia, o_municipi = self.get_ine(sub['id_municipi'][0])
 
-                z = ''
                 res_srid = ['', '']
                 if vertex:
                     res_srid = convert_srid(get_srid(o), vertex)
@@ -133,7 +132,7 @@ class FB3(StopMultiprocessBased):
                     o_punt_frontera,                    # PUNTO FRONTERA
                     format_f(res_srid[0], decimals=3),  # X
                     format_f(res_srid[1], decimals=3),  # Y
-                    z,                                  # Z
+                    '0,000',                                  # Z
                     o_municipi,                         # MUNICIPIO
                     o_provincia,                        # PROVINCIA
                     o_zona,                             # ZONA

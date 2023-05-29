@@ -82,10 +82,10 @@ class FA5(StopMultiprocessBased):
                 energia_ids = energia_obj.search([('punt_frontera_id', '=', item)])
                 energia_data = energia_obj.read(energia_ids, fields_to_read_energia)
 
-                o_energia_activa_entrante = '0,000'
-                o_energia_activa_saliente = '0,000'
-                o_energia_reactiva_entrante = '0,000'
-                o_energia_reactiva_saliente = '0,000'
+                o_energia_activa_entrante = 0.0
+                o_energia_activa_saliente = 0.0
+                o_energia_reactiva_entrante = 0.0
+                o_energia_reactiva_saliente = 0.0
                 inici_any = '{}-01-01'.format(self.year)
                 fi_any = '{}-12-31'.format(self.year)
 
@@ -120,10 +120,10 @@ class FA5(StopMultiprocessBased):
                     o_zona,                                             # ZONA
                     o_tipo_frontera,                                    # TIPO FRONTERA
                     o_tension,                                          # TENSIÓN
-                    format_f(o_energia_activa_entrante, decimals=3),    # ENERGIA ACTIVA ENTRANTE
-                    format_f(o_energia_activa_saliente, decimals=3),    # ENERGIA ACTIVA SALIENTE
-                    format_f(o_energia_reactiva_entrante, decimals=3),  # ENERGIA REACTIVA ENTRANTE
-                    format_f(o_energia_reactiva_saliente, decimals=3),  # ENERGIA REACTIVA SALIENTE
+                    format_f(o_energia_activa_entrante, decimals=3) or '0,000',    # ENERGIA ACTIVA ENTRANTE
+                    format_f(o_energia_activa_saliente, decimals=3) or '0,000',    # ENERGIA ACTIVA SALIENTE
+                    format_f(o_energia_reactiva_entrante, decimals=3) or '0,000',  # ENERGIA REACTIVA ENTRANTE
+                    format_f(o_energia_reactiva_saliente, decimals=3) or '0,000',  # ENERGIA REACTIVA SALIENTE
                     o_codigo_empresa,                                   # CÓDIGO EMPRESA
                     o_codigo_frontera_dt,                               # CÓDIGO EMPRESA
                 ])

@@ -355,7 +355,7 @@ class FB1(StopMultiprocessBased):
 
                     # FINANCIADO
                     financiado = ''
-                    if tram.get('perc_financament', False):
+                    if isinstance(tram.get('perc_financament', False), float):
                         financiado = 100 - tram['perc_financament']
 
                     # CAUSA_BAJA
@@ -523,7 +523,7 @@ class FB1(StopMultiprocessBased):
                         im_construccion,                    # IM_CONSTRUCCION
                         im_trabajos,                        # IM_TRABAJOS
                         valor_auditado,  # VALOR AUDITADO
-                        financiado,  # FINANCIADO
+                        format_f(financiado, decimals=2),   # FINANCIADO
                         subvenciones_europeas,              # SUBVENCIONES EUROPEAS
                         subvenciones_nacionales,            # SUBVENCIONES NACIONALES
                         subvenciones_prtr,                  # SUBVENCIONES PRTR
@@ -793,7 +793,7 @@ class FB1(StopMultiprocessBased):
 
                     # FINANCIADO
                     financiado = ''
-                    if linia.get('perc_financament', False):
+                    if isinstance(linia.get('perc_financament', False), float):
                         financiado = 100 - linia['perc_financament']
 
                     # CAUSA_BAJA
@@ -880,7 +880,7 @@ class FB1(StopMultiprocessBased):
                         im_construccion,  # IM_CONSTRUCCION
                         im_trabajos,  # IM_TRABAJOS
                         valor_auditado,  # VALOR AUDITADO
-                        financiado,  # FINANCIADO
+                        format_f(financiado, decimals=2),  # FINANCIADO
                         subvenciones_europeas,  # SUBVENCIONES EUROPEAS
                         subvenciones_nacionales,  # SUBVENCIONES NACIONALES
                         subvenciones_prtr,  # SUBVENCIONES PRTR

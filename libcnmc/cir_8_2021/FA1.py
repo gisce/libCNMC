@@ -717,7 +717,7 @@ class FA1(StopMultiprocessBased):
                     o_nom_node,     # Nudo
                     format_f(res_srid[0], decimals=3),  # X
                     format_f(res_srid[1], decimals=3),  # Y
-                    '',                 # Z
+                    '0,000',                 # Z
                     o_cnae,             # CNAE
                     o_cod_tfa,          # Codigo de tarifa
                     o_name,             # CUPS
