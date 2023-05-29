@@ -239,7 +239,7 @@ class FB2(StopMultiprocessBased):
 
                 # FINANCIADO
                 financiado = ''
-                if ct.get('perc_financament', False):
+                if isinstance(ct.get('perc_financament', False), float):
                     financiado = 100 - ct['perc_financament']
 
                 #CCAA
