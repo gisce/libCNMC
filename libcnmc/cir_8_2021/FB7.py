@@ -68,7 +68,6 @@ class FB7(StopMultiprocessBased):
                     municipi_id = node['municipi_id'][0]
                     o_provincia, o_municipi = self.get_ine(municipi_id)
 
-                z = ''
                 res_srid = ['', '']
                 if vertex:
                     res_srid = convert_srid(get_srid(O), vertex)
@@ -83,7 +82,7 @@ class FB7(StopMultiprocessBased):
                     node['name'],                       # NODE
                     format_f(res_srid[0], decimals=3),  # X
                     format_f(res_srid[1], decimals=3),  # Y
-                    z,                                  # Z
+                    '0,000',                            # Z
                     o_tensio,                           # TENSION
                     o_municipi,                         # MUNICIPIO
                     o_provincia,                        # PROVINCIA

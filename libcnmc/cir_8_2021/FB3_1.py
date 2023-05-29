@@ -104,7 +104,6 @@ class FB3_1(StopMultiprocessBased):
                 res_srid = ['', '']
                 if vertex:
                     res_srid = convert_srid(get_srid(o), vertex)
-                z = ''
 
                 o_parc = parc['name']
                 o_node = subestacio['node']
@@ -133,7 +132,7 @@ class FB3_1(StopMultiprocessBased):
                     o_node,  # NUDO
                     format_f(res_srid[0], decimals=3),  # X
                     format_f(res_srid[1], decimals=3),  # Y
-                    z,  # Z
+                    '0,000',  # Z
                     o_cini,  # CINI
                     o_tensio,  # TENSION DEL PARQUE
                     o_tensio_const, #TENSION DE CONSTRUCCION DEL PARQUE

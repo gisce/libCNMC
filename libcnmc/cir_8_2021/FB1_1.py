@@ -89,7 +89,6 @@ class FB1_1(StopMultiprocessBased):
                                 'y': float(inicio[1])
                             }
                             res_srid_inicio = convert_srid(get_srid(o), (vertex_inicio['x'], vertex_inicio['y']))
-                            o_inicio_z = ''
 
                             # Vertex final
                             o_final = '{} 0'.format(dest)
@@ -99,7 +98,6 @@ class FB1_1(StopMultiprocessBased):
                                 'y': float(final[1])
                             }
                             res_srid_final = convert_srid(get_srid(o), (vertex_final['x'], vertex_final['y']))
-                            o_final_z = ''
 
                             self.output_q.put([
                                 '{}_{}'.format(o_segmento, o_position + 1),  # CÓDIGO SEGMENTO
@@ -108,10 +106,10 @@ class FB1_1(StopMultiprocessBased):
                                 o_nsegmento,                                 # TOTAL SEGMENTOS
                                 format_f(res_srid_inicio[0], decimals=3),    # COORDENADA X INICIO
                                 format_f(res_srid_inicio[1], decimals=3),    # COORDENADA Y INICIO
-                                o_inicio_z,                                  # COORDENADA Z INICIO
+                                '0,000',                                     # COORDENADA Z INICIO
                                 format_f(res_srid_final[0], decimals=3),     # COORDENADA X FINAL
                                 format_f(res_srid_final[1], decimals=3),     # COORDENADA Y FINAL
-                                o_final_z                                    # COORDENADA Z FINAL
+                                '0,000',                                     # COORDENADA Z FINAL
                             ])
                     except:
                         pass

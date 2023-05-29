@@ -112,7 +112,7 @@ class FA3(StopMultiprocessBased):
                     o_tipo_crecimiento,                             # TIPO CRECIMIENTO
                     format_f(res_srid[0], decimals=3),              # COORDENADA X
                     format_f(res_srid[1], decimals=3),              # COORDENADA Y
-                    '',                                             # COORDENADA Z
+                    '0,000',                                             # COORDENADA Z
                     format_f(o_superficie, decimals=3),             # SUPERFICIE
                     o_uso,                                          # USO
                     format_f(o_potencia_solicitada, decimals=3),    # POTENCIA SOLICITADA

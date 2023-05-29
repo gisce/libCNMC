@@ -325,7 +325,6 @@ class FB2(StopMultiprocessBased):
                     float(self.get_potencia_trafos(item)), decimals=3)).replace('.',',')
 
                 #X,Y,Z
-                z = ''
                 res_srid = ['', '']
                 if vertex:
                     res_srid = convert_srid(get_srid(O), vertex)
@@ -402,7 +401,7 @@ class FB2(StopMultiprocessBased):
                     o_potencia,                         # POTENCIA
                     format_f(res_srid[0], decimals=3),  # X
                     format_f(res_srid[1], decimals=3),  # Y
-                    z,                                  # Z
+                    '0,000',                            # Z
                     municipio,                          # MUNICIPIO
                     provincia,                          # PROVINCIA
                     comunitat_codi or '',               # CODIGO_CCAA
