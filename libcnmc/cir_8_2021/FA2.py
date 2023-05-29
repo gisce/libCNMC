@@ -160,7 +160,6 @@ class FA2(StopMultiprocessBased):
                 # Coordenades I Node
                 vertex = ''
                 o_nudo = ''
-                o_coordenadas_z = ''
                 res_srid = ['', '']
 
                 escomesa_data = o.GiscedataCupsPs.read(cups[0], ['id_escomesa'])['id_escomesa']
@@ -237,7 +236,7 @@ class FA2(StopMultiprocessBased):
                     o_nudo,  # Node
                     format_f(res_srid[0], decimals=3),  # Coordenada x
                     format_f(res_srid[1], decimals=3),  # Coordenada y
-                    o_coordenadas_z,  # Coordenada z
+                    '0,000',  # Coordenada z
                     o_cil,  # CIL
                     o_cini,  # CINI
                     o_municipio,  # Municipi

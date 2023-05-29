@@ -414,7 +414,6 @@ class FB6(StopMultiprocessBased):
                 o_any = self.year
                 x = ''
                 y = ''
-                z = ''
                 if vertex:
                     res_srid = convert_srid(get_srid(O), vertex)
                     x = format_f(res_srid[0], decimals=3)
@@ -455,7 +454,7 @@ class FB6(StopMultiprocessBased):
                     o_node,  # NUDO
                     x,              # X
                     y,              # Y
-                    z,              # Z
+                    '0,000',              # Z
                     o_municipi,     # MUNICIPIO
                     o_provincia,    # PROVINCIA
                     comunitat_codi,     #CCAA
