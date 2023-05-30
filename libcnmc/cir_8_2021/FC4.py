@@ -28,7 +28,7 @@ class FC4(StopMultiprocessBased):
         O = self.connection
         fields_to_read = [
             'cia', 'actuaciones', 'inversion',
-            'gasto', 'ingreso', 'gasto', 'tension', 'potencia'
+            'gasto', 'ingreso', 'tension', 'potencia'
         ]
         while True:
             try:
@@ -39,19 +39,15 @@ class FC4(StopMultiprocessBased):
                 self.progress_q.put(item)
 
                 c4 = O.model('cir8.2021.c4').read(item, fields_to_read)
-                row = []
-                for field in fields_to_read:
-                    if field in ['tension', 'potencia']:
-                        row.append(
-                            format_f(c4.get(field, 0.0), 3)
-                        )
-                    elif field in ['cia', 'actuaciones']:
-                        row.append(c4.get(field, ''))
-                    else:
-                        row.append(
-                            format_f(c4.get(field, 0.0), 2)
-                        )
-                self.output_q.put(row)
+                self.output_q.put([
+                    c4.get('cia', ''),
+                    c4.get('actuaciones', 0),
+                    format_f(c4.get('inversion', 0.0), 2),
+                    format_f(c4.get('gastos', 0.0), 2),
+                    format_f(c4.get('ingreso', 0.0), 2),
+                    format_f(c4.get('tension', 0.0), 3),
+                    format_f(c4.get('potencia', 0.0), 3),
+                ])
                 self.input_q.task_done()
             except Exception:
                 self.input_q.task_done()

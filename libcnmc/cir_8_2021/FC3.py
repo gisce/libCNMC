@@ -29,7 +29,7 @@ class FC3(StopMultiprocessBased):
         fields_to_read = [
             'cia', 'actuaciones', 'tension', 'potencia',
             'inversion_n_5', 'inversion_n_4', 'inversion_n_3',
-            'inversion_n_2', 'gasto', 'ingreso', 'gasto', 'identificador'
+            'inversion_n_2', 'gasto', 'ingreso', 'identificador'
         ]
         while True:
             try:
@@ -40,19 +40,19 @@ class FC3(StopMultiprocessBased):
                 self.progress_q.put(item)
 
                 c3 = O.model('cir8.2021.c3').read(item, fields_to_read)
-                row = []
-                for field in fields_to_read:
-                    if field in ['tension', 'potencia']:
-                        row.append(
-                            format_f(c3.get(field, 0.0), 3)
-                        )
-                    elif field in ['cia', 'actuaciones', 'identificador']:
-                        row.append(c3.get(field, ''))
-                    else:
-                        row.append(
-                            format_f(c3.get(field, 0.0), 2)
-                        )
-                self.output_q.put(row)
+                self.output_q.put([
+                    c3.get('cia', ''),
+                    c3.get('actuaciones', 0),
+                    format_f(c3.get('tension', 0.0), 3),
+                    format_f(c3.get('potencia', 0.0), 3),
+                    format_f(c3.get('inversion_n_5', 0.0), 2),
+                    format_f(c3.get('inversion_n_4', 0.0), 2),
+                    format_f(c3.get('inversion_n_3', 0.0), 2),
+                    format_f(c3.get('inversion_n_2', 0.0), 2),
+                    format_f(c3.get('gastos', 0.0), 2),
+                    format_f(c3.get('ingreso', 0.0), 2),
+                    c3.get('identificador', ''),
+                ])
                 self.input_q.task_done()
             except Exception:
                 self.input_q.task_done()
