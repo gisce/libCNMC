@@ -20,6 +20,8 @@ from FB8 import FB8
 from FB9 import FB9
 from FC1 import FC1
 from FC2 import FC2
+from FC3 import FC3
+from FC4 import FC4
 from FC5 import FC5
 from FC7 import FC7
 from FD1 import FD1
