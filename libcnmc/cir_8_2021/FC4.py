@@ -43,7 +43,7 @@ class FC4(StopMultiprocessBased):
                     c4.get('cia', ''),
                     c4.get('actuaciones', 0),
                     format_f(c4.get('inversion', 0.0), 2),
-                    format_f(c4.get('gastos', 0.0), 2),
+                    format_f(c4.get('gasto', 0.0), 2),
                     format_f(c4.get('ingreso', 0.0), 2),
                     format_f(c4.get('tension', 0.0), 3),
                     format_f(c4.get('potencia', 0.0), 3),
