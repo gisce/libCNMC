@@ -128,6 +128,7 @@ class FB5(StopMultiprocessBased):
                 else:
                     trafo_obra = ''
 
+                tipo_inversion = ''
                 #CAMPS OBRES
                 if trafo_obra != '':
                     obra_year = data_finalitzacio.split('-')[0]
@@ -149,7 +150,7 @@ class FB5(StopMultiprocessBased):
                     im_construccion = str(format_f(
                         float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
                     , 2)).replace(".", ",")
-                    tipo_inversion = (trafo_obra['tipo_inversion'] or '0') if not trafo_obra['fecha_baja'] else '1'
+                    tipo_inversion = trafo_obra['tipo_inversion'] or ''
                     valor_auditado = str(
                         float(im_construccion.replace(",", ".")) +
                         float(im_ingenieria.replace(",", ".")) + float(im_trabajos.replace(",", "."))
@@ -161,7 +162,6 @@ class FB5(StopMultiprocessBased):
                 else:
                     data_ip = ''
                     identificador_baja = ''
-                    tipo_inversion = ''
                     im_ingenieria = ''
                     im_construccion = ''
                     im_trabajos = ''

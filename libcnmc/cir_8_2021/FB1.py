@@ -307,6 +307,7 @@ class FB1(StopMultiprocessBased):
                     else:
                         tram_obra = ''
 
+                    tipo_inversion = ''
                     # CAMPS OBRA
                     if tram_obra != '':
                         obra_year = data_finalitzacio.split('-')[0]
@@ -321,7 +322,7 @@ class FB1(StopMultiprocessBased):
                             identificador_baja = '{}{}'.format(self.prefix_AT, tram_name)
                         else:
                             identificador_baja = ''
-                        tipo_inversion = (tram_obra['tipo_inversion'] or '0') if not tram_obra['fecha_baja'] else '1'
+                        tipo_inversion = tram_obra['tipo_inversion'] or ''
                         im_ingenieria = format_f_6181(tram_obra['im_ingenieria'] or 0.0, float_type='euro')
                         im_materiales = format_f_6181(tram_obra['im_materiales'] or 0.0, float_type='euro')
                         im_obracivil = format_f_6181(tram_obra['im_obracivil'] or 0.0, float_type='euro')
@@ -341,7 +342,6 @@ class FB1(StopMultiprocessBased):
                     else:
                         data_ip = ''
                         identificador_baja = ''
-                        tipo_inversion = ''
                         im_ingenieria = ''
                         im_construccion = ''
                         im_trabajos = ''
@@ -492,7 +492,6 @@ class FB1(StopMultiprocessBased):
 
                         if fecha_baja:
                             motivacion = ''
-                            tipo_inversion = ''
 
                     output = [
                         o_tram,  # IDENTIFICADOR
@@ -744,6 +743,7 @@ class FB1(StopMultiprocessBased):
                     else:
                         linia_obra = ''
 
+                    tipo_inversion = ''
                     # CAMPS OBRA
                     if linia_obra != '':
                         obra_year = data_finalitzacio.split('-')[0]
@@ -758,7 +758,7 @@ class FB1(StopMultiprocessBased):
                             identificador_baja = '{}{}'.format(self.prefix_BT, elem_name)
                         else:
                             identificador_baja = ''
-                        tipo_inversion = (linia_obra['tipo_inversion'] or '0') if not linia_obra['fecha_baja'] else '1'
+                        tipo_inversion = linia_obra['tipo_inversion'] or ''
                         im_ingenieria = format_f_6181(linia_obra['im_ingenieria'] or 0.0, float_type='euro')
                         im_materiales = format_f_6181(linia_obra['im_materiales'] or 0.0, float_type='euro')
                         im_obracivil = format_f_6181(linia_obra['im_obracivil'] or 0.0, float_type='euro')
@@ -779,7 +779,6 @@ class FB1(StopMultiprocessBased):
                     else:
                         data_ip = ''
                         identificador_baja = ''
-                        tipo_inversion = ''
                         im_ingenieria = ''
                         im_construccion = ''
                         im_trabajos = ''
@@ -811,7 +810,7 @@ class FB1(StopMultiprocessBased):
                     if modelo == 'M':
                         estado = ''
                         fecha_aps = ''
-                        operacion = ''
+                        operacion = 0
                     else:
                         # Estado
                         if linia[self.compare_field]:
@@ -849,7 +848,6 @@ class FB1(StopMultiprocessBased):
 
                         if fecha_baja:
                             motivacion = ''
-                            tipo_inversion = ''
 
                     output = [
                         identificador_tramo,  # IDENTIFICADOR TRAMO
