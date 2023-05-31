@@ -17,7 +17,8 @@ class FB1_1(StopMultiprocessBased):
     def get_sequence(self):
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-12-31' % self.year
-        search_params = ['|', ('data_pm', '=', False),
+        search_params = [('criteri_regulatori', '!=', 'excloure'),
+                         '|', ('data_pm', '=', False),
                          ('data_pm', '<', data_pm),
                          '|', ('data_baixa', '>', data_baixa),
                          ('data_baixa', '=', False),
@@ -66,8 +67,6 @@ class FB1_1(StopMultiprocessBased):
                     else:
                         o_tram = '{}{}'.format(self.prefix_BT, tramo['name'])
 
-                o_segmento = tramo['name']
-
                 geom = tramo['geom']
                 points = geom.replace('LINESTRING(', '')
                 points = points.replace(')', '')
@@ -88,7 +87,6 @@ class FB1_1(StopMultiprocessBased):
                                 'y': float(inicio[1])
                             }
                             res_srid_inicio = convert_srid(get_srid(o), (vertex_inicio['x'], vertex_inicio['y']))
-                            o_inicio_z = ''
 
                             # Vertex final
                             o_final = '{} 0'.format(dest)
@@ -98,19 +96,18 @@ class FB1_1(StopMultiprocessBased):
                                 'y': float(final[1])
                             }
                             res_srid_final = convert_srid(get_srid(o), (vertex_final['x'], vertex_final['y']))
-                            o_final_z = ''
 
                             self.output_q.put([
-                                '{}_{}'.format(o_segmento, o_position + 1),  # CÓDIGO SEGMENTO
+                                '{}_{}'.format(o_tram, o_position + 1),      # CÓDIGO SEGMENTO
                                 o_tram,                                      # IDENTIFICADOR DE TRAMO
                                 o_position + 1,                              # ORDEN EN LA LISTA DE SEGMENTOS
                                 o_nsegmento,                                 # TOTAL SEGMENTOS
                                 format_f(res_srid_inicio[0], decimals=3),    # COORDENADA X INICIO
                                 format_f(res_srid_inicio[1], decimals=3),    # COORDENADA Y INICIO
-                                o_inicio_z,                                  # COORDENADA Z INICIO
+                                '0,000',                                     # COORDENADA Z INICIO
                                 format_f(res_srid_final[0], decimals=3),     # COORDENADA X FINAL
                                 format_f(res_srid_final[1], decimals=3),     # COORDENADA Y FINAL
-                                o_final_z                                    # COORDENADA Z FINAL
+                                '0,000',                                     # COORDENADA Z FINAL
                             ])
                     except:
                         pass

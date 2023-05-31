@@ -556,6 +556,7 @@ class FD2(StopMultiprocessBased):
                         }
                         self.create_logs(create_vals, ref)
                         continue
+
                     if isinstance(fact_id, (list, tuple)):
                         fact_id = fact_id[0]
                     invoice_id = o.GiscedataFacturacioFactura.read(fact_id, ['invoice_id'])['invoice_id'][0]

@@ -84,15 +84,6 @@ class FB1(StopMultiprocessBased):
                                ('data_baixa', '!=', False),
                           ('active', '=', True)]
 
-        # No han d'aparèixer si la data_pm i la data_baixa són del mateix any que el formulari
-        search_params += ['!',
-                          '&',
-                          '&', ('data_pm', '>', data_baixa),
-                          '&', ('data_pm', '<', data_pm),
-                               ('data_baixa', '!=', False),
-                          '&', ('data_baixa', '>', data_baixa),
-                               ('data_baixa', '<', data_pm)]
-
         obj_lat = self.connection.GiscedataAtTram
         ids = obj_lat.search(
             search_params, 0, 0, False, {'active_test': False})
@@ -113,15 +104,6 @@ class FB1(StopMultiprocessBased):
                           '&', ('active', '=', False),
                                ('data_baixa', '!=', False),
                           ('active', '=', True)]
-
-        # No han d'aparèixer si la data_pm i la data_baixa són del mateix any que el formulari
-        search_params += ['!',
-                          '&',
-                          '&', ('data_pm', '>', data_baixa),
-                          '&', ('data_pm', '<', data_pm),
-                               ('data_baixa', '!=', False),
-                          '&', ('data_baixa', '>', data_baixa),
-                               ('data_baixa', '<', data_pm)]
 
         obj_lbt = self.connection.GiscedataBtElement
         ids = obj_lbt.search(
@@ -325,6 +307,7 @@ class FB1(StopMultiprocessBased):
                     else:
                         tram_obra = ''
 
+                    tipo_inversion = ''
                     # CAMPS OBRA
                     if tram_obra != '':
                         obra_year = data_finalitzacio.split('-')[0]
@@ -339,7 +322,7 @@ class FB1(StopMultiprocessBased):
                             identificador_baja = '{}{}'.format(self.prefix_AT, tram_name)
                         else:
                             identificador_baja = ''
-                        tipo_inversion = (tram_obra['tipo_inversion'] or '0') if not tram_obra['fecha_baja'] else '1'
+                        tipo_inversion = tram_obra['tipo_inversion'] or ''
                         im_ingenieria = format_f_6181(tram_obra['im_ingenieria'] or 0.0, float_type='euro')
                         im_materiales = format_f_6181(tram_obra['im_materiales'] or 0.0, float_type='euro')
                         im_obracivil = format_f_6181(tram_obra['im_obracivil'] or 0.0, float_type='euro')
@@ -359,7 +342,6 @@ class FB1(StopMultiprocessBased):
                     else:
                         data_ip = ''
                         identificador_baja = ''
-                        tipo_inversion = ''
                         im_ingenieria = ''
                         im_construccion = ''
                         im_trabajos = ''
@@ -373,7 +355,7 @@ class FB1(StopMultiprocessBased):
 
                     # FINANCIADO
                     financiado = ''
-                    if tram.get('perc_financament', False):
+                    if isinstance(tram.get('perc_financament', False), float):
                         financiado = 100 - tram['perc_financament']
 
                     # CAUSA_BAJA
@@ -499,25 +481,17 @@ class FB1(StopMultiprocessBased):
                                 0
                             )
                             if actual == entregada and fecha_baja == '':
-                                estado = 0
+                                estado = '0'
+                                if tram_obra:
+                                    estado = '1'
                             else:
                                 self.output_m.put("{} {}".format(tram["name"], adapt_diff(actual.diff(entregada))))
                                 estado = 1
                         else:
-                            if tram['data_pm']:
-                                if tram['data_pm'][:4] != str(self.year):
-                                    self.output_m.put(
-                                        "Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(
-                                            tram["name"]))
-                                    estado = '1'
-                                else:
-                                    estado = '2'
-                            else:
-                                self.output_m.put(
-                                    "Identificador:{} No estava en el fitxer carregat al any n-1".format(tram["name"]))
-                                estado = '1'
-                        if tram_obra:
-                            estado = '1'
+                            estado = '2'
+
+                        if fecha_baja:
+                            motivacion = ''
 
                     output = [
                         o_tram,  # IDENTIFICADOR
@@ -548,7 +522,7 @@ class FB1(StopMultiprocessBased):
                         im_construccion,                    # IM_CONSTRUCCION
                         im_trabajos,                        # IM_TRABAJOS
                         valor_auditado,  # VALOR AUDITADO
-                        financiado,  # FINANCIADO
+                        format_f(financiado, decimals=2),   # FINANCIADO
                         subvenciones_europeas,              # SUBVENCIONES EUROPEAS
                         subvenciones_nacionales,            # SUBVENCIONES NACIONALES
                         subvenciones_prtr,                  # SUBVENCIONES PRTR
@@ -769,6 +743,7 @@ class FB1(StopMultiprocessBased):
                     else:
                         linia_obra = ''
 
+                    tipo_inversion = ''
                     # CAMPS OBRA
                     if linia_obra != '':
                         obra_year = data_finalitzacio.split('-')[0]
@@ -783,7 +758,7 @@ class FB1(StopMultiprocessBased):
                             identificador_baja = '{}{}'.format(self.prefix_BT, elem_name)
                         else:
                             identificador_baja = ''
-                        tipo_inversion = (linia_obra['tipo_inversion'] or '0') if not linia_obra['fecha_baja'] else '1'
+                        tipo_inversion = linia_obra['tipo_inversion'] or ''
                         im_ingenieria = format_f_6181(linia_obra['im_ingenieria'] or 0.0, float_type='euro')
                         im_materiales = format_f_6181(linia_obra['im_materiales'] or 0.0, float_type='euro')
                         im_obracivil = format_f_6181(linia_obra['im_obracivil'] or 0.0, float_type='euro')
@@ -804,7 +779,6 @@ class FB1(StopMultiprocessBased):
                     else:
                         data_ip = ''
                         identificador_baja = ''
-                        tipo_inversion = ''
                         im_ingenieria = ''
                         im_construccion = ''
                         im_trabajos = ''
@@ -818,7 +792,7 @@ class FB1(StopMultiprocessBased):
 
                     # FINANCIADO
                     financiado = ''
-                    if linia.get('perc_financament', False):
+                    if isinstance(linia.get('perc_financament', False), float):
                         financiado = 100 - linia['perc_financament']
 
                     # CAUSA_BAJA
@@ -836,7 +810,7 @@ class FB1(StopMultiprocessBased):
                     if modelo == 'M':
                         estado = ''
                         fecha_aps = ''
-                        operacion = ''
+                        operacion = 0
                     else:
                         # Estado
                         if linia[self.compare_field]:
@@ -863,26 +837,17 @@ class FB1(StopMultiprocessBased):
                                 0
                             )
                             if actual == entregada and fecha_baja == '':
-                                estado = 0
+                                estado = '0'
+                                if linia_obra:
+                                    estado = '1'
                             else:
                                 self.output_m.put("{} {}".format(linia["name"], adapt_diff(actual.diff(entregada))))
-                                estado = 1
-                        else:
-                            if linia['data_pm']:
-                                if linia['data_pm'][:4] != str(self.year):
-                                    self.output_m.put(
-                                        "Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(
-                                            linia["name"]))
-                                    estado = '1'
-                                else:
-                                    estado = '2'
-                            else:
-                                self.output_m.put(
-                                    "Identificador:{} No estava en el fitxer carregat al any n-1".format(linia["name"]))
                                 estado = '1'
+                        else:
+                            estado = '2'
 
-                        if linia_obra:
-                            estado = '1'
+                        if fecha_baja:
+                            motivacion = ''
 
                     output = [
                         identificador_tramo,  # IDENTIFICADOR TRAMO
@@ -913,7 +878,7 @@ class FB1(StopMultiprocessBased):
                         im_construccion,  # IM_CONSTRUCCION
                         im_trabajos,  # IM_TRABAJOS
                         valor_auditado,  # VALOR AUDITADO
-                        financiado,  # FINANCIADO
+                        format_f(financiado, decimals=2),  # FINANCIADO
                         subvenciones_europeas,  # SUBVENCIONES EUROPEAS
                         subvenciones_nacionales,  # SUBVENCIONES NACIONALES
                         subvenciones_prtr,  # SUBVENCIONES PRTR

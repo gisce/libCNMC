@@ -189,6 +189,7 @@ class FB2(StopMultiprocessBased):
                 else:
                     ct_obra = ''
 
+                tipo_inversion = ''
                 #CAMPS OBRA
                 if ct_obra != '':
                     obra_year = data_finalitzacio.split('-')[0]
@@ -200,7 +201,7 @@ class FB2(StopMultiprocessBased):
                     identificador_baja = (
                         get_inst_name(ct_obra['identificador_baja']) if ct_obra['identificador_baja'] else ''
                     )
-                    tipo_inversion = (ct_obra['tipo_inversion'] or '0') if not ct_obra['fecha_baja'] else '1'
+                    tipo_inversion = ct_obra['tipo_inversion'] or ''
                     im_ingenieria = format_f_6181(ct_obra['im_ingenieria'] or 0.0, float_type='euro')
                     im_materiales = format_f_6181(ct_obra['im_materiales'] or 0.0, float_type='euro')
                     im_obracivil = format_f_6181(ct_obra['im_obracivil'] or 0.0, float_type='euro')
@@ -219,7 +220,6 @@ class FB2(StopMultiprocessBased):
                 else:
                     data_ip = ''
                     identificador_baja = ''
-                    tipo_inversion = ''
                     im_ingenieria = ''
                     im_construccion = ''
                     im_trabajos = ''
@@ -239,7 +239,7 @@ class FB2(StopMultiprocessBased):
 
                 # FINANCIADO
                 financiado = ''
-                if ct.get('perc_financament', False):
+                if isinstance(ct.get('perc_financament', False), float):
                     financiado = 100 - ct['perc_financament']
 
                 #CCAA
@@ -325,7 +325,6 @@ class FB2(StopMultiprocessBased):
                     float(self.get_potencia_trafos(item)), decimals=3)).replace('.',',')
 
                 #X,Y,Z
-                z = ''
                 res_srid = ['', '']
                 if vertex:
                     res_srid = convert_srid(get_srid(O), vertex)
@@ -377,24 +376,13 @@ class FB2(StopMultiprocessBased):
                     )
                     if entregada == actual and fecha_baja == '':
                         estado = '0'
+                        if ct_obra:
+                            estado = '1'
                     else:
                         self.output_m.put("{} {}".format(ct["name"], adapt_diff(actual.diff(entregada))))
                         estado = '1'
                 else:
-                    if ct['data_pm']:
-                        if ct['data_pm'][:4] != str(self.year):
-                            self.output_m.put(
-                                "Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(
-                                    ct["name"]))
-                            estado = '1'
-                        else:
-                            estado = '2'
-                    else:
-                        self.output_m.put(
-                            "Identificador:{} No estava en el fitxer carregat al any n-1".format(ct["name"]))
-                        estado = '1'
-                if ct_obra:
-                    estado = '1'
+                    estado = '2'
 
                 # Fecha APS / Estado
                 if modelo == 'M':
@@ -413,7 +401,7 @@ class FB2(StopMultiprocessBased):
                     o_potencia,                         # POTENCIA
                     format_f(res_srid[0], decimals=3),  # X
                     format_f(res_srid[1], decimals=3),  # Y
-                    z,                                  # Z
+                    '0,000',                            # Z
                     municipio,                          # MUNICIPIO
                     provincia,                          # PROVINCIA
                     comunitat_codi or '',               # CODIGO_CCAA
@@ -433,7 +421,7 @@ class FB2(StopMultiprocessBased):
                     subvenciones_nacionales,            # SUBVENCIONES NACIONALES
                     subvenciones_prtr,                  # SUBVENCIONES PRTR
                     valor_auditado,                     # VALOR AUDITADO
-                    financiado,                         # FINANCIADO
+                    format_f(financiado, decimals=2),   # FINANCIADO
                     cuenta_contable,                    # CUENTA CONTABLE
                     motivacion,                         # MOTIVACION
                     avifauna,                           # AVIFAUNA

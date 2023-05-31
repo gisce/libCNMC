@@ -204,6 +204,7 @@ class FB4(StopMultiprocessBased):
                 else:
                     pos_obra = ''
 
+                tipo_inversion = ''
                 #CAMPS OBRES
                 if pos_obra != '':
                     obra_year = data_finalitzacio.split('-')[0]
@@ -219,7 +220,7 @@ class FB4(StopMultiprocessBased):
                     , 2)).replace(".", ",")
                     im_ingenieria = format_f_6181(pos_obra['im_ingenieria'] or 0.0, float_type='euro')
                     im_trabajos = format_f_6181(pos_obra['im_trabajos'] or 0.0, float_type='euro')
-                    tipo_inversion = (pos_obra['tipo_inversion'] or '0') if not pos_obra['fecha_baja'] else '1'
+                    tipo_inversion = pos_obra['tipo_inversion'] or ''
                     valor_auditado = format_f_6181(pos_obra['valor_auditado'] or 0.0, float_type='euro')
                     valor_residual = format_f_6181(pos_obra['valor_residual'] or 0.0, float_type='euro')
                     subvenciones_europeas = format_f_6181(pos_obra['subvenciones_europeas'] or 0.0, float_type='euro')
@@ -236,7 +237,6 @@ class FB4(StopMultiprocessBased):
                 else:
                     data_ip = ''
                     identificador_baja = ''
-                    tipo_inversion = ''
                     im_ingenieria = ''
                     im_construccion = ''
                     im_trabajos = ''
@@ -312,25 +312,17 @@ class FB4(StopMultiprocessBased):
                         0
                     )
                     if entregada == actual and fecha_baja == '':
-                        estado = 0
+                        estado = '0'
+                        if pos_obra:
+                            estado = '1'
                     else:
                         self.output_m.put("{} {}".format(pos["name"], adapt_diff(actual.diff(entregada))))
-                        estado = 1
-                else:
-                    if pos['data_pm']:
-                        if pos['data_pm'][:4] != str(self.year):
-                            self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(pos["name"]))
-                            estado = '1'
-                        else:
-                            estado = '2'
-                    else:
-                        self.output_m.put("Identificador:{} No estava en el fitxer carregat al any n-1".format(pos["name"]))
                         estado = '1'
+                else:
+                    estado = '2'
 
-                if pos_obra:
-                    estado = '1'
                 if pos['cini'][4] == '3' and data_pm < data_baixa_limit and pos_obra == '':
-                    estado = 0
+                    estado = '0'
 
                 # Si MODELO = 'M', ESTADO i FECHA_APS han d'estar buides
                 if modelo == 'M':

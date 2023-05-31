@@ -116,7 +116,7 @@ class FB6(StopMultiprocessBased):
         muni = O.ResMunicipi.read(municipi_id, ['ine'])
         return get_ine(O, muni['ine'])
 
-    def obtenir_camps_linia_at(self, installacio):
+    def obtenir_camps_linia_at(self, linia_id):
         """
         Gets the data of the line where the cel·la is placed
 
@@ -126,24 +126,27 @@ class FB6(StopMultiprocessBased):
         """
 
         o = self.connection
-        id_tram = int(installacio.split(',')[1])
-
-        tram = o.GiscedataAtSuport.read(id_tram, ['linia'])
-        linia_id = tram['linia']
-        fields_to_read = [
-            'municipi', 'provincia', 'tensio', 'name'
-        ]
-        linia = o.GiscedataAtLinia.read(int(linia_id[0]), fields_to_read)
-        municipi = ''
-        id_municipi = linia['municipi'][0]
-        name = linia['name']
-        tensio = format_f(float(linia['tensio']) / 1000.0, decimals=3)
+        tensio_obj = o.GiscedataTensionsTensio
 
         res = {
-            'id_municipi': id_municipi,
-            'tensio': tensio,
-            'name': name
+            'id_municipi': '',
+            'tensio': '',
+            'name': ''
         }
+
+        fields_to_read = ['municipi', 'tensio_id', 'name']
+        linia_data = o.GiscedataAtLinia.read(linia_id, fields_to_read)
+
+        if linia_data.get('municipi', False):
+            res['id_municipi'] = linia_data['municipi'][0]
+        if linia_data.get('tensio_id', False):
+            tensio_id = linia_data['tensio_id'][0]
+            tensio_data = tensio_obj.read(tensio_id, ['tensio'])
+            if tensio_data.get('tensio', False):
+                res['tensio'] = format_f(float(tensio_data['tensio']) / 1000.0, decimals=3)
+        if linia_data.get('name', False):
+            res['name'] = linia_data['name'][0]
+
         return res
 
     def get_node_vertex_tram(self, element_name):
@@ -261,9 +264,10 @@ class FB6(StopMultiprocessBased):
                 else:
                     cella_obra = ''
 
+                tipo_inversion = ''
                 # CAMPS OBRA
                 if cella_obra != '':
-                    tipo_inversion = (cella_obra['tipo_inversion'] or '0') if not cella_obra['fecha_baja'] else '1'
+                    tipo_inversion = cella_obra['tipo_inversion'] or ''
                     im_ingenieria = format_f_6181(cella_obra['im_ingenieria'] or 0.0, float_type='euro')
                     im_materiales = format_f_6181(cella_obra['im_materiales'] or 0.0, float_type='euro')
                     im_obracivil = format_f_6181(cella_obra['im_obracivil'] or 0.0, float_type='euro')
@@ -283,7 +287,6 @@ class FB6(StopMultiprocessBased):
                     avifauna = int(cella_obra['avifauna'] == True)
                     financiado = format_f(cella_obra.get('financiado') or 0.0, 2)
                 else:
-                    tipo_inversion = ''
                     ccuu = ''
                     ccaa = ''
                     im_ingenieria = ''
@@ -305,8 +308,11 @@ class FB6(StopMultiprocessBased):
                 o_cini = cella['cini']
                 o_prop = int(cella['propietari'])
 
-                #TRAM
-                o_identificador_elemento = ""
+                # TRAM, MUNICIPI I PROVINCIA
+                o_identificador_elemento = ''
+                id_municipi = ''
+                linia_data = {}
+                ct_data = {}
                 if cella.get('installacio', False):
                     installacio_data = cella['installacio']
                     inst_model = installacio_data.split(',')[0]
@@ -320,15 +326,39 @@ class FB6(StopMultiprocessBased):
                                 o_identificador_elemento = tram_data['id_regulatori']
                             else:
                                 o_identificador_elemento = "{}{}".format(self.prefix_AT, tram_data['name'])
+                        suport_data = O.GiscedataAtSuport.read(inst_id, ['linies_at_ids'])
+                        if suport_data.get('linies_at_ids', False):
+                            linia_id = suport_data['linies_at_ids'][0]
+                            linia_data = self.obtenir_camps_linia_at(linia_id)
 
-                    if inst_model == 'giscedata.cts':
-                        ct_data = model_obj.read(inst_id, ['name', 'id_regulatori'])
+                    elif inst_model == 'giscedata.cts':
+                        ct_data = model_obj.read(inst_id, ['name', 'id_regulatori', 'id_municipi'])
                         if ct_data.get('id_regulatori', False):
                             o_identificador_elemento = ct_data['id_regulatori']
                         else:
                             o_identificador_elemento = ct_data['name']
+
                 else:
                     o_identificador_elemento = self.get_node_vertex_tram(o_fiabilitat)
+
+                o_municipi = ''
+                o_provincia = ''
+                comunitat_codi = ''
+                if linia_data.get('id_municipi', False):
+                    id_municipi = linia_data['id_municipi']
+                    o_provincia, o_municipi = self.get_ine(id_municipi)
+                elif ct_data.get('id_municipi'):
+                    id_municipi = ct_data['id_municipi'][0]
+                    o_provincia, o_municipi = self.get_ine(id_municipi)
+
+                # funció per trobar la ccaa desde el municipi
+                fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
+                if id_municipi:
+                    id_comunitat = fun_ccaa(id_municipi)
+                    comunitat_vals = O.ResComunitat_autonoma.read(
+                        id_comunitat[0], ['codi'])
+                    if comunitat_vals:
+                        comunitat_codi = comunitat_vals['codi']
 
                 #FECHA BAJA, CAUSA_BAJA
                 if cella['data_baixa']:
@@ -364,34 +394,13 @@ class FB6(StopMultiprocessBased):
                     o_node, vertex = self.get_node_vertex(o_fiabilitat)
                 o_node = o_node.replace('*', '')
 
-                element =  cella['installacio'].split(',')[0]
-                dict_linia = self.obtenir_camps_linia_at(cella['installacio'])
-
-                # MUNICIPI I PROVINCIA
-                o_municipi = ''
-                o_provincia = ''
-                if dict_linia.get('id_municipi', False):
-                    id_municipi = dict_linia['id_municipi']
-                    o_provincia, o_municipi = self.get_ine(id_municipi)
-
-                o_name = dict_linia.get('name')
-
-                # funció per trobar la ccaa desde el municipi
-                fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
-                if id_municipi:
-                    id_comunitat = fun_ccaa(id_municipi)
-                    comunitat_vals = O.ResComunitat_autonoma.read(
-                        id_comunitat[0], ['codi'])
-                    if comunitat_vals:
-                        comunitat_codi = comunitat_vals['codi']
-
                 if cella['tensio']:
                     tensio = O.GiscedataTensionsTensio.read(
                         cella['tensio'][0], ['tensio']
                     )
                     o_tensio = format_f(int(tensio['tensio'])/1000.0, decimals=3)
                 else:
-                    o_tensio = dict_linia.get('tensio')
+                    o_tensio = linia_data.get('tensio', '0,000')
 
                 # TENSIO_CONST
                 o_tensio_const = ''
@@ -405,7 +414,6 @@ class FB6(StopMultiprocessBased):
                 o_any = self.year
                 x = ''
                 y = ''
-                z = ''
                 if vertex:
                     res_srid = convert_srid(get_srid(O), vertex)
                     x = format_f(res_srid[0], decimals=3)
@@ -427,25 +435,13 @@ class FB6(StopMultiprocessBased):
                     )
                     if entregada == actual and fecha_baja == '':
                         estado = '0'
+                        if cella_obra:
+                            estado = '1'
                     else:
                         self.output_m.put("{} {}".format(cella["name"], adapt_diff(actual.diff(entregada))))
                         estado = '1'
                 else:
-                    if cella['data_pm']:
-                        if cella['data_pm'][:4] != str(self.year):
-                            self.output_m.put(
-                                "Identificador:{} No estava en el fitxer carregat al any n-1 i la data de PM es diferent al any actual".format(
-                                    cella["name"]))
-                            estado = '1'
-                        else:
-                            estado = '2'
-                    else:
-                        self.output_m.put(
-                            "Identificador:{} No estava en el fitxer carregat al any n-1".format(cella["name"]))
-                        estado = '1'
-
-                if cella_obra:
-                    estado = '1'
+                    estado = '2'
 
                 if modelo == 'M':
                     estado = ''
@@ -458,7 +454,7 @@ class FB6(StopMultiprocessBased):
                     o_node,  # NUDO
                     x,              # X
                     y,              # Y
-                    z,              # Z
+                    '0,000',              # Z
                     o_municipi,     # MUNICIPIO
                     o_provincia,    # PROVINCIA
                     comunitat_codi,     #CCAA
