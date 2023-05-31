@@ -305,6 +305,11 @@ class FB2(StopMultiprocessBased):
                 else:
                     o_node_baixa = '';
 
+                if ct['cini']:
+                    cini = ct['cini']
+                    if cini[4] == '5' and cini[7] == 'Z' and o_node:
+                        o_node_baixa = o_node
+
                 #TENSIO
                 try:
                     o_tensio_p = format_f(
