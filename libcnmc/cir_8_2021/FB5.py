@@ -193,6 +193,10 @@ class FB5(StopMultiprocessBased):
                 else:
                     o_node_baixa = o_node
 
+                if o_cini:
+                    if cini[1] == '2' and cini[2] == '4' and cini[4] == '0' and cini[7] == '1':
+                        o_node_baixa = o_node
+
                 #FECHA_BAJA, CAUSA_BAJA
 
                 data_pm_limit = '{0}-01-01'.format(self.year + 1)
