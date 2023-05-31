@@ -77,16 +77,17 @@ class FB7(StopMultiprocessBased):
                         float(node['tensio']) / 1000.0, decimals=3) or ''
                 except:
                     o_tensio = ''
-
-                self.output_q.put([
-                    node['name'],                       # NODE
-                    format_f(res_srid[0], decimals=3),  # X
-                    format_f(res_srid[1], decimals=3),  # Y
-                    '0,000',                            # Z
-                    o_tensio,                           # TENSION
-                    o_municipi,                         # MUNICIPIO
-                    o_provincia,                        # PROVINCIA
-                ])
+                    
+                if o_tensio and o_tensio != '0,000':
+                    self.output_q.put([
+                        node['name'],                       # NODE
+                        format_f(res_srid[0], decimals=3),  # X
+                        format_f(res_srid[1], decimals=3),  # Y
+                        '0,000',                            # Z
+                        o_tensio,                           # TENSION
+                        o_municipi,                         # MUNICIPIO
+                        o_provincia,                        # PROVINCIA
+                    ])
                 self.input_q.task_done()
             except Exception:
                 self.input_q.task_done()
