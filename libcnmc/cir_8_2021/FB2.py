@@ -189,6 +189,7 @@ class FB2(StopMultiprocessBased):
                 else:
                     ct_obra = ''
 
+                tipo_inversion = ''
                 #CAMPS OBRA
                 if ct_obra != '':
                     obra_year = data_finalitzacio.split('-')[0]
@@ -200,7 +201,7 @@ class FB2(StopMultiprocessBased):
                     identificador_baja = (
                         get_inst_name(ct_obra['identificador_baja']) if ct_obra['identificador_baja'] else ''
                     )
-                    tipo_inversion = (ct_obra['tipo_inversion'] or '0') if not ct_obra['fecha_baja'] else '1'
+                    tipo_inversion = ct_obra['tipo_inversion'] or ''
                     im_ingenieria = format_f_6181(ct_obra['im_ingenieria'] or 0.0, float_type='euro')
                     im_materiales = format_f_6181(ct_obra['im_materiales'] or 0.0, float_type='euro')
                     im_obracivil = format_f_6181(ct_obra['im_obracivil'] or 0.0, float_type='euro')
@@ -219,7 +220,6 @@ class FB2(StopMultiprocessBased):
                 else:
                     data_ip = ''
                     identificador_baja = ''
-                    tipo_inversion = ''
                     im_ingenieria = ''
                     im_construccion = ''
                     im_trabajos = ''
@@ -304,6 +304,11 @@ class FB2(StopMultiprocessBased):
                         o_node_baixa = '';
                 else:
                     o_node_baixa = '';
+
+                if ct['cini']:
+                    cini = ct['cini']
+                    if cini[4] == '5' and cini[7] == 'Z' and o_node:
+                        o_node_baixa = o_node
 
                 #TENSIO
                 try:

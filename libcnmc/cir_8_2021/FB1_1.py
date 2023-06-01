@@ -67,8 +67,6 @@ class FB1_1(StopMultiprocessBased):
                     else:
                         o_tram = '{}{}'.format(self.prefix_BT, tramo['name'])
 
-                o_segmento = tramo['name']
-
                 geom = tramo['geom']
                 points = geom.replace('LINESTRING(', '')
                 points = points.replace(')', '')
@@ -100,7 +98,7 @@ class FB1_1(StopMultiprocessBased):
                             res_srid_final = convert_srid(get_srid(o), (vertex_final['x'], vertex_final['y']))
 
                             self.output_q.put([
-                                '{}_{}'.format(o_segmento, o_position + 1),  # CÓDIGO SEGMENTO
+                                '{}_{}'.format(o_tram, o_position + 1),      # CÓDIGO SEGMENTO
                                 o_tram,                                      # IDENTIFICADOR DE TRAMO
                                 o_position + 1,                              # ORDEN EN LA LISTA DE SEGMENTOS
                                 o_nsegmento,                                 # TOTAL SEGMENTOS

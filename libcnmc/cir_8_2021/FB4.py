@@ -204,6 +204,7 @@ class FB4(StopMultiprocessBased):
                 else:
                     pos_obra = ''
 
+                tipo_inversion = ''
                 #CAMPS OBRES
                 if pos_obra != '':
                     obra_year = data_finalitzacio.split('-')[0]
@@ -219,7 +220,7 @@ class FB4(StopMultiprocessBased):
                     , 2)).replace(".", ",")
                     im_ingenieria = format_f_6181(pos_obra['im_ingenieria'] or 0.0, float_type='euro')
                     im_trabajos = format_f_6181(pos_obra['im_trabajos'] or 0.0, float_type='euro')
-                    tipo_inversion = (pos_obra['tipo_inversion'] or '0') if not pos_obra['fecha_baja'] else '1'
+                    tipo_inversion = pos_obra['tipo_inversion'] or ''
                     valor_auditado = format_f_6181(pos_obra['valor_auditado'] or 0.0, float_type='euro')
                     valor_residual = format_f_6181(pos_obra['valor_residual'] or 0.0, float_type='euro')
                     subvenciones_europeas = format_f_6181(pos_obra['subvenciones_europeas'] or 0.0, float_type='euro')
@@ -236,7 +237,6 @@ class FB4(StopMultiprocessBased):
                 else:
                     data_ip = ''
                     identificador_baja = ''
-                    tipo_inversion = ''
                     im_ingenieria = ''
                     im_construccion = ''
                     im_trabajos = ''

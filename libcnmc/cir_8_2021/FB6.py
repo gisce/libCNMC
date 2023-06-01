@@ -264,9 +264,10 @@ class FB6(StopMultiprocessBased):
                 else:
                     cella_obra = ''
 
+                tipo_inversion = ''
                 # CAMPS OBRA
                 if cella_obra != '':
-                    tipo_inversion = (cella_obra['tipo_inversion'] or '0') if not cella_obra['fecha_baja'] else '1'
+                    tipo_inversion = cella_obra['tipo_inversion'] or ''
                     im_ingenieria = format_f_6181(cella_obra['im_ingenieria'] or 0.0, float_type='euro')
                     im_materiales = format_f_6181(cella_obra['im_materiales'] or 0.0, float_type='euro')
                     im_obracivil = format_f_6181(cella_obra['im_obracivil'] or 0.0, float_type='euro')
@@ -286,7 +287,6 @@ class FB6(StopMultiprocessBased):
                     avifauna = int(cella_obra['avifauna'] == True)
                     financiado = format_f(cella_obra.get('financiado') or 0.0, 2)
                 else:
-                    tipo_inversion = ''
                     ccuu = ''
                     ccaa = ''
                     im_ingenieria = ''
