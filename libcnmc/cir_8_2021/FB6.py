@@ -250,17 +250,20 @@ class FB6(StopMultiprocessBased):
                 # Filtre d'obres finalitzades
                 cella_obra = ''
                 if obra_id_data.get('obra_id', False):
-                    obra_id = obra_id_data['obra_id']
-                    data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
-                    if data_finalitzacio_data:
-                        if data_finalitzacio_data.get('data_finalitzacio', False):
-                            data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
+                    obres_ids = obra_id_data['obra_id']
+                    for obra_id in obres_ids:
+                        data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id, ['data_finalitzacio'])
+                        if data_finalitzacio_data:
+                            if data_finalitzacio_data.get('data_finalitzacio', False):
+                                data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
 
-                            inici_any = '{}-01-01'.format(self.year)
-                            fi_any = '{}-12-31'.format(self.year)
-                            if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
-                                cella_obra = O.GiscedataProjecteObraTiCelles.read(obra_ti_pos_id[0],
-                                                                                  fields_to_read_obra)
+                                inici_any = '{}-01-01'.format(self.year)
+                                fi_any = '{}-12-31'.format(self.year)
+                                if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
+                                    cella_obra = O.GiscedataProjecteObraTiCelles.read(obra_ti_pos_id[0],
+                                                                                      fields_to_read_obra)
+                        if cella_obra:
+                            break
                 else:
                     cella_obra = ''
 

@@ -294,16 +294,19 @@ class FB1(StopMultiprocessBased):
                     # Filtre d'obres finalitzades
                     tram_obra = ''
                     if obra_id_data.get('obra_id', False):
-                        obra_id = obra_id_data['obra_id']
-                        data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
-                        if data_finalitzacio_data:
-                            if data_finalitzacio_data.get('data_finalitzacio', False):
-                                data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
+                        obres_ids = obra_id_data['obra_id']
+                        for obra_id in obres_ids:
+                            data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id, ['data_finalitzacio'])
+                            if data_finalitzacio_data:
+                                if data_finalitzacio_data.get('data_finalitzacio', False):
+                                    data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
 
-                                inici_any = '{}-01-01'.format(self.year)
-                                fi_any = '{}-12-31'.format(self.year)
-                                if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
-                                    tram_obra = O.GiscedataProjecteObraTiAt.read(obra_ti_at_id[0], fields_to_read_obra)
+                                    inici_any = '{}-01-01'.format(self.year)
+                                    fi_any = '{}-12-31'.format(self.year)
+                                    if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
+                                        tram_obra = O.GiscedataProjecteObraTiAt.read(obra_ti_at_id[0], fields_to_read_obra)
+                            if tram_obra:
+                                break
                     else:
                         tram_obra = ''
 
@@ -730,16 +733,19 @@ class FB1(StopMultiprocessBased):
                     # Filtre d'obres finalitzades
                     linia_obra = ''
                     if obra_id_data.get('obra_id', False):
-                        obra_id = obra_id_data['obra_id']
-                        data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
-                        if data_finalitzacio_data:
-                            if data_finalitzacio_data.get('data_finalitzacio', False):
-                                data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
+                        obres_ids = obra_id_data['obra_id']
+                        for obra_id in obres_ids:
+                            data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id, ['data_finalitzacio'])
+                            if data_finalitzacio_data:
+                                if data_finalitzacio_data.get('data_finalitzacio', False):
+                                    data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
 
-                                inici_any = '{}-01-01'.format(self.year)
-                                fi_any = '{}-12-31'.format(self.year)
-                                if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
-                                    linia_obra = O.GiscedataProjecteObraTiBt.read(obra_ti_bt_id[0], fields_to_read_obra)
+                                    inici_any = '{}-01-01'.format(self.year)
+                                    fi_any = '{}-12-31'.format(self.year)
+                                    if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
+                                        linia_obra = O.GiscedataProjecteObraTiBt.read(obra_ti_bt_id[0], fields_to_read_obra)
+                            if linia_obra:
+                                break
                     else:
                         linia_obra = ''
 
