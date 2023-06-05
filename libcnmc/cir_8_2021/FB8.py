@@ -82,30 +82,26 @@ class FB8(StopMultiprocessBased):
                     data_pm = data_pm_despatx.strftime('%d/%m/%Y')
 
                 # OBRES
-
-                obra_ti_despatx_obj = O.GiscedataProjecteObraTiDespatx
-                obra_ti_despatx_id = obra_ti_despatx_obj.search([('element_ti_id', '=', despatx['id'])])
-                if obra_ti_despatx_id:
-                    obra_id_data = obra_ti_despatx_obj.read(obra_ti_despatx_id[0], ['obra_id'])
-                else:
-                    obra_id_data = {}
-
-                # Filtre d'obres finalitzades
                 despatx_obra = ''
-                if obra_id_data.get('obra_id', False):
-                    obra_id = obra_id_data['obra_id']
-                    data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
-                    if data_finalitzacio_data:
-                        if data_finalitzacio_data.get('data_finalitzacio', False):
-                            data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
+                obra_ti_despatx_obj = O.GiscedataProjecteObraTiDespatx
+                obra_ti_ids = obra_ti_despatx_obj.search([('element_ti_id', '=', despatx['id'])])
+                if obra_ti_ids:
+                    for obra_ti_id in obra_ti_ids:
+                        obra_id_data = obra_ti_despatx_obj.read(obra_ti_id, ['obra_id'])
+                        obra_id = obra_id_data['obra_id']
+                        # Filtre d'obres finalitzades
+                        data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
+                        if data_finalitzacio_data:
+                            if data_finalitzacio_data.get('data_finalitzacio', False):
+                                data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
 
-                            inici_any = '{}-01-01'.format(self.year)
-                            fi_any = '{}-12-31'.format(self.year)
-                            if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
-                                despatx_obra = O.GiscedataProjecteObraTiDespatx.read(obra_ti_despatx_id[0],
-                                                                                     fields_to_read_obra)
-                else:
-                    despatx_obra = ''
+                                inici_any = '{}-01-01'.format(self.year)
+                                fi_any = '{}-12-31'.format(self.year)
+                                if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
+                                    despatx_obra = O.GiscedataProjecteObraTiDespatx.read(obra_ti_id,
+                                                                                         fields_to_read_obra)
+                        if despatx_obra:
+                            break
 
                 #CAMPS OBRES
                 if despatx_obra != '':

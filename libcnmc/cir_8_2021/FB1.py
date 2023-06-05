@@ -737,7 +737,7 @@ class FB1(StopMultiprocessBased):
                                         linia_obra = O.GiscedataProjecteObraTiBt.read(obra_ti_id, fields_to_read_obra)
                             if linia_obra:
                                 break
-                                
+
                     tipo_inversion = ''
                     # CAMPS OBRA
                     if linia_obra != '':
