@@ -169,8 +169,8 @@ class FB2(StopMultiprocessBased):
                 obra_ti_ct_obj = O.GiscedataProjecteObraTiCts
                 obra_ti_ids = obra_ti_ct_obj.search([('element_ti_id', '=', ct['id'])])
                 if obra_ti_ids:
-                    for obra_id in obra_ti_ids:
-                        obra_id_data = obra_ti_ct_obj.read(obra_id, ['obra_id'])
+                    for obra_ti_id in obra_ti_ids:
+                        obra_id_data = obra_ti_ct_obj.read(obra_ti_id, ['obra_id'])
                         obra_id = obra_id_data['obra_id']
                         # Filtre d'obres finalitzades
                         data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
@@ -181,7 +181,7 @@ class FB2(StopMultiprocessBased):
                                 inici_any = '{}-01-01'.format(self.year)
                                 fi_any = '{}-12-31'.format(self.year)
                                 if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
-                                    ct_obra = O.GiscedataProjecteObraTiCts.read(obra_ti_ct_id[0], fields_to_read_obra)
+                                    ct_obra = obra_ti_ct_obj.read(obra_ti_id, fields_to_read_obra)
                         if ct_obra:
                             break
 
