@@ -23,6 +23,11 @@ class FC1(StopMultiprocessBased):
         )
         return prevision_ids
 
+    def get_ine_ccaa(self, ccaa_id):
+        O = self.connection
+        codi_ccaa = O.ResComunitatAutonoma.read(ccaa_id, ['codi'])
+        return codi_ccaa['codi']
+
     def consumer(self):
         O = self.connection
         fields_to_read = []
@@ -90,7 +95,7 @@ class FC1(StopMultiprocessBased):
                 # CCAA
                 o_ccaa = ''
                 if c1.get('ccaa', False):
-                    o_ccaa = c1['ccaa']
+                    o_ccaa = self.get_ine_ccaa(c1['ccaa'][0])
 
                 # UNIDADES
                 o_unidades = ''
