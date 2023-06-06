@@ -273,7 +273,10 @@ class UpdateCNMCStats(UpdateFile):
         super(UpdateCNMCStats, self).__init__(**kwargs)
         self.header = [
             'cups', 'cne_anual_activa', 'cne_anual_reactiva',
-            'cnmc_potencia_facturada', 'cnmc_numero_lectures'
+            'cnmc_potencia_facturada', 'cnmc_numero_lectures',
+            'cne_anual_activa_generada', 'cne_anual_reactiva_generada',
+            'cnmc_energia_autoconsumida', 'cnmc_energia_excedentaria',
+            'cnmc_factures_total', 'cnmc_factures_estimades',
         ]
         self.search_keys = [('cups', 'name')]
         self.object = self.connection.GiscedataCupsPs
