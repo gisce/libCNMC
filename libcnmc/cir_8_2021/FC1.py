@@ -3,7 +3,7 @@ import traceback
 from datetime import datetime
 
 from libcnmc.core import StopMultiprocessBased
-from libcnmc.utils import get_ine, format_f
+from libcnmc.utils import format_f
 
 
 class FC1(StopMultiprocessBased):
@@ -25,7 +25,7 @@ class FC1(StopMultiprocessBased):
 
     def get_ine_ccaa(self, ccaa_id):
         O = self.connection
-        codi_ccaa = O.ResComunitatAutonoma.read(ccaa_id, ['codi'])
+        codi_ccaa = O.model('res.comunitat_autonoma').read(ccaa_id, ['codi'])
         return codi_ccaa['codi']
 
     def consumer(self):
