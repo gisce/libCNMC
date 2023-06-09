@@ -440,7 +440,10 @@ class FB6(StopMultiprocessBased):
 
                 if modelo == 'M':
                     estado = ''
-                    fecha_aps = ''
+                    data_pm = ''
+
+                if causa_baja in [1, 3]:
+                    tipo_inversion = ''
 
                 self.output_q.put([
                     o_fiabilitat,   # ELEMENTO FIABILIDAD
