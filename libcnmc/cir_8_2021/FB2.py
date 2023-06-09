@@ -390,6 +390,9 @@ class FB2(StopMultiprocessBased):
                     estado = ''
                     data_pm = ''
 
+                if fecha_baja:
+                    tipo_inversion = ''
+
                 output = [
                     o_identificador_ct,           # IDENTIFICADOR
                     ct['cini'] or '',                   # CINI

@@ -251,7 +251,10 @@ class FB5(StopMultiprocessBased):
 
                 if modelo == 'M':
                     estado = ''
-                    fecha_aps = ''
+                    data_pm = ''
+
+                if fecha_baja:
+                    tipo_inversion = ''
 
                 self.output_q.put([
                     o_maquina,              # IDENTIFICADOR_MAQUINA
