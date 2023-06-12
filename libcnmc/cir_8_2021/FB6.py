@@ -445,6 +445,9 @@ class FB6(StopMultiprocessBased):
                 if causa_baja in [1, 3]:
                     tipo_inversion = ''
 
+                # L'any 2022 no es declaren subvencions PRTR
+                subvenciones_prtr = ''
+
                 self.output_q.put([
                     o_fiabilitat,   # ELEMENTO FIABILIDAD
                     o_cini,  # CINI
