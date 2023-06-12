@@ -152,7 +152,7 @@ class FB9(StopMultiprocessBased):
                 at['2_P_16'] = at['2_O_16']
 
                 # # FINANCIADO 100% # #
-                df_f100 = df[df['28'] == 100]
+                df_f100 = df[(df['28'] == 100) & ((df['22'] == 0) | (df['22'] == 1))]
 
                 at['3_E_16'] = df_f100.shape[0]
                 at['3_F_16'] = df_f100['10'].sum()
@@ -238,7 +238,7 @@ class FB9(StopMultiprocessBased):
                 bt['2_P_17'] = bt['2_O_17']
 
                 # # FINANCIADO 100% # #
-                df_f100 = df[df['28'] == 100]
+                df_f100 = df[(df['28'] == 100) & ((df['22'] == 0) | (df['22'] == 1))]
 
                 bt['3_E_17'] = df_f100.shape[0]
                 bt['3_F_17'] = df_f100['10'].sum()
@@ -321,7 +321,7 @@ class FB9(StopMultiprocessBased):
                 pos['2_P_18'] = pos['2_O_18']
 
                 # # FINANCIADO 100% # #
-                df_f100 = df[df['24'] == 100]
+                df_f100 = df[(df['24'] == 100) & ((df['14'] == 0) | (df['14'] == 1))]
 
                 pos['3_E_18'] = df_f100.shape[0]
                 pos['3_F_18'] = 0
@@ -396,7 +396,7 @@ class FB9(StopMultiprocessBased):
                 trafo['2_P_19'] = trafo['2_O_19']
 
                 # # FINANCIADO 100% # #
-                df_f100 = df[df['21'] == 100]
+                df_f100 = df[(df['21'] == 100) & ((df['12'] == 0) | (df['12'] == 1))]
 
                 trafo['3_E_19'] = df_f100.shape[0]
                 trafo['3_F_19'] = df_f100['5'].sum()
@@ -476,7 +476,7 @@ class FB9(StopMultiprocessBased):
                 cel['2_P_20'] = cel['2_O_20']
 
                 # # FINANCIADO 100% # #
-                df_f100 = df[df['27'] == 100]
+                df_f100 = df[(df['27'] == 100) & ((df['19'] == 0) | (df['19'] == 1))]
 
                 cel['3_E_20'] = df_f100.shape[0]
                 cel['3_F_20'] = 0
@@ -556,7 +556,7 @@ class FB9(StopMultiprocessBased):
                 ct['2_P_21'] = ct['2_O_21']
 
                 # # FINANCIADO 100% # #
-                df_f100 = df[df['31'] == 100]
+                df_f100 = df[(df['31'] == 100) & ((df['23'] == 0) | (df['23'] == 1))]
 
                 ct['3_E_21'] = df_f100.shape[0]
                 ct['3_F_21'] = df_f100['8'].sum() / 1000
@@ -977,7 +977,7 @@ class FB9(StopMultiprocessBased):
                 # # # CUADRO 3 - H # # #
 
                 # # FINANCIADO 100% # #
-                df_f100 = df[df['15'] == 100]
+                df_f100 = df[(df['15'] == 100) & (df['14'] >= 0)]
 
                 desp['3_E_24'] = df_f100.shape[0]
                 desp['3_F_24'] = 0
