@@ -256,6 +256,9 @@ class FB5(StopMultiprocessBased):
                 if fecha_baja:
                     tipo_inversion = ''
 
+                # L'any 2022 no es declaren subvencions PRTR
+                subvenciones_prtr = ''
+
                 self.output_q.put([
                     o_maquina,              # IDENTIFICADOR_MAQUINA
                     o_cini,                 # CINI

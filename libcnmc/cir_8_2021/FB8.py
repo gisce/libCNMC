@@ -200,6 +200,9 @@ class FB8(StopMultiprocessBased):
                 else:
                     descripcio = ''
 
+                # L'any 2022 no es declaren subvencions PRTR
+                subvenciones_prtr = ''
+
                 self.output_q.put([
                     despatx['name'],                    # IDENTIFICADOR
                     despatx['cini'],                    # CINI
