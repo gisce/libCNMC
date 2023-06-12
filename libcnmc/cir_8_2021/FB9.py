@@ -54,8 +54,6 @@ class FB9(StopMultiprocessBased):
                     break
                 self.progress_q.put(item)
 
-                print('EI---------------')
-
                 # RESUMEN
 
                 resumen = OrderedDict()
@@ -161,7 +159,6 @@ class FB9(StopMultiprocessBased):
                 at['3_G_16'] = df_f100['27'].sum()
                 at['3_H_16'] = at['3_G_16']
 
-                self.output_q.put(['-----', 'AT', '-----'])
                 for k, v in at.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -248,7 +245,6 @@ class FB9(StopMultiprocessBased):
                 bt['3_G_17'] = df_f100['27'].sum()
                 bt['3_H_17'] = bt['3_G_17']
 
-                self.output_q.put(['-----', 'BT', '-----'])
                 for k, v in bt.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -332,7 +328,6 @@ class FB9(StopMultiprocessBased):
                 pos['3_G_18'] = df_f100['18'].sum()
                 pos['3_H_18'] = pos['3_G_18']
 
-                self.output_q.put(['-----', 'POSICIONES', '-----'])
                 for k, v in pos.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -408,7 +403,6 @@ class FB9(StopMultiprocessBased):
                 trafo['3_G_19'] = df_f100['20'].sum()
                 trafo['3_H_19'] = trafo['3_G_19']
 
-                self.output_q.put(['-----', 'TRAFOS', '-----'])
                 for k, v in trafo.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -489,7 +483,6 @@ class FB9(StopMultiprocessBased):
                 cel['3_G_20'] = df_f100['26'].sum()
                 cel['3_H_20'] = cel['3_G_20']
 
-                self.output_q.put(['-----', 'FIABILIDAD', '-----'])
                 for k, v in cel.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -570,7 +563,6 @@ class FB9(StopMultiprocessBased):
                 ct['3_G_21'] = df_f100['30'].sum()
                 ct['3_H_21'] = ct['3_G_21']
 
-                self.output_q.put(['-----', 'CTs', '-----'])
                 for k, v in ct.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -629,7 +621,6 @@ class FB9(StopMultiprocessBased):
                 inv_uf['3_G_22'] = at['3_G_16'] + bt['3_G_17'] + pos['3_G_18'] + trafo['3_G_19'] + cel['3_G_20'] + ct['3_G_21']
                 inv_uf['3_H_22'] = at['3_H_16'] + bt['3_H_17'] + pos['3_H_18'] + trafo['3_H_19'] + cel['3_H_20'] + ct['3_H_21']
 
-                self.output_q.put(['-----', 'INVERSIONES UF', '-----'])
                 for k, v in inv_uf.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -861,7 +852,6 @@ class FB9(StopMultiprocessBased):
                 equipos['3_G_23'] = 0
                 equipos['3_H_23'] = 0
 
-                self.output_q.put(['-----', 'EQUIPOS DE MEDIDA + CUADRO 1A', '-----'])
                 for k, v in equipos.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -994,7 +984,6 @@ class FB9(StopMultiprocessBased):
                 desp['3_G_24'] = df_f100['14'].sum()
                 desp['3_H_24'] = desp['3_G_24']
 
-                self.output_q.put(['-----', 'OTROS INMOVILIZADOS', '-----'])
                 for k, v in desp.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -1053,7 +1042,6 @@ class FB9(StopMultiprocessBased):
                 inv['3_G_25'] = inv_uf['3_G_22'] + desp['3_G_24']
                 inv['3_H_25'] = inv_uf['3_H_22'] + desp['3_H_24']
 
-                self.output_q.put(['-----', 'TOTAL INVERSIONES', '-----'])
                 for k, v in inv.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -1107,7 +1095,6 @@ class FB9(StopMultiprocessBased):
                 autonomica['4_G_26'] = 0
                 autonomica['4_H_26'] = 0
 
-                self.output_q.put(['-----', 'NORMATIVA AUTONOMICA', '-----'])
                 for k, v in autonomica.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -1133,7 +1120,6 @@ class FB9(StopMultiprocessBased):
 
                 # INGRESOS PERCIBIDOS
 
-                self.output_q.put(['-----', 'RESUMEN DE INVERSIONES', '-----'])
                 for k, v in resumen.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
