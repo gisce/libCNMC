@@ -221,7 +221,7 @@ class StopMultiprocessBased(MultiprocessBased):
             self.input_q.put('STOP')
 
 
-class UpdateFile(MultiprocessBased):
+class UpdateFile(StopMultiprocessBased):
     def __init__(self, **kwargs):
         super(UpdateFile, self).__init__(**kwargs)
         self.file_input = kwargs.pop('file_input')
@@ -255,16 +255,19 @@ class UpdateFile(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 values = item.rstrip().split(';')
                 vals = self.build_vals(values)
                 self.search_and_update(vals)
+                self.input_q.task_done()
             except:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
                 self.output_q.put([item.strip()])
-            finally:
                 self.input_q.task_done()
 
 
