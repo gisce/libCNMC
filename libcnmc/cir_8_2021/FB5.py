@@ -190,7 +190,7 @@ class FB5(StopMultiprocessBased):
                     o_node_baixa = o_node
 
                 if o_cini:
-                    if cini[1] == '2' and cini[2] == '4' and cini[4] == '0' and cini[7] == '1':
+                    if o_cini[1] == '2' and o_cini[2] == '4' and o_cini[4] == '0' and o_cini[7] == '1':
                         o_node_baixa = o_node
 
                 #FECHA_BAJA, CAUSA_BAJA
