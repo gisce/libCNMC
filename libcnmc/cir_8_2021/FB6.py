@@ -239,34 +239,30 @@ class FB6(StopMultiprocessBased):
                     data_pm = data_pm_ct.strftime('%d/%m/%Y')
 
                 # OBRES
-
-                obra_ti_pos_obj = O.GiscedataProjecteObraTiCelles
-                obra_ti_pos_id = obra_ti_pos_obj.search([('element_ti_id', '=', cella['id'])])
-                if obra_ti_pos_id:
-                    obra_id_data = obra_ti_pos_obj.read(obra_ti_pos_id[0], ['obra_id'])
-                else:
-                    obra_id_data = {}
-
-                # Filtre d'obres finalitzades
                 cella_obra = ''
-                if obra_id_data.get('obra_id', False):
-                    obra_id = obra_id_data['obra_id']
-                    data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
-                    if data_finalitzacio_data:
-                        if data_finalitzacio_data.get('data_finalitzacio', False):
-                            data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
+                obra_ti_pos_obj = O.GiscedataProjecteObraTiCelles
+                obra_ti_ids = obra_ti_pos_obj.search([('element_ti_id', '=', cella['id'])])
+                if obra_ti_ids:
+                    for obra_ti_id in obra_ti_ids:
+                        obra_id_data = obra_ti_pos_obj.read(obra_ti_id, ['obra_id'])
+                        obra_id = obra_id_data['obra_id']
+                        # Filtre d'obres finalitzades
+                        data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
+                        if data_finalitzacio_data:
+                            if data_finalitzacio_data.get('data_finalitzacio', False):
+                                data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
 
-                            inici_any = '{}-01-01'.format(self.year)
-                            fi_any = '{}-12-31'.format(self.year)
-                            if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
-                                cella_obra = O.GiscedataProjecteObraTiCelles.read(obra_ti_pos_id[0],
-                                                                                  fields_to_read_obra)
-                else:
-                    cella_obra = ''
+                                inici_any = '{}-01-01'.format(self.year)
+                                fi_any = '{}-12-31'.format(self.year)
+                                if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
+                                    cella_obra = O.GiscedataProjecteObraTiCelles.read(obra_ti_id, fields_to_read_obra)
+                        if cella_obra:
+                            break
 
+                tipo_inversion = ''
                 # CAMPS OBRA
                 if cella_obra != '':
-                    tipo_inversion = (cella_obra['tipo_inversion'] or '0') if not cella_obra['fecha_baja'] else '1'
+                    tipo_inversion = cella_obra['tipo_inversion'] or ''
                     im_ingenieria = format_f_6181(cella_obra['im_ingenieria'] or 0.0, float_type='euro')
                     im_materiales = format_f_6181(cella_obra['im_materiales'] or 0.0, float_type='euro')
                     im_obracivil = format_f_6181(cella_obra['im_obracivil'] or 0.0, float_type='euro')
@@ -286,7 +282,6 @@ class FB6(StopMultiprocessBased):
                     avifauna = int(cella_obra['avifauna'] == True)
                     financiado = format_f(cella_obra.get('financiado') or 0.0, 2)
                 else:
-                    tipo_inversion = ''
                     ccuu = ''
                     ccaa = ''
                     im_ingenieria = ''
@@ -414,7 +409,6 @@ class FB6(StopMultiprocessBased):
                 o_any = self.year
                 x = ''
                 y = ''
-                z = ''
                 if vertex:
                     res_srid = convert_srid(get_srid(O), vertex)
                     x = format_f(res_srid[0], decimals=3)
@@ -446,7 +440,13 @@ class FB6(StopMultiprocessBased):
 
                 if modelo == 'M':
                     estado = ''
-                    fecha_aps = ''
+                    data_pm = ''
+
+                if causa_baja in [1, 3]:
+                    tipo_inversion = ''
+
+                # L'any 2022 no es declaren subvencions PRTR
+                subvenciones_prtr = ''
 
                 self.output_q.put([
                     o_fiabilitat,   # ELEMENTO FIABILIDAD
@@ -455,7 +455,7 @@ class FB6(StopMultiprocessBased):
                     o_node,  # NUDO
                     x,              # X
                     y,              # Y
-                    z,              # Z
+                    '0,000',              # Z
                     o_municipi,     # MUNICIPIO
                     o_provincia,    # PROVINCIA
                     comunitat_codi,     #CCAA

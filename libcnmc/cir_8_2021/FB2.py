@@ -165,30 +165,27 @@ class FB2(StopMultiprocessBased):
                     data_pm = data_pm_ct.strftime('%d/%m/%Y')
 
                 # OBRES
-
-                obra_ti_ct_obj = O.GiscedataProjecteObraTiCts
-                obra_ti_ct_id = obra_ti_ct_obj.search([('element_ti_id', '=', ct['id'])])
-                if obra_ti_ct_id:
-                    obra_id_data = obra_ti_ct_obj.read(obra_ti_ct_id[0], ['obra_id'])
-                else:
-                    obra_id_data = {}
-
-                # Filtre d'obres finalitzades
                 ct_obra = ''
-                if obra_id_data.get('obra_id', False):
-                    obra_id = obra_id_data['obra_id']
-                    data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
-                    if data_finalitzacio_data:
-                        if data_finalitzacio_data.get('data_finalitzacio', False):
-                            data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
+                obra_ti_ct_obj = O.GiscedataProjecteObraTiCts
+                obra_ti_ids = obra_ti_ct_obj.search([('element_ti_id', '=', ct['id'])])
+                if obra_ti_ids:
+                    for obra_ti_id in obra_ti_ids:
+                        obra_id_data = obra_ti_ct_obj.read(obra_ti_id, ['obra_id'])
+                        obra_id = obra_id_data['obra_id']
+                        # Filtre d'obres finalitzades
+                        data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
+                        if data_finalitzacio_data:
+                            if data_finalitzacio_data.get('data_finalitzacio', False):
+                                data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
 
-                            inici_any = '{}-01-01'.format(self.year)
-                            fi_any = '{}-12-31'.format(self.year)
-                            if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
-                                ct_obra = O.GiscedataProjecteObraTiCts.read(obra_ti_ct_id[0], fields_to_read_obra)
-                else:
-                    ct_obra = ''
+                                inici_any = '{}-01-01'.format(self.year)
+                                fi_any = '{}-12-31'.format(self.year)
+                                if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
+                                    ct_obra = obra_ti_ct_obj.read(obra_ti_id, fields_to_read_obra)
+                        if ct_obra:
+                            break
 
+                tipo_inversion = ''
                 #CAMPS OBRA
                 if ct_obra != '':
                     obra_year = data_finalitzacio.split('-')[0]
@@ -200,7 +197,7 @@ class FB2(StopMultiprocessBased):
                     identificador_baja = (
                         get_inst_name(ct_obra['identificador_baja']) if ct_obra['identificador_baja'] else ''
                     )
-                    tipo_inversion = (ct_obra['tipo_inversion'] or '0') if not ct_obra['fecha_baja'] else '1'
+                    tipo_inversion = ct_obra['tipo_inversion'] or ''
                     im_ingenieria = format_f_6181(ct_obra['im_ingenieria'] or 0.0, float_type='euro')
                     im_materiales = format_f_6181(ct_obra['im_materiales'] or 0.0, float_type='euro')
                     im_obracivil = format_f_6181(ct_obra['im_obracivil'] or 0.0, float_type='euro')
@@ -219,7 +216,6 @@ class FB2(StopMultiprocessBased):
                 else:
                     data_ip = ''
                     identificador_baja = ''
-                    tipo_inversion = ''
                     im_ingenieria = ''
                     im_construccion = ''
                     im_trabajos = ''
@@ -239,7 +235,7 @@ class FB2(StopMultiprocessBased):
 
                 # FINANCIADO
                 financiado = ''
-                if ct.get('perc_financament', False):
+                if isinstance(ct.get('perc_financament', False), float):
                     financiado = 100 - ct['perc_financament']
 
                 #CCAA
@@ -305,6 +301,11 @@ class FB2(StopMultiprocessBased):
                 else:
                     o_node_baixa = '';
 
+                if ct['cini']:
+                    cini = ct['cini']
+                    if cini[4] == '5' and cini[7] == 'Z' and o_node:
+                        o_node_baixa = o_node
+
                 #TENSIO
                 try:
                     o_tensio_p = format_f(
@@ -325,7 +326,6 @@ class FB2(StopMultiprocessBased):
                     float(self.get_potencia_trafos(item)), decimals=3)).replace('.',',')
 
                 #X,Y,Z
-                z = ''
                 res_srid = ['', '']
                 if vertex:
                     res_srid = convert_srid(get_srid(O), vertex)
@@ -390,6 +390,12 @@ class FB2(StopMultiprocessBased):
                     estado = ''
                     data_pm = ''
 
+                if fecha_baja:
+                    tipo_inversion = ''
+
+                # L'any 2022 no es declaren subvencions PRTR
+                subvenciones_prtr = ''
+
                 output = [
                     o_identificador_ct,           # IDENTIFICADOR
                     ct['cini'] or '',                   # CINI
@@ -402,7 +408,7 @@ class FB2(StopMultiprocessBased):
                     o_potencia,                         # POTENCIA
                     format_f(res_srid[0], decimals=3),  # X
                     format_f(res_srid[1], decimals=3),  # Y
-                    z,                                  # Z
+                    '0,000',                            # Z
                     municipio,                          # MUNICIPIO
                     provincia,                          # PROVINCIA
                     comunitat_codi or '',               # CODIGO_CCAA

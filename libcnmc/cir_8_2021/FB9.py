@@ -54,8 +54,6 @@ class FB9(StopMultiprocessBased):
                     break
                 self.progress_q.put(item)
 
-                print('EI---------------')
-
                 # RESUMEN
 
                 resumen = OrderedDict()
@@ -89,6 +87,8 @@ class FB9(StopMultiprocessBased):
                 columns = [str(x) for x in range(35)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns,
                                  dtype={'0': 'object', '21': 'object', '23': 'object', '34': 'object'})
+                df['28'] = pd.to_numeric(df['28'], errors='coerce').astype(float)
+                df['22'] = pd.to_numeric(df['22'], errors='coerce').astype(float)
                 at = OrderedDict()
 
                 # # AT # #
@@ -152,14 +152,13 @@ class FB9(StopMultiprocessBased):
                 at['2_P_16'] = at['2_O_16']
 
                 # # FINANCIADO 100% # #
-                df_f100 = df[df['28'] == 100]
+                df_f100 = df[(df['28'] == 100) & ((df['22'] == 0) | (df['22'] == 1))]
 
                 at['3_E_16'] = df_f100.shape[0]
                 at['3_F_16'] = df_f100['10'].sum()
                 at['3_G_16'] = df_f100['27'].sum()
                 at['3_H_16'] = at['3_G_16']
 
-                self.output_q.put(['-----', 'AT', '-----'])
                 for k, v in at.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -174,6 +173,8 @@ class FB9(StopMultiprocessBased):
                 columns = [str(x) for x in range(35)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns,
                                  dtype={'0': 'object', '21': 'object', '23': 'object', '34': 'object'})
+                df['28'] = pd.to_numeric(df['28'], errors='coerce').astype(float)
+                df['22'] = pd.to_numeric(df['22'], errors='coerce').astype(float)
                 bt = OrderedDict()
 
                 # # BT # #
@@ -237,14 +238,13 @@ class FB9(StopMultiprocessBased):
                 bt['2_P_17'] = bt['2_O_17']
 
                 # # FINANCIADO 100% # #
-                df_f100 = df[df['28'] == 100]
+                df_f100 = df[(df['28'] == 100) & ((df['22'] == 0) | (df['22'] == 1))]
 
                 bt['3_E_17'] = df_f100.shape[0]
                 bt['3_F_17'] = df_f100['10'].sum()
                 bt['3_G_17'] = df_f100['27'].sum()
                 bt['3_H_17'] = bt['3_G_17']
 
-                self.output_q.put(['-----', 'BT', '-----'])
                 for k, v in bt.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -258,6 +258,8 @@ class FB9(StopMultiprocessBased):
                 file_path = '/tmp/8_2021_loaded_or_generated_b4.txt'
                 columns = [str(x) for x in range(27)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
+                df['24'] = pd.to_numeric(df['24'], errors='coerce').astype(float)
+                df['14'] = pd.to_numeric(df['14'], errors='coerce').astype(float)
                 pos = OrderedDict()
 
                 # # EQUIPADAS CON INTERRUPTOR # #
@@ -278,14 +280,14 @@ class FB9(StopMultiprocessBased):
                 # TIPO 0
                 df_f0_to = df_f0[df_f0['14'] == 0]
                 pos['1_E_18'] = df_f0_to.shape[0]
-                pos['1_F_18'] = ''
+                pos['1_F_18'] = 0
                 pos['1_G_18'] = df_f0_to['18'].sum()
                 pos['1_H_18'] = pos['1_G_18']
 
                 # TIPO 1
                 df_f0_t1 = df_f0[df_f0['14'] == 1]
                 pos['1_I_18'] = df_f0_t1.shape[0]
-                pos['1_J_18'] = ''
+                pos['1_J_18'] = 0
                 pos['1_K_18'] = df_f0_t1['18'].sum()
                 pos['1_L_18'] = pos['1_K_18']
 
@@ -301,14 +303,14 @@ class FB9(StopMultiprocessBased):
                 # TIPO 0
                 df_f_to = df_f[df_f['14'] == 0]
                 pos['2_E_18'] = df_f_to.shape[0]
-                pos['2_F_18'] = ''
+                pos['2_F_18'] = 0
                 pos['2_G_18'] = df_f_to['18'].sum()
                 pos['2_H_18'] = pos['2_G_18']
 
                 # TIPO 1
                 df_f_t1 = df_f[df_f['14'] == 1]
                 pos['2_I_18'] = df_f_t1.shape[0]
-                pos['2_J_18'] = ''
+                pos['2_J_18'] = 0
                 pos['2_K_18'] = df_f_t1['18'].sum()
                 pos['2_L_18'] = pos['2_K_18']
 
@@ -319,14 +321,13 @@ class FB9(StopMultiprocessBased):
                 pos['2_P_18'] = pos['2_O_18']
 
                 # # FINANCIADO 100% # #
-                df_f100 = df[df['24'] == 100]
+                df_f100 = df[(df['24'] == 100) & ((df['14'] == 0) | (df['14'] == 1))]
 
                 pos['3_E_18'] = df_f100.shape[0]
-                pos['3_F_18'] = ''
+                pos['3_F_18'] = 0
                 pos['3_G_18'] = df_f100['18'].sum()
                 pos['3_H_18'] = pos['3_G_18']
 
-                self.output_q.put(['-----', 'POSICIONES', '-----'])
                 for k, v in pos.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -340,6 +341,8 @@ class FB9(StopMultiprocessBased):
                 file_path = '/tmp/8_2021_loaded_or_generated_b5.txt'
                 columns = [str(x) for x in range(25)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
+                df['21'] = pd.to_numeric(df['21'], errors='coerce').astype(float)
+                df['12'] = pd.to_numeric(df['12'], errors='coerce').astype(float)
                 trafo = OrderedDict()
 
                 resumen['5_G_6'] += df['17'].sum()
@@ -393,14 +396,13 @@ class FB9(StopMultiprocessBased):
                 trafo['2_P_19'] = trafo['2_O_19']
 
                 # # FINANCIADO 100% # #
-                df_f100 = df[df['21'] == 100]
+                df_f100 = df[(df['21'] == 100) & ((df['12'] == 0) | (df['12'] == 1))]
 
                 trafo['3_E_19'] = df_f100.shape[0]
                 trafo['3_F_19'] = df_f100['5'].sum()
                 trafo['3_G_19'] = df_f100['20'].sum()
                 trafo['3_H_19'] = trafo['3_G_19']
 
-                self.output_q.put(['-----', 'TRAFOS', '-----'])
                 for k, v in trafo.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -414,6 +416,8 @@ class FB9(StopMultiprocessBased):
                 file_path = '/tmp/8_2021_loaded_or_generated_b6.txt'
                 columns = [str(x) for x in range(31)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
+                df['27'] = pd.to_numeric(df['27'], errors='coerce').astype(float)
+                df['19'] = pd.to_numeric(df['19'], errors='coerce').astype(float)
                 cel = OrderedDict()
 
                 # CUADRO 5
@@ -431,14 +435,14 @@ class FB9(StopMultiprocessBased):
                 # TIPO 0
                 df_f0_to = df_f0[df_f0['19'] == 0]
                 cel['1_E_20'] = df_f0_to.shape[0]
-                cel['1_F_20'] = ''
+                cel['1_F_20'] = 0
                 cel['1_G_20'] = df_f0_to['26'].sum()
                 cel['1_H_20'] = cel['1_G_20']
 
                 # TIPO 1
                 df_f0_t1 = df_f0[df_f0['19'] == 1]
                 cel['1_I_20'] = df_f0_t1.shape[0]
-                cel['1_J_20'] = ''
+                cel['1_J_20'] = 0
                 cel['1_K_20'] = df_f0_t1['26'].sum()
                 cel['1_L_20'] = cel['1_K_20']
 
@@ -454,14 +458,14 @@ class FB9(StopMultiprocessBased):
                 # TIPO 0
                 df_f_to = df_f[df_f['19'] == 0]
                 cel['2_E_20'] = df_f_to.shape[0]
-                cel['2_F_20'] = ''
+                cel['2_F_20'] = 0
                 cel['2_G_20'] = df_f_to['26'].sum()
                 cel['2_H_20'] = cel['2_G_20']
 
                 # TIPO 1
                 df_f_t1 = df_f[df_f['19'] == 1]
                 cel['2_I_20'] = df_f_t1.shape[0]
-                cel['2_J_20'] = ''
+                cel['2_J_20'] = 0
                 cel['2_K_20'] = df_f_t1['26'].sum()
                 cel['2_L_20'] = cel['2_K_20']
 
@@ -472,14 +476,13 @@ class FB9(StopMultiprocessBased):
                 cel['2_P_20'] = cel['2_O_20']
 
                 # # FINANCIADO 100% # #
-                df_f100 = df[df['27'] == 100]
+                df_f100 = df[(df['27'] == 100) & ((df['19'] == 0) | (df['19'] == 1))]
 
                 cel['3_E_20'] = df_f100.shape[0]
-                cel['3_F_20'] = ''
+                cel['3_F_20'] = 0
                 cel['3_G_20'] = df_f100['26'].sum()
                 cel['3_H_20'] = cel['3_G_20']
 
-                self.output_q.put(['-----', 'FIABILIDAD', '-----'])
                 for k, v in cel.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -493,6 +496,8 @@ class FB9(StopMultiprocessBased):
                 file_path = '/tmp/8_2021_loaded_or_generated_b2.txt'
                 columns = [str(x) for x in range(36)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
+                df['31'] = pd.to_numeric(df['31'], errors='coerce').astype(float)
+                df['23'] = pd.to_numeric(df['23'], errors='coerce').astype(float)
                 ct = OrderedDict()
 
                 # CUADRO 5
@@ -551,14 +556,13 @@ class FB9(StopMultiprocessBased):
                 ct['2_P_21'] = ct['2_O_21']
 
                 # # FINANCIADO 100% # #
-                df_f100 = df[df['31'] == 100]
+                df_f100 = df[(df['31'] == 100) & ((df['23'] == 0) | (df['23'] == 1))]
 
                 ct['3_E_21'] = df_f100.shape[0]
                 ct['3_F_21'] = df_f100['8'].sum() / 1000
                 ct['3_G_21'] = df_f100['30'].sum()
                 ct['3_H_21'] = ct['3_G_21']
 
-                self.output_q.put(['-----', 'CTs', '-----'])
                 for k, v in ct.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -617,7 +621,6 @@ class FB9(StopMultiprocessBased):
                 inv_uf['3_G_22'] = at['3_G_16'] + bt['3_G_17'] + pos['3_G_18'] + trafo['3_G_19'] + cel['3_G_20'] + ct['3_G_21']
                 inv_uf['3_H_22'] = at['3_H_16'] + bt['3_H_17'] + pos['3_H_18'] + trafo['3_H_19'] + cel['3_H_20'] + ct['3_H_21']
 
-                self.output_q.put(['-----', 'INVERSIONES UF', '-----'])
                 for k, v in inv_uf.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -645,138 +648,210 @@ class FB9(StopMultiprocessBased):
                     '1a_d_18', '1a_e_18', 'tipo_18',
                     '1a_d_19', '1a_e_19', 'tipo_19'
                 ]
-                equipos_data = equipos_obj.read(equipos_id[0], fields_to_read)
+                if equipos_id:
+                    equipos_data = equipos_obj.read(equipos_id[0], fields_to_read)
 
-                # # # CUADRO 1A # # #
+                    # # # CUADRO 1A # # #
 
-                # # EN SERVICIO CLIENTE ##
+                    # # EN SERVICIO CLIENTE ##
 
-                # TIPO 1 #
-                equipos['1A_D_10'] = equipos_data['1a_d_10']
-                equipos['1A_E_10'] = equipos_data['1a_e_10']
-                # TIPO 2 #
-                equipos['1A_D_11'] = equipos_data['1a_d_11']
-                equipos['1A_E_11'] = equipos_data['1a_e_11']
-                # TIPO 3 BT #
-                equipos['1A_D_12'] = equipos_data['1a_d_12']
-                equipos['1A_E_12'] = equipos_data['1a_e_12']
-                # TIPO 3 AT #
-                equipos['1A_D_13'] = equipos_data['1a_d_13']
-                equipos['1A_E_13'] = equipos_data['1a_e_13']
-                # TIPO 4 con telegestión #
-                equipos['1A_D_14'] = equipos_data['1a_d_14']
-                equipos['1A_E_14'] = equipos_data['1a_e_14']
-                # TIPO 4 sin telegestión #
-                equipos['1A_D_15'] = equipos_data['1a_d_15']
-                equipos['1A_E_15'] = equipos_data['1a_e_15']
-                # TIPO 5 #
-                equipos['1A_D_16'] = equipos_data['1a_d_16']
-                equipos['1A_E_16'] = equipos_data['1a_e_16']
-                # TODOS #
-                equipos['1A_D_17'] = equipos['1A_D_10'] + equipos['1A_D_11'] + equipos['1A_D_12'] + equipos['1A_D_13'] \
-                                     + equipos['1A_D_14'] + equipos['1A_D_15'] + equipos['1A_D_16']
-                equipos['1A_E_17'] = equipos['1A_E_10'] + equipos['1A_E_11'] + equipos['1A_E_12'] + equipos['1A_E_13'] \
-                                     + equipos['1A_E_14'] + equipos['1A_E_15'] + equipos['1A_E_16']
+                    # TIPO 1 #
+                    equipos['1A_D_10'] = equipos_data['1a_d_10']
+                    equipos['1A_E_10'] = equipos_data['1a_e_10']
+                    # TIPO 2 #
+                    equipos['1A_D_11'] = equipos_data['1a_d_11']
+                    equipos['1A_E_11'] = equipos_data['1a_e_11']
+                    # TIPO 3 BT #
+                    equipos['1A_D_12'] = equipos_data['1a_d_12']
+                    equipos['1A_E_12'] = equipos_data['1a_e_12']
+                    # TIPO 3 AT #
+                    equipos['1A_D_13'] = equipos_data['1a_d_13']
+                    equipos['1A_E_13'] = equipos_data['1a_e_13']
+                    # TIPO 4 con telegestión #
+                    equipos['1A_D_14'] = equipos_data['1a_d_14']
+                    equipos['1A_E_14'] = equipos_data['1a_e_14']
+                    # TIPO 4 sin telegestión #
+                    equipos['1A_D_15'] = equipos_data['1a_d_15']
+                    equipos['1A_E_15'] = equipos_data['1a_e_15']
+                    # TIPO 5 #
+                    equipos['1A_D_16'] = equipos_data['1a_d_16']
+                    equipos['1A_E_16'] = equipos_data['1a_e_16']
+                    # TODOS #
+                    equipos['1A_D_17'] = equipos['1A_D_10'] + equipos['1A_D_11'] + equipos['1A_D_12'] + equipos['1A_D_13'] \
+                                         + equipos['1A_D_14'] + equipos['1A_D_15'] + equipos['1A_D_16']
+                    equipos['1A_E_17'] = equipos['1A_E_10'] + equipos['1A_E_11'] + equipos['1A_E_12'] + equipos['1A_E_13'] \
+                                         + equipos['1A_E_14'] + equipos['1A_E_15'] + equipos['1A_E_16']
 
-                # # EN RED # #
+                    # # EN RED # #
 
-                equipos['1A_D_18'] = equipos_data['1a_d_18']
-                equipos['1A_E_18'] = equipos_data['1a_e_18']
+                    equipos['1A_D_18'] = equipos_data['1a_d_18']
+                    equipos['1A_E_18'] = equipos_data['1a_e_18']
 
-                # # TOTAL # #
+                    # # TOTAL # #
 
-                # # # CUADRO 1 - G # # #
-                equipos['1A_D_19'] = equipos['1A_D_17'] + equipos['1A_D_18']
-                equipos['1A_E_19'] = equipos['1A_E_17'] + equipos['1A_E_18']
+                    # # # CUADRO 1 - G # # #
+                    equipos['1A_D_19'] = equipos['1A_D_17'] + equipos['1A_D_18']
+                    equipos['1A_E_19'] = equipos['1A_E_17'] + equipos['1A_E_18']
 
-                equipos['1_E_23'] = 0
-                equipos['1_G_23'] = 0
-                equipos['1_I_23'] = 0
-                equipos['1_K_23'] = 0
-                if equipos_data['tipo_10'] == 'tipo_0':
-                    equipos['1_E_23'] += equipos['1A_D_10']
-                    equipos['1_G_23'] += equipos['1A_E_10']
-                elif equipos_data['tipo_10'] == 'tipo_1':
-                    equipos['1_I_23'] += equipos['1A_D_10']
-                    equipos['1_K_23'] += equipos['1A_E_10']
-                if equipos_data['tipo_11'] == 'tipo_0':
-                    equipos['1_E_23'] += equipos['1A_D_11']
-                    equipos['1_G_23'] += equipos['1A_E_11']
-                elif equipos_data['tipo_11'] == 'tipo_1':
-                    equipos['1_I_23'] += equipos['1A_D_11']
-                    equipos['1_K_23'] += equipos['1A_E_11']
-                if equipos_data['tipo_12'] == 'tipo_0':
-                    equipos['1_E_23'] += equipos['1A_D_12']
-                    equipos['1_G_23'] += equipos['1A_E_12']
-                elif equipos_data['tipo_12'] == 'tipo_1':
-                    equipos['1_I_23'] += equipos['1A_D_12']
-                    equipos['1_K_23'] += equipos['1A_E_12']
-                if equipos_data['tipo_13'] == 'tipo_0':
-                    equipos['1_E_23'] += equipos['1A_D_13']
-                    equipos['1_G_23'] += equipos['1A_E_13']
-                elif equipos_data['tipo_13'] == 'tipo_1':
-                    equipos['1_I_23'] += equipos['1A_D_13']
-                    equipos['1_K_23'] += equipos['1A_E_13']
-                if equipos_data['tipo_14'] == 'tipo_0':
-                    equipos['1_E_23'] += equipos['1A_D_14']
-                    equipos['1_G_23'] += equipos['1A_E_14']
-                elif equipos_data['tipo_14'] == 'tipo_1':
-                    equipos['1_I_23'] += equipos['1A_D_14']
-                    equipos['1_K_23'] += equipos['1A_E_14']
-                if equipos_data['tipo_15'] == 'tipo_0':
-                    equipos['1_E_23'] += equipos['1A_D_15']
-                    equipos['1_G_23'] += equipos['1A_E_15']
-                elif equipos_data['tipo_15'] == 'tipo_1':
-                    equipos['1_I_23'] += equipos['1A_D_15']
-                    equipos['1_K_23'] += equipos['1A_E_15']
-                if equipos_data['tipo_16'] == 'tipo_0':
-                    equipos['1_E_23'] += equipos['1A_D_16']
-                    equipos['1_G_23'] += equipos['1A_E_16']
-                elif equipos_data['tipo_16'] == 'tipo_1':
-                    equipos['1_I_23'] += equipos['1A_D_16']
-                    equipos['1_K_23'] += equipos['1A_E_16']
-                if equipos_data['tipo_18'] == 'tipo_0':
-                    equipos['1_E_23'] += equipos['1A_D_18']
-                    equipos['1_G_23'] += equipos['1A_E_18']
-                elif equipos_data['tipo_18'] == 'tipo_1':
-                    equipos['1_I_23'] += equipos['1A_D_18']
-                    equipos['1_K_23'] += equipos['1A_E_18']
+                    equipos['1_E_23'] = 0
+                    equipos['1_G_23'] = 0
+                    equipos['1_I_23'] = 0
+                    equipos['1_K_23'] = 0
+                    if equipos_data['tipo_10'] == 'tipo_0':
+                        equipos['1_E_23'] += equipos['1A_D_10']
+                        equipos['1_G_23'] += equipos['1A_E_10']
+                    elif equipos_data['tipo_10'] == 'tipo_1':
+                        equipos['1_I_23'] += equipos['1A_D_10']
+                        equipos['1_K_23'] += equipos['1A_E_10']
+                    if equipos_data['tipo_11'] == 'tipo_0':
+                        equipos['1_E_23'] += equipos['1A_D_11']
+                        equipos['1_G_23'] += equipos['1A_E_11']
+                    elif equipos_data['tipo_11'] == 'tipo_1':
+                        equipos['1_I_23'] += equipos['1A_D_11']
+                        equipos['1_K_23'] += equipos['1A_E_11']
+                    if equipos_data['tipo_12'] == 'tipo_0':
+                        equipos['1_E_23'] += equipos['1A_D_12']
+                        equipos['1_G_23'] += equipos['1A_E_12']
+                    elif equipos_data['tipo_12'] == 'tipo_1':
+                        equipos['1_I_23'] += equipos['1A_D_12']
+                        equipos['1_K_23'] += equipos['1A_E_12']
+                    if equipos_data['tipo_13'] == 'tipo_0':
+                        equipos['1_E_23'] += equipos['1A_D_13']
+                        equipos['1_G_23'] += equipos['1A_E_13']
+                    elif equipos_data['tipo_13'] == 'tipo_1':
+                        equipos['1_I_23'] += equipos['1A_D_13']
+                        equipos['1_K_23'] += equipos['1A_E_13']
+                    if equipos_data['tipo_14'] == 'tipo_0':
+                        equipos['1_E_23'] += equipos['1A_D_14']
+                        equipos['1_G_23'] += equipos['1A_E_14']
+                    elif equipos_data['tipo_14'] == 'tipo_1':
+                        equipos['1_I_23'] += equipos['1A_D_14']
+                        equipos['1_K_23'] += equipos['1A_E_14']
+                    if equipos_data['tipo_15'] == 'tipo_0':
+                        equipos['1_E_23'] += equipos['1A_D_15']
+                        equipos['1_G_23'] += equipos['1A_E_15']
+                    elif equipos_data['tipo_15'] == 'tipo_1':
+                        equipos['1_I_23'] += equipos['1A_D_15']
+                        equipos['1_K_23'] += equipos['1A_E_15']
+                    if equipos_data['tipo_16'] == 'tipo_0':
+                        equipos['1_E_23'] += equipos['1A_D_16']
+                        equipos['1_G_23'] += equipos['1A_E_16']
+                    elif equipos_data['tipo_16'] == 'tipo_1':
+                        equipos['1_I_23'] += equipos['1A_D_16']
+                        equipos['1_K_23'] += equipos['1A_E_16']
+                    if equipos_data['tipo_18'] == 'tipo_0':
+                        equipos['1_E_23'] += equipos['1A_D_18']
+                        equipos['1_G_23'] += equipos['1A_E_18']
+                    elif equipos_data['tipo_18'] == 'tipo_1':
+                        equipos['1_I_23'] += equipos['1A_D_18']
+                        equipos['1_K_23'] += equipos['1A_E_18']
 
-                # TIPO 0 #
-                equipos['1_F_23'] = ''
-                equipos['1_H_23'] = equipos['1_G_23']
+                    # TIPO 0 #
+                    equipos['1_F_23'] = 0
+                    equipos['1_H_23'] = equipos['1_G_23']
 
-                # TIPO 1 #
-                equipos['1_J_23'] = ''
-                equipos['1_L_23'] = equipos['1_K_23']
+                    # TIPO 1 #
+                    equipos['1_J_23'] = 0
+                    equipos['1_L_23'] = equipos['1_K_23']
 
-                # TOTAL #
-                equipos['1_M_23'] = equipos['1_E_23'] + equipos['1_I_23']
-                equipos['1_N_23'] = equipos['1_F_23'] + equipos['1_J_23']
-                equipos['1_O_23'] = equipos['1_G_23'] + equipos['1_K_23']
-                equipos['1_P_23'] = equipos['1_O_23']
+                    # TOTAL #
+                    equipos['1_M_23'] = equipos['1_E_23'] + equipos['1_I_23']
+                    equipos['1_N_23'] = equipos['1_F_23'] + equipos['1_J_23']
+                    equipos['1_O_23'] = equipos['1_G_23'] + equipos['1_K_23']
+                    equipos['1_P_23'] = equipos['1_O_23']
+
+                else:
+                    equipos['1A_D_10'] = 0
+                    equipos['1A_E_10'] = 0
+                    equipos['1A_D_11'] = 0
+                    equipos['1A_E_11'] = 0
+                    equipos['1A_D_12'] = 0
+                    equipos['1A_E_12'] = 0
+                    equipos['1A_D_13'] = 0
+                    equipos['1A_E_13'] = 0
+                    equipos['1A_D_14'] = 0
+                    equipos['1A_E_14'] = 0
+                    equipos['1A_D_15'] = 0
+                    equipos['1A_E_15'] = 0
+                    equipos['1A_D_16'] = 0
+                    equipos['1A_E_16'] = 0
+                    equipos['1A_D_17'] = 0
+                    equipos['1A_E_17'] = 0
+                    equipos['1A_D_18'] = 0
+                    equipos['1A_E_18'] = 0
+                    equipos['1A_D_19'] = 0
+                    equipos['1A_E_19'] = 0
+                    equipos['1_E_23'] = 0
+                    equipos['1_G_23'] = 0
+                    equipos['1_I_23'] = 0
+                    equipos['1_K_23'] = 0
+                    equipos['1_E_23'] = 0
+                    equipos['1_G_23'] = 0
+                    equipos['1_I_23'] = 0
+                    equipos['1_K_23'] = 0
+                    equipos['1_E_23'] = 0
+                    equipos['1_G_23'] = 0
+                    equipos['1_I_23'] = 0
+                    equipos['1_K_23'] = 0
+                    equipos['1_E_23'] = 0
+                    equipos['1_G_23'] = 0
+                    equipos['1_I_23'] = 0
+                    equipos['1_K_23'] = 0
+                    equipos['1_E_23'] = 0
+                    equipos['1_G_23'] = 0
+                    equipos['1_I_23'] = 0
+                    equipos['1_K_23'] = 0
+                    equipos['1_E_23'] = 0
+                    equipos['1_G_23'] = 0
+                    equipos['1_I_23'] = 0
+                    equipos['1_K_23'] = 0
+                    equipos['1_E_23'] = 0
+                    equipos['1_G_23'] = 0
+                    equipos['1_I_23'] = 0
+                    equipos['1_K_23'] = 0
+                    equipos['1_E_23'] = 0
+                    equipos['1_G_23'] = 0
+                    equipos['1_I_23'] = 0
+                    equipos['1_K_23'] = 0
+                    equipos['1_E_23'] = 0
+                    equipos['1_G_23'] = 0
+                    equipos['1_I_23'] = 0
+                    equipos['1_K_23'] = 0
+
+                    # TIPO 0 #
+                    equipos['1_F_23'] = 0
+                    equipos['1_H_23'] = equipos['1_G_23']
+
+                    # TIPO 1 #
+                    equipos['1_J_23'] = 0
+                    equipos['1_L_23'] = equipos['1_K_23']
+
+                    # TOTAL #
+                    equipos['1_M_23'] = equipos['1_E_23'] + equipos['1_I_23']
+                    equipos['1_N_23'] = equipos['1_F_23'] + equipos['1_J_23']
+                    equipos['1_O_23'] = equipos['1_G_23'] + equipos['1_K_23']
+                    equipos['1_P_23'] = equipos['1_O_23']
 
                 # # # CUADRO 2 - G # # #
-                equipos['2_E_23'] = ''
-                equipos['2_F_23'] = ''
-                equipos['2_G_23'] = ''
-                equipos['2_H_23'] = ''
-                equipos['2_I_23'] = ''
-                equipos['2_J_23'] = ''
-                equipos['2_K_23'] = ''
-                equipos['2_L_23'] = ''
-                equipos['2_M_23'] = ''
-                equipos['2_N_23'] = ''
-                equipos['2_O_23'] = ''
-                equipos['2_P_23'] = ''
+                equipos['2_E_23'] = 0
+                equipos['2_F_23'] = 0
+                equipos['2_G_23'] = 0
+                equipos['2_H_23'] = 0
+                equipos['2_I_23'] = 0
+                equipos['2_J_23'] = 0
+                equipos['2_K_23'] = 0
+                equipos['2_L_23'] = 0
+                equipos['2_M_23'] = 0
+                equipos['2_N_23'] = 0
+                equipos['2_O_23'] = 0
+                equipos['2_P_23'] = 0
 
                 # # # CUADRO 3 - G # # #
-                equipos['3_E_23'] = ''
-                equipos['3_F_23'] = ''
-                equipos['3_G_23'] = ''
-                equipos['3_H_23'] = ''
+                equipos['3_E_23'] = 0
+                equipos['3_F_23'] = 0
+                equipos['3_G_23'] = 0
+                equipos['3_H_23'] = 0
 
-                self.output_q.put(['-----', 'EQUIPOS DE MEDIDA + CUADRO 1A', '-----'])
                 for k, v in equipos.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -790,6 +865,7 @@ class FB9(StopMultiprocessBased):
                 file_path = '/tmp/8_2021_loaded_or_generated_b8.txt'
                 columns = [str(x) for x in range(17)]
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns, dtype={'2': 'object'})
+                df['15'] = pd.to_numeric(df['15'], errors='coerce').astype(float)
                 desp = OrderedDict()
 
                 resumen['5_G_6'] += df['11'].sum()
@@ -833,14 +909,14 @@ class FB9(StopMultiprocessBased):
                 # # # CUADRO 1 - H # # #
 
                 desp['1_E_24'] = desp['1B_D_17']
-                desp['1_F_24'] = ''
+                desp['1_F_24'] = 0
                 desp['1_G_24'] = desp['1B_E_17']
                 desp['1_H_24'] = desp['1B_F_17']
 
-                desp['1_I_24'] = ''
-                desp['1_J_24'] = ''
-                desp['1_K_24'] = ''
-                desp['1_L_24'] = ''
+                desp['1_I_24'] = 0
+                desp['1_J_24'] = 0
+                desp['1_K_24'] = 0
+                desp['1_L_24'] = 0
 
                 desp['1_M_24'] = desp['1_E_24']
                 desp['1_N_24'] = desp['1_F_24']
@@ -882,16 +958,16 @@ class FB9(StopMultiprocessBased):
                 desp['2A_F_17'] = desp['2A_F_13'] + desp['2A_F_14'] + desp['2A_F_15'] + desp['2A_F_16']
 
                 desp['2_E_24'] = desp['2A_D_17']
-                desp['2_F_24'] = ''
+                desp['2_F_24'] = 0
                 desp['2_G_24'] = desp['2A_E_17']
                 desp['2_H_24'] = desp['2A_F_17']
 
                 # # # CUADRO 2 - H # # #
 
-                desp['2_I_24'] = ''
-                desp['2_J_24'] = ''
-                desp['2_K_24'] = ''
-                desp['2_L_24'] = ''
+                desp['2_I_24'] = 0
+                desp['2_J_24'] = 0
+                desp['2_K_24'] = 0
+                desp['2_L_24'] = 0
 
                 desp['2_M_24'] = desp['2_E_24']
                 desp['2_N_24'] = desp['2_F_24']
@@ -901,14 +977,13 @@ class FB9(StopMultiprocessBased):
                 # # # CUADRO 3 - H # # #
 
                 # # FINANCIADO 100% # #
-                df_f100 = df[df['15'] == 100]
+                df_f100 = df[(df['15'] == 100) & (df['14'] >= 0)]
 
                 desp['3_E_24'] = df_f100.shape[0]
-                desp['3_F_24'] = ''
+                desp['3_F_24'] = 0
                 desp['3_G_24'] = df_f100['14'].sum()
                 desp['3_H_24'] = desp['3_G_24']
 
-                self.output_q.put(['-----', 'OTROS INMOVILIZADOS', '-----'])
                 for k, v in desp.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -967,7 +1042,6 @@ class FB9(StopMultiprocessBased):
                 inv['3_G_25'] = inv_uf['3_G_22'] + desp['3_G_24']
                 inv['3_H_25'] = inv_uf['3_H_22'] + desp['3_H_24']
 
-                self.output_q.put(['-----', 'TOTAL INVERSIONES', '-----'])
                 for k, v in inv.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -980,48 +1054,47 @@ class FB9(StopMultiprocessBased):
 
                 autonomica = OrderedDict()
 
-                autonomica['4_E_17'] = ''
-                autonomica['4_F_17'] = ''
-                autonomica['4_G_17'] = ''
-                autonomica['4_H_17'] = ''
-                autonomica['4_E_18'] = ''
-                autonomica['4_F_18'] = ''
-                autonomica['4_G_18'] = ''
-                autonomica['4_H_18'] = ''
-                autonomica['4_E_19'] = ''
-                autonomica['4_F_19'] = ''
-                autonomica['4_G_19'] = ''
-                autonomica['4_H_19'] = ''
-                autonomica['4_E_20'] = ''
-                autonomica['4_F_20'] = ''
-                autonomica['4_G_20'] = ''
-                autonomica['4_H_20'] = ''
-                autonomica['4_E_21'] = ''
-                autonomica['4_F_21'] = ''
-                autonomica['4_G_21'] = ''
-                autonomica['4_H_21'] = ''
-                autonomica['4_E_22'] = ''
-                autonomica['4_F_22'] = ''
-                autonomica['4_G_22'] = ''
-                autonomica['4_H_22'] = ''
-                autonomica['4_E_23'] = ''
-                autonomica['4_F_23'] = ''
-                autonomica['4_G_23'] = ''
-                autonomica['4_H_23'] = ''
-                autonomica['4_E_24'] = ''
-                autonomica['4_F_24'] = ''
-                autonomica['4_G_24'] = ''
-                autonomica['4_H_24'] = ''
-                autonomica['4_E_25'] = ''
-                autonomica['4_F_25'] = ''
-                autonomica['4_G_25'] = ''
-                autonomica['4_H_25'] = ''
-                autonomica['4_E_26'] = ''
-                autonomica['4_F_26'] = ''
-                autonomica['4_G_26'] = ''
-                autonomica['4_H_26'] = ''
+                autonomica['4_E_17'] = 0
+                autonomica['4_F_17'] = 0
+                autonomica['4_G_17'] = 0
+                autonomica['4_H_17'] = 0
+                autonomica['4_E_18'] = 0
+                autonomica['4_F_18'] = 0
+                autonomica['4_G_18'] = 0
+                autonomica['4_H_18'] = 0
+                autonomica['4_E_19'] = 0
+                autonomica['4_F_19'] = 0
+                autonomica['4_G_19'] = 0
+                autonomica['4_H_19'] = 0
+                autonomica['4_E_20'] = 0
+                autonomica['4_F_20'] = 0
+                autonomica['4_G_20'] = 0
+                autonomica['4_H_20'] = 0
+                autonomica['4_E_21'] = 0
+                autonomica['4_F_21'] = 0
+                autonomica['4_G_21'] = 0
+                autonomica['4_H_21'] = 0
+                autonomica['4_E_22'] = 0
+                autonomica['4_F_22'] = 0
+                autonomica['4_G_22'] = 0
+                autonomica['4_H_22'] = 0
+                autonomica['4_E_23'] = 0
+                autonomica['4_F_23'] = 0
+                autonomica['4_G_23'] = 0
+                autonomica['4_H_23'] = 0
+                autonomica['4_E_24'] = 0
+                autonomica['4_F_24'] = 0
+                autonomica['4_G_24'] = 0
+                autonomica['4_H_24'] = 0
+                autonomica['4_E_25'] = 0
+                autonomica['4_F_25'] = 0
+                autonomica['4_G_25'] = 0
+                autonomica['4_H_25'] = 0
+                autonomica['4_E_26'] = 0
+                autonomica['4_F_26'] = 0
+                autonomica['4_G_26'] = 0
+                autonomica['4_H_26'] = 0
 
-                self.output_q.put(['-----', 'NORMATIVA AUTONOMICA', '-----'])
                 for k, v in autonomica.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -1047,7 +1120,6 @@ class FB9(StopMultiprocessBased):
 
                 # INGRESOS PERCIBIDOS
 
-                self.output_q.put(['-----', 'RESUMEN DE INVERSIONES', '-----'])
                 for k, v in resumen.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA

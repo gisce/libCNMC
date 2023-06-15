@@ -158,9 +158,13 @@ class FB3_3(StopMultiprocessBased):
                     if operacio:
                         o_operacio = operacio
                     else:
-                        o_operacio = ''
+                        o_operacio = 0
                 else:
-                    o_operacio = ''
+                    o_operacio = 0
+
+                if o_cini:
+                    if o_cini[1] == '2' and o_cini[2] == '7' and o_cini[5] == '1' and o_cini[7] == '1':
+                        o_operacio = 0
 
                 self.output_q.put([
                     o_subestacio,  # SUBESTACION

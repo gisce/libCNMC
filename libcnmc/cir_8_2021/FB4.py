@@ -180,30 +180,27 @@ class FB4(StopMultiprocessBased):
                     causa_baja = 0;
 
                 # OBRES
-
-                obra_ti_pos_obj = O.GiscedataProjecteObraTiPosicio
-                obra_ti_pos_id = obra_ti_pos_obj.search([('element_ti_id', '=', pos['id'])])
-                if obra_ti_pos_id:
-                    obra_id_data = obra_ti_pos_obj.read(obra_ti_pos_id[0], ['obra_id'])
-                else:
-                    obra_id_data = {}
-
-                # Filtre d'obres finalitzades
                 pos_obra = ''
-                if obra_id_data.get('obra_id', False):
-                    obra_id = obra_id_data['obra_id']
-                    data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
-                    if data_finalitzacio_data:
-                        if data_finalitzacio_data.get('data_finalitzacio', False):
-                            data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
+                obra_ti_pos_obj = O.GiscedataProjecteObraTiPosicio
+                obra_ti_ids = obra_ti_pos_obj.search([('element_ti_id', '=', pos['id'])])
+                if obra_ti_ids:
+                    for obra_ti_id in obra_ti_ids:
+                        obra_id_data = obra_ti_pos_obj.read(obra_ti_id, ['obra_id'])
+                        obra_id = obra_id_data['obra_id']
+                        # Filtre d'obres finalitzades
+                        data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
+                        if data_finalitzacio_data:
+                            if data_finalitzacio_data.get('data_finalitzacio', False):
+                                data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
 
-                            inici_any = '{}-01-01'.format(self.year)
-                            fi_any = '{}-12-31'.format(self.year)
-                            if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
-                                pos_obra = O.GiscedataProjecteObraTiPosicio.read(obra_ti_pos_id[0], fields_to_read_obra)
-                else:
-                    pos_obra = ''
+                                inici_any = '{}-01-01'.format(self.year)
+                                fi_any = '{}-12-31'.format(self.year)
+                                if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
+                                    pos_obra = O.GiscedataProjecteObraTiPosicio.read(obra_ti_id, fields_to_read_obra)
+                        if pos_obra:
+                            break
 
+                tipo_inversion = ''
                 #CAMPS OBRES
                 if pos_obra != '':
                     obra_year = data_finalitzacio.split('-')[0]
@@ -219,7 +216,7 @@ class FB4(StopMultiprocessBased):
                     , 2)).replace(".", ",")
                     im_ingenieria = format_f_6181(pos_obra['im_ingenieria'] or 0.0, float_type='euro')
                     im_trabajos = format_f_6181(pos_obra['im_trabajos'] or 0.0, float_type='euro')
-                    tipo_inversion = (pos_obra['tipo_inversion'] or '0') if not pos_obra['fecha_baja'] else '1'
+                    tipo_inversion = pos_obra['tipo_inversion'] or ''
                     valor_auditado = format_f_6181(pos_obra['valor_auditado'] or 0.0, float_type='euro')
                     valor_residual = format_f_6181(pos_obra['valor_residual'] or 0.0, float_type='euro')
                     subvenciones_europeas = format_f_6181(pos_obra['subvenciones_europeas'] or 0.0, float_type='euro')
@@ -236,7 +233,6 @@ class FB4(StopMultiprocessBased):
                 else:
                     data_ip = ''
                     identificador_baja = ''
-                    tipo_inversion = ''
                     im_ingenieria = ''
                     im_construccion = ''
                     im_trabajos = ''
@@ -328,6 +324,12 @@ class FB4(StopMultiprocessBased):
                 if modelo == 'M':
                     estado = ''
                     data_pm = ''
+
+                if fecha_baja:
+                    tipo_inversion = ''
+
+                # L'any 2022 no es declaren subvencions PRTR
+                subvenciones_prtr = ''
 
                 output = [
                     pos['name'],  #IDENTIFICADOR_POSICION

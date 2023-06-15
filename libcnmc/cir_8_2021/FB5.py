@@ -103,31 +103,28 @@ class FB5(StopMultiprocessBased):
                     data_pm = data_pm_trafo.strftime('%d/%m/%Y')
 
                 # OBRES
-
-                obra_ti_trafo_obj = o.GiscedataProjecteObraTiTransformador
-                obra_ti_trafo_id = obra_ti_trafo_obj.search([('element_ti_id', '=', trafo['id'])])
-                if obra_ti_trafo_id:
-                    obra_id_data = obra_ti_trafo_obj.read(obra_ti_trafo_id[0], ['obra_id'])
-                else:
-                    obra_id_data = {}
-
-                # Filtre d'obres finalitzades
                 trafo_obra = ''
-                if obra_id_data.get('obra_id', False):
-                    obra_id = obra_id_data['obra_id']
-                    data_finalitzacio_data = o.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
-                    if data_finalitzacio_data:
-                        if data_finalitzacio_data.get('data_finalitzacio', False):
-                            data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
+                obra_ti_trafo_obj = o.GiscedataProjecteObraTiTransformador
+                obra_ti_ids = obra_ti_trafo_obj.search([('element_ti_id', '=', trafo['id'])])
+                if obra_ti_ids:
+                    for obra_ti_id in obra_ti_ids:
+                        obra_id_data = obra_ti_trafo_obj.read(obra_ti_id, ['obra_id'])
+                        obra_id = obra_id_data['obra_id']
+                        # Filtre d'obres finalitzades
+                        data_finalitzacio_data = o.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
+                        if data_finalitzacio_data:
+                            if data_finalitzacio_data.get('data_finalitzacio', False):
+                                data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
 
-                            inici_any = '{}-01-01'.format(self.year)
-                            fi_any = '{}-12-31'.format(self.year)
-                            if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
-                                trafo_obra = o.GiscedataProjecteObraTiTransformador.read(obra_ti_trafo_id[0],
-                                                                                         fields_to_read_obra)
-                else:
-                    trafo_obra = ''
+                                inici_any = '{}-01-01'.format(self.year)
+                                fi_any = '{}-12-31'.format(self.year)
+                                if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
+                                    trafo_obra = o.GiscedataProjecteObraTiTransformador.read(obra_ti_id,
+                                                                                             fields_to_read_obra)
+                        if trafo_obra:
+                            break
 
+                tipo_inversion = ''
                 #CAMPS OBRES
                 if trafo_obra != '':
                     obra_year = data_finalitzacio.split('-')[0]
@@ -149,7 +146,7 @@ class FB5(StopMultiprocessBased):
                     im_construccion = str(format_f(
                         float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
                     , 2)).replace(".", ",")
-                    tipo_inversion = (trafo_obra['tipo_inversion'] or '0') if not trafo_obra['fecha_baja'] else '1'
+                    tipo_inversion = trafo_obra['tipo_inversion'] or ''
                     valor_auditado = str(
                         float(im_construccion.replace(",", ".")) +
                         float(im_ingenieria.replace(",", ".")) + float(im_trabajos.replace(",", "."))
@@ -161,7 +158,6 @@ class FB5(StopMultiprocessBased):
                 else:
                     data_ip = ''
                     identificador_baja = ''
-                    tipo_inversion = ''
                     im_ingenieria = ''
                     im_construccion = ''
                     im_trabajos = ''
@@ -192,6 +188,10 @@ class FB5(StopMultiprocessBased):
                     o_node_baixa = trafo['node_baixa'][1]
                 else:
                     o_node_baixa = o_node
+
+                if o_cini:
+                    if o_cini[1] == '2' and o_cini[2] == '4' and o_cini[4] == '0' and o_cini[7] == '1':
+                        o_node_baixa = o_node
 
                 #FECHA_BAJA, CAUSA_BAJA
 
@@ -251,7 +251,13 @@ class FB5(StopMultiprocessBased):
 
                 if modelo == 'M':
                     estado = ''
-                    fecha_aps = ''
+                    data_pm = ''
+
+                if fecha_baja:
+                    tipo_inversion = ''
+
+                # L'any 2022 no es declaren subvencions PRTR
+                subvenciones_prtr = ''
 
                 self.output_q.put([
                     o_maquina,              # IDENTIFICADOR_MAQUINA

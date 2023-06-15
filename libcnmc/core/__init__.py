@@ -221,7 +221,7 @@ class StopMultiprocessBased(MultiprocessBased):
             self.input_q.put('STOP')
 
 
-class UpdateFile(MultiprocessBased):
+class UpdateFile(StopMultiprocessBased):
     def __init__(self, **kwargs):
         super(UpdateFile, self).__init__(**kwargs)
         self.file_input = kwargs.pop('file_input')
@@ -255,16 +255,19 @@ class UpdateFile(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == 'STOP':
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 values = item.rstrip().split(';')
                 vals = self.build_vals(values)
                 self.search_and_update(vals)
+                self.input_q.task_done()
             except:
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
                 self.output_q.put([item.strip()])
-            finally:
                 self.input_q.task_done()
 
 
@@ -273,7 +276,10 @@ class UpdateCNMCStats(UpdateFile):
         super(UpdateCNMCStats, self).__init__(**kwargs)
         self.header = [
             'cups', 'cne_anual_activa', 'cne_anual_reactiva',
-            'cnmc_potencia_facturada', 'cnmc_numero_lectures'
+            'cnmc_potencia_facturada', 'cnmc_numero_lectures',
+            'cne_anual_activa_generada', 'cne_anual_reactiva_generada',
+            'cnmc_energia_autoconsumida', 'cnmc_energia_excedentaria',
+            'cnmc_factures_total', 'cnmc_factures_estimades',
         ]
         self.search_keys = [('cups', 'name')]
         self.object = self.connection.GiscedataCupsPs

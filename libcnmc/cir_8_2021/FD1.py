@@ -42,7 +42,7 @@ class FD1(StopMultiprocessBased):
                     o_provincia,
                     o_ccaa,
                     d1['zona'],
-                    format_f(d1['potencia'], 2),
+                    format_f(d1['potencia'], 3),
                     d1['n_cups'],
                     format_f(d1['programadas_transporte'], 2),
                     format_f(d1['programadas_distribucion'], 2),
