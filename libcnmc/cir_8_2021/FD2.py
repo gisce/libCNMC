@@ -369,15 +369,20 @@ class FD2(StopMultiprocessBased):
                 ('date_created', '<=', year_end)
             ]
             r102_ids = o.model("giscedata.switching.r1.02").search(search_params)
+            subtipus_ids = o.model("giscedata.subtipus.reclamacio").search([('circular', '=', True)])
 
             ## Tractem els r1 i comptabilitzem els que escau
             for r102_id in r102_ids:
                 r1_header_id = o.model("giscedata.switching.r1.02").read(r102_id, ['header_id'])[
                     'header_id']
                 sw_id = o.GiscedataSwitchingStepHeader.read(r1_header_id[0], ['sw_id'])['sw_id'][0]
+                r101_id = o.model('giscedata.switching.r1.01').search([('sw_id', '=', sw_id)])
+                if r101_id:
+                    r101_id = r101_id[0]
+                subtipus_id = o.model('giscedata.switching.r1.01').read(r101_id, ['subtipus_id'])['subtipus_id'][0]
                 step_id = o.GiscedataSwitching.read(sw_id, ['step_id'])['step_id'][0]
                 proces_name = o.model('giscedata.switching.step').read(step_id, ['name'])['name']
-                if '05' in proces_name:
+                if '05' in proces_name and subtipus_id in subtipus_ids:
                     model_names = ['giscedata.switching.r1.02', 'giscedata.switching.r1.05']
                     field_names = ['date_created', 'date_created']
                     context = {'model_names': model_names, 'field_names': field_names}
@@ -775,7 +780,7 @@ class FD2(StopMultiprocessBased):
                     total_ts = 0
                     for atc_id in atc_ids:
                         crm_data = o.GiscedataAtc.read(atc_id, ['crm_id', 'state'])
-                        if 'done' in crm_data['state']:
+                        if crm_data['state'] in ACCEPTED_STATES:
                             if isinstance(atc_id, list):
                                 atc_id = atc_id[0]
                             if 'Z8_01' in cod_gest_data['name']:
@@ -790,6 +795,9 @@ class FD2(StopMultiprocessBased):
                                 self.compute_time(cod_gest_data, file_fields, time_spent, ref)
                         else:
                             file_fields['no_tramitadas'] += 1
+                            create_vals = {'atesa': False}
+                            ref = ('giscedata.atc', atc_id)
+                            self.create_logs(create_vals, ref)
                             file_fields['totals'] += 1
 
                 ## Asignem els valors segons escau
