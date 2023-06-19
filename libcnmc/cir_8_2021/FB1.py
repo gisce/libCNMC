@@ -495,6 +495,9 @@ class FB1(StopMultiprocessBased):
                         # L'any 2022 no es declaren subvencions PRTR
                         subvenciones_prtr = ''
 
+                        if causa_baja == '0':
+                            fecha_baja = ''
+
                     output = [
                         o_tram,  # IDENTIFICADOR
                         tram.get('cini', '') or '',         # CINI
@@ -851,6 +854,9 @@ class FB1(StopMultiprocessBased):
 
                     # L'any 2022 no es declaren subvencions PRTR
                     subvenciones_prtr = ''
+
+                    if causa_baja == '0':
+                        fecha_baja = ''
 
                     output = [
                         identificador_tramo,  # IDENTIFICADOR TRAMO
