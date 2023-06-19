@@ -331,6 +331,9 @@ class FB4(StopMultiprocessBased):
                 # L'any 2022 no es declaren subvencions PRTR
                 subvenciones_prtr = ''
 
+                if causa_baja == '0':
+                    fecha_baja = ''
+
                 output = [
                     pos['name'],  #IDENTIFICADOR_POSICION
                     pos['cini'],  #CINI

@@ -448,6 +448,9 @@ class FB6(StopMultiprocessBased):
                 # L'any 2022 no es declaren subvencions PRTR
                 subvenciones_prtr = ''
 
+                if causa_baja == '0':
+                    fecha_baja = ''
+
                 self.output_q.put([
                     o_fiabilitat,   # ELEMENTO FIABILIDAD
                     o_cini,  # CINI
