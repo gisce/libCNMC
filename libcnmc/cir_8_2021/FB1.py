@@ -488,15 +488,15 @@ class FB1(StopMultiprocessBased):
                         else:
                             estado = '2'
 
-                        if fecha_baja:
-                            motivacion = ''
-                            tipo_inversion = ''
+                    if fecha_baja:
+                        motivacion = ''
+                        tipo_inversion = ''
 
-                        # L'any 2022 no es declaren subvencions PRTR
-                        subvenciones_prtr = ''
+                    # L'any 2022 no es declaren subvencions PRTR
+                    subvenciones_prtr = ''
 
-                        if causa_baja == '0':
-                            fecha_baja = ''
+                    if causa_baja == '0':
+                        fecha_baja = ''
 
                     output = [
                         o_tram,  # IDENTIFICADOR
@@ -848,9 +848,9 @@ class FB1(StopMultiprocessBased):
                         else:
                             estado = '2'
 
-                        if fecha_baja:
-                            motivacion = ''
-                            tipo_inversion = ''
+                    if fecha_baja:
+                        motivacion = ''
+                        tipo_inversion = ''
 
                     # L'any 2022 no es declaren subvencions PRTR
                     subvenciones_prtr = ''
