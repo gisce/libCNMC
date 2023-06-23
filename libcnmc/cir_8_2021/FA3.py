@@ -35,7 +35,7 @@ class FA3(StopMultiprocessBased):
         O = self.connection
         fields_to_read = ['name', 'tipo_crecimiento', 'node_id', 'superficie', 'uso_previsto', 'potencia_solicitada',
                           'id_municipi', 'id_provincia', 'year_previsto', 'suministros_bt', 'suministros_mt',
-                          'suministros_at']
+                          'suministros_at', 'x', 'y']
         while True:
             try:
                 item = self.input_q.get()
@@ -57,13 +57,13 @@ class FA3(StopMultiprocessBased):
                     o_tipo_crecimiento = prevision['tipo_crecimiento']
 
                 # COORDENADAS
-                res_srid = ['', '']
-                if prevision["node_id"]:
-                    node_data = O.GiscegisNodes.read(prevision["node_id"][0], ["geom"])
-                    coords = wkt.loads(node_data["geom"]).coords[0]
-                    vertex = [coords[0], coords[1]]
-                    if vertex:
-                        res_srid = convert_srid(get_srid(O), vertex)
+                o_x = ''
+                if prevision.get('x', False):
+                    o_x = prevision['x']
+
+                o_y = ''
+                if prevision.get('y', False):
+                    o_y = prevision['y']
 
                 # SUPERFÍCIE
                 o_superficie = ''
@@ -110,8 +110,8 @@ class FA3(StopMultiprocessBased):
                 self.output_q.put([
                     o_cod_crecimiento,                              # CÓDIGO CRECIMIENTO
                     o_tipo_crecimiento,                             # TIPO CRECIMIENTO
-                    format_f(res_srid[0], decimals=3),              # COORDENADA X
-                    format_f(res_srid[1], decimals=3),              # COORDENADA Y
+                    format_f(o_x, decimals=3),                      # COORDENADA X
+                    format_f(o_y, decimals=3),                      # COORDENADA Y
                     '0,000',                                             # COORDENADA Z
                     format_f(o_superficie, decimals=3),             # SUPERFICIE
                     o_uso,                                          # USO
