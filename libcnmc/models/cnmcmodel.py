@@ -59,6 +59,8 @@ class CNMCModel(object):
         self.store = stored(*values, **kwvalues)
         self.validator.validate(self.store._asdict())
         self.store = stored(**self.validator.document)
+        self.trams_at_prefix = kwvalues.get('trams_at_prefix', False) or ''
+        self.trams_bt_prefix = kwvalues.get('trams_bt_prefix', False) or ''
 
     def dump(self, out_format='json'):
         if out_format == 'json':

@@ -4,6 +4,7 @@ from collections import OrderedDict
 from libcnmc.models.cnmcmodel import CNMCModel
 from libcnmc.models.fields import String, Integer, Decimal
 import string
+import re
 
 
 class F2Res4666(CNMCModel):
@@ -34,9 +35,7 @@ class F2Res4666(CNMCModel):
 
     @property
     def ref(self):
-        return ''.join(
-            c for c in self.store.identificador if c in string.digits
-        )
+        return re.sub('^{}'.format(self.trams_bt_prefix), '', self.store.identificador)
 
     def __cmp__(self, other):
         comp_fields = [
