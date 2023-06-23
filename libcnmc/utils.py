@@ -664,3 +664,25 @@ def get_serveis_aux(o, re_id):
                     serveis_aux = cups_data['cups']
 
     return serveis_aux
+
+
+def get_autoconsum_by_modcon(o, cups_id, ultim_dia_any, primer_dia_any):
+    autoconsum_id = ''
+    modcon_obj = o.GiscedataPolissaModcontractual
+    cups_obj = o.GiscedataCupsPs
+
+    search_params = [('cups', '=', cups_id),
+                     ('data_inici', '<=', ultim_dia_any),
+                     ('data_final', '>=', primer_dia_any)]
+    modcon_ids = modcon_obj.search(search_params)
+
+    if modcon_ids:
+        for modcon_id in modcon_ids:
+            modcon_data = modcon_obj.read(modcon_id, ['autoconsumo', 'cups'])
+            if modcon_data.get('autoconsumo', False):
+                if modcon_data['autoconsumo'] != '00':
+                    cups_id = modcon_data['cups']
+                    autoconsum_id_data = cups_obj.read(cups_id, ['autoconsum_id'])
+                    if autoconsum_id_data.get('autoconsum_id', False):
+                        autoconsum_id = autoconsum_id_data['autoconsum_id']
+    return autoconsum_id

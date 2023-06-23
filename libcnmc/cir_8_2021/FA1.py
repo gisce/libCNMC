@@ -6,7 +6,7 @@ import traceback
 from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP, \
     TARIFAS_AT, TARIFAS_BT
 from libcnmc.utils import get_ine, get_comptador, format_f, get_srid,\
-    convert_srid, get_tipus_connexio
+    convert_srid, get_tipus_connexio, get_autoconsum_by_modcon
 from libcnmc.core import StopMultiprocessBased
 from ast import literal_eval
 import logging
@@ -391,6 +391,7 @@ class FA1(StopMultiprocessBased):
 
         O = self.connection
         ultim_dia_any = '%s-12-31' % self.year
+        primer_dia_any = '%s-01-01' % self.year
         search_glob = [
             ('state', 'in', ['tall', 'activa', 'baixa']),
             ('data_alta', '<=', ultim_dia_any),
@@ -453,7 +454,10 @@ class FA1(StopMultiprocessBased):
                 o_conexion_autoconsumo = ''
 
                 cups_obj = O.GiscedataCupsPs
-                autoconsum_id_data = cups_obj.get_autoconsum_on_date(item, ultim_dia_any)
+
+                autoconsum_id_data = get_autoconsum_by_modcon(O, item, ultim_dia_any, primer_dia_any)
+
+                autoconsum_id_data = cups_obj.get_autoconsum_on_date(item, ultim_dia_any, )
 
                 if autoconsum_id_data:
                     # AUTOCONSUMO
