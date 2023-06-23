@@ -56,8 +56,8 @@ class CNMCModel(object):
         """
         self.validator = CNMCValidator(self.schema)
         stored = namedtuple('{0}_store'.format(self.__class__.__name__), self.fields)
-        self.trams_at_prefix = kwvalues.pop('trams_at_prefix') or ''
-        self.trams_bt_prefix = kwvalues.pop('trams_bt_prefix') or ''
+        self.trams_at_prefix = kwvalues.get('trams_at_prefix', False) or ''
+        self.trams_bt_prefix = kwvalues.get('trams_bt_prefix', False) or ''
         self.store = stored(*values, **kwvalues)
         self.validator.validate(self.store._asdict())
         self.store = stored(**self.validator.document)
