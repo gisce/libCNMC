@@ -31,9 +31,8 @@ class F1Res4666(CNMCModel):
         ('estado', Integer())
         ])
 
-    @property
-    def ref(self):
-        return re.sub('^{}'.format(self.trams_at_prefix), '', self.store.identificador)
+    def ref_or_regulatori(self, trams_at_prefix, trams_bt_prefix):
+        return re.sub('^{}'.format(trams_at_prefix), '', self.store.identificador)
 
     def __cmp__(self, other):
         comp_fields = [
