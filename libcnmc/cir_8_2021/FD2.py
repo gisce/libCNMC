@@ -59,33 +59,33 @@ class FD2(StopMultiprocessBased):
 
                 d2_obj = o.model('cir8.2021.d2')
 
-                cod_gest_data = d2_obj.browse(item)
-
+                cod_gest_data = d2_obj.read(item, [])
+                cod_gest_name = o.model('giscedata.codigos.gestion.calidad.z').read(cod_gest_data['cod_gestion'][0], ['name'])['name']
 
                 ## Asignem els valors segons escau
-                if cod_gest_data['name'] != 'Z8_01_dl5':
+                if cod_gest_name != 'Z8_01_dl5':
                     output = [
-                        cod_gest_data.cod_gestion.name,
-                        cod_gest_data.solicitudes,
-                        cod_gest_data.en_plazo,
-                        cod_gest_data.fuera_plazo,
-                        cod_gest_data.no_atendidas,
+                        cod_gest_name,
+                        cod_gest_data['solicitudes'],
+                        cod_gest_data['en_plazo'],
+                        cod_gest_data['fuera_plazo'],
+                        cod_gest_data['no_atendidas'],
                     ]
                     self.output_q.put(output)
                 else:
-                    d2_z8_15 = d2_obj.search([('active', '=', True), ('cod_gest_id.name', '=', 'Z8_01_dl15')])[0]
-                    d2_z8_15 = d2_obj.browse(d2_z8_15)
-                    solicitudes = cod_gest_data.solicitudes + d2_z8_15.solicitudes
-                    en_plazo = cod_gest_data.en_plazo + d2_z8_15.en_plazo
-                    fuera_plazo = cod_gest_data.fuera_plazo + d2_z8_15.fuera_plazo
-                    no_atendidas = cod_gest_data.no_atendidas + d2_z8_15.no_atendidas
+                    d2_z8_15 = d2_obj.search([('active', '=', True), ('cod_gestion.name', '=', 'Z8_01_dl15')])[0]
+                    d2_z8_15 = d2_obj.read(d2_z8_15, [])
+                    solicitudes = cod_gest_data['solicitudes'] + d2_z8_15['solicitudes']
+                    en_plazo = cod_gest_data['en_plazo'] + d2_z8_15['en_plazo']
+                    fuera_plazo = cod_gest_data['fuera_plazo'] + d2_z8_15['fuera_plazo']
+                    no_atendidas = cod_gest_data['no_atendidas'] + d2_z8_15['no_atendidas']
 
                     output = [
                         'Z8_01',
-                        solicitudes,
-                        en_plazo,
-                        fuera_plazo,
-                        no_atendidas
+                        ,
+                        ,
+                        ,
+
                     ]
                     self.output_q.put(output)
 
