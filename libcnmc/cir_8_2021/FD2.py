@@ -82,9 +82,10 @@ class FD2(StopMultiprocessBased):
 
                     output = [
                         'Z8_01',
-                        ,
-                        ,
-                        ,
+                        solicitudes,
+                        en_plazo,
+                        fuera_plazo,
+                        no_atendidas
 
                     ]
                     self.output_q.put(output)
