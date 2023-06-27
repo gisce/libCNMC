@@ -115,7 +115,7 @@ class FB1(StopMultiprocessBased):
             bt_ids[elem] = 'bt.{}'.format(bt_ids[elem])
 
         at_bt_ids = at_ids + bt_ids
-        return at_bt_ids
+        return bt_ids
 
     def get_zona_qualitat_ct(self, codi_ct):
         """
