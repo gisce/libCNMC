@@ -714,37 +714,38 @@ class FA1(StopMultiprocessBased):
                 o_baixa = self.get_baixa_cups(cups['id'])
 
                 self.output_q.put([
-                    o_nom_node,     # Nudo
-                    format_f(res_srid[0], decimals=3),  # X
-                    format_f(res_srid[1], decimals=3),  # Y
-                    '0,000',                 # Z
-                    o_cnae,             # CNAE
-                    o_cod_tfa,          # Codigo de tarifa
+                    # o_nom_node,     # Nudo
+                    # format_f(res_srid[0], decimals=3),  # X
+                    # format_f(res_srid[1], decimals=3),  # Y
+                    # '0,000',                 # Z
+                    # o_cnae,             # CNAE
+                    # o_cod_tfa,          # Codigo de tarifa
                     o_name,             # CUPS
-                    o_codi_ine_mun,     # Municipio
-                    o_codi_ine_prov,    # Provincia
+                    cups.get('et', ''),
+                    # o_codi_ine_mun,     # Municipio
+                    # o_codi_ine_prov,    # Provincia
                     o_zona,             # Zona de calidad
-                    o_connexio,         # Conexion
-                    o_tensio,           # Tension de alimentacion
-                    o_estat_contracte,  # Estado de contrato
-                    format_f(o_potencia or '0,000', decimals=3),    # Potencia contratada
-                    format_f(o_pot_ads, decimals=3),        # Potencia adscrita a la instalacion
-                    format_f(o_anual_activa, decimals=3),   # Energia activa anual consumida
-                    format_f(o_anual_reactiva, decimals=3), # Energia reactiva anual consumida
-                    o_autoconsumo,       #Autoconsumo si o no
-                    o_comptador_cini,  # CINI
-                    o_comptador_data,  # INSTALACION
-                    o_num_lectures,  # NUMERO LECTURAS
-                    o_baixa,  # BAJA SUMINISTRO
-                    o_titular,  # CAMBIO TITULARIDAD
-                    o_facturas_estimadas,
-                    o_facturas_total,
-                    o_cau,
-                    o_cod_auto,
-                    o_cod_generacio_auto,
-                    o_conexion_autoconsumo,
-                    format_f(o_energia_autoconsumida, decimals=3),
-                    format_f(o_energia_excedentaria, decimals=3)
+                    # o_connexio,         # Conexion
+                    # o_tensio,           # Tension de alimentacion
+                    # o_estat_contracte,  # Estado de contrato
+                    # format_f(o_potencia or '0,000', decimals=3),    # Potencia contratada
+                    # format_f(o_pot_ads, decimals=3),        # Potencia adscrita a la instalacion
+                    # format_f(o_anual_activa, decimals=3),   # Energia activa anual consumida
+                    # format_f(o_anual_reactiva, decimals=3), # Energia reactiva anual consumida
+                    # o_autoconsumo,       #Autoconsumo si o no
+                    # o_comptador_cini,  # CINI
+                    # o_comptador_data,  # INSTALACION
+                    # o_num_lectures,  # NUMERO LECTURAS
+                    # o_baixa,  # BAJA SUMINISTRO
+                    # o_titular,  # CAMBIO TITULARIDAD
+                    # o_facturas_estimadas,
+                    # o_facturas_total,
+                    # o_cau,
+                    # o_cod_auto,
+                    # o_cod_generacio_auto,
+                    # o_conexion_autoconsumo,
+                    # format_f(o_energia_autoconsumida, decimals=3),
+                    # format_f(o_energia_excedentaria, decimals=3)
                 ])
                 self.input_q.task_done()
             except Exception:
