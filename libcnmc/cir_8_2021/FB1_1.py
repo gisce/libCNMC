@@ -75,6 +75,14 @@ class FB1_1(StopMultiprocessBased):
                 o_nsegmento = len(points) - 1
                 next_ = None
 
+                # SEGMENTO - Ajustat a 22 caràcters
+                max_o_segmento = '{}_{}'.format(o_tram, o_nsegmento)
+                if len(max_o_segmento) <= 22:
+                    new_o_tram = o_tram
+                else:
+                    diff = len(max_o_segmento) - 22
+                    new_o_tram = o_tram[diff:]
+
                 for o_position, p in enumerate(points):
                     try:
                         dest = points[o_position + 1]
@@ -97,13 +105,8 @@ class FB1_1(StopMultiprocessBased):
                             }
                             res_srid_final = convert_srid(get_srid(o), (vertex_final['x'], vertex_final['y']))
 
-                            # SEGMENTO
-                            o_segmento = '{}_{}'.format(o_tram, o_position + 1)
-                            if len(o_segmento) > 22:
-                                o_segmento = o_segmento[-22:]
-
                             self.output_q.put([
-                                o_segmento,                                  # SEGMENTO
+                                '{}_{}'.format(new_o_tram, o_position + 1),  # SEGMENTO
                                 o_tram,                                      # IDENTIFICADOR DE TRAMO
                                 o_position + 1,                              # ORDEN EN LA LISTA DE SEGMENTOS
                                 o_nsegmento,                                 # TOTAL SEGMENTOS
