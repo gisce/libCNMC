@@ -97,8 +97,13 @@ class FB1_1(StopMultiprocessBased):
                             }
                             res_srid_final = convert_srid(get_srid(o), (vertex_final['x'], vertex_final['y']))
 
+                            # SEGMENTO
+                            o_segmento = '{}_{}'.format(o_tram, o_position + 1)
+                            if len(o_segmento) > 22:
+                                o_segmento = o_segmento[-22:]
+
                             self.output_q.put([
-                                '{}_{}'.format(o_tram, o_position + 1),      # CÓDIGO SEGMENTO
+                                o_segmento,                                  # SEGMENTO
                                 o_tram,                                      # IDENTIFICADOR DE TRAMO
                                 o_position + 1,                              # ORDEN EN LA LISTA DE SEGMENTOS
                                 o_nsegmento,                                 # TOTAL SEGMENTOS
