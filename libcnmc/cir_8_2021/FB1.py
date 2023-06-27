@@ -7,6 +7,7 @@ from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import (format_f, tallar_text, format_f_6181, get_codi_actuacio, convert_spanish_date,
                            get_forced_elements, adapt_diff)
 from libcnmc.models import F1Res4666,F2Res4666
+from libcnmc.utils import CODIS_ZONA
 
 class FB1(StopMultiprocessBased):
     """
@@ -115,6 +116,32 @@ class FB1(StopMultiprocessBased):
 
         at_bt_ids = at_ids + bt_ids
         return at_bt_ids
+
+    def get_zona_qualitat_ct(self, codi_ct):
+        """
+        Returns the quality zone of a given ct
+        :param codi_ct: Codi CT
+        :type codi_ct: str
+        :return: Quality zone
+        :rtype: str
+        """
+        zona_qualitat = ''
+        if codi_ct:
+            ct_ids = self.connection.GiscedataCts.search(
+                [('name', '=', codi_ct)],
+                0, 0, False, {"active_test": False}
+            )
+
+            if ct_ids:
+                dades_ct = self.connection.GiscedataCts.read(
+                    ct_ids[0], ['zona_id'])
+                if dades_ct['zona_id']:
+                    zona_desc = dades_ct['zona_id'][1].upper().replace(
+                        ' ', ''
+                    )
+                    if zona_desc in CODIS_ZONA:
+                        zona_qualitat = CODIS_ZONA[zona_desc]
+        return zona_qualitat
 
     def consumer(self):
         """
@@ -543,7 +570,7 @@ class FB1(StopMultiprocessBased):
                                       'coeficient', 'longitud_cad', 'punt_frontera', 'model', 'operacion',
                                       'propietari', 'edge_id', 'cable', 'tipus_instalacio_cnmc_id',
                                       'data_pm', 'data_baixa', 'id_regulatori', self.compare_field,
-                                      'perc_financament',
+                                      'perc_financament', 'ct',
                                       ]
 
                     linia = O.GiscedataBtElement.read(item, fields_to_read)
@@ -858,8 +885,17 @@ class FB1(StopMultiprocessBased):
                     if causa_baja == '0':
                         fecha_baja = ''
 
+                    # CT i ZONA
+                    ct = ''
+                    zona = ''
+                    if linia.get('ct', False):
+                        ct = linia['ct'][1]
+                        zona = self.get_zona_qualitat_ct(ct)
+
                     output = [
                         identificador_tramo,  # IDENTIFICADOR TRAMO
+                        ct,
+                        zona,
                         linia.get('cini', '') or '',  # CINI
                         codigo_ccuu or '',  # CODIGO_CCUU
                         node_inicial,  # ORIGEN
