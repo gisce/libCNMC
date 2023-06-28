@@ -334,6 +334,10 @@ class FB4(StopMultiprocessBased):
                 if causa_baja == '0':
                     fecha_baja = ''
 
+                if modelo == 'E':
+                    tipo_inversion = '0'
+                    estado = '1'
+
                 output = [
                     pos['name'],  #IDENTIFICADOR_POSICION
                     pos['cini'],  #CINI
