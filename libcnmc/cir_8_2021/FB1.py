@@ -498,6 +498,10 @@ class FB1(StopMultiprocessBased):
                     if causa_baja == '0':
                         fecha_baja = ''
 
+                    if modelo == 'E':
+                        tipo_inversion = '0'
+                        estado = '1'
+
                     output = [
                         o_tram,  # IDENTIFICADOR
                         tram.get('cini', '') or '',         # CINI
@@ -857,6 +861,10 @@ class FB1(StopMultiprocessBased):
 
                     if causa_baja == '0':
                         fecha_baja = ''
+
+                    if modelo == 'E':
+                        tipo_inversion = '0'
+                        estado = '1'
 
                     output = [
                         identificador_tramo,  # IDENTIFICADOR TRAMO
