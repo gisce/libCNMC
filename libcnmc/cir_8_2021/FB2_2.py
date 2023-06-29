@@ -46,12 +46,11 @@ class FB2_2(StopMultiprocessBased):
 
         :return: None
         """
-
+        cella_obj = self.connection.GiscedataCellesCella
         search_params = [
             ("installacio", "like", "%giscedata.cts%"),
             ("tipus_element.codi", "!=", "FUS_AT")
         ]
-
 
         data_pm = '{}-01-01'.format(self.year + 1)
         data_baixa = '{}-12-31'.format(self.year)
@@ -66,8 +65,17 @@ class FB2_2(StopMultiprocessBased):
                           '&', ('active', '=', False),
                           ('data_baixa', '!=', False),
                           ('active', '=', True)]
-        return self.connection.GiscedataCellesCella.search(
-            search_params, 0, 0, False, {'active_test': False})
+
+        cell_ids = cella_obj.search(search_params, 0, 0, False, {'active_test': False})
+        ids_cini_data = cella_obj.read(cell_ids, ['cini'])
+        ids_i28 = []
+        for cell_data in ids_cini_data:
+            cini = cell_data['cini']
+            if cini:
+                if cini[:3] == 'I28':
+                    ids_i28.append(cell_data['id'])
+
+        return ids_i28
 
     def get_codi_ct(self, ct_id):
         o = self.connection
