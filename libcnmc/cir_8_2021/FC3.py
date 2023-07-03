@@ -51,7 +51,7 @@ class FC3(StopMultiprocessBased):
                     format_f(c3.get('inversion_n_2', 0.0), 2),
                     format_f(c3.get('gasto', 0.0), 2),
                     format_f(c3.get('ingreso', 0.0), 2),
-                    c3.get('identificador', ''),
+                    c3.get('identificador', '') or '',
                 ])
                 self.input_q.task_done()
             except Exception:

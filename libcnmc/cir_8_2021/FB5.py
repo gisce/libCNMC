@@ -262,6 +262,10 @@ class FB5(StopMultiprocessBased):
                 if causa_baja == '0':
                     fecha_baja = ''
 
+                if modelo == 'E':
+                    tipo_inversion = '0'
+                    estado = '1'
+
                 self.output_q.put([
                     o_maquina,              # IDENTIFICADOR_MAQUINA
                     o_cini,                 # CINI
