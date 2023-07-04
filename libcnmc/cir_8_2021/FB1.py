@@ -502,6 +502,13 @@ class FB1(StopMultiprocessBased):
                         tipo_inversion = '0'
                         estado = '1'
 
+                    # ESTADO no pot ser 2 si FECHA_APS < 2022
+                    fecha_aps_year = int(fecha_aps.split('/')[2])
+                    if estado == '2' and fecha_aps_year != int(self.year):
+                        estado = '1'
+                    elif fecha_aps_year == int(self.year):
+                        estado = '2'
+
                     output = [
                         o_tram,  # IDENTIFICADOR
                         tram.get('cini', '') or '',         # CINI
@@ -865,6 +872,13 @@ class FB1(StopMultiprocessBased):
                     if modelo == 'E':
                         tipo_inversion = '0'
                         estado = '1'
+
+                    # ESTADO no pot ser 2 si FECHA_APS < 2022
+                    fecha_aps_year = int(fecha_aps.split('/')[2])
+                    if estado == '2' and fecha_aps_year != int(self.year):
+                        estado = '1'
+                    elif fecha_aps_year == int(self.year):
+                        estado = '2'
 
                     output = [
                         identificador_tramo,  # IDENTIFICADOR TRAMO
