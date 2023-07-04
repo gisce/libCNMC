@@ -76,6 +76,7 @@ class FB8(StopMultiprocessBased):
                 obra_id = O.GiscedataProjecteObraTiDespatx.search([('element_ti_id', '=', despatx['id'])])
 
                 #DATA_PM
+                data_pm = ''
                 if despatx['data_apm']:
                     data_pm_despatx = datetime.strptime(str(despatx['data_apm']),
                                                    '%Y-%m-%d')
@@ -204,11 +205,14 @@ class FB8(StopMultiprocessBased):
                 subvenciones_prtr = ''
 
                 # ESTADO no pot ser 2 si FECHA_APS < 2022
-                fecha_aps_year = int(data_pm.split('/')[2])
-                if estado == '2' and fecha_aps_year != int(self.year):
+                if data_pm:
+                    fecha_aps_year = int(data_pm.split('/')[2])
+                    if estado == '2' and fecha_aps_year != int(self.year):
+                        estado = '1'
+                    elif fecha_aps_year == int(self.year):
+                        estado = '2'
+                else:
                     estado = '1'
-                elif fecha_aps_year == int(self.year):
-                    estado = '2'
 
                 self.output_q.put([
                     despatx['name'],                    # IDENTIFICADOR
