@@ -747,8 +747,8 @@ class FD2(StopMultiprocessBased):
                 file_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0,
                                'debug_helper': [0, 0]}
                 z8_fields = {'totals': 0, 'dentro_plazo': 0, 'fuera_plazo': 0, 'no_tramitadas': 0}
-                year_start = '01-01-' + str(self.year)
-                year_end = '12-31-' + str(self.year)
+                year_start = str(self.year) + '-01-01'
+                year_end = str(self.year) + '-12-31'
                 cod_gest_data = o.GiscedataCodigosGestionCalidadZ.read(item, ['dies_limit', 'name', 'id',
                                                                               'dies_post_acceptacio'])
 
