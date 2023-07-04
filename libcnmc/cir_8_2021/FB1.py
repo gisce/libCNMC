@@ -268,6 +268,7 @@ class FB1(StopMultiprocessBased):
                         causa_baja = '0'
 
                     # Fecha APS
+                    fecha_aps = ''
                     if tram['data_pm']:
                         data_pm_linia = datetime.strptime(str(tram['data_pm']),
                                                           '%Y-%m-%d')
@@ -503,11 +504,15 @@ class FB1(StopMultiprocessBased):
                         estado = '1'
 
                     # ESTADO no pot ser 2 si FECHA_APS < 2022
-                    fecha_aps_year = int(fecha_aps.split('/')[2])
-                    if estado == '2' and fecha_aps_year != int(self.year):
-                        estado = '1'
-                    elif fecha_aps_year == int(self.year):
-                        estado = '2'
+                    if not modelo == 'M':
+                        if fecha_aps:
+                            fecha_aps_year = int(fecha_aps.split('/')[2])
+                            if estado == '2' and fecha_aps_year != int(self.year):
+                                estado = '1'
+                            elif fecha_aps_year == int(self.year):
+                                estado = '2'
+                        else:
+                            estado = '1'
 
                     output = [
                         o_tram,  # IDENTIFICADOR
@@ -722,6 +727,7 @@ class FB1(StopMultiprocessBased):
                         fecha_baja = ''
 
                     # Fecha APS
+                    fecha_aps = ''
                     if linia['data_pm']:
                         data_pm_linia = datetime.strptime(str(linia['data_pm']),
                                                           '%Y-%m-%d')
@@ -874,11 +880,15 @@ class FB1(StopMultiprocessBased):
                         estado = '1'
 
                     # ESTADO no pot ser 2 si FECHA_APS < 2022
-                    fecha_aps_year = int(fecha_aps.split('/')[2])
-                    if estado == '2' and fecha_aps_year != int(self.year):
-                        estado = '1'
-                    elif fecha_aps_year == int(self.year):
-                        estado = '2'
+                    if not modelo == 'M':
+                        if fecha_aps:
+                            fecha_aps_year = int(fecha_aps.split('/')[2])
+                            if estado == '2' and fecha_aps_year != int(self.year):
+                                estado = '1'
+                            elif fecha_aps_year == int(self.year):
+                                estado = '2'
+                        else:
+                            estado = '1'
 
                     output = [
                         identificador_tramo,  # IDENTIFICADOR TRAMO
