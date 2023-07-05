@@ -59,6 +59,7 @@ class FB9(StopMultiprocessBased):
                 resumen = OrderedDict()
                 resumen['5_G_6'] = 0
                 resumen['5_G_7'] = 0
+                resumen['5_G_8'] = 0
 
                 at_obj = O.GiscedataAtTram
                 bt_obj = O.GiscedataBtElement
