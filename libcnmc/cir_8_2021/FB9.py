@@ -58,7 +58,6 @@ class FB9(StopMultiprocessBased):
 
                 resumen = OrderedDict()
                 resumen['5_G_6'] = 0
-                resumen['5_G_8'] = 0
                 resumen['5_G_7'] = 0
 
                 at_obj = O.GiscedataAtTram
@@ -103,7 +102,7 @@ class FB9(StopMultiprocessBased):
                 for name in names['giscedata.at.tram']:
                     names_at_prefix.append('{}{}'.format(self.prefix_AT, name))
                 df_5_g_10 = df[df['0'].isin(names_at_prefix)]
-                resumen['5_G_10'] = df_5_g_10['27'].sum()
+                resumen['5_G_9'] = df_5_g_10['27'].sum()
 
                 # # FINANCIADO 0% # #
                 df_f0 = df[df['28'] == 0]
@@ -189,7 +188,7 @@ class FB9(StopMultiprocessBased):
                 for name in names['giscedata.bt.element']:
                     names_bt_prefix.append('{}{}'.format(self.prefix_BT, name))
                 df_5_g_10 = df[df['0'].isin(names_bt_prefix)]
-                resumen['5_G_10'] += df_5_g_10['27'].sum()
+                resumen['5_G_9'] += df_5_g_10['27'].sum()
 
                 # # FINANCIADO 0% # #
                 df_f0 = df[df['28'] == 0]
@@ -272,7 +271,7 @@ class FB9(StopMultiprocessBased):
 
                 pos_names = names['giscedata.cts.subestacions.posicio']
                 df_5_g_10 = df[df['0'].isin(pos_names)]
-                resumen['5_G_10'] += df_5_g_10['18'].sum()
+                resumen['5_G_9'] += df_5_g_10['18'].sum()
 
                 # # FINANCIADO 0% # #
                 df_f0 = df[df['24'] == 0]
@@ -427,7 +426,7 @@ class FB9(StopMultiprocessBased):
 
                 cella_names = names['giscedata.celles.cella']
                 df_5_g_10 = df[df['0'].isin(cella_names)]
-                resumen['5_G_10'] += df_5_g_10['26'].sum()
+                resumen['5_G_9'] += df_5_g_10['26'].sum()
 
                 # # FINANCIADO 0% # #
                 df_f0 = df[df['27'] == 0]
@@ -507,7 +506,7 @@ class FB9(StopMultiprocessBased):
 
                 ct_names = names['giscedata.cts']
                 df_5_g_10 = df[df['0'].isin(ct_names)]
-                resumen['5_G_10'] += df_5_g_10['30'].sum()
+                resumen['5_G_9'] += df_5_g_10['30'].sum()
 
                 # # FINANCIADO 0% # #
                 df_f0 = df[df['31'] == 0]
@@ -1109,23 +1108,33 @@ class FB9(StopMultiprocessBased):
                 resumen['5_G_5'] = inv['1_O_25'] + inv['2_O_25'] + inv['3_G_25']
 
                 # INVERSIÓN INSTALACIONES FINANCIADAS
-                resumen['5_G_9'] = inv['3_G_25']
+                resumen['5_G_8'] = inv['3_G_25']
 
                 # INVERSIÓN EQUIPOS MEDIDA
-                resumen['5_G_11'] = equipos['1A_E_17']
+                resumen['5_G_10'] = equipos['1A_E_17']
 
                 # INVERSIÓN NETA TOTAL
-                resumen['5_G_12'] = resumen['5_G_5'] - resumen['5_G_6'] - resumen['5_G_7'] - resumen['5_G_8'] \
-                                    - resumen['5_G_9'] - resumen['5_G_10'] - resumen['5_G_11']
+                resumen['5_G_11'] = resumen['5_G_5'] - resumen['5_G_6'] - resumen['5_G_7'] - resumen['5_G_8'] \
+                                    - resumen['5_G_9'] - resumen['5_G_10']
 
                 # INGRESOS PERCIBIDOS
-                resumen['5_G_13'] = 0
-                resumen['1B_D_18'] = 0
-                resumen['1B_E_18'] = 0
-                resumen['1B_F_18'] = 0
-                resumen['2A_D_18'] = 0
-                resumen['2A_E_18'] = 0
-                resumen['2A_F_18'] = 0
+                resumen['5_G_12'] = 0
+                c3_obj = self.connection.model('cir8.2021.c3')
+                c3_ids = c3_obj.search([('year', '=', self.year)])
+
+                if c3_ids:
+                    for c3_id in c3_ids:
+                        ingreso_data = c3_obj.read(c3_id, ['ingreso'])
+                        if ingreso_data.get('ingreso', False):
+                            resumen['5_G_12'] += ingreso_data['ingreso']
+
+                # CAMPS EXTRA DEL VALIDADOR
+                resumen['1B_D_18'] = resumen['1B_D_13'] + resumen['1B_D_14'] + resumen['1B_D_15'] + resumen['1B_D_16'] + resumen['1B_D_17']
+                resumen['1B_E_18'] = resumen['1B_E_13'] + resumen['1B_E_14'] + resumen['1B_E_15'] + resumen['1B_E_16'] + resumen['1B_E_17']
+                resumen['1B_F_18'] = resumen['1B_F_13'] + resumen['1B_F_14'] + resumen['1B_F_15'] + resumen['1B_F_16'] + resumen['1B_F_17']
+                resumen['2A_D_18'] = resumen['2A_D_13'] + resumen['2A_D_14'] + resumen['2A_D_15'] + resumen['2A_D_16'] + resumen['2A_D_17']
+                resumen['2A_E_18'] = resumen['2A_E_13'] + resumen['2A_E_14'] + resumen['2A_E_15'] + resumen['2A_E_16'] + resumen['2A_E_17']
+                resumen['2A_F_18'] = resumen['2A_F_13'] + resumen['2A_F_14'] + resumen['2A_F_15'] + resumen['2A_F_16'] + resumen['2A_F_17']
 
                 for k, v in resumen.items():
                     self.output_q.put([
