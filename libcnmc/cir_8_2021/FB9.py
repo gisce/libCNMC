@@ -984,6 +984,14 @@ class FB9(StopMultiprocessBased):
                 desp['3_G_24'] = df_f100['14'].sum()
                 desp['3_H_24'] = desp['3_G_24']
 
+                # CAMPS EXTRA DEL VALIDADOR
+                desp['1B_D_18'] = desp['1B_D_13'] + desp['1B_D_14'] + desp['1B_D_15'] + desp['1B_D_16'] + desp['1B_D_17']
+                desp['1B_E_18'] = desp['1B_E_13'] + desp['1B_E_14'] + desp['1B_E_15'] + desp['1B_E_16'] + desp['1B_E_17']
+                desp['1B_F_18'] = desp['1B_F_13'] + desp['1B_F_14'] + desp['1B_F_15'] + desp['1B_F_16'] + desp['1B_F_17']
+                desp['2A_D_18'] = desp['2A_D_13'] + desp['2A_D_14'] + desp['2A_D_15'] + desp['2A_D_16'] + desp['2A_D_17']
+                desp['2A_E_18'] = desp['2A_E_13'] + desp['2A_E_14'] + desp['2A_E_15'] + desp['2A_E_16'] + desp['2A_E_17']
+                desp['2A_F_18'] = desp['2A_F_13'] + desp['2A_F_14'] + desp['2A_F_15'] + desp['2A_F_16'] + desp['2A_F_17']
+
                 for k, v in desp.items():
                     self.output_q.put([
                         k,                                 # CODIGO_CELDA
@@ -1128,14 +1136,6 @@ class FB9(StopMultiprocessBased):
                         ingreso_data = c3_obj.read(c3_id, ['ingreso'])
                         if ingreso_data.get('ingreso', False):
                             resumen['5_G_12'] += ingreso_data['ingreso']
-
-                # CAMPS EXTRA DEL VALIDADOR
-                resumen['1B_D_18'] = resumen['1B_D_13'] + resumen['1B_D_14'] + resumen['1B_D_15'] + resumen['1B_D_16'] + resumen['1B_D_17']
-                resumen['1B_E_18'] = resumen['1B_E_13'] + resumen['1B_E_14'] + resumen['1B_E_15'] + resumen['1B_E_16'] + resumen['1B_E_17']
-                resumen['1B_F_18'] = resumen['1B_F_13'] + resumen['1B_F_14'] + resumen['1B_F_15'] + resumen['1B_F_16'] + resumen['1B_F_17']
-                resumen['2A_D_18'] = resumen['2A_D_13'] + resumen['2A_D_14'] + resumen['2A_D_15'] + resumen['2A_D_16'] + resumen['2A_D_17']
-                resumen['2A_E_18'] = resumen['2A_E_13'] + resumen['2A_E_14'] + resumen['2A_E_15'] + resumen['2A_E_16'] + resumen['2A_E_17']
-                resumen['2A_F_18'] = resumen['2A_F_13'] + resumen['2A_F_14'] + resumen['2A_F_15'] + resumen['2A_F_16'] + resumen['2A_F_17']
 
                 for k, v in resumen.items():
                     self.output_q.put([
