@@ -1119,6 +1119,13 @@ class FB9(StopMultiprocessBased):
                                     - resumen['5_G_9'] - resumen['5_G_10'] - resumen['5_G_11']
 
                 # INGRESOS PERCIBIDOS
+                resumen['5_G_13'] = 0
+                resumen['1B_D_18'] = 0
+                resumen['1B_E_18'] = 0
+                resumen['1B_F_18'] = 0
+                resumen['2A_D_18'] = 0
+                resumen['2A_E_18'] = 0
+                resumen['2A_F_18'] = 0
 
                 for k, v in resumen.items():
                     self.output_q.put([

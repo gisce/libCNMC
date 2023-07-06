@@ -93,17 +93,17 @@ class FA3(StopMultiprocessBased):
                     o_year_previsto = prevision['year_previsto']
 
                 # SUMINISTROS BT
-                o_suministros_bt = ''
+                o_suministros_bt = 0
                 if prevision['suministros_bt']:
                     o_suministros_bt = prevision['suministros_bt']
 
                 # SUMINISTROS MT
-                o_suministros_mt = ''
+                o_suministros_mt = 0
                 if prevision['suministros_mt']:
                     o_suministros_mt = prevision['suministros_mt']
 
                 # SUMINISTROS AT
-                o_suministros_at = ''
+                o_suministros_at = 0
                 if prevision['suministros_at']:
                     o_suministros_at = prevision['suministros_at']
 

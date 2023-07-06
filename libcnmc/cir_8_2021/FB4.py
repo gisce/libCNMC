@@ -35,7 +35,7 @@ class FB4(StopMultiprocessBased):
             :param kwargs:
             """
 
-        self.year = kwargs.pop("year")
+        self.year = kwargs.pop('year', datetime.now().year - 1)
         self.compare_field = '4666_entregada'
 
         super(FB4, self).__init__(**kwargs)
@@ -337,6 +337,17 @@ class FB4(StopMultiprocessBased):
                 if modelo == 'E':
                     tipo_inversion = '0'
                     estado = '1'
+
+                # ESTADO no pot ser 2 si FECHA_APS < 2022
+                if not modelo == 'M':
+                    if data_pm:
+                        fecha_aps_year = int(data_pm.split('/')[2])
+                        if estado == '2' and fecha_aps_year != int(self.year):
+                            estado = '1'
+                        elif fecha_aps_year == int(self.year):
+                            estado = '2'
+                    else:
+                        estado = '1'
 
                 output = [
                     pos['name'],  #IDENTIFICADOR_POSICION
