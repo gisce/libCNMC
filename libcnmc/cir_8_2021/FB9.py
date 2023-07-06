@@ -515,14 +515,14 @@ class FB9(StopMultiprocessBased):
                 # TIPO 0
                 df_f0_to = df_f0[df_f0['23'] == 0]
                 ct['1_E_21'] = df_f0_to.shape[0]
-                ct['1_F_21'] = df_f0_to['8'].sum() / 1000
+                ct['1_F_21'] = df_f0_to['10'].sum() / 1000
                 ct['1_G_21'] = df_f0_to['30'].sum()
                 ct['1_H_21'] = ct['1_G_21']
 
                 # TIPO 1
                 df_f0_t1 = df_f0[df_f0['23'] == 1]
                 ct['1_I_21'] = df_f0_t1.shape[0]
-                ct['1_J_21'] = df_f0_t1['8'].sum() / 1000
+                ct['1_J_21'] = df_f0_t1['10'].sum() / 1000
                 ct['1_K_21'] = df_f0_t1['30'].sum()
                 ct['1_L_21'] = ct['1_K_21']
 
@@ -538,14 +538,14 @@ class FB9(StopMultiprocessBased):
                 # TIPO 0
                 df_f_to = df_f[df_f['23'] == 0]
                 ct['2_E_21'] = df_f_to.shape[0]
-                ct['2_F_21'] = df_f_to['8'].sum() / 1000
+                ct['2_F_21'] = df_f_to['10'].sum() / 1000
                 ct['2_G_21'] = df_f_to['30'].sum()
                 ct['2_H_21'] = ct['2_G_21']
 
                 # TIPO 1
                 df_f_t1 = df_f[df_f['23'] == 1]
                 ct['2_I_21'] = df_f_t1.shape[0]
-                ct['2_J_21'] = df_f_t1['8'].sum() / 1000
+                ct['2_J_21'] = df_f_t1['10'].sum() / 1000
                 ct['2_K_21'] = df_f_t1['30'].sum()
                 ct['2_L_21'] = ct['2_K_21']
 
@@ -559,7 +559,7 @@ class FB9(StopMultiprocessBased):
                 df_f100 = df[(df['31'] == 100) & ((df['23'] == 0) | (df['23'] == 1))]
 
                 ct['3_E_21'] = df_f100.shape[0]
-                ct['3_F_21'] = df_f100['8'].sum() / 1000
+                ct['3_F_21'] = df_f100['10'].sum() / 1000
                 ct['3_G_21'] = df_f100['30'].sum()
                 ct['3_H_21'] = ct['3_G_21']
 
@@ -895,23 +895,28 @@ class FB9(StopMultiprocessBased):
                 desp['1B_E_15'] = df_f0_dig['14'].sum()
                 desp['1B_F_15'] = desp['1B_E_15']
 
+                # PRTR #
+                desp['1B_D_16'] = 0
+                desp['1B_E_16'] = 0
+                desp['1B_F_16'] = 0
+
                 # OTRO IBO #
                 df_f0_ibo = df_f0[df_f0['2'] == 'IBO']
-                desp['1B_D_16'] = df_f0_ibo.shape[0]
-                desp['1B_E_16'] = df_f0_ibo['14'].sum()
-                desp['1B_F_16'] = desp['1B_E_16']
+                desp['1B_D_17'] = df_f0_ibo.shape[0]
+                desp['1B_E_17'] = df_f0_ibo['14'].sum()
+                desp['1B_F_17'] = desp['1B_E_17']
 
                 # TOTAL #
-                desp['1B_D_17'] = desp['1B_D_13'] + desp['1B_D_14'] + desp['1B_D_15'] + desp['1B_D_16']
-                desp['1B_E_17'] = desp['1B_E_13'] + desp['1B_E_14'] + desp['1B_E_15'] + desp['1B_E_16']
-                desp['1B_F_17'] = desp['1B_F_13'] + desp['1B_F_14'] + desp['1B_F_15'] + desp['1B_F_16']
+                desp['1B_D_18'] = desp['1B_D_13'] + desp['1B_D_14'] + desp['1B_D_15'] + desp['1B_D_16'] + desp['1B_D_17']
+                desp['1B_E_18'] = desp['1B_E_13'] + desp['1B_E_14'] + desp['1B_E_15'] + desp['1B_E_16'] + desp['1B_E_17']
+                desp['1B_F_18'] = desp['1B_F_13'] + desp['1B_F_14'] + desp['1B_F_15'] + desp['1B_F_16'] + desp['1B_F_17']
 
                 # # # CUADRO 1 - H # # #
 
-                desp['1_E_24'] = desp['1B_D_17']
+                desp['1_E_24'] = desp['1B_D_18']
                 desp['1_F_24'] = 0
-                desp['1_G_24'] = desp['1B_E_17']
-                desp['1_H_24'] = desp['1B_F_17']
+                desp['1_G_24'] = desp['1B_E_18']
+                desp['1_H_24'] = desp['1B_F_18']
 
                 desp['1_I_24'] = 0
                 desp['1_J_24'] = 0
@@ -946,21 +951,26 @@ class FB9(StopMultiprocessBased):
                 desp['2A_E_15'] = df_f_dig['14'].sum()
                 desp['2A_F_15'] = desp['2A_E_15']
 
+                # PRTR #
+                desp['2A_D_16'] = 0
+                desp['2A_E_16'] = 0
+                desp['2A_F_16'] = 0
+
                 # OTRO IBO #
                 df_f_ibo = df_f[df_f['2'] == 'IBO']
-                desp['2A_D_16'] = df_f_ibo.shape[0]
-                desp['2A_E_16'] = df_f_ibo['14'].sum()
-                desp['2A_F_16'] = desp['2A_E_16']
+                desp['2A_D_17'] = df_f_ibo.shape[0]
+                desp['2A_E_17'] = df_f_ibo['14'].sum()
+                desp['2A_F_17'] = desp['2A_E_17']
 
                 # TOTAL #
-                desp['2A_D_17'] = desp['2A_D_13'] + desp['2A_D_14'] + desp['2A_D_15'] + desp['2A_D_16']
-                desp['2A_E_17'] = desp['2A_E_13'] + desp['2A_E_14'] + desp['2A_E_15'] + desp['2A_E_16']
-                desp['2A_F_17'] = desp['2A_F_13'] + desp['2A_F_14'] + desp['2A_F_15'] + desp['2A_F_16']
+                desp['2A_D_18'] = desp['2A_D_13'] + desp['2A_D_14'] + desp['2A_D_15'] + desp['2A_D_16'] + desp['2A_D_17']
+                desp['2A_E_18'] = desp['2A_E_13'] + desp['2A_E_14'] + desp['2A_E_15'] + desp['2A_E_16'] + desp['2A_E_17']
+                desp['2A_F_18'] = desp['2A_F_13'] + desp['2A_F_14'] + desp['2A_F_15'] + desp['2A_F_16'] + desp['2A_F_17']
 
-                desp['2_E_24'] = desp['2A_D_17']
+                desp['2_E_24'] = desp['2A_D_18']
                 desp['2_F_24'] = 0
-                desp['2_G_24'] = desp['2A_E_17']
-                desp['2_H_24'] = desp['2A_F_17']
+                desp['2_G_24'] = desp['2A_E_18']
+                desp['2_H_24'] = desp['2A_F_18']
 
                 # # # CUADRO 2 - H # # #
 
@@ -983,14 +993,6 @@ class FB9(StopMultiprocessBased):
                 desp['3_F_24'] = 0
                 desp['3_G_24'] = df_f100['14'].sum()
                 desp['3_H_24'] = desp['3_G_24']
-
-                # CAMPS EXTRA DEL VALIDADOR
-                desp['1B_D_18'] = desp['1B_D_13'] + desp['1B_D_14'] + desp['1B_D_15'] + desp['1B_D_16'] + desp['1B_D_17']
-                desp['1B_E_18'] = desp['1B_E_13'] + desp['1B_E_14'] + desp['1B_E_15'] + desp['1B_E_16'] + desp['1B_E_17']
-                desp['1B_F_18'] = desp['1B_F_13'] + desp['1B_F_14'] + desp['1B_F_15'] + desp['1B_F_16'] + desp['1B_F_17']
-                desp['2A_D_18'] = desp['2A_D_13'] + desp['2A_D_14'] + desp['2A_D_15'] + desp['2A_D_16'] + desp['2A_D_17']
-                desp['2A_E_18'] = desp['2A_E_13'] + desp['2A_E_14'] + desp['2A_E_15'] + desp['2A_E_16'] + desp['2A_E_17']
-                desp['2A_F_18'] = desp['2A_F_13'] + desp['2A_F_14'] + desp['2A_F_15'] + desp['2A_F_16'] + desp['2A_F_17']
 
                 for k, v in desp.items():
                     self.output_q.put([
