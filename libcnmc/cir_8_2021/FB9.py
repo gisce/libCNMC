@@ -498,7 +498,7 @@ class FB9(StopMultiprocessBased):
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
                 df['31'] = pd.to_numeric(df['31'], errors='coerce').astype(float)
                 df['23'] = pd.to_numeric(df['23'], errors='coerce').astype(float)
-                df['8'] = pd.to_numeric(df['8'], errors='coerce').astype(int)
+                df['8'] = pd.to_numeric(df['8'], errors='coerce').astype(float)
                 ct = OrderedDict()
 
                 # CUADRO 5
