@@ -498,6 +498,7 @@ class FB9(StopMultiprocessBased):
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
                 df['31'] = pd.to_numeric(df['31'], errors='coerce').astype(float)
                 df['23'] = pd.to_numeric(df['23'], errors='coerce').astype(float)
+                df['8'] = pd.to_numeric(df['8'], errors='coerce').astype(int)
                 ct = OrderedDict()
 
                 # CUADRO 5
@@ -515,14 +516,14 @@ class FB9(StopMultiprocessBased):
                 # TIPO 0
                 df_f0_to = df_f0[df_f0['23'] == 0]
                 ct['1_E_21'] = df_f0_to.shape[0]
-                ct['1_F_21'] = df_f0_to['10'].sum() / 1000
+                ct['1_F_21'] = df_f0_to['8'].sum() / 1000
                 ct['1_G_21'] = df_f0_to['30'].sum()
                 ct['1_H_21'] = ct['1_G_21']
 
                 # TIPO 1
                 df_f0_t1 = df_f0[df_f0['23'] == 1]
                 ct['1_I_21'] = df_f0_t1.shape[0]
-                ct['1_J_21'] = df_f0_t1['10'].sum() / 1000
+                ct['1_J_21'] = df_f0_t1['8'].sum() / 1000
                 ct['1_K_21'] = df_f0_t1['30'].sum()
                 ct['1_L_21'] = ct['1_K_21']
 
@@ -538,14 +539,14 @@ class FB9(StopMultiprocessBased):
                 # TIPO 0
                 df_f_to = df_f[df_f['23'] == 0]
                 ct['2_E_21'] = df_f_to.shape[0]
-                ct['2_F_21'] = df_f_to['10'].sum() / 1000
+                ct['2_F_21'] = df_f_to['8'].sum() / 1000
                 ct['2_G_21'] = df_f_to['30'].sum()
                 ct['2_H_21'] = ct['2_G_21']
 
                 # TIPO 1
                 df_f_t1 = df_f[df_f['23'] == 1]
                 ct['2_I_21'] = df_f_t1.shape[0]
-                ct['2_J_21'] = df_f_t1['10'].sum() / 1000
+                ct['2_J_21'] = df_f_t1['8'].sum() / 1000
                 ct['2_K_21'] = df_f_t1['30'].sum()
                 ct['2_L_21'] = ct['2_K_21']
 
@@ -559,7 +560,7 @@ class FB9(StopMultiprocessBased):
                 df_f100 = df[(df['31'] == 100) & ((df['23'] == 0) | (df['23'] == 1))]
 
                 ct['3_E_21'] = df_f100.shape[0]
-                ct['3_F_21'] = df_f100['10'].sum() / 1000
+                ct['3_F_21'] = df_f100['8'].sum() / 1000
                 ct['3_G_21'] = df_f100['30'].sum()
                 ct['3_H_21'] = ct['3_G_21']
 
