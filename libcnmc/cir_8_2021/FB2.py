@@ -414,6 +414,10 @@ class FB2(StopMultiprocessBased):
                     else:
                         estado = '1'
 
+                # Buidem FECHA_IP si hi ha FECHA_BAJA
+                if fecha_baja:
+                    data_ip = ''
+
                 output = [
                     o_identificador_ct,           # IDENTIFICADOR
                     ct['cini'] or '',                   # CINI
