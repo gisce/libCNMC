@@ -652,7 +652,7 @@ class FB1(StopMultiprocessBased):
                     # TENSION CONSTRUCCION
                     tension_construccion = ''
                     if linia.get('tensio_const', False):
-                        tension_construccion = format_f(float(linia['tensio_max_disseny_id'][1])/1000, 3)
+                        tension_construccion = format_f(float(linia['tensio_const'][1])/1000, 3)
                         if str(tension_construccion) == str(tension_explotacion):
                             tension_construccion = ''
 
