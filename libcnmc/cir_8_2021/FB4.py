@@ -349,6 +349,10 @@ class FB4(StopMultiprocessBased):
                     else:
                         estado = '1'
 
+                # Buidem FECHA_IP si hi ha FECHA_BAJA
+                if fecha_baja:
+                    data_ip = ''
+
                 output = [
                     pos['name'],  #IDENTIFICADOR_POSICION
                     pos['cini'],  #CINI

@@ -278,6 +278,10 @@ class FB5(StopMultiprocessBased):
                     else:
                         estado = '1'
 
+                # Buidem FECHA_IP si hi ha FECHA_BAJA
+                if fecha_baja:
+                    data_ip = ''
+
                 self.output_q.put([
                     o_maquina,              # IDENTIFICADOR_MAQUINA
                     o_cini,                 # CINI

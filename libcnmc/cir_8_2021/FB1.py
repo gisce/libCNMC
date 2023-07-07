@@ -514,6 +514,10 @@ class FB1(StopMultiprocessBased):
                         else:
                             estado = '1'
 
+                    # Buidem FECHA_IP si hi ha FECHA_BAJA
+                    if fecha_baja:
+                        data_ip = ''
+
                     output = [
                         o_tram,  # IDENTIFICADOR
                         tram.get('cini', '') or '',         # CINI
@@ -889,6 +893,10 @@ class FB1(StopMultiprocessBased):
                                 estado = '2'
                         else:
                             estado = '1'
+
+                    # Buidem FECHA_IP si hi ha FECHA_BAJA
+                    if fecha_baja:
+                        data_ip = ''
 
                     output = [
                         identificador_tramo,  # IDENTIFICADOR TRAMO
