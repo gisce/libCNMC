@@ -1138,7 +1138,7 @@ class FB9(StopMultiprocessBased):
                     for c3_id in c3_ids:
                         ingreso_data = c3_obj.read(c3_id, ['ingreso'])
                         if ingreso_data.get('ingreso', False):
-                            resumen['5_G_12'] += ingreso_data['ingreso']
+                            resumen['5_G_12'] += abs(ingreso_data['ingreso'])
 
                 for k, v in resumen.items():
                     self.output_q.put([
