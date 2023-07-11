@@ -58,8 +58,8 @@ class FB9(StopMultiprocessBased):
 
                 resumen = OrderedDict()
                 resumen['5_G_6'] = 0
-                resumen['5_G_8'] = 0
                 resumen['5_G_7'] = 0
+                resumen['5_G_8'] = 0
 
                 at_obj = O.GiscedataAtTram
                 bt_obj = O.GiscedataBtElement
@@ -103,7 +103,7 @@ class FB9(StopMultiprocessBased):
                 for name in names['giscedata.at.tram']:
                     names_at_prefix.append('{}{}'.format(self.prefix_AT, name))
                 df_5_g_10 = df[df['0'].isin(names_at_prefix)]
-                resumen['5_G_10'] = df_5_g_10['27'].sum()
+                resumen['5_G_9'] = df_5_g_10['27'].sum()
 
                 # # FINANCIADO 0% # #
                 df_f0 = df[df['28'] == 0]
@@ -189,7 +189,7 @@ class FB9(StopMultiprocessBased):
                 for name in names['giscedata.bt.element']:
                     names_bt_prefix.append('{}{}'.format(self.prefix_BT, name))
                 df_5_g_10 = df[df['0'].isin(names_bt_prefix)]
-                resumen['5_G_10'] += df_5_g_10['27'].sum()
+                resumen['5_G_9'] += df_5_g_10['27'].sum()
 
                 # # FINANCIADO 0% # #
                 df_f0 = df[df['28'] == 0]
@@ -272,7 +272,7 @@ class FB9(StopMultiprocessBased):
 
                 pos_names = names['giscedata.cts.subestacions.posicio']
                 df_5_g_10 = df[df['0'].isin(pos_names)]
-                resumen['5_G_10'] += df_5_g_10['18'].sum()
+                resumen['5_G_9'] += df_5_g_10['18'].sum()
 
                 # # FINANCIADO 0% # #
                 df_f0 = df[df['24'] == 0]
@@ -427,7 +427,7 @@ class FB9(StopMultiprocessBased):
 
                 cella_names = names['giscedata.celles.cella']
                 df_5_g_10 = df[df['0'].isin(cella_names)]
-                resumen['5_G_10'] += df_5_g_10['26'].sum()
+                resumen['5_G_9'] += df_5_g_10['26'].sum()
 
                 # # FINANCIADO 0% # #
                 df_f0 = df[df['27'] == 0]
@@ -498,6 +498,7 @@ class FB9(StopMultiprocessBased):
                 df = pd.read_csv(file_path, sep=';', decimal=',', names=columns)
                 df['31'] = pd.to_numeric(df['31'], errors='coerce').astype(float)
                 df['23'] = pd.to_numeric(df['23'], errors='coerce').astype(float)
+                df['8'] = pd.to_numeric(df['8'], errors='coerce').astype(float)
                 ct = OrderedDict()
 
                 # CUADRO 5
@@ -507,7 +508,7 @@ class FB9(StopMultiprocessBased):
 
                 ct_names = names['giscedata.cts']
                 df_5_g_10 = df[df['0'].isin(ct_names)]
-                resumen['5_G_10'] += df_5_g_10['30'].sum()
+                resumen['5_G_9'] += df_5_g_10['30'].sum()
 
                 # # FINANCIADO 0% # #
                 df_f0 = df[df['31'] == 0]
@@ -895,23 +896,28 @@ class FB9(StopMultiprocessBased):
                 desp['1B_E_15'] = df_f0_dig['14'].sum()
                 desp['1B_F_15'] = desp['1B_E_15']
 
+                # PRTR #
+                desp['1B_D_16'] = 0
+                desp['1B_E_16'] = 0
+                desp['1B_F_16'] = 0
+
                 # OTRO IBO #
                 df_f0_ibo = df_f0[df_f0['2'] == 'IBO']
-                desp['1B_D_16'] = df_f0_ibo.shape[0]
-                desp['1B_E_16'] = df_f0_ibo['14'].sum()
-                desp['1B_F_16'] = desp['1B_E_16']
+                desp['1B_D_17'] = df_f0_ibo.shape[0]
+                desp['1B_E_17'] = df_f0_ibo['14'].sum()
+                desp['1B_F_17'] = desp['1B_E_17']
 
                 # TOTAL #
-                desp['1B_D_17'] = desp['1B_D_13'] + desp['1B_D_14'] + desp['1B_D_15'] + desp['1B_D_16']
-                desp['1B_E_17'] = desp['1B_E_13'] + desp['1B_E_14'] + desp['1B_E_15'] + desp['1B_E_16']
-                desp['1B_F_17'] = desp['1B_F_13'] + desp['1B_F_14'] + desp['1B_F_15'] + desp['1B_F_16']
+                desp['1B_D_18'] = desp['1B_D_13'] + desp['1B_D_14'] + desp['1B_D_15'] + desp['1B_D_16'] + desp['1B_D_17']
+                desp['1B_E_18'] = desp['1B_E_13'] + desp['1B_E_14'] + desp['1B_E_15'] + desp['1B_E_16'] + desp['1B_E_17']
+                desp['1B_F_18'] = desp['1B_F_13'] + desp['1B_F_14'] + desp['1B_F_15'] + desp['1B_F_16'] + desp['1B_F_17']
 
                 # # # CUADRO 1 - H # # #
 
-                desp['1_E_24'] = desp['1B_D_17']
+                desp['1_E_24'] = desp['1B_D_18']
                 desp['1_F_24'] = 0
-                desp['1_G_24'] = desp['1B_E_17']
-                desp['1_H_24'] = desp['1B_F_17']
+                desp['1_G_24'] = desp['1B_E_18']
+                desp['1_H_24'] = desp['1B_F_18']
 
                 desp['1_I_24'] = 0
                 desp['1_J_24'] = 0
@@ -946,21 +952,26 @@ class FB9(StopMultiprocessBased):
                 desp['2A_E_15'] = df_f_dig['14'].sum()
                 desp['2A_F_15'] = desp['2A_E_15']
 
+                # PRTR #
+                desp['2A_D_16'] = 0
+                desp['2A_E_16'] = 0
+                desp['2A_F_16'] = 0
+
                 # OTRO IBO #
                 df_f_ibo = df_f[df_f['2'] == 'IBO']
-                desp['2A_D_16'] = df_f_ibo.shape[0]
-                desp['2A_E_16'] = df_f_ibo['14'].sum()
-                desp['2A_F_16'] = desp['2A_E_16']
+                desp['2A_D_17'] = df_f_ibo.shape[0]
+                desp['2A_E_17'] = df_f_ibo['14'].sum()
+                desp['2A_F_17'] = desp['2A_E_17']
 
                 # TOTAL #
-                desp['2A_D_17'] = desp['2A_D_13'] + desp['2A_D_14'] + desp['2A_D_15'] + desp['2A_D_16']
-                desp['2A_E_17'] = desp['2A_E_13'] + desp['2A_E_14'] + desp['2A_E_15'] + desp['2A_E_16']
-                desp['2A_F_17'] = desp['2A_F_13'] + desp['2A_F_14'] + desp['2A_F_15'] + desp['2A_F_16']
+                desp['2A_D_18'] = desp['2A_D_13'] + desp['2A_D_14'] + desp['2A_D_15'] + desp['2A_D_16'] + desp['2A_D_17']
+                desp['2A_E_18'] = desp['2A_E_13'] + desp['2A_E_14'] + desp['2A_E_15'] + desp['2A_E_16'] + desp['2A_E_17']
+                desp['2A_F_18'] = desp['2A_F_13'] + desp['2A_F_14'] + desp['2A_F_15'] + desp['2A_F_16'] + desp['2A_F_17']
 
-                desp['2_E_24'] = desp['2A_D_17']
+                desp['2_E_24'] = desp['2A_D_18']
                 desp['2_F_24'] = 0
-                desp['2_G_24'] = desp['2A_E_17']
-                desp['2_H_24'] = desp['2A_F_17']
+                desp['2_G_24'] = desp['2A_E_18']
+                desp['2_H_24'] = desp['2A_F_18']
 
                 # # # CUADRO 2 - H # # #
 
@@ -1109,16 +1120,25 @@ class FB9(StopMultiprocessBased):
                 resumen['5_G_5'] = inv['1_O_25'] + inv['2_O_25'] + inv['3_G_25']
 
                 # INVERSIÓN INSTALACIONES FINANCIADAS
-                resumen['5_G_9'] = inv['3_G_25']
+                resumen['5_G_8'] = inv['3_G_25']
 
                 # INVERSIÓN EQUIPOS MEDIDA
-                resumen['5_G_11'] = equipos['1A_E_17']
+                resumen['5_G_10'] = equipos['1A_E_17']
 
                 # INVERSIÓN NETA TOTAL
-                resumen['5_G_12'] = resumen['5_G_5'] - resumen['5_G_6'] - resumen['5_G_7'] - resumen['5_G_8'] \
-                                    - resumen['5_G_9'] - resumen['5_G_10'] - resumen['5_G_11']
+                resumen['5_G_11'] = resumen['5_G_5'] - resumen['5_G_6'] - resumen['5_G_7'] - resumen['5_G_8'] \
+                                    - resumen['5_G_9'] - resumen['5_G_10']
 
                 # INGRESOS PERCIBIDOS
+                resumen['5_G_12'] = 0
+                c3_obj = self.connection.model('cir8.2021.c3')
+                c3_ids = c3_obj.search([('year', '=', self.year)])
+
+                if c3_ids:
+                    for c3_id in c3_ids:
+                        ingreso_data = c3_obj.read(c3_id, ['ingreso'])
+                        if ingreso_data.get('ingreso', False):
+                            resumen['5_G_12'] += abs(ingreso_data['ingreso'])
 
                 for k, v in resumen.items():
                     self.output_q.put([

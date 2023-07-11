@@ -268,6 +268,7 @@ class FB1(StopMultiprocessBased):
                         causa_baja = '0'
 
                     # Fecha APS
+                    fecha_aps = ''
                     if tram['data_pm']:
                         data_pm_linia = datetime.strptime(str(tram['data_pm']),
                                                           '%Y-%m-%d')
@@ -498,6 +499,25 @@ class FB1(StopMultiprocessBased):
                     if causa_baja == '0':
                         fecha_baja = ''
 
+                    if modelo == 'E':
+                        tipo_inversion = '0'
+                        estado = '1'
+
+                    # ESTADO no pot ser 2 si FECHA_APS < 2022
+                    if not modelo == 'M':
+                        if fecha_aps:
+                            fecha_aps_year = int(fecha_aps.split('/')[2])
+                            if estado == '2' and fecha_aps_year != int(self.year):
+                                estado = '1'
+                            elif fecha_aps_year == int(self.year):
+                                estado = '2'
+                        else:
+                            estado = '1'
+
+                    # Buidem FECHA_IP si hi ha FECHA_BAJA
+                    if fecha_baja:
+                        data_ip = ''
+
                     output = [
                         o_tram,  # IDENTIFICADOR
                         tram.get('cini', '') or '',         # CINI
@@ -636,7 +656,7 @@ class FB1(StopMultiprocessBased):
                     # TENSION CONSTRUCCION
                     tension_construccion = ''
                     if linia.get('tensio_const', False):
-                        tension_construccion = format_f(float(linia['tensio_max_disseny_id'][1])/1000, 3)
+                        tension_construccion = format_f(float(linia['tensio_const'][1])/1000, 3)
                         if str(tension_construccion) == str(tension_explotacion):
                             tension_construccion = ''
 
@@ -711,6 +731,7 @@ class FB1(StopMultiprocessBased):
                         fecha_baja = ''
 
                     # Fecha APS
+                    fecha_aps = ''
                     if linia['data_pm']:
                         data_pm_linia = datetime.strptime(str(linia['data_pm']),
                                                           '%Y-%m-%d')
@@ -857,6 +878,25 @@ class FB1(StopMultiprocessBased):
 
                     if causa_baja == '0':
                         fecha_baja = ''
+
+                    if modelo == 'E':
+                        tipo_inversion = '0'
+                        estado = '1'
+
+                    # ESTADO no pot ser 2 si FECHA_APS < 2022
+                    if not modelo == 'M':
+                        if fecha_aps:
+                            fecha_aps_year = int(fecha_aps.split('/')[2])
+                            if estado == '2' and fecha_aps_year != int(self.year):
+                                estado = '1'
+                            elif fecha_aps_year == int(self.year):
+                                estado = '2'
+                        else:
+                            estado = '1'
+
+                    # Buidem FECHA_IP si hi ha FECHA_BAJA
+                    if fecha_baja:
+                        data_ip = ''
 
                     output = [
                         identificador_tramo,  # IDENTIFICADOR TRAMO

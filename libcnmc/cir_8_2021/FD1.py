@@ -31,9 +31,13 @@ class FD1(StopMultiprocessBased):
                     break
                 self.progress_q.put(item)
                 d1 = O.model('cir8.2021.d1').read(item, fields_to_read)
-                o_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi(
+                o_ccaa = ''
+                id_comunitat = O.ResComunitat_autonoma.get_ccaa_from_municipi(
                     d1['municipio'][0]
                 )[0]
+                comunitat_vals = O.ResComunitat_autonoma.read(id_comunitat, ['codi'])
+                if comunitat_vals:
+                    o_ccaa = comunitat_vals['codi']
                 ine = O.ResMunicipi.read(d1['municipio'][0], ['ine'])['ine']
                 o_provincia, o_municipio = get_ine(O, ine)
                 self.output_q.put([
@@ -42,7 +46,7 @@ class FD1(StopMultiprocessBased):
                     o_provincia,
                     o_ccaa,
                     d1['zona'],
-                    format_f(d1['potencia'], 3),
+                    format_f(d1['potencia'], 2),
                     d1['n_cups'],
                     format_f(d1['programadas_transporte'], 2),
                     format_f(d1['programadas_distribucion'], 2),

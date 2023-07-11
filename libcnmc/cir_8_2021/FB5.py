@@ -97,6 +97,7 @@ class FB5(StopMultiprocessBased):
                     modelo = ''
 
                 # FECHA_APS
+                data_pm = ''
                 if trafo['data_pm']:
                     data_pm_trafo = datetime.strptime(str(trafo['data_pm']),
                                                       '%Y-%m-%d')
@@ -261,6 +262,25 @@ class FB5(StopMultiprocessBased):
 
                 if causa_baja == '0':
                     fecha_baja = ''
+
+                if modelo == 'E':
+                    tipo_inversion = '0'
+                    estado = '1'
+
+                # ESTADO no pot ser 2 si FECHA_APS < 2022
+                if not modelo == 'M':
+                    if data_pm:
+                        fecha_aps_year = int(data_pm.split('/')[2])
+                        if estado == '2' and fecha_aps_year != int(self.year):
+                            estado = '1'
+                        elif fecha_aps_year == int(self.year):
+                            estado = '2'
+                    else:
+                        estado = '1'
+
+                # Buidem FECHA_IP si hi ha FECHA_BAJA
+                if fecha_baja:
+                    data_ip = ''
 
                 self.output_q.put([
                     o_maquina,              # IDENTIFICADOR_MAQUINA
