@@ -303,7 +303,7 @@ class FB2(StopMultiprocessBased):
 
                 if ct['cini']:
                     cini = ct['cini']
-                    if cini[4] == '5' and cini[7] == 'Z' and o_node:
+                    if o_node and cini[7] == 'V' or cini[7] == 'Z':
                         o_node_baixa = o_node
 
                 #TENSIO
