@@ -681,7 +681,7 @@ def get_autoconsum_by_modcon(o, cups_id, ultim_dia_any, primer_dia_any):
             modcon_data = modcon_obj.read(modcon_id, ['autoconsumo', 'cups'])
             if modcon_data.get('autoconsumo', False):
                 if modcon_data['autoconsumo'] != '00':
-                    cups_id = modcon_data['cups']
+                    cups_id = modcon_data['cups'][0]
                     autoconsum_id_data = cups_obj.read(cups_id, ['autoconsum_id'])
                     if autoconsum_id_data.get('autoconsum_id', False):
                         autoconsum_id = autoconsum_id_data['autoconsum_id']
