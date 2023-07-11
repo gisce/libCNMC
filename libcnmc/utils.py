@@ -674,7 +674,7 @@ def get_autoconsum_by_modcon(o, cups_id, ultim_dia_any, primer_dia_any):
     search_params = [('cups', '=', cups_id),
                      ('data_inici', '<=', ultim_dia_any),
                      ('data_final', '>=', primer_dia_any)]
-    modcon_ids = modcon_obj.search(search_params)
+    modcon_ids = modcon_obj.search(search_params, 0, 1, 'data_inici desc')
 
     if modcon_ids:
         for modcon_id in modcon_ids:
@@ -685,4 +685,5 @@ def get_autoconsum_by_modcon(o, cups_id, ultim_dia_any, primer_dia_any):
                     autoconsum_id_data = cups_obj.read(cups_id, ['autoconsum_id'])
                     if autoconsum_id_data.get('autoconsum_id', False):
                         autoconsum_id = autoconsum_id_data['autoconsum_id']
+                        break
     return autoconsum_id

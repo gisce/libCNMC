@@ -453,11 +453,7 @@ class FA1(StopMultiprocessBased):
                 o_cod_generacio_auto = ''
                 o_conexion_autoconsumo = ''
 
-                cups_obj = O.GiscedataCupsPs
-
                 autoconsum_id_data = get_autoconsum_by_modcon(O, item, ultim_dia_any, primer_dia_any)
-
-                autoconsum_id_data = cups_obj.get_autoconsum_on_date(item, ultim_dia_any, )
 
                 if autoconsum_id_data:
                     # AUTOCONSUMO
