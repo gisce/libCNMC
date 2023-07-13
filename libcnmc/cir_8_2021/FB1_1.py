@@ -28,6 +28,14 @@ class FB1_1(StopMultiprocessBased):
                           '&', ('active', '=', False),
                           ('data_baixa', '!=', False),
                           ('active', '=', True)]
+        # Excluim els IDs amb data de baixa de l'any en qüestió
+        search_params += ['!',
+                          '&',
+                          ('active', '=', False),
+                          '&',
+                          ('data_baixa', '>=', data_baixa),
+                          ('data_baixa', '<', data_pm)]
+
         res_at = self.connection.GiscedataAtTram.search(
             search_params, 0, 0, False, {'active_test': False})
         res_bt = self.connection.GiscedataBtElement.search(
