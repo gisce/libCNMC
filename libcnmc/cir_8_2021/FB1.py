@@ -317,8 +317,11 @@ class FB1(StopMultiprocessBased):
                             data_ip = ''
                         if tram_obra.get('identificador_baja', False):
                             tram_id = tram_obra['identificador_baja'][0]
-                            tram_name = O.GiscedataAtTram.read(tram_id, ['name'])['name']
-                            identificador_baja = '{}{}'.format(self.prefix_AT, tram_name)
+                            tram_data = O.GiscedataAtTram.read(tram_id, ['name', 'id_regulatori'])
+                            if tram_data.get('id_regulatori', False):
+                                identificador_baja = tram_data['id_regulatori']
+                            else:
+                                identificador_baja = '{}{}'.format(self.prefix_AT, tram_data['name'])
                         else:
                             identificador_baja = ''
                         tipo_inversion = tram_obra['tipo_inversion'] or ''
@@ -777,8 +780,12 @@ class FB1(StopMultiprocessBased):
                             data_ip = ''
                         if linia_obra.get('identificador_baja', False):
                             elem_id = linia_obra['identificador_baja'][0]
-                            elem_name = O.GiscedataBtElement.read(elem_id, ['name'])['name']
-                            identificador_baja = '{}{}'.format(self.prefix_BT, elem_name)
+                            elem_data = O.GiscedataBtElement.read(elem_id, ['name', 'id_regulatori'])
+                            if elem_data.get('id_regulatori', False):
+                                identificador_baja = elem_data['id_regulatori']
+                            else:
+                                identificador_baja = '{}{}'.format(self.prefix_BT, elem_data['name'])
+
                         else:
                             identificador_baja = ''
                         tipo_inversion = linia_obra['tipo_inversion'] or ''

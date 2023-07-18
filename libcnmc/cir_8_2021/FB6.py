@@ -267,9 +267,14 @@ class FB6(StopMultiprocessBased):
                     im_materiales = format_f_6181(cella_obra['im_materiales'] or 0.0, float_type='euro')
                     im_obracivil = format_f_6181(cella_obra['im_obracivil'] or 0.0, float_type='euro')
                     im_trabajos = format_f_6181(cella_obra['im_trabajos'] or 0.0, float_type='euro')
-                    identificador_baja = (
-                        get_inst_name(cella_obra['identificador_baja'][0]) if cella_obra['identificador_baja'] else ''
-                    )
+                    identificador_baja = ''
+                    if cella_obra.get('identificador_baja', False):
+                        cella_id = cella_obra['identificador_baja'][0]
+                        cella_data = O.GiscedataCellesCella.read(cella_id, ['name', 'id_regulatori'])
+                        if cella_data.get('id_regulatori', False):
+                            identificador_baja = cella_data['id_regulatori']
+                        else:
+                            identificador_baja = cella_data['name']
                     im_construccion = str(format_f(
                         float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
                     , 2)).replace(".", ",")

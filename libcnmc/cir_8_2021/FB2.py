@@ -194,9 +194,15 @@ class FB2(StopMultiprocessBased):
                         data_ip = convert_spanish_date(data_finalitzacio)
                     else:
                         data_ip = ''
-                    identificador_baja = (
-                        get_inst_name(ct_obra['identificador_baja']) if ct_obra['identificador_baja'] else ''
-                    )
+                    identificador_baja = ''
+                    if ct_obra.get('identificador_baja', False):
+                        ct_id = ct_obra['identificador_baja'][0]
+                        ct_data = O.GiscedataCts.read(ct_id, ['name', 'id_regulatori'])
+                        if ct_data.get('id_regulatori', False):
+                            identificador_baja = ct_data['id_regulatori']
+                        else:
+                            identificador_baja = ct_data['name']
+
                     tipo_inversion = ct_obra['tipo_inversion'] or ''
                     im_ingenieria = format_f_6181(ct_obra['im_ingenieria'] or 0.0, float_type='euro')
                     im_materiales = format_f_6181(ct_obra['im_materiales'] or 0.0, float_type='euro')
