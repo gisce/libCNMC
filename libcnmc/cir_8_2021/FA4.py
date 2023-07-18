@@ -136,7 +136,7 @@ class FA4(StopMultiprocessBased):
 
         o = self.connection
         fields_to_read = [
-            'name', 'et', 'polisses', 'id'
+            'name', 'et', 'polisses', 'id', 'id_escomesa'
         ]
         while True:
             try:
@@ -156,11 +156,30 @@ class FA4(StopMultiprocessBased):
                 o_cini = self.get_cini(cups['et'])
                 if not o_cini:
                     o_cini = 'False'
-                o_codi_ct = cups['et']
+
+                # IDENTIFICADOR segons si és AT o BT
+                o_identificador = ''
+                escomesa_obj = self.connection.GiscedataCupsEscomesa
+                tipus_obj = self.connection.GiscedataCupsBlockname
+                trace_obj = self.connection.GiscegisTraceability
+                if cups.get('id_escomesa', False):
+                    escomesa_data = escomesa_obj.read(cups['id_escomesa'][0], ['blockname', 'node_id'])
+                    if escomesa_data.get('blockname', False):
+                        tipus_data = tipus_obj.read(escomesa_data['blockname'][0], ['name'])
+                        if tipus_data['name'] == 'CONTA-AT':
+                            if escomesa_data.get('node_id', False):
+                                trace_data = trace_obj.read(escomesa_data['node_id'][0], ['information'])
+                                if trace_data.get('information', False):
+                                    information = trace_data['information']
+                                    if information.get('subestacio_id', False):
+                                        o_identificador = information['subestacio_id'][1]
+                        else:
+                            o_identificador = cups['et']
+
                 self.output_q.put([
                     o_cups,         # CUPS
                     o_cini,         # CINI
-                    o_codi_ct       # CODIGO SUBESTACION
+                    o_identificador       # CODIGO SUBESTACION
                 ])
                 self.input_q.task_done()
             except Exception:
