@@ -72,37 +72,37 @@ class FC7(StopMultiprocessBased):
                     o_grado_amortizacion = c7['grado_amortizacion']
 
                 # financiacion
-                o_financiacion = ''
+                o_financiacion = '0,00'
                 if c7['financiacion']:
                     o_financiacion = c7['financiacion']
 
                 # inversion_year
-                o_inversion_year = ''
+                o_inversion_year = '0,00'
                 if c7['inversion_year']:
                     o_inversion_year = c7['inversion_year']
 
                 # amortizacion_year
-                o_amortizacion_year = ''
+                o_amortizacion_year = '0,00'
                 if c7['amortizacion_year']:
                     o_amortizacion_year = c7['amortizacion_year']
 
                 # traspaso_year
-                o_traspaso_year = ''
+                o_traspaso_year = '0,00'
                 if c7['traspaso_year']:
                     o_traspaso_year = c7['traspaso_year']
 
                 # baja_year
-                o_baja_year = ''
+                o_baja_year = '0,00'
                 if c7['baja_year']:
                     o_baja_year = c7['baja_year']
 
                 # inmovilizado
-                o_inmovilizado = ''
+                o_inmovilizado = '0,00'
                 if c7['inmovilizado']:
                     o_inmovilizado = c7['inmovilizado']
 
                 # amortizacion_acumulada
-                o_amortizacion_acumulada = ''
+                o_amortizacion_acumulada = '0,00'
                 if c7['amortizacion_acumulada']:
                     o_amortizacion_acumulada = c7['amortizacion_acumulada']
 
