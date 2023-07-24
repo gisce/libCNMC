@@ -59,7 +59,6 @@ class FB9(StopMultiprocessBased):
                 resumen = OrderedDict()
                 resumen['5_G_6'] = 0
                 resumen['5_G_7'] = 0
-                resumen['5_G_8'] = 0
 
                 at_obj = O.GiscedataAtTram
                 bt_obj = O.GiscedataBtElement
@@ -97,7 +96,6 @@ class FB9(StopMultiprocessBased):
                 # CUADRO 5
                 resumen['5_G_6'] += df['29'].sum()
                 resumen['5_G_7'] += df['31'].sum()
-                resumen['5_G_8'] += df['30'].sum()
 
                 names_at_prefix = []
                 for name in names['giscedata.at.tram']:
@@ -183,7 +181,6 @@ class FB9(StopMultiprocessBased):
                 # CUADRO 5
                 resumen['5_G_6'] += df['29'].sum()
                 resumen['5_G_7'] += df['31'].sum()
-                resumen['5_G_8'] += df['30'].sum()
 
                 names_bt_prefix = []
                 for name in names['giscedata.bt.element']:
@@ -268,7 +265,6 @@ class FB9(StopMultiprocessBased):
                 # CUADRO 5
                 resumen['5_G_6'] += df['20'].sum()
                 resumen['5_G_7'] += df['22'].sum()
-                resumen['5_G_8'] += df['21'].sum()
 
                 pos_names = names['giscedata.cts.subestacions.posicio']
                 df_5_g_10 = df[df['0'].isin(pos_names)]
@@ -347,7 +343,6 @@ class FB9(StopMultiprocessBased):
 
                 resumen['5_G_6'] += df['17'].sum()
                 resumen['5_G_7'] += df['19'].sum()
-                resumen['5_G_8'] += df['18'].sum()
 
                 # # FINANCIADO 0% # #
                 df_f0 = df[df['21'] == 0]
@@ -423,7 +418,6 @@ class FB9(StopMultiprocessBased):
                 # CUADRO 5
                 resumen['5_G_6'] += df['23'].sum()
                 resumen['5_G_7'] += df['25'].sum()
-                resumen['5_G_8'] += df['24'].sum()
 
                 cella_names = names['giscedata.celles.cella']
                 df_5_g_10 = df[df['0'].isin(cella_names)]
@@ -504,7 +498,6 @@ class FB9(StopMultiprocessBased):
                 # CUADRO 5
                 resumen['5_G_6'] += df['27'].sum()
                 resumen['5_G_7'] += df['29'].sum()
-                resumen['5_G_8'] += df['28'].sum()
 
                 ct_names = names['giscedata.cts']
                 df_5_g_10 = df[df['0'].isin(ct_names)]
@@ -871,7 +864,6 @@ class FB9(StopMultiprocessBased):
 
                 resumen['5_G_6'] += df['11'].sum()
                 resumen['5_G_7'] += df['13'].sum()
-                resumen['5_G_8'] += df['12'].sum()
 
                 # # # CUADRO 1B # # #
 
@@ -1120,7 +1112,7 @@ class FB9(StopMultiprocessBased):
                 resumen['5_G_5'] = inv['1_O_25'] + inv['2_O_25'] + inv['3_G_25']
 
                 # INVERSIÓN INSTALACIONES FINANCIADAS
-                resumen['5_G_8'] = inv['3_G_25']
+                resumen['5_G_8'] = inv['3_G_25'] + inv['2_O_25'] - resumen['5_G_9']
 
                 # INVERSIÓN EQUIPOS MEDIDA
                 resumen['5_G_10'] = equipos['1A_E_17']
