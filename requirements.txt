@@ -4,6 +4,7 @@ libcomxml
 chardet
 pyproj==2.2.2
 osconf
-cerberus>=1.0
+cerberus>1.0,<=1.3.4;python_version<="2.7.18"
+cerberus>1.0;python_version>"2.7.18"
 python-dateutil
 shapely
