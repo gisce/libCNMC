@@ -78,7 +78,7 @@ class FB2_1(StopMultiprocessBased):
         o = self.connection
         fields_to_read = [
             'ct', 'name', 'cini', 'potencia_nominal',
-            'data_pm', 'id_estat'
+            'data_pm', 'id_estat', 'id_regulatori'
         ]
         while True:
             try:
@@ -94,7 +94,7 @@ class FB2_1(StopMultiprocessBased):
 
                 o_ct = trafo['ct'] and trafo['ct'][1] or ''
                 o_cini = trafo['cini'] or ''
-                o_maquina = trafo['name']
+                o_maquina = trafo['id_regulatori'] if trafo.get('id_regulatori', False) else trafo['name']
                 o_pot = format_f(
                     float(trafo['potencia_nominal']),
                     decimals=3

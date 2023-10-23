@@ -101,8 +101,9 @@ class FB2_2(StopMultiprocessBased):
                 res = ''
                 if trafo_id:
                     codi_maquina = o.GiscedataTransformadorTrafo.read(trafo_id[0],
-                                                                      ['name'])
-                    res = codi_maquina['name']
+                                                                      ['name', 'id_regulatori'])
+                    res = codi_maquina['id_regulatori'] if codi_maquina.get('id_regulatori', False) \
+                        else codi_maquina['name']
         return res
 
     def get_tipus_inst(self, ti_cnmc_id):
