@@ -120,7 +120,7 @@ class FB3_3(StopMultiprocessBased):
         o = self.connection
         fields_to_read = [
             'ct', 'name', 'cini', 'propietari', 'id_estat',
-            'conexions', 'id_operacio', 'data_pm'
+            'conexions', 'id_operacio', 'data_pm', 'id_regulatori'
         ]
         while True:
             try:
@@ -134,7 +134,7 @@ class FB3_3(StopMultiprocessBased):
                     item, fields_to_read
                 )
                 o_subestacio = trafo['ct'][1]
-                o_maquina = trafo['name']
+                o_maquina = trafo['id_regulatori'] if trafo.get('id_regulatori', False) else trafo['name']
                 o_cini = trafo['cini']
 
                 # IDENTIFICADOR_PARQUE_ALTA / IDENTIFICADOR_PARQUE_BAJA
