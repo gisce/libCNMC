@@ -11,17 +11,6 @@ import traceback
 from libcnmc.utils import format_f
 from libcnmc.core import StopMultiprocessBased
 
-TIPUS_INST = {
-    'TI-174': 1,
-    'TI-187': 1,
-    'TI-182': 1,
-    'TI-183': 1,
-    'TI-187A': 1,
-    'TI-179': 0,
-    'TI-177': 0,
-    'TI-181': 2,
-    'TI-102V': 0,
-}
 
 class FB2_2(StopMultiprocessBased):
     """
@@ -115,7 +104,7 @@ class FB2_2(StopMultiprocessBased):
     def consumer(self):
         o = self.connection
         fields_to_read = [
-            'installacio', 'name', 'propietari', 'data_pm', 'cini', 'tipus_instalacio_cnmc_id'
+            'installacio', 'name', 'propietari', 'data_pm', 'cini', 'tipus_element'
         ]
         while True:
             try:
@@ -138,8 +127,9 @@ class FB2_2(StopMultiprocessBased):
                 o_propietari = int(celles['propietari'])
                 if o_propietari == 0:
                     o_maquina = ''
-                o_interruptor = self.get_tipus_inst(celles['tipus_instalacio_cnmc_id'])
-                o_interruptor_val = TIPUS_INST[o_interruptor]
+                o_interruptor_val = o.model('giscedata.celles.tipus.element').read(
+                    celles['tipus_element'][0], ['interruptor']
+                )['interruptor']
 
                 o_data = ''
                 if celles['data_pm']:
