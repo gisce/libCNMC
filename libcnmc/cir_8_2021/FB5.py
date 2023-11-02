@@ -64,7 +64,7 @@ class FB5(StopMultiprocessBased):
     def consumer(self):
         o = self.connection
         fields_to_read = [
-            'ct', 'name', 'cini', 'potencia_nominal', 'id_estat', 'node_id', 'data_pm', 'data_baixa',
+            'ct', 'name', 'cini', 'potencia_nominal', 'id_estat', 'node_id', 'data_pm', 'data_baixa', 'id_regulatori',
             'tipus_instalacio_cnmc_id', 'node_baixa', 'model', self.compare_field
         ]
         fields_to_read_obra = [
@@ -179,7 +179,7 @@ class FB5(StopMultiprocessBased):
                         else data_ip
 
                 o_subestacio = trafo['ct'][1]
-                o_maquina = trafo['name']
+                o_maquina = trafo.get('id_regulatori', trafo['name'])
                 o_cini = trafo['cini']
                 o_pot_maquina = format_f(
                     float(trafo['potencia_nominal']) / 1000.0, decimals=3)
