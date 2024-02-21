@@ -5,10 +5,10 @@ import traceback
 
 from libcnmc.res_4667.utils import get_resum_any_id
 from libcnmc.utils import format_f, get_codigo_ccaa
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 
 
-class PRO(MultiprocessBased):
+class PRO(StopMultiprocessBased):
     """
     Class to generate proyectos of 4667
     """
@@ -87,6 +87,9 @@ class PRO(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
                 pro = O.GiscedataCnmcProjectes.read(item, fields_to_read)
                 codigo = pro["codi"]
@@ -110,11 +113,10 @@ class PRO(MultiprocessBased):
                     pro["estado"]
                 ]
 
-
                 self.output_q.put(output)
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

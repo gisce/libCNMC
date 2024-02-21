@@ -5,10 +5,10 @@ import traceback
 
 from libcnmc.res_4667.utils import get_resum_any_id
 from libcnmc.utils import format_f, get_codigo_ccaa
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 
 
-class RESCCAA(MultiprocessBased):
+class RESCCAA(StopMultiprocessBased):
     """
     Class to generate F2 of 4667
     """
@@ -44,6 +44,9 @@ class RESCCAA(MultiprocessBased):
         :rtype: str
         """
         item = self.input_q.get()
+        if item == "STOP":
+            self.input_q.task_done()
+            return
         self.progress_q.put(item)
 
         fields_read = [
@@ -82,9 +85,9 @@ class RESCCAA(MultiprocessBased):
                 resum["num_proyectos_prtr"] or "0",
             ]
             self.output_q.put(output)
+            self.input_q.task_done()
         except Exception:
+            self.input_q.task_done()
             traceback.print_exc()
             if self.raven:
                 self.raven.captureException()
-        finally:
-            self.input_q.task_done()
