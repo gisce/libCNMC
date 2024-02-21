@@ -8,10 +8,10 @@ import traceback
 
 from libcnmc.res_4667.utils import get_resum_any_id
 from libcnmc.utils import format_f, get_codigo_ccaa, get_name_ti
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 
 
-class FIA(MultiprocessBased):
+class FIA(StopMultiprocessBased):
     """
     Class to generate F6 of 4667
     """
@@ -58,6 +58,9 @@ class FIA(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
 
                 fia = O.GiscedataCnmcFiabilitat.read(item, fields_to_read)
@@ -77,10 +80,9 @@ class FIA(MultiprocessBased):
                     fia["actuacio_elegible_prtr"] or '',
                 ]
                 self.output_q.put(output)
-
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

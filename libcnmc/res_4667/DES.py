@@ -8,10 +8,10 @@ import traceback
 
 from libcnmc.res_4667.utils import get_resum_any_id
 from libcnmc.utils import get_name_ti, get_codigo_ccaa, format_f
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 
 
-class DES(MultiprocessBased):
+class DES(StopMultiprocessBased):
     """
     Class to generate F6 of 4667
     """
@@ -57,6 +57,9 @@ class DES(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
 
                 des = O.GiscedataCnmcDespatx.read(item, fields_to_read)
@@ -74,10 +77,9 @@ class DES(MultiprocessBased):
                     des["actuacio_elegible_prtr"] or '',
                 ]
                 self.output_q.put(output)
-
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()

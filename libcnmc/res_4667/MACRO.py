@@ -4,11 +4,11 @@
 import traceback
 
 from libcnmc.res_4667.utils import get_resum_any_id
-from libcnmc.core import MultiprocessBased
+from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import format_f
 
 
-class MACRO(MultiprocessBased):
+class MACRO(StopMultiprocessBased):
     """
     Class to generate F2 of 4667
     """
@@ -49,6 +49,9 @@ class MACRO(MultiprocessBased):
         while True:
             try:
                 item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
                 self.progress_q.put(item)
 
                 macro = O.GiscedataCnmcResum_any.read(item, fields_to_read)
@@ -60,10 +63,9 @@ class MACRO(MultiprocessBased):
                     format_f(float(macro["macro_inc_demanda_sector"]), 2) or "0.00"
                 ]
                 self.output_q.put(output)
-
+                self.input_q.task_done()
             except Exception:
+                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-            finally:
-                self.input_q.task_done()
