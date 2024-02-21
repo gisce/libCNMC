@@ -43,11 +43,6 @@ class RESCCAA(StopMultiprocessBased):
         :return: Line
         :rtype: str
         """
-        item = self.input_q.get()
-        if item == "STOP":
-            self.input_q.task_done()
-            return
-        self.progress_q.put(item)
 
         fields_read = [
             "anio_periodo",
@@ -66,28 +61,35 @@ class RESCCAA(StopMultiprocessBased):
             "num_proyectos_prtr",
         ]
         model_ccaa = self.connection.GiscedataCnmcResum_ccaa
-        resum = model_ccaa.read(item, fields_read)
-        try:
-            output = [
-                get_codigo_ccaa(self.connection, resum["codigo_ccaa"][0]),
-                resum["anio_periodo"],
-                format_f(resum["vol_total_inv_prv_ccaa"], 2) or "0.00",
-                format_f(resum["ayudas_prv_ccaa"], 2) or "0.00",
-                format_f(resum["financiacion_prv_ccaa"], 2) or "0.00",
-                format_f(resum["vpi_retribuible_prv_ccaa"], 2) or "0.00",
-                resum["num_proyectos_ccaa"],
-                format_f(resum["vol_total_inv_bt_prv_ccaa"], 2) or "0.00",
-                format_f(resum["vol_total_inv_gr_prv_ccaa"], 2) or "0.00",
-                format_f(resum["vol_total_inv_prv_ccaa_prtr"], 2) or "0.00",
-                format_f(resum["ayudas_prv_ccaa_prtr"], 2) or "0.00",
-                format_f(resum["financiacion_prv_ccaa_prtr"], 2) or "0.00",
-                format_f(resum["vpi_retribuible_prv_ccaa_prtr"], 2) or "0.00",
-                resum["num_proyectos_prtr"] or "0",
-            ]
-            self.output_q.put(output)
-            self.input_q.task_done()
-        except Exception:
-            self.input_q.task_done()
-            traceback.print_exc()
-            if self.raven:
-                self.raven.captureException()
+        while True:
+            try:
+                item = self.input_q.get()
+                if item == "STOP":
+                    self.input_q.task_done()
+                    break
+                self.progress_q.put(item)
+                resum = model_ccaa.read(item, fields_read)
+
+                output = [
+                    get_codigo_ccaa(self.connection, resum["codigo_ccaa"][0]),
+                    resum["anio_periodo"],
+                    format_f(resum["vol_total_inv_prv_ccaa"], 2) or "0.00",
+                    format_f(resum["ayudas_prv_ccaa"], 2) or "0.00",
+                    format_f(resum["financiacion_prv_ccaa"], 2) or "0.00",
+                    format_f(resum["vpi_retribuible_prv_ccaa"], 2) or "0.00",
+                    resum["num_proyectos_ccaa"],
+                    format_f(resum["vol_total_inv_bt_prv_ccaa"], 2) or "0.00",
+                    format_f(resum["vol_total_inv_gr_prv_ccaa"], 2) or "0.00",
+                    format_f(resum["vol_total_inv_prv_ccaa_prtr"], 2) or "0.00",
+                    format_f(resum["ayudas_prv_ccaa_prtr"], 2) or "0.00",
+                    format_f(resum["financiacion_prv_ccaa_prtr"], 2) or "0.00",
+                    format_f(resum["vpi_retribuible_prv_ccaa_prtr"], 2) or "0.00",
+                    resum["num_proyectos_prtr"] or "0",
+                ]
+                self.output_q.put(output)
+                self.input_q.task_done()
+            except Exception:
+                self.input_q.task_done()
+                traceback.print_exc()
+                if self.raven:
+                    self.raven.captureException()
