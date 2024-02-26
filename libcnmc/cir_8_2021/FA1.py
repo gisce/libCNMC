@@ -566,7 +566,9 @@ class FA1(StopMultiprocessBased):
                     # pensat que la tensió s'intentés agafar de la pòlissa,
                     # després intentar per modcon, despreś de la traça de
                     # l'escomesa i, sino resulta cap, llavors es deixa buit.
+                    # Todo: Revisar si es pot eliminar
                     ###########################################################
+
                     # Es comenta per NOTA (1)
                     # if polissa['tensio']:
                     #     o_tensio = format_f(
@@ -651,7 +653,7 @@ class FA1(StopMultiprocessBased):
                         fields_to_read_modcon = [
                             'cnae',
                             'tarifa',
-                            'tensio',
+                            # 'tensio',
                             'potencia',
                             'polissa_id',
                             'data_final'
@@ -687,6 +689,7 @@ class FA1(StopMultiprocessBased):
                         if self.default_o_cod_tfa:
                             o_cod_tfa = self.default_o_cod_tfa
                 # Es tabula enrera fora del 'else' anterior per NOTA (1)
+                # Tensió d'alimentació en kV
                 if cups.get('id_escomesa', False):
                     search_params = [
                         ('escomesa', '=', cups['id_escomesa'][0])
