@@ -554,15 +554,25 @@ class FA1(StopMultiprocessBased):
 
                 if polissa_id:
                     fields_to_read = [
-                        'potencia', 'cnae', 'tarifa', 'butlletins', 'tensio'
+                        'potencia', 'cnae', 'tarifa', 'butlletins'#, 'tensio'
                     ]
                     polissa_id = polissa_id[0]
                     polissa = O.GiscedataPolissa.read(
                         polissa_id, fields_to_read, context_glob
                     )
-                    if polissa['tensio']:
-                        o_tensio = format_f(
-                            float(polissa['tensio']) / 1000.0, decimals=3)
+                    ###########################################################
+                    # NOTA (1):
+                    # De moment es deixa comentat. Inicalment estava
+                    # pensat que la tensió s'intentés agafar de la pòlissa,
+                    # després intentar per modcon, despreś de la traça de
+                    # l'escomesa i, sino resulta cap, llavors es deixa buit.
+                    # Todo: Revisar si es pot eliminar
+                    ###########################################################
+
+                    # Es comenta per NOTA (1)
+                    # if polissa['tensio']:
+                    #     o_tensio = format_f(
+                    #         float(polissa['tensio']) / 1000.0, decimals=3)
                     o_potencia = polissa['potencia']
                     if polissa['cnae']:
                         cnae_id = polissa['cnae'][0]
@@ -643,7 +653,7 @@ class FA1(StopMultiprocessBased):
                         fields_to_read_modcon = [
                             'cnae',
                             'tarifa',
-                            'tensio',
+                            # 'tensio',
                             'potencia',
                             'polissa_id',
                             'data_final'
@@ -665,34 +675,37 @@ class FA1(StopMultiprocessBased):
                                     cnae_id, ['name']
                                 )['name']
                                 self.cnaes[cnae_id] = o_cnae
-                        if modcon['tensio']:
-                            o_tensio = format_f(
-                                float(modcon['tensio']) / 1000.0, decimals=3)
+                        # Es comenta per NOTA (1)
+                        # if modcon['tensio']:
+                        #     o_tensio = format_f(
+                        #         float(modcon['tensio']) / 1000.0, decimals=3)
                         if modcon['potencia']:
                             o_potencia = modcon['potencia']
                     else:
                         # No existeix modificació contractual per el CUPS
                         o_potencia = cups['potencia_conveni']
-                        if cups.get('id_escomesa', False):
-                            search_params = [
-                                ('escomesa', '=', cups['id_escomesa'][0])
-                            ]
-                            id_esc_gis = O.GiscegisEscomesesTraceability.search(
-                                search_params
-                            )
-
-                            if id_esc_gis:
-                                tensio_gis = O.GiscegisEscomesesTraceability.read(
-                                    id_esc_gis, ['tensio']
-                                )[0]['tensio']
-                                o_tensio = format_f(
-                                    float(tensio_gis) / 1000.0, decimals=3)
-                        else:
-                            o_tensio = ''
                         if self.default_o_cnae:
                             o_cnae = self.default_o_cnae
                         if self.default_o_cod_tfa:
                             o_cod_tfa = self.default_o_cod_tfa
+                # Es tabula enrera fora del 'else' anterior per NOTA (1)
+                # Tensió d'alimentació en kV
+                if cups.get('id_escomesa', False):
+                    search_params = [
+                        ('escomesa', '=', cups['id_escomesa'][0])
+                    ]
+                    id_esc_gis = O.GiscegisEscomesesTraceability.search(
+                        search_params
+                    )
+
+                    if id_esc_gis:
+                        tensio_gis = O.GiscegisEscomesesTraceability.read(
+                            id_esc_gis, ['tensio']
+                        )[0]['tensio']
+                        o_tensio = format_f(
+                            float(tensio_gis) / 1000.0, decimals=3)
+                else:
+                    o_tensio = ''
 
                 # potencia adscrita
                 o_pot_ads = 0
