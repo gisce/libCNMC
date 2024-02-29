@@ -173,9 +173,19 @@ class FB8(StopMultiprocessBased):
                     if comunitat_vals:
                         comunitat_codi = comunitat_vals['codi']
 
-                if despatx[self.compare_field]:
-                    data_entregada = despatx[self.compare_field]
-                    entregada = F6Res4666(**data_entregada)
+                hist_obj = O.model('circular.82021.historics.b8')
+                hist_ids = hist_obj.search([
+                    ('identificador_posicion', '=', despatx['name']),
+                    ('year', '=', self.year - 1)
+                ])
+                if hist_ids:
+                    hist = hist_obj.read(hist_ids[0], [
+                        'cini', 'codigo_ccuu', 'fecha_aps'
+                    ])
+                    entregada = F6Res4666(
+                        cini=hist['cini'],
+                        fecha_aps=hist['fecha_aps']
+                    )
                     actual = F6Res4666(
                         despatx['name'],
                         despatx['cini'],
