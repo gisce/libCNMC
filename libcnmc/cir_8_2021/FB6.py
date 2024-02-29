@@ -420,9 +420,20 @@ class FB6(StopMultiprocessBased):
                     y = format_f(res_srid[1], decimals=3)
 
                 # ESTADO
-                if cella[self.compare_field] and str(self.year + 1) not in str(data_pm):
-                    last_data = cella[self.compare_field]
-                    entregada = F7Res4666(**last_data)
+                hist_obj = O.model('circular.82021.historics.b6')
+                hist_ids = hist_obj.search([
+                    ('identificador_em', '=', o_fiabilitat),
+                    ('year', '=', self.year - 1)
+                ])
+                if hist_ids:
+                    hist = hist_obj.read(hist_ids[0], [
+                        'cini', 'codigo_ccuu', 'fecha_aps'
+                    ])
+                    entregada = F7Res4666(
+                        cini=hist['cini'],
+                        codigo_ccuu=hist['codigo_ccuu'],
+                        fecha_aps=hist['fecha_aps']
+                    )
                     actual = F7Res4666(
                         cella['name'],
                         cella['cini'],
