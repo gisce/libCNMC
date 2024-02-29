@@ -127,7 +127,7 @@ class FB1(StopMultiprocessBased):
             'baixa', 'data_pm', 'data_industria', 'coeficient', 'cini', 'propietari', 'tensio_max_disseny_id', 'name',
             'origen', 'final', 'perc_financament', 'longitud_cad', 'cable', 'linia', 'model', 'model', 'punt_frontera',
             'tipus_instalacio_cnmc_id', 'data_baixa', 'baixa', 'longitud_cad', 'data_pm', 'circuits',
-            'id_regulatori', self.compare_field, 'municipi',
+            'id_regulatori', 'municipi',
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
 
@@ -459,9 +459,24 @@ class FB1(StopMultiprocessBased):
                         operacion = 0
                     else:
                         # Estado
-                        if tram[self.compare_field]:
-                            data_entregada = tram[self.compare_field]
-                            entregada = F1Res4666(**data_entregada)
+                        # Busquem a l'historic
+                        hist_obj = O.model('circular.82021.historics.b1')
+                        hist_ids = hist_obj.search([
+                            ('identificador_tramo', '=', o_tram),
+                            ('year', '=', self.year - 1)
+                        ])
+                        if hist_ids:
+                            hist = hist_obj.read(hist_ids[0], [
+                                'cini', 'codigo_ccuu', 'longitud',
+                                'tension_explotacion', 'fecha_aps'
+                            ])
+                            entregada = F1Res4666(
+                                cini=hist['cini'],
+                                longitud=hist['longitud'],
+                                codigo_ccuu=hist['codigo_ccuu'],
+                                nivel_tension=hist['tension_explotacion'],
+                                fecha_aps=hist['fecha_aps']
+                            )
                             actual = F1Res4666(
                                 o_tram,
                                 tram['cini'],
@@ -843,9 +858,23 @@ class FB1(StopMultiprocessBased):
                         operacion = 0
                     else:
                         # Estado
-                        if linia[self.compare_field]:
-                            data_entregada = linia[self.compare_field]
-                            entregada = F2Res4666(**data_entregada)
+                        hist_obj = O.model('circular.82021.historics.b1')
+                        hist_ids = hist_obj.search([
+                            ('identificador_tramo', '=', identificador_tramo),
+                            ('year', '=', self.year - 1)
+                        ])
+                        if hist_ids:
+                            hist = hist_obj.read(hist_ids[0], [
+                                'cini', 'codigo_ccuu', 'longitud',
+                                'tension_explotacion', 'fecha_aps'
+                            ])
+                            entregada = F1Res4666(
+                                cini=hist['cini'],
+                                longitud=hist['longitud'],
+                                codigo_ccuu=hist['codigo_ccuu'],
+                                nivel_tension=hist['tension_explotacion'],
+                                fecha_aps=hist['fecha_aps']
+                            )
                             actual = F2Res4666(
                                 identificador_tramo,
                                 linia['cini'],
