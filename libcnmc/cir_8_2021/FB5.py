@@ -223,9 +223,20 @@ class FB5(StopMultiprocessBased):
                     ['name'])['name']
 
                 # ESTADO
-                if trafo[self.compare_field]:
-                    last_data = trafo[self.compare_field]
-                    entregada = F5Res4666(**last_data)
+                hist_obj = self.connection.model('circular.82021.historics.b5')
+                hist_ids = hist_obj.search([
+                    ('identificador_maquina', '=', o_maquina),
+                    ('year', '=', self.year - 1)
+                ])
+                if hist_ids:
+                    hist = hist_obj.read(hist_ids[0], [
+                        'cini', 'codigo_ccuu', 'fecha_aps'
+                    ])
+                    entregada = F5Res4666(
+                        cini=hist['cini'],
+                        codigo_ccuu=hist['codigo_ccuu'],
+                        fecha_aps=hist['fecha_aps']
+                    )
                     actual = F5Res4666(
                         trafo['name'],
                         trafo['cini'],
