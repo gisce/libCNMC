@@ -361,9 +361,20 @@ class FB2(StopMultiprocessBased):
                     modelo = ct['model']
 
                 # Estado
-                if ct[self.compare_field]:
-                    last_data = ct[self.compare_field]
-                    entregada = F8Res4666(**last_data)
+                hist_obj = O.model('circular.82021.historics.b2')
+                hist_ids = hist_obj.search([
+                    ('identifiacdor_ct', '=', o_identificador_ct),
+                    ('year', '=', self.year - 1)
+                ])
+                if hist_ids:
+                    hist = hist_obj.read(hist_ids[0], [
+                        'cini', 'codigo_ccuu', 'fecha_aps'
+                    ])
+                    entregada = F8Res4666(
+                        cini=hist['cini'],
+                        codigo_ccuu=hist['codigo_ccuu'],
+                        fecha_aps=hist['fecha_aps']
+                    )
 
                     id_ti = ct['tipus_instalacio_cnmc_id'][0]
                     ti = O.GiscedataTipusInstallacio.read(
