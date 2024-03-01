@@ -39,9 +39,7 @@ class FB6(StopMultiprocessBased):
         self.report_name = 'FB6 - Elements de millora de fiabilitat'
         self.base_object = 'Elements de millora de fiabilitat'
         self.cod_dis = 'R1-{}'.format(self.codi_r1[-3:])
-        self.compare_field = "4666_entregada"
         self.prefix_AT = kwargs.pop('prefix_at', 'A') or 'A'
-        self.compare_field = '4666_entregada'
 
     def get_sequence(self):
         """
@@ -203,7 +201,7 @@ class FB6(StopMultiprocessBased):
         fields_to_read = [
             'installacio', 'cini', 'propietari', 'name', 'tensio', 'node_id', 'perc_financament',
             'tipus_instalacio_cnmc_id', 'punt_frontera', 'tensio_const', 'model',
-            'geom', 'tram_id', 'id', 'data_pm', 'data_baixa', self.compare_field,
+            'geom', 'tram_id', 'id', 'data_pm', 'data_baixa',
         ]
         fields_to_read_obra = [
             'name', 'cini', 'tipo_inversion', 'ccuu', 'codigo_ccaa', 'nivel_tension_explotacion', 'elemento_act',

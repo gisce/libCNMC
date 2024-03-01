@@ -39,7 +39,6 @@ class FB2(StopMultiprocessBased):
         self.codi_r1 = kwargs.pop('codi_r1')
         self.base_object = 'CTS'
         self.report_name = 'Formulario B2: Centros de Transformación'
-        self.compare_field = "4666_entregada"
         self.extended = kwargs.get("extended", False)
 
     def get_sequence(self):
@@ -126,7 +125,7 @@ class FB2(StopMultiprocessBased):
         fields_to_read = [
             'id', 'name', 'cini', 'data_pm', 'tipus_instalacio_cnmc_id', 'tensio_p',
             'id_municipi', 'perc_financament', 'descripcio', 'data_baixa', 'tensio_const',
-            self.compare_field, 'node_baixa', 'zona_id', 'node_id', 'potencia',
+            'node_baixa', 'zona_id', 'node_id', 'potencia',
             'model', 'punt_frontera', 'id_regulatori', 'perc_financament',
         ]
 

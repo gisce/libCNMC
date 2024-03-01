@@ -36,7 +36,6 @@ class FB4(StopMultiprocessBased):
             """
 
         self.year = kwargs.pop('year', datetime.now().year - 1)
-        self.compare_field = '4666_entregada'
 
         super(FB4, self).__init__(**kwargs)
         self.include_obres = False
@@ -118,7 +117,7 @@ class FB4(StopMultiprocessBased):
 
         fields_to_read = [
             'name', 'cini', 'node_id', 'propietari', 'subestacio_id', 'data_pm', 'tensio', 'model',
-            'parc_id', 'data_baixa', 'interruptor', 'tipus_instalacio_cnmc_id', 'punt_frontera', self.compare_field,
+            'parc_id', 'data_baixa', 'interruptor', 'tipus_instalacio_cnmc_id', 'punt_frontera',
             'tipus_interruptor',
         ]
         fields_to_read_obra = [

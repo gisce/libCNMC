@@ -27,7 +27,6 @@ class FB8(StopMultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.report_name = 'FB8 - Otros activos'
         self.base_object = 'Despatxos'
-        self.compare_field = '4666_entregada'
 
     def get_sequence(self):
         data_pm = '{0}-01-01'.format(self.year + 1)
@@ -52,7 +51,7 @@ class FB8(StopMultiprocessBased):
         data_baixa_limit = '{0}-01-01'.format(self.year)
         fields_to_read = [
             'id', 'cini', 'name', 'geom', 'vertex', 'data_apm', 'data_baixa', 'municipi', 'data_baixa_parcial',
-            'valor_baixa_parcial', 'motivacion', self.compare_field, 'coco',
+            'valor_baixa_parcial', 'motivacion', 'coco',
         ]
         fields_to_read_obra = [
             'subvenciones_europeas', 'subvenciones_nacionales', 'subvenciones_prtr', 'financiado', 'fecha_baja',
