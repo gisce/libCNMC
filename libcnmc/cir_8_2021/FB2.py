@@ -362,7 +362,7 @@ class FB2(StopMultiprocessBased):
                 # Estado
                 hist_obj = O.model('circular.82021.historics.b2')
                 hist_ids = hist_obj.search([
-                    ('identifiacdor_ct', '=', o_identificador_ct),
+                    ('identificador_ct', '=', o_identificador_ct),
                     ('year', '=', self.year - 1)
                 ])
                 if hist_ids:
