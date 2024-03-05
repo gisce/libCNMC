@@ -183,7 +183,7 @@ class FB5(StopMultiprocessBased):
                 o_cini = trafo['cini']
                 o_pot_maquina = format_f(
                     float(trafo['potencia_nominal']) / 1000.0, decimals=3)
-                o_node = trafo['node_id'][1]
+                o_node = trafo['node_id'] and trafo['node_id'][1] or ''
 
                 if trafo['node_baixa']:
                     o_node_baixa = trafo['node_baixa'][1]
