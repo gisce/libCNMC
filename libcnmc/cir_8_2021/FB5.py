@@ -179,7 +179,7 @@ class FB5(StopMultiprocessBased):
                         else data_ip
 
                 o_subestacio = trafo['ct'][1]
-                o_maquina = trafo.get('id_regulatori', trafo['name']).strip() or trafo['name']
+                o_maquina = (trafo['id_regulatori'] or '').strip() or trafo['name']
                 o_cini = trafo['cini']
                 o_pot_maquina = format_f(
                     float(trafo['potencia_nominal']) / 1000.0, decimals=3)
