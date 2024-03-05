@@ -56,7 +56,12 @@ class CNMCModel(object):
         """
         self.validator = CNMCValidator(self.schema)
         stored = namedtuple('{0}_store'.format(self.__class__.__name__), self.fields)
-        self.store = stored(*values, **kwvalues)
+        for idx, k in enumerate(self.fields):
+            if idx < len(values):
+                kwvalues[k] = values[idx]
+            elif k not in kwvalues:
+                kwvalues[k] = None
+        self.store = stored(**kwvalues)
         self.validator.validate(self.store._asdict())
         self.store = stored(**self.validator.document)
 
