@@ -23,7 +23,6 @@ class FB5(StopMultiprocessBased):
         self.year = kwargs.pop('year', datetime.now().year - 1)
         self.report_name = 'FB5 - TRAFOS-SE'
         self.base_object = 'TRAFOS'
-        self.compare_field = '4666_entregada'
 
     def get_sequence(self):
         search_params = [
@@ -65,7 +64,7 @@ class FB5(StopMultiprocessBased):
         o = self.connection
         fields_to_read = [
             'ct', 'name', 'cini', 'potencia_nominal', 'id_estat', 'node_id', 'data_pm', 'data_baixa', 'id_regulatori',
-            'tipus_instalacio_cnmc_id', 'node_baixa', 'model', self.compare_field
+            'tipus_instalacio_cnmc_id', 'node_baixa', 'model'
         ]
         fields_to_read_obra = [
             'subvenciones_europeas', 'subvenciones_nacionales', 'subvenciones_prtr', 'financiado',
@@ -223,9 +222,20 @@ class FB5(StopMultiprocessBased):
                     ['name'])['name']
 
                 # ESTADO
-                if trafo[self.compare_field]:
-                    last_data = trafo[self.compare_field]
-                    entregada = F5Res4666(**last_data)
+                hist_obj = self.connection.model('circular.82021.historics.b5')
+                hist_ids = hist_obj.search([
+                    ('identificador_maquina', '=', o_maquina),
+                    ('year', '=', self.year - 1)
+                ])
+                if hist_ids:
+                    hist = hist_obj.read(hist_ids[0], [
+                        'cini', 'codigo_ccuu', 'fecha_aps'
+                    ])
+                    entregada = F5Res4666(
+                        cini=hist['cini'],
+                        codigo_ccuu=hist['codigo_ccuu'],
+                        fecha_aps=hist['fecha_aps']
+                    )
                     actual = F5Res4666(
                         trafo['name'],
                         trafo['cini'],

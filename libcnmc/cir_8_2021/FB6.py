@@ -39,9 +39,7 @@ class FB6(StopMultiprocessBased):
         self.report_name = 'FB6 - Elements de millora de fiabilitat'
         self.base_object = 'Elements de millora de fiabilitat'
         self.cod_dis = 'R1-{}'.format(self.codi_r1[-3:])
-        self.compare_field = "4666_entregada"
         self.prefix_AT = kwargs.pop('prefix_at', 'A') or 'A'
-        self.compare_field = '4666_entregada'
 
     def get_sequence(self):
         """
@@ -203,7 +201,7 @@ class FB6(StopMultiprocessBased):
         fields_to_read = [
             'installacio', 'cini', 'propietari', 'name', 'tensio', 'node_id', 'perc_financament',
             'tipus_instalacio_cnmc_id', 'punt_frontera', 'tensio_const', 'model',
-            'geom', 'tram_id', 'id', 'data_pm', 'data_baixa', self.compare_field,
+            'geom', 'tram_id', 'id', 'data_pm', 'data_baixa',
         ]
         fields_to_read_obra = [
             'name', 'cini', 'tipo_inversion', 'ccuu', 'codigo_ccaa', 'nivel_tension_explotacion', 'elemento_act',
@@ -420,9 +418,20 @@ class FB6(StopMultiprocessBased):
                     y = format_f(res_srid[1], decimals=3)
 
                 # ESTADO
-                if cella[self.compare_field] and str(self.year + 1) not in str(data_pm):
-                    last_data = cella[self.compare_field]
-                    entregada = F7Res4666(**last_data)
+                hist_obj = O.model('circular.82021.historics.b6')
+                hist_ids = hist_obj.search([
+                    ('identificador_em', '=', o_fiabilitat),
+                    ('year', '=', self.year - 1)
+                ])
+                if hist_ids:
+                    hist = hist_obj.read(hist_ids[0], [
+                        'cini', 'codigo_ccuu', 'fecha_aps'
+                    ])
+                    entregada = F7Res4666(
+                        cini=hist['cini'],
+                        codigo_ccuu=hist['codigo_ccuu'],
+                        fecha_aps=hist['fecha_aps']
+                    )
                     actual = F7Res4666(
                         cella['name'],
                         cella['cini'],
