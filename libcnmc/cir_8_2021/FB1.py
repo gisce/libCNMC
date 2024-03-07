@@ -579,7 +579,7 @@ class FB1(StopMultiprocessBased):
                     fields_to_read = ['name', 'cini', 'coeficient', 'municipi', 'voltatge', 'tensio_const',
                                       'coeficient', 'longitud_cad', 'punt_frontera', 'model', 'operacion',
                                       'propietari', 'edge_id', 'cable', 'tipus_instalacio_cnmc_id',
-                                      'data_pm', 'data_baixa', 'id_regulatori', self.compare_field,
+                                      'data_pm', 'data_baixa', 'id_regulatori',
                                       'perc_financament',
                                       ]
 
