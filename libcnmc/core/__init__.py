@@ -14,9 +14,34 @@ try:
     from raven import Client
 except:
     Client = None
+
+try:
+    import sentry_sdk
+except ImportError:
+    sentry_sdk = None
 from progressbar import ProgressBar, ETA, Percentage, Bar
 from libcnmc.utils import N_PROC
 from libcnmc import VERSION
+
+
+class SentryCompatRaven(object):
+
+    def __init__(self, client, client_type):
+        self.client = client
+        self.client_type = client_type
+
+    def captureException(self):
+        if self.client_type == 'raven':
+            self.client.captureException()
+        else:
+            self.client.capture_exception()
+
+    def captureMessage(self, message, level=None, scope=None, **scope_args):
+        if self.client_type == 'raven':
+            self.client.captureMessage(message, level)
+        else:
+            self.client.capture_message(message, level, scope, **scope_args)
+
 
 
 class MultiprocessBased(object):
@@ -46,10 +71,24 @@ class MultiprocessBased(object):
         self.base_object = ''
         self.file_header = []
         if 'SENTRY_DSN' in os.environ and Client:
-            self.raven = Client()
-            self.raven.tags_context({'version': VERSION})
+            try:
+                raven = Client()
+                raven.tags_context({'version': VERSION})
+                self.raven = SentryCompatRaven(raven, 'raven')
+            except ValueError:
+                pass
         else:
             self.raven = None
+
+        if 'SENTRY_DSN' in os.environ and sentry_sdk:
+            try:
+                sentry_sdk.init(
+                    dsn=os.environ['SENTRY_DSN'],
+                    release=VERSION
+                )
+                self.raven = SentryCompatRaven(sentry_sdk, 'sentry_sdk')
+            except ValueError:
+                pass
         self.content = ''
 
     def get_sequence(self):
