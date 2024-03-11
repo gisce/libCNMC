@@ -867,7 +867,7 @@ class FB1(StopMultiprocessBased):
                                 'cini', 'codigo_ccuu', 'longitud',
                                 'tension_explotacion', 'fecha_aps'
                             ])
-                            entregada = F1Res4666(
+                            entregada = F2Res4666(
                                 cini=hist['cini'],
                                 longitud=hist['longitud'],
                                 codigo_ccuu=hist['codigo_ccuu'],
