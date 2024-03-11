@@ -3,6 +3,7 @@ import click
 from datetime import datetime
 
 from libcnmc.utils import N_PROC
+from libcnmc import VERSION
 from libcnmc.core import UpdateCNMCStats, UpdateCINISComptador
 from libcnmc.core.backend import OOOPFactory
 from libcnmc.cir_4_2014 import F1, F1bis, F11
@@ -1210,6 +1211,14 @@ def cir_3_2015_f3(**kwargs):
     proc.calc()
 
 
+def version_command(ctx, opt, version):
+    if version:
+        click.echo(VERSION)
+        ctx = click.get_current_context()
+        ctx.exit()
+
+
 cli = click.CommandCollection(sources=[
     cnmc, cnmc_4666, cnmc_4667, cnmc_4_2015, cnmc_6181, cnmc_8_2021
 ])
+cli.params.append(click.Option(['--version'], is_flag=True, callback=version_command, expose_value=False, is_eager=True, help='Show the version'))
