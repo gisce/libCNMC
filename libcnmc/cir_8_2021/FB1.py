@@ -5,7 +5,7 @@ from datetime import datetime
 import traceback
 from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import (format_f, tallar_text, format_f_6181, get_codi_actuacio, convert_spanish_date,
-                           get_forced_elements, adapt_diff)
+                           get_forced_elements, adapt_diff, fetch_tensions_norm)
 from libcnmc.models import F1Res4666,F2Res4666
 
 class FB1(StopMultiprocessBased):
@@ -31,6 +31,7 @@ class FB1(StopMultiprocessBased):
         self.prefix_AT = kwargs.pop('prefix_at', 'A') or 'A'
         self.prefix_BT = kwargs.pop('prefix_bt', 'B') or 'B'
         self.dividir = kwargs.pop('div', False)
+        self.tensions = fetch_tensions_norm(self.connection)
 
         O = self.connection
 
@@ -185,12 +186,12 @@ class FB1(StopMultiprocessBased):
                         if linia_id:
                             tensio_data = O.GiscedataAtLinia.read(linia_id, ['tensio_id'])
                             if tensio_data.get('tensio_id', False):
-                                tension_explotacion = format_f(float(tensio_data['tensio_id'][1])/1000, 3)
+                                tension_explotacion = self.tensions.get(tensio_data['tensio_id'][0], '')
 
                     # Tensión_construcción
                     tension_construccion = ''
                     if tram.get('tensio_max_disseny_id', False):
-                        tension_construccion = format_f(float(tram['tensio_max_disseny_id'][1])/1000, 3)
+                        tension_construccion = self.tensions.get(tram['tensio_max_disseny_id'][0], '')
                         if str(tension_construccion) == str(tension_explotacion):
                             tension_construccion = ''
 
@@ -369,15 +370,13 @@ class FB1(StopMultiprocessBased):
                     o_nivell_tensio = ''
                     if tram.get('tensio_max_disseny_id', False):
                         nivell_tensio_id = tram['tensio_max_disseny_id'][0]
-                        o_nivell_tensio = O.GiscedataTensionsTensio.read(nivell_tensio_id, ["tensio"])["tensio"]
+                        o_nivell_tensio = self.tensions.get(nivell_tensio_id, '')
                     else:
                         if tram.get('linia', False):
                             linia_id, linia_name = tram['linia']
                             tensio_data = O.GiscedataAtLinia.read(linia_id, ['tensio_id'])
                             if tensio_data.get('tensio_id', False):
-                                o_nivell_tensio = float(tensio_data['tensio_id'][1])
-                    if o_nivell_tensio:
-                        o_nivell_tensio = format_f(float(o_nivell_tensio) / 1000.0, 3)
+                                o_nivell_tensio = self.tensions.get(tensio_data['tensio_id'][0], '')
 
                     # identificador_tramo
                     if tram.get('id_regulatori', False):
@@ -673,7 +672,7 @@ class FB1(StopMultiprocessBased):
                     # TENSION CONSTRUCCION
                     tension_construccion = ''
                     if linia.get('tensio_const', False):
-                        tension_construccion = format_f(float(linia['tensio_const'][1])/1000, 3)
+                        tension_construccion = self.tensions.get(linia['tensio_const'][0], '')
                         if str(tension_construccion) == str(tension_explotacion):
                             tension_construccion = ''
 
