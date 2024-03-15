@@ -508,6 +508,7 @@ class FA1(StopMultiprocessBased):
                     )
                     id_escomesa = cups.get("id_escomesa")
                     o_nom_node = ''
+                    vertex = ''
                     if id_escomesa:
                         escomesa = O.GiscedataCupsEscomesa.read(id_escomesa[0], ["node_id", "geom"])
                         if escomesa.get("geom",False):
@@ -519,7 +520,7 @@ class FA1(StopMultiprocessBased):
                         bloc_escomesa = O.GiscegisBlocsEscomeses.read(
                             bloc_escomesa_id[0], ['node', 'vertex']
                         )
-                        if bloc_escomesa['vertex']:
+                        if bloc_escomesa['vertex'] and not vertex:
                             vertex = O.GiscegisVertex.read(
                                 bloc_escomesa['vertex'][0], ['x', 'y']
                             )
