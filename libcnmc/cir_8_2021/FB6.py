@@ -57,7 +57,7 @@ class FB6(StopMultiprocessBased):
                               ('data_baixa', '=', False)]
 
         search_params += [
-            ("tipus_element.codi_cnmc", "!=", "T"),
+            ("installacio", '=like', 'giscedata.at.suport,%'),
             ('inventari', '=', 'fiabilitat'),
         ]
 
