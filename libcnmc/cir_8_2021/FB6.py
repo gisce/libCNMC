@@ -57,7 +57,7 @@ class FB6(StopMultiprocessBased):
                               ('data_baixa', '=', False)]
 
         search_params += [
-            ("installacio", '=like', 'giscedata.at.suport,%'),
+            ('cini', '=like', 'I26%'),
             ('inventari', '=', 'fiabilitat'),
         ]
 
