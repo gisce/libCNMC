@@ -165,6 +165,8 @@ class FB3_3(StopMultiprocessBased):
         if trafo.get('conexions', False):
             o_costat_alta = self.get_parcs(trafo)['o_costat_alta']
             o_costat_baixa = self.get_parcs(trafo)['o_costat_baixa']
+        else:
+            o_costat_alta = o_costat_baixa = ''
 
         o_propietat = int(trafo['propietari'])
         o_estat = self.get_estat(trafo['id_estat'][0])
