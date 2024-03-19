@@ -174,7 +174,7 @@ class FB8(StopMultiprocessBased):
 
                 hist_obj = O.model('circular.82021.historics.b8')
                 hist_ids = hist_obj.search([
-                    ('identificador_posicion', '=', despatx['name']),
+                    ('identificador', '=', despatx['name']),
                     ('year', '=', self.year - 1)
                 ])
                 if hist_ids:
