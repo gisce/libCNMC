@@ -13,6 +13,7 @@ class FA4(StopMultiprocessBased):
         self.reducir_cups = kwargs.get("reducir_cups", False)
         self.report_name = 'FA4 - CUPS-CT'
         self.base_object = 'CTS i CUPS'
+        self.prefix_at = kwargs.get('prefix_at', 'A')
         mod_all_year = self.connection.GiscedataPolissaModcontractual.search(
             [
                 ("data_inici", "<=", "{}-01-01".format(self.year)),
@@ -136,7 +137,7 @@ class FA4(StopMultiprocessBased):
 
         o = self.connection
         fields_to_read = [
-            'name', 'et', 'polisses', 'id'
+            'name', 'et', 'polisses', 'id', 'id_escomesa'
         ]
         while True:
             try:
@@ -148,15 +149,35 @@ class FA4(StopMultiprocessBased):
                 cups = o.GiscedataCupsPs.read(
                     item, fields_to_read
                 )
+                if cups['id_escomesa']:
+                    escomesa = o.GiscedataCupsEscomesa.read(cups['id_escomesa'][0], ['blockname', 'node_id'])
+                    # Si és un CONTA-AT hem de d'agafar el tram que li arriba
+                    # com a identificador i el seu CINI
+                    if escomesa['blockname'][1] == 'CONTA-AT' and escomesa['node_id']:
+                        edge_ids = o.GiscegisEdge.search([
+                            '|',
+                            ('start_node', '=', escomesa['node_id'][0]),
+                            ('end_node', '=', escomesa['node_id'][0])
+                        ])
+                        if edge_ids:
+                            tram_ids = o.GiscedataAtTram.search([
+                                ('edge_id', '=', edge_ids[0])
+                            ])
+                            if tram_ids:
+                                tram = o.GiscedataAtTram.read(tram_ids[0], ['cini', 'name', 'id_regulatori'])
+                                o_cini = tram['cini']
+                                o_codi_ct = tram['id_regulatori'] or '{}{}'.format(self.prefix_at, tram['name'])
+                    else:
+                        o_cini = self.get_cini(cups['et'])
+                        if not o_cini:
+                            o_cini = ''
+                        o_codi_ct = cups['et']
 
                 if self.reducir_cups:
                     o_cups = cups['name'][:20]
                 else:
                     o_cups = cups['name']
-                o_cini = self.get_cini(cups['et'])
-                if not o_cini:
-                    o_cini = 'False'
-                o_codi_ct = cups['et']
+
                 self.output_q.put([
                     o_cups,         # CUPS
                     o_cini,         # CINI

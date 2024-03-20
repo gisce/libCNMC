@@ -171,6 +171,7 @@ def cir_8_2021_fa3(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('--derechos/--no-derechos', default=False)
 @click.option("--reducir-cups/--no-reducir-cups",default=False)
+@click.option('--prefix_at', help="Prefix dels Trams AT", default='A')
 def cir_8_2021_fa4(**kwargs):
     """
     Click entry to generate the FA4 file of 2021
@@ -192,7 +193,8 @@ def cir_8_2021_fa4(**kwargs):
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
         derechos=kwargs['derechos'],
-        reducir_cupss=kwargs["reducir_cups"]
+        reducir_cupss=kwargs["reducir_cups"],
+        prefix_at=kwargs['prefix_at'],
     )
     proc.calc()
 
