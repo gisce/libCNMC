@@ -380,7 +380,7 @@ class FB5(StopMultiprocessBased):
         if condensador['ct_id']:
             ct = self.connection.GiscedataCts.read(condensador['ct_id'][0], ['node_id'])
             if ct['node_id']:
-                o_node = ct['node_id'][0]
+                o_node = ct['node_id'][1]
 
         o_potencia_maquina = format_f(
             float(condensador['potencia_instalada']) / 1000.0, decimals=3
