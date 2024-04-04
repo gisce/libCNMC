@@ -36,7 +36,10 @@ class FB2_2(StopMultiprocessBased):
         :return: None
         """
         cella_obj = self.connection.GiscedataCellesCella
-        search_params = [('cini', '=like', 'I28%')]
+        search_params = [
+            ('cini', '=like', 'I28%'),
+            ("tipus_element.codi", "!=", "FUS_AT")
+        ]
 
         data_pm = '{}-01-01'.format(self.year + 1)
         data_baixa = '{}-12-31'.format(self.year)
