@@ -712,8 +712,24 @@ class FA1(StopMultiprocessBased):
 
                 # potencia adscrita
                 o_pot_ads = 0
-                if cups.get('potencia_adscrita', False):
+
+                if cups['force_potencia_adscrita']:
                     o_pot_ads = cups['potencia_adscrita']
+                else:
+                    # Buscar butlletins vigents en data circular i agafgar el màxim
+                    current_date = '{}-01-01'.format(self.year)
+                    but_ids = self.connection.GiscedataButlleti.search([
+                        ('cups_id', '=', cups['id']),
+                        '|', '|', '|',
+                        '&', ('data', '=', False), ('data_vigencia', '=', False),
+                        '&', ('data', '<=', current_date), ('data_vigencia', '=', False),
+                        '&', ('data', '=', False), ('data_vigencia', '>=', current_date),
+                        '&', ('data', '<=', current_date), ('data_vigencia', '>=', current_date),
+                    ], 0, 0, False, {'active_test': False})
+                    o_pot_ads = max(
+                        b['pot_max_admisible']
+                        for b in self.connection.GiscedataButlleti.read(but_ids, ['pot_max_admisible'])
+                    )
                 if o_pot_ads < o_potencia:
                     o_pot_ads = o_potencia
 
