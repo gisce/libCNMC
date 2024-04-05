@@ -471,9 +471,6 @@ class FA1(StopMultiprocessBased):
                     if autoconsum_data.get('cau', False):
                         o_cau = autoconsum_data['cau']
 
-                    if o_cod_auto in ['002', '003', '005', '007']:
-                        o_cau = ''
-
                     # COD_GENERACION_AUTO
                     if autoconsum_data.get('generador_id', False):
                         generador_id = autoconsum_data['generador_id'][0]
