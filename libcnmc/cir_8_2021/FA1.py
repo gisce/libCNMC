@@ -726,10 +726,11 @@ class FA1(StopMultiprocessBased):
                         '&', ('data', '=', False), ('data_vigencia', '>=', current_date),
                         '&', ('data', '<=', current_date), ('data_vigencia', '>=', current_date),
                     ], 0, 0, False, {'active_test': False})
-                    o_pot_ads = max(
-                        b['pot_max_admisible']
-                        for b in self.connection.GiscedataButlleti.read(but_ids, ['pot_max_admisible'])
-                    )
+                    if but_ids:
+                        o_pot_ads = max(
+                            b['pot_max_admisible']
+                            for b in self.connection.GiscedataButlleti.read(but_ids, ['pot_max_admisible'])
+                        )
                 if o_pot_ads < o_potencia:
                     o_pot_ads = o_potencia
 
