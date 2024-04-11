@@ -98,6 +98,9 @@ class FB2_2(StopMultiprocessBased):
         fields_to_read = [
             'installacio', 'name', 'propietari', 'data_pm', 'cini', 'tipus_element'
         ]
+        exist_trafo_field = o.GiscedataCellesCella.fields_get(['trafo_prot_id'])
+        if exist_trafo_field:
+            fields_to_read.append('trafo_prot_id')
         while True:
             try:
                 # generar linies
@@ -114,7 +117,11 @@ class FB2_2(StopMultiprocessBased):
                 o_ct = self.get_codi_ct(o_ct_id)
 
                 o_id_cella = celles['name']
-                o_maquina = self.get_codi_maquina(o_ct_id, o_id_cella)
+                if exist_trafo_field and celles['trafo_prot_id']:
+                    trafo = o.GiscedataTransformadorTrafo.read(celles['trafo_prot_id'][0], ['name', 'id_regulatori'])
+                    o_maquina = trafo['id_regulatori'] or trafo['name']
+                else:
+                    o_maquina = self.get_codi_maquina(o_ct_id, o_id_cella)
                 o_cini = celles['cini'] or ''
                 o_propietari = int(celles['propietari'])
                 if o_propietari == 0:
