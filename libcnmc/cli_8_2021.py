@@ -271,6 +271,7 @@ def cir_8_2021_fa5(**kwargs):
 @click.option("--reducir-cups/--no-reducir-cups",default=False)
 @click.option('--prefix_at', help="Prefix dels Trams AT")
 @click.option('--prefix_bt', help="Prefix dels Trams BT")
+@click.option('--embarrats/--no-embarrats', default=True, help="Afegir embarrats")
 @click.option('--div/--no-div', default=False, help="Dividir la longitud dels Trams AT entre el núm. de circuits")
 def cir_8_2021_fb1(**kwargs):
     """
@@ -297,7 +298,8 @@ def cir_8_2021_fb1(**kwargs):
         reducir_cupss=kwargs["reducir_cups"],
         prefix_at=kwargs['prefix_at'],
         prefix_bt=kwargs['prefix_bt'],
-        div=kwargs['div']
+        div=kwargs['div'],
+        embarrats=kwargs['embarrats'],
     )
     proc.calc()
 
