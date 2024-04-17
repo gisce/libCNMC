@@ -34,7 +34,6 @@ class FD2(StopMultiprocessBased):
         """
 
         search_params = [
-            '|',
             ('active', '=', True),
             ('year', '=', self.year),
             ('cod_gestion.name', '!=', 'Z8_01_dl15')
