@@ -596,6 +596,18 @@ def get_tipus_connexio(o, id_escomesa):
                     )
                     if tram_bt['tipus_linia']:
                         tipus = tram_bt['tipus_linia'][1][0]
+                else:
+                    tram_at = o.GiscedataAtTram.search(
+                        [('edge_id', '=', edge_id[0])]
+                    )
+                    if tram_at:
+                        tram_at = o.GiscedataAtTram.read(
+                            tram_at[0], ['tipus']
+                        )
+                        if tram_at['tipus'] and tram_at['tipus'] == 1:
+                            tipus = 'A'
+                        else:
+                            tipus = 'S'
     else:
         bloc = o.GiscegisBlocsEscomeses.search(
             [('escomesa', '=', id_escomesa)]
