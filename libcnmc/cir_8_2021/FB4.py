@@ -104,6 +104,14 @@ class FB4(StopMultiprocessBased):
             cts_data = o.GiscedataCts.read(cts_id['ct_id'][0], ['propietari', 'node_id', 'punt_frontera', 'model'])
         return cts_data
 
+    def get_tensio(self, sub):
+        o = self.connection
+        res = ''
+        if sub['tensio']:
+            tensio_obj = o.GiscedataTensionsTensio.read(sub['tensio'][0])
+            res = tensio_obj['tensio']
+        return res
+
     def consumer(self):
         """
         Generates the line of the file
