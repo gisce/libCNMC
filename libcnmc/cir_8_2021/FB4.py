@@ -268,10 +268,15 @@ class FB4(StopMultiprocessBased):
                     ti = ''
 
                 #AJENA
-                if pos['propietari']:
-                    ajena = 0
-                else:
-                    ajena = 1
+                ajena = 1
+                if pos.get('propietari', False):
+                    # Agafar la propietat de les Posicions a on la Subestació
+                    # també és propietat
+                    if pos.get('subestacio_id', False):
+                        sub_id = pos['subestacio_id'][0]
+                        se_data = self.get_cts_data(sub_id)
+                        if se_data.get('propietari', False):
+                            ajena = 0
 
                 #NODE
                 if pos['node_id']:
