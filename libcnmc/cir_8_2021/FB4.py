@@ -104,6 +104,24 @@ class FB4(StopMultiprocessBased):
             cts_data = o.GiscedataCts.read(cts_id['ct_id'][0], ['propietari', 'node_id', 'punt_frontera', 'model'])
         return cts_data
 
+    def get_subestacio(self, sub_id):
+        """
+        Returns the SE data
+        :param sub_id: ID of SE
+        :type sub_id: int
+        :return: Node, Name, CINI and CT-ID of the SE
+        :rtype: dict[str,str]
+        """
+
+        o = self.connection
+        sub = o.GiscedataCtsSubestacions.read(
+            sub_id, ['name']
+        )
+        ret = {
+            "name": sub['name'],
+        }
+        return ret
+
     def consumer(self):
         """
         Generates the line of the file
@@ -251,12 +269,12 @@ class FB4(StopMultiprocessBased):
                     else data_ip
 
                 #IDENTIFICADOR_EMPLAZAMIENTO
-                if pos['parc_id']:
+                identificador_emplazamiento = ''
+                if pos.get('parc_id', False): # nom Parc
                     identificador_emplazamiento = pos['parc_id'][1]
-                else:
-                    o_parc = pos['subestacio_id'][1] + "-"\
-                        + str(self.get_tensio(pos))
-                    identificador_emplazamiento = "SUBESTACIO_NAME"
+                elif pos.get('subestacio_id', False): # nom Subestació
+                    sub_data = self.get_subestacio(pos['subestacio_id'][0])
+                    identificador_emplazamiento =  sub_data.get('name', '')
 
                 #CODIGO CCUU
                 if pos['tipus_instalacio_cnmc_id']:
