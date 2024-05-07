@@ -1222,3 +1222,6 @@ cli = click.CommandCollection(sources=[
     cnmc, cnmc_4666, cnmc_4667, cnmc_4_2015, cnmc_6181, cnmc_8_2021
 ])
 cli.params.append(click.Option(['--version'], is_flag=True, callback=version_command, expose_value=False, is_eager=True, help='Show the version'))
+
+if __name__ == '__main__':
+    cli()
