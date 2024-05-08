@@ -798,7 +798,9 @@ class FB1(StopMultiprocessBased):
                     # CAMPS OBRA
                     if linia_obra != '':
                         obra_year = data_finalitzacio.split('-')[0]
-                        data_pm_year = fecha_aps.split('/')[2]
+                        data_pm_year = (
+                                fecha_aps and fecha_aps.split('/')[2] or ''
+                        )
                         if linia_obra['tipo_inversion'] != '0' and obra_year != data_pm_year:
                             data_ip = convert_spanish_date(data_finalitzacio)
                         else:
