@@ -512,7 +512,7 @@ class FA1(StopMultiprocessBased):
                         if escomesa.get("geom",False):
                             geom = wkt.loads(escomesa["geom"]).coords[0]
                             vertex = {"x":geom[0], "y": geom[1]}
-                        if not o_nom_node and escomesa.get("node_id", False):
+                        if escomesa.get("node_id", False):
                             o_nom_node = escomesa.get("node_id")[1]
                     if bloc_escomesa_id and not o_nom_node:
                         bloc_escomesa = O.GiscegisBlocsEscomeses.read(
