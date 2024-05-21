@@ -411,7 +411,7 @@ class FA1(StopMultiprocessBased):
                     'name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
                     'cne_anual_reactiva', 'cnmc_potencia_facturada', 'et',
                     'polisses', 'potencia_conveni', 'potencia_adscrita',
-                    "node_id", 'autoconsum_id', 'cnmc_numero_lectures',
+                    'autoconsum_id', 'cnmc_numero_lectures',
                     'cnmc_factures_estimades', 'cnmc_factures_total',
                     'cnmc_energia_autoconsumida', 'cnmc_energia_excedentaria',
                     'force_potencia_adscrita', 'cnmc_conexion_autoconsumo',
@@ -497,7 +497,7 @@ class FA1(StopMultiprocessBased):
                 o_tensio = ''
                 o_connexio = ''
                 vertex = False
-                if cups and cups['id_escomesa'] and "node_id" not in cups:
+                if cups and cups['id_escomesa']:
                     o_connexio = get_tipus_connexio(
                         O, cups['id_escomesa'][0]
                     )
@@ -506,14 +506,13 @@ class FA1(StopMultiprocessBased):
                         search_params
                     )
                     id_escomesa = cups.get("id_escomesa")
-                    o_nom_node = ''
                     vertex = ''
                     if id_escomesa:
                         escomesa = O.GiscedataCupsEscomesa.read(id_escomesa[0], ["node_id", "geom"])
                         if escomesa.get("geom",False):
                             geom = wkt.loads(escomesa["geom"]).coords[0]
                             vertex = {"x":geom[0], "y": geom[1]}
-                        if escomesa.get("node_id", False):
+                        if not o_nom_node and escomesa.get("node_id", False):
                             o_nom_node = escomesa.get("node_id")[1]
                     if bloc_escomesa_id and not o_nom_node:
                         bloc_escomesa = O.GiscegisBlocsEscomeses.read(
