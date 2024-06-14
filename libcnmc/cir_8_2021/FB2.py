@@ -110,6 +110,10 @@ class FB2(StopMultiprocessBased):
                     res += trafo['potencia_nominal']
         return res
 
+    def get_tensio(self, tensio_id):
+        o = self.connection
+        return o.GiscedataTensionsTensio.read(tensio_id, ['tensio'])['tensio']
+
     def consumer(self):
         """
         Method that generates the csv file
@@ -123,10 +127,11 @@ class FB2(StopMultiprocessBased):
             return vals['name']
 
         fields_to_read = [
-            'id', 'name', 'cini', 'data_pm', 'tipus_instalacio_cnmc_id', 'tensio_p',
-            'id_municipi', 'perc_financament', 'descripcio', 'data_baixa', 'tensio_const',
-            'node_baixa', 'zona_id', 'node_id', 'potencia',
-            'model', 'punt_frontera', 'id_regulatori', 'perc_financament',
+            'id', 'name', 'cini', 'data_pm', 'tipus_instalacio_cnmc_id',
+            'tensio_p', 'id_municipi', 'perc_financament', 'descripcio',
+            'data_baixa', 'tensio_const', 'node_baixa', 'zona_id', 'node_id',
+            'potencia', 'model', 'punt_frontera', 'id_regulatori',
+            'perc_financament', 'tensio_entrant'
         ]
 
         fields_to_read_obra = [
@@ -312,11 +317,15 @@ class FB2(StopMultiprocessBased):
                         o_node_baixa = o_node
 
                 #TENSIO
-                try:
-                    o_tensio_p = format_f(
-                        float(ct['tensio_p']) / 1000.0, decimals=3) or ''
-                except:
-                    o_tensio_p = ''
+                if ct.get('tensio_entrant'):
+                    o_tensio_p = self.get_tensio(ct['tensio_entrant'][0])
+                else:
+                    try:
+
+                        o_tensio_p = format_f(
+                            float(ct['tensio_p']) / 1000.0, decimals=3) or ''
+                    except:
+                        o_tensio_p = ''
 
                 #TENSIO_CONST
                 o_tensio_const = ''
