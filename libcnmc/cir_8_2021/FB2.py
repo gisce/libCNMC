@@ -266,23 +266,36 @@ class FB2(StopMultiprocessBased):
                 #DATA_BAIXA, CAUSA_BAJA
                 if ct['data_baixa']:
                     if ct['data_baixa'] < data_pm_limit:
-                        tmp_date = datetime.strptime(
-                            ct['data_baixa'], '%Y-%m-%d %H:%M:%S')
-                        fecha_baja = tmp_date.strftime('%d/%m/%Y')
-
-                        if int(fecha_baja.split("/")[2]) - int(data_pm.split("/")[2]) >= 40:
-                            if identificador_baja != '':
-                                causa_baja = 1
+                        tmp_date = ''
+                        try:
+                            tmp_date = datetime.strptime(
+                                ct['data_baixa'], '%Y-%m-%d %H:%M:%S'
+                            )
+                        except ValueError:
+                            try:
+                                tmp_date = datetime.strptime(
+                                    ct['data_baixa'], '%Y-%m-%d'
+                                )
+                            except ValueError:
+                                traceback.print_exc()
+                                if self.raven:
+                                    self.raven.captureException()
+                        if tmp_date:
+                            fecha_baja = tmp_date.strftime('%d/%m/%Y')
+                            if (int(fecha_baja.split("/")[2])
+                                    - int(data_pm.split("/")[2]) >= 40):
+                                if identificador_baja != '':
+                                    causa_baja = 1
+                                else:
+                                    causa_baja = 2
                             else:
-                                causa_baja = 2
-                        else:
-                            causa_baja = 3
+                                causa_baja = 3
                     else:
                         fecha_baja = ''
-                        causa_baja = 0;
+                        causa_baja = 0
                 else:
                     fecha_baja = ''
-                    causa_baja = 0;
+                    causa_baja = 0
 
                 #CCUU
                 if ct['tipus_instalacio_cnmc_id']:
@@ -307,9 +320,9 @@ class FB2(StopMultiprocessBased):
                 if ct["node_baixa"]:
                     o_node_baixa = ct["node_baixa"][1]
                     if o_node_baixa == 0:
-                        o_node_baixa = '';
+                        o_node_baixa = ''
                 else:
-                    o_node_baixa = '';
+                    o_node_baixa = ''
 
                 if ct['cini']:
                     cini = ct['cini']
