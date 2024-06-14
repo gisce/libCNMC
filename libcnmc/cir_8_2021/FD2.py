@@ -72,7 +72,10 @@ class FD2(StopMultiprocessBased):
                     ]
                     self.output_q.put(output)
                 else:
-                    d2_z8_15 = d2_obj.search([('active', '=', True), ('cod_gestion.name', '=', 'Z8_01_dl15')])[0]
+                    d2_z8_15 = d2_obj.search([('active', '=', True),
+                                              ('cod_gestion.name', '=', 'Z8_01_dl15'),
+                                              ('year', '=', self.year)])[0]
+
                     d2_z8_15 = d2_obj.read(d2_z8_15, [])
                     solicitudes = cod_gest_data['solicitudes'] + d2_z8_15['solicitudes']
                     en_plazo = cod_gest_data['en_plazo'] + d2_z8_15['en_plazo']
