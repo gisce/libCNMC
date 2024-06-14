@@ -287,10 +287,10 @@ class FB2(StopMultiprocessBased):
                                 causa_baja = 3
                     else:
                         fecha_baja = ''
-                        causa_baja = 0;
+                        causa_baja = 0
                 else:
                     fecha_baja = ''
-                    causa_baja = 0;
+                    causa_baja = 0
 
                 #CCUU
                 if ct['tipus_instalacio_cnmc_id']:
@@ -315,9 +315,9 @@ class FB2(StopMultiprocessBased):
                 if ct["node_baixa"]:
                     o_node_baixa = ct["node_baixa"][1]
                     if o_node_baixa == 0:
-                        o_node_baixa = '';
+                        o_node_baixa = ''
                 else:
-                    o_node_baixa = '';
+                    o_node_baixa = ''
 
                 if ct['cini']:
                     cini = ct['cini']
