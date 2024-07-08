@@ -262,6 +262,11 @@ class FB4(StopMultiprocessBased):
                     cuenta_contable = ''
                     financiado = ''
 
+                # Si el valor residual resulta en un float amb valor 0.0, en el
+                # seu lloc es forçarà a valor buit
+                if valor_residual == 0.0:
+                    valor_residual = ''
+
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data IP sortirà en blanc
                 if data_ip:
