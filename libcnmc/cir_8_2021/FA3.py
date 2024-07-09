@@ -2,7 +2,6 @@
 from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import format_f, convert_srid, get_srid, get_ine
 from datetime import datetime
-from shapely import wkt
 import traceback
 
 
@@ -57,13 +56,10 @@ class FA3(StopMultiprocessBased):
                     o_tipo_crecimiento = prevision['tipo_crecimiento']
 
                 # COORDENADAS
-                o_x = ''
-                if prevision.get('x', False):
-                    o_x = prevision['x']
-
-                o_y = ''
-                if prevision.get('y', False):
-                    o_y = prevision['y']
+                res_srid = ['', '']
+                vertex = [prevision.get('x', 0.0), prevision.get('y', 0.0)]
+                if vertex:
+                    res_srid = convert_srid(get_srid(O), vertex)
 
                 # SUPERFÍCIE
                 o_superficie = ''
@@ -110,9 +106,9 @@ class FA3(StopMultiprocessBased):
                 self.output_q.put([
                     o_cod_crecimiento,                              # CÓDIGO CRECIMIENTO
                     o_tipo_crecimiento,                             # TIPO CRECIMIENTO
-                    format_f(o_x, decimals=3),                      # COORDENADA X
-                    format_f(o_y, decimals=3),                      # COORDENADA Y
-                    '0,000',                                             # COORDENADA Z
+                    format_f(res_srid[0], decimals=3),              # COORDENADA X
+                    format_f(res_srid[1], decimals=3),              # COORDENADA Y
+                    '0,000',                                        # COORDENADA Z
                     format_f(o_superficie, decimals=3),             # SUPERFICIE
                     o_uso,                                          # USO
                     format_f(o_potencia_solicitada, decimals=3),    # POTENCIA SOLICITADA
