@@ -88,6 +88,10 @@ class FB1(StopMultiprocessBased):
                           '&', ('active', '=', False),
                                ('data_baixa', '!=', False),
                           ('active', '=', True)]
+        # Excloure els registres que es troben de baixa i el model es 'M'
+        search_params += [
+            '|', ('model', '!=', 'M'), ('data_baixa', '=', False)
+        ]
 
         obj_lat = self.connection.GiscedataAtTram
         ids = obj_lat.search(
@@ -114,6 +118,10 @@ class FB1(StopMultiprocessBased):
                           '&', ('active', '=', False),
                                ('data_baixa', '!=', False),
                           ('active', '=', True)]
+        # Excloure els registres que es troben de baixa i el model es 'M'
+        search_params += [
+            '|', ('model', '!=', 'M'), ('data_baixa', '=', False)
+        ]
 
         obj_lbt = self.connection.GiscedataBtElement
         ids = obj_lbt.search(
@@ -135,7 +143,7 @@ class FB1(StopMultiprocessBased):
 
         fields_to_read = [
             'baixa', 'data_pm', 'data_industria', 'coeficient', 'cini', 'propietari', 'tensio_max_disseny_id', 'name',
-            'origen', 'final', 'perc_financament', 'longitud_cad', 'cable', 'linia', 'model', 'model', 'punt_frontera',
+            'origen', 'final', 'perc_financament', 'longitud_cad', 'cable', 'linia', 'model', 'punt_frontera',
             'tipus_instalacio_cnmc_id', 'data_baixa', 'baixa', 'longitud_cad', 'data_pm', 'circuits',
             'id_regulatori', 'municipi',
         ]
