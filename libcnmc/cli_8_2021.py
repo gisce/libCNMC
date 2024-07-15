@@ -273,6 +273,7 @@ def cir_8_2021_fa5(**kwargs):
 @click.option('--prefix_bt', help="Prefix dels Trams BT")
 @click.option('--embarrats/--no-embarrats', default=True, help="Afegir embarrats")
 @click.option('--div/--no-div', default=False, help="Dividir la longitud dels Trams AT entre el núm. de circuits")
+@click.option('--tensio-modcon/--no-tensio-modcon', default=False, help="Afegir tensio de la ultima modcon activa")
 def cir_8_2021_fb1(**kwargs):
     """
     Click entry to generate the FB1 file of 2021
@@ -300,6 +301,7 @@ def cir_8_2021_fb1(**kwargs):
         prefix_bt=kwargs['prefix_bt'],
         div=kwargs['div'],
         embarrats=kwargs['embarrats'],
+        tensio_modcon=kwargs['tensio_modcon'],
     )
     proc.calc()
 
