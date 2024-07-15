@@ -750,14 +750,14 @@ class FA1(StopMultiprocessBased):
                     o_num_lectures,                                     # NUMERO LECTURAS
                     o_baixa,                                            # BAJA SUMINISTRO
                     o_titular,                                          # CAMBIO TITULARIDAD
-                    o_facturas_estimadas,                               # fff
-                    o_facturas_total,                                   # fff
-                    o_cau,                                              # fff
-                    o_cod_auto,                                         # fff
-                    o_cod_generacio_auto,                               # fff
-                    o_conexion_autoconsumo,                             # fff
-                    format_f(o_energia_autoconsumida, decimals=3),      # fff
-                    format_f(o_energia_excedentaria, decimals=3)        # fff
+                    o_facturas_estimadas,                               # NUMERO DE FACTURAS DE PEAJES
+                    o_facturas_total,                                   # NUMERO TOTAL DE FACTURAS
+                    o_cau,                                              # CODIGO DE AUTOCONSUMO
+                    o_cod_auto,                                         # CÓDIGO DE TIPOLOGIA EN AUTOCONSUMO
+                    o_cod_generacio_auto,                               # CÓDIGO DE GENERACIÓN DE AUTOCONSUMO
+                    o_conexion_autoconsumo,                             # CONEXIÓN AUTOCONSUMO
+                    format_f(o_energia_autoconsumida, decimals=3),      # ENERGIA AUTOCONSUMIDA
+                    format_f(o_energia_excedentaria, decimals=3)        # ENERGIA EXECEDENTARIA
                 ])
                 self.input_q.task_done()
             except Exception:
