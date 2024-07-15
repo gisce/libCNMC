@@ -60,7 +60,10 @@ class FB6(StopMultiprocessBased):
             ('cini', '=like', 'I26%'),
             ('inventari', '=', 'fiabilitat'),
         ]
-
+        # Excloure els registres que es troben de baixa i el model es 'M'
+        search_params += [
+            '|', ('model', '!=', 'M'), ('data_baixa', '=', False)
+        ]
         return self.connection.GiscedataCellesCella.search(search_params, 0, 0, False, {'active_test': False})
 
     def get_node_vertex(self, element_name):

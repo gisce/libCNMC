@@ -66,6 +66,10 @@ class FB2(StopMultiprocessBased):
                           '&', ('active', '=', False),
                                ('data_baixa', '!=', False),
                           ('active', '=', True)]
+        # Excloure els registres que es troben de baixa i el model es 'M'
+        search_params += [
+            '|', ('model', '!=', 'M'), ('data_baixa', '=', False)
+        ]
 
         forced_ids = get_forced_elements(self.connection, "giscedata.cts")
 
