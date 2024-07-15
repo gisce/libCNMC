@@ -334,15 +334,11 @@ class FB2(StopMultiprocessBased):
                         o_node_baixa = o_node
 
                 #TENSIO
+                o_tensio_p = 0.0
                 if ct.get('tensio_entrant'):
-                    o_tensio_p = self.get_tensio(ct['tensio_entrant'][0])
-                else:
-                    try:
-
-                        o_tensio_p = format_f(
-                            float(ct['tensio_p']) / 1000.0, decimals=3) or ''
-                    except:
-                        o_tensio_p = ''
+                    o_tensio_p = float(self.get_tensio(ct['tensio_entrant'][0]))
+                elif ct.get('tensio_p'):
+                    o_tensio_p = float(ct['tensio_p'])
 
                 #TENSIO_CONST
                 o_tensio_const = ''
@@ -461,42 +457,42 @@ class FB2(StopMultiprocessBased):
                     data_ip = ''
 
                 output = [
-                    o_identificador_ct,           # IDENTIFICADOR
-                    ct['cini'] or '',                   # CINI
-                    ct['descripcio'] or '',             # DENOMINACION
-                    str(ti),                            # CODIGO_CCUU
-                    o_node,                             # NUDO_ALTA
-                    o_node_baixa,                       # NUDO_BAJA
-                    o_tensio_p,                         # NIVEL TENSION
-                    o_tensio_const,                     # TENSION CONSTRUCCION
-                    o_potencia,                         # POTENCIA
-                    format_f(res_srid[0], decimals=3),  # X
-                    format_f(res_srid[1], decimals=3),  # Y
-                    '0,000',                            # Z
-                    municipio,                          # MUNICIPIO
-                    provincia,                          # PROVINCIA
-                    comunitat_codi or '',               # CODIGO_CCAA
-                    zona_name,                          # ZONA
-                    estado,                             # ESTADO
-                    modelo,                             # MODELO
-                    punto_frontera,                     # PUNTO_FRONTERA
-                    data_pm,                            # FECHA APS
-                    causa_baja,                         # CAUSA BAJA
-                    fecha_baja,                         # FECHA BAJA
-                    data_ip,                            # FECHA IP
-                    tipo_inversion,                     # TIPO INVERSION
-                    im_ingenieria,                      # IM_TRAMITES
-                    im_construccion,                    # IM_CONSTRUCCION
-                    im_trabajos,                        # IM_TRABAJOS
-                    subvenciones_europeas,              # SUBVENCIONES EUROPEAS
-                    subvenciones_nacionales,            # SUBVENCIONES NACIONALES
-                    subvenciones_prtr,                  # SUBVENCIONES PRTR
-                    valor_auditado,                     # VALOR AUDITADO
-                    format_f(financiado, decimals=2),   # FINANCIADO
-                    cuenta_contable,                    # CUENTA CONTABLE
-                    motivacion,                         # MOTIVACION
-                    avifauna,                           # AVIFAUNA
-                    identificador_baja,                 # ID_BAJA
+                    o_identificador_ct,                                 # IDENTIFICADOR
+                    ct['cini'] or '',                                   # CINI
+                    ct['descripcio'] or '',                             # DENOMINACION
+                    str(ti),                                            # CODIGO_CCUU
+                    o_node,                                             # NUDO_ALTA
+                    o_node_baixa,                                       # NUDO_BAJA
+                    format_f(o_tensio_p / 1000.0, decimals=3) or '',    # NIVEL TENSION
+                    o_tensio_const,                                     # TENSION CONSTRUCCION
+                    o_potencia,                                         # POTENCIA
+                    format_f(res_srid[0], decimals=3),                  # X
+                    format_f(res_srid[1], decimals=3),                  # Y
+                    '0,000',                                            # Z
+                    municipio,                                          # MUNICIPIO
+                    provincia,                                          # PROVINCIA
+                    comunitat_codi or '',                               # CODIGO_CCAA
+                    zona_name,                                          # ZONA
+                    estado,                                             # ESTADO
+                    modelo,                                             # MODELO
+                    punto_frontera,                                     # PUNTO_FRONTERA
+                    data_pm,                                            # FECHA APS
+                    causa_baja,                                         # CAUSA BAJA
+                    fecha_baja,                                         # FECHA BAJA
+                    data_ip,                                            # FECHA IP
+                    tipo_inversion,                                     # TIPO INVERSION
+                    im_ingenieria,                                      # IM_TRAMITES
+                    im_construccion,                                    # IM_CONSTRUCCION
+                    im_trabajos,                                        # IM_TRABAJOS
+                    subvenciones_europeas,                              # SUBVENCIONES EUROPEAS
+                    subvenciones_nacionales,                            # SUBVENCIONES NACIONALES
+                    subvenciones_prtr,                                  # SUBVENCIONES PRTR
+                    valor_auditado,                                     # VALOR AUDITADO
+                    format_f(financiado, decimals=2),                   # FINANCIADO
+                    cuenta_contable,                                    # CUENTA CONTABLE
+                    motivacion,                                         # MOTIVACION
+                    avifauna,                                           # AVIFAUNA
+                    identificador_baja,                                 # ID_BAJA
                 ]
                 self.output_q.put(output)
                 self.input_q.task_done()
