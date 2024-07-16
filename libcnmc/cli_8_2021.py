@@ -32,6 +32,7 @@ def cnmc_8_2021():
 @click.option("--reducir-cups/--no-reducir-cups", default=False)
 @click.option("--allow-cna/--no-allow-cna", default=False)
 @click.option("--zona_qualitat",default="ct")
+@click.option('--tensio-modcon/--no-tensio-modcon', default=False, help="Afegir tensio de la ultima modcon activa")
 def cir_8_2021_fa1(**kwargs):
     """
     Click entry to generate the FA1 of 2021
@@ -55,7 +56,8 @@ def cir_8_2021_fa1(**kwargs):
         derechos=kwargs["derechos"],
         reducir_cups=kwargs["reducir_cups"],
         allow_cna=kwargs["allow_cna"],
-        zona_qualitat=kwargs["zona_qualitat"]
+        zona_qualitat=kwargs["zona_qualitat"],
+        tensio_modcon=kwargs['tensio_modcon']
     )
     proc.calc()
 
@@ -273,7 +275,6 @@ def cir_8_2021_fa5(**kwargs):
 @click.option('--prefix_bt', help="Prefix dels Trams BT")
 @click.option('--embarrats/--no-embarrats', default=True, help="Afegir embarrats")
 @click.option('--div/--no-div', default=False, help="Dividir la longitud dels Trams AT entre el núm. de circuits")
-@click.option('--tensio-modcon/--no-tensio-modcon', default=False, help="Afegir tensio de la ultima modcon activa")
 def cir_8_2021_fb1(**kwargs):
     """
     Click entry to generate the FB1 file of 2021
@@ -300,8 +301,7 @@ def cir_8_2021_fb1(**kwargs):
         prefix_at=kwargs['prefix_at'],
         prefix_bt=kwargs['prefix_bt'],
         div=kwargs['div'],
-        embarrats=kwargs['embarrats'],
-        tensio_modcon=kwargs['tensio_modcon'],
+        embarrats=kwargs['embarrats']
     )
     proc.calc()
 

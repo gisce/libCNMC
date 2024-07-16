@@ -494,7 +494,7 @@ class FA1(StopMultiprocessBased):
                     id_mun = cups["id_municipi"][0]
                     o_codi_ine_prov, o_codi_ine_mun = self.get_ine(id_mun)
                 o_nom_node = ''
-                o_tensio = ''
+                o_tensio = 0.0
                 o_connexio = ''
                 vertex = False
                 if cups and cups['id_escomesa']:
@@ -687,8 +687,6 @@ class FA1(StopMultiprocessBased):
                                 id_esc_gis, ['tensio']
                             )[0]['tensio']
                             o_tensio = float(tensio_gis)
-                else:
-                    o_tensio = ''
 
                 # potencia adscrita
                 o_pot_ads = 0
