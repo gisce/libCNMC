@@ -37,6 +37,7 @@ class FA1(StopMultiprocessBased):
         self.zona_qualitat = kwargs.get("zona_qualitat", "ct")
         self.layer = 'LBT\_%'
         self.ultim_dia_any = '{}-12-31'.format(self.year)
+        self.tensio_modcon = kwargs.pop('tensio-modcon', False)
         id_res_like = self.connection.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')]
         )
