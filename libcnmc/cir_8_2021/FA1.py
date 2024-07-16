@@ -324,6 +324,37 @@ class FA1(StopMultiprocessBased):
         else:
             return '0'
 
+    def get_tensio(self, cup, year, tensio_modcon):
+        O = self.connection
+        tensio = 0.0
+        ultim_dia_any = '%s-12-31' % year
+        if cup:
+            if tensio_modcon:
+                if len(cup['polisses']):
+                    search_modcon = [('id', 'in', cup['polisses']),
+                                     ('data_inici', '<=', ultim_dia_any), (
+                                     'polissa_id.state', 'in',
+                                     ['tall', 'activa', 'baixa'])]
+                    modcons = O.GiscedataPolissaModcontractual.search(search_modcon, 0,
+                        1, 'data_inici desc', {'active_test': False})
+                    if modcons:
+                        modcon_id = modcons[0]
+                        modcon = O.GiscedataPolissaModcontractual.read(modcon_id,
+                            ['tensio'])
+                        if modcon.get('tensio'):
+                            tensio = float(modcon['tensio'])
+            else:
+                if cup.get('id_escomesa', False):
+                    search_params = [('escomesa', '=', cup['id_escomesa'][0])]
+                    id_esc_gis = O.GiscegisEscomesesTraceability.search(
+                        search_params)
+                    if id_esc_gis:
+                        tensio_gis = O.GiscegisEscomesesTraceability.read(id_esc_gis,
+                            ['tensio'])[0]['tensio']
+                        tensio = float(tensio_gis)
+
+        return tensio
+
     def get_baixa_cups(self, cups_id):
         """
         Devuelve si un CUPS ha estado de baja durante el año
@@ -494,7 +525,7 @@ class FA1(StopMultiprocessBased):
                     id_mun = cups["id_municipi"][0]
                     o_codi_ine_prov, o_codi_ine_mun = self.get_ine(id_mun)
                 o_nom_node = ''
-                o_tensio = 0.0
+                o_tensio = self.get_tensio(cups, self.year, self.tensio_modcon)
                 o_connexio = ''
                 vertex = False
                 if cups and cups['id_escomesa']:
@@ -639,7 +670,7 @@ class FA1(StopMultiprocessBased):
                         fields_to_read_modcon = [
                             'cnae',
                             'tarifa',
-                            'tensio',
+                            # 'tensio',
                             'potencia',
                             'polissa_id',
                             'data_final'
@@ -661,8 +692,6 @@ class FA1(StopMultiprocessBased):
                                     cnae_id, ['name']
                                 )['name']
                                 self.cnaes[cnae_id] = o_cnae
-                        if self.tensio_modcon and modcon.get('tensio'):
-                                o_tensio = float(modcon['tensio'])
                         if modcon['potencia']:
                             o_potencia = modcon['potencia']
                     else:
@@ -672,21 +701,6 @@ class FA1(StopMultiprocessBased):
                             o_cnae = self.default_o_cnae
                         if self.default_o_cod_tfa:
                             o_cod_tfa = self.default_o_cod_tfa
-                # Tensió d'alimentació en kV
-                if not o_tensio:
-                    if cups.get('id_escomesa', False):
-                        search_params = [
-                            ('escomesa', '=', cups['id_escomesa'][0])
-                        ]
-                        id_esc_gis = O.GiscegisEscomesesTraceability.search(
-                            search_params
-                        )
-
-                        if id_esc_gis:
-                            tensio_gis = O.GiscegisEscomesesTraceability.read(
-                                id_esc_gis, ['tensio']
-                            )[0]['tensio']
-                            o_tensio = float(tensio_gis)
 
                 # potencia adscrita
                 o_pot_ads = 0
