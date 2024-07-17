@@ -331,7 +331,7 @@ class FA1(StopMultiprocessBased):
         ultim_dia_any = '%s-12-31' % year
         if cups:
             if tensio_modcon:
-                if len(cup['polisses']):
+                if len(cups['polisses']):
                     search_modcon = [('id', 'in', cups['polisses']),
                                      ('data_inici', '<=', ultim_dia_any), (
                                      'polissa_id.state', 'in',
