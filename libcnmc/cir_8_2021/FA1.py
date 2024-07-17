@@ -37,7 +37,7 @@ class FA1(StopMultiprocessBased):
         self.zona_qualitat = kwargs.get("zona_qualitat", "ct")
         self.layer = 'LBT\_%'
         self.ultim_dia_any = '{}-12-31'.format(self.year)
-        self.tensio_modcon = kwargs.pop('tensio-modcon', False)
+        self.tensio_modcon = kwargs.pop('tensio_modcon', False)
         id_res_like = self.connection.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')]
         )
@@ -325,14 +325,14 @@ class FA1(StopMultiprocessBased):
         else:
             return '0'
 
-    def get_tensio(self, cup, year, tensio_modcon):
+    def get_tensio(self, cups, year, tensio_modcon):
         O = self.connection
         tensio = 0.0
         ultim_dia_any = '%s-12-31' % year
-        if cup:
+        if cups:
             if tensio_modcon:
                 if len(cup['polisses']):
-                    search_modcon = [('id', 'in', cup['polisses']),
+                    search_modcon = [('id', 'in', cups['polisses']),
                                      ('data_inici', '<=', ultim_dia_any), (
                                      'polissa_id.state', 'in',
                                      ['tall', 'activa', 'baixa'])]
@@ -345,8 +345,8 @@ class FA1(StopMultiprocessBased):
                         if modcon.get('tensio'):
                             tensio = float(modcon['tensio'])
             else:
-                if cup.get('id_escomesa', False):
-                    search_params = [('escomesa', '=', cup['id_escomesa'][0])]
+                if cups.get('id_escomesa', False):
+                    search_params = [('escomesa', '=', cups['id_escomesa'][0])]
                     id_esc_gis = O.GiscegisEscomesesTraceability.search(
                         search_params)
                     if id_esc_gis:
