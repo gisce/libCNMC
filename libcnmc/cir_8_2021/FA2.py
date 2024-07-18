@@ -51,10 +51,10 @@ class FA2(StopMultiprocessBased):
             ('data_alta', '<', data_pm), ('collectiu', '=', True)
         ]
         autoconsum_ids = O.GiscedataAutoconsum.search(
-            search_params_ac, context={'active_test': False})
+            search_params_ac, 0, 0, False, {"active_test": False})
         search_params_gen = [('autoconsum_id', 'in', autoconsum_ids)]
         generador_ids = O.GiscedataAutoconsumGenerador.search(
-            search_params_gen, context={'active_test': False})
+            search_params_gen, 0, 0, False, {"active_test": False})
 
         for elem in range(0, len(autoconsum_ids)):
              generador_ids[elem] = 'gac.{}'.format(generador_ids[elem])
