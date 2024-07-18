@@ -37,6 +37,7 @@ class FA1(StopMultiprocessBased):
         self.zona_qualitat = kwargs.get("zona_qualitat", "ct")
         self.layer = 'LBT\_%'
         self.ultim_dia_any = '{}-12-31'.format(self.year)
+        self.tensio_modcon = kwargs.pop('tensio_modcon', False)
         id_res_like = self.connection.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')]
         )
@@ -324,6 +325,37 @@ class FA1(StopMultiprocessBased):
         else:
             return '0'
 
+    def get_tensio(self, cups, year, tensio_modcon):
+        O = self.connection
+        tensio = 0.0
+        ultim_dia_any = '%s-12-31' % year
+        if cups:
+            if tensio_modcon:
+                if len(cups['polisses']):
+                    search_modcon = [('id', 'in', cups['polisses']),
+                                     ('data_inici', '<=', ultim_dia_any), (
+                                     'polissa_id.state', 'in',
+                                     ['tall', 'activa', 'baixa'])]
+                    modcons = O.GiscedataPolissaModcontractual.search(search_modcon, 0,
+                        1, 'data_inici desc', {'active_test': False})
+                    if modcons:
+                        modcon_id = modcons[0]
+                        modcon = O.GiscedataPolissaModcontractual.read(modcon_id,
+                            ['tensio'])
+                        if modcon.get('tensio'):
+                            tensio = float(modcon['tensio'])
+            else:
+                if cups.get('id_escomesa', False):
+                    search_params = [('escomesa', '=', cups['id_escomesa'][0])]
+                    id_esc_gis = O.GiscegisEscomesesTraceability.search(
+                        search_params)
+                    if id_esc_gis:
+                        tensio_gis = O.GiscegisEscomesesTraceability.read(id_esc_gis,
+                            ['tensio'])[0]['tensio']
+                        tensio = float(tensio_gis)
+
+        return tensio
+
     def get_baixa_cups(self, cups_id):
         """
         Devuelve si un CUPS ha estado de baja durante el año
@@ -494,7 +526,7 @@ class FA1(StopMultiprocessBased):
                     id_mun = cups["id_municipi"][0]
                     o_codi_ine_prov, o_codi_ine_mun = self.get_ine(id_mun)
                 o_nom_node = ''
-                o_tensio = ''
+                o_tensio = self.get_tensio(cups, self.year, self.tensio_modcon)
                 o_connexio = ''
                 vertex = False
                 if cups and cups['id_escomesa']:
@@ -559,19 +591,6 @@ class FA1(StopMultiprocessBased):
                     polissa = O.GiscedataPolissa.read(
                         polissa_id, fields_to_read, context_glob
                     )
-                    ###########################################################
-                    # NOTA (1):
-                    # De moment es deixa comentat. Inicalment estava
-                    # pensat que la tensió s'intentés agafar de la pòlissa,
-                    # després intentar per modcon, despreś de la traça de
-                    # l'escomesa i, sino resulta cap, llavors es deixa buit.
-                    # Todo: Revisar si es pot eliminar
-                    ###########################################################
-
-                    # Es comenta per NOTA (1)
-                    # if polissa['tensio']:
-                    #     o_tensio = format_f(
-                    #         float(polissa['tensio']) / 1000.0, decimals=3)
                     o_potencia = polissa['potencia']
                     if polissa['cnae']:
                         cnae_id = polissa['cnae'][0]
@@ -674,10 +693,6 @@ class FA1(StopMultiprocessBased):
                                     cnae_id, ['name']
                                 )['name']
                                 self.cnaes[cnae_id] = o_cnae
-                        # Es comenta per NOTA (1)
-                        # if modcon['tensio']:
-                        #     o_tensio = format_f(
-                        #         float(modcon['tensio']) / 1000.0, decimals=3)
                         if modcon['potencia']:
                             o_potencia = modcon['potencia']
                     else:
@@ -687,24 +702,6 @@ class FA1(StopMultiprocessBased):
                             o_cnae = self.default_o_cnae
                         if self.default_o_cod_tfa:
                             o_cod_tfa = self.default_o_cod_tfa
-                # Es tabula enrera fora del 'else' anterior per NOTA (1)
-                # Tensió d'alimentació en kV
-                if cups.get('id_escomesa', False):
-                    search_params = [
-                        ('escomesa', '=', cups['id_escomesa'][0])
-                    ]
-                    id_esc_gis = O.GiscegisEscomesesTraceability.search(
-                        search_params
-                    )
-
-                    if id_esc_gis:
-                        tensio_gis = O.GiscegisEscomesesTraceability.read(
-                            id_esc_gis, ['tensio']
-                        )[0]['tensio']
-                        o_tensio = format_f(
-                            float(tensio_gis) / 1000.0, decimals=3)
-                else:
-                    o_tensio = ''
 
                 # potencia adscrita
                 o_pot_ads = 0
@@ -743,37 +740,37 @@ class FA1(StopMultiprocessBased):
                 o_baixa = self.get_baixa_cups(cups['id'])
 
                 self.output_q.put([
-                    o_nom_node,     # Nudo
-                    format_f(res_srid[0], decimals=3),  # X
-                    format_f(res_srid[1], decimals=3),  # Y
-                    '0,000',                 # Z
-                    o_cnae,             # CNAE
-                    o_cod_tfa,          # Codigo de tarifa
-                    o_name,             # CUPS
-                    o_codi_ine_mun,     # Municipio
-                    o_codi_ine_prov,    # Provincia
-                    o_zona,             # Zona de calidad
-                    o_connexio,         # Conexion
-                    o_tensio,           # Tension de alimentacion
-                    o_estat_contracte,  # Estado de contrato
-                    format_f(o_potencia or '0,000', decimals=3),    # Potencia contratada
-                    format_f(o_pot_ads, decimals=3),        # Potencia adscrita a la instalacion
-                    format_f(o_anual_activa, decimals=3),   # Energia activa anual consumida
-                    format_f(o_anual_reactiva, decimals=3), # Energia reactiva anual consumida
-                    o_autoconsumo,       #Autoconsumo si o no
-                    o_comptador_cini,  # CINI
-                    o_comptador_data,  # INSTALACION
-                    o_num_lectures,  # NUMERO LECTURAS
-                    o_baixa,  # BAJA SUMINISTRO
-                    o_titular,  # CAMBIO TITULARIDAD
-                    o_facturas_estimadas,
-                    o_facturas_total,
-                    o_cau,
-                    o_cod_auto,
-                    o_cod_generacio_auto,
-                    o_conexion_autoconsumo,
-                    format_f(o_energia_autoconsumida, decimals=3),
-                    format_f(o_energia_excedentaria, decimals=3)
+                    o_nom_node,                                         # Nudo
+                    format_f(res_srid[0], decimals=3),                  # X
+                    format_f(res_srid[1], decimals=3),                  # Y
+                    '0,000',                                            # Z
+                    o_cnae,                                             # CNAE
+                    o_cod_tfa,                                          # Codigo de tarifa
+                    o_name,                                             # CUPS
+                    o_codi_ine_mun,                                     # Municipio
+                    o_codi_ine_prov,                                    # Provincia
+                    o_zona,                                             # Zona de calidad
+                    o_connexio,                                         # Conexion
+                    format_f(o_tensio/1000.0, decimals=3),              # Tension de alimentacion
+                    o_estat_contracte,                                  # Estado de contrato
+                    format_f(o_potencia or '0,000', decimals=3),        # Potencia contratada
+                    format_f(o_pot_ads, decimals=3),                    # Potencia adscrita a la instalacion
+                    format_f(o_anual_activa, decimals=3),               # Energia activa anual consumida
+                    format_f(o_anual_reactiva, decimals=3),             # Energia reactiva anual consumida
+                    o_autoconsumo,                                      # Autoconsumo si o no
+                    o_comptador_cini,                                   # CINI
+                    o_comptador_data,                                   # INSTALACION
+                    o_num_lectures,                                     # NUMERO LECTURAS
+                    o_baixa,                                            # BAJA SUMINISTRO
+                    o_titular,                                          # CAMBIO TITULARIDAD
+                    o_facturas_estimadas,                               # NUMERO DE FACTURAS DE PEAJES
+                    o_facturas_total,                                   # NUMERO TOTAL DE FACTURAS
+                    o_cau,                                              # CODIGO DE AUTOCONSUMO
+                    o_cod_auto,                                         # CÓDIGO DE TIPOLOGIA EN AUTOCONSUMO
+                    o_cod_generacio_auto,                               # CÓDIGO DE GENERACIÓN DE AUTOCONSUMO
+                    o_conexion_autoconsumo,                             # CONEXIÓN AUTOCONSUMO
+                    format_f(o_energia_autoconsumida, decimals=3),      # ENERGIA AUTOCONSUMIDA
+                    format_f(o_energia_excedentaria, decimals=3)        # ENERGIA EXECEDENTARIA
                 ])
                 self.input_q.task_done()
             except Exception:
