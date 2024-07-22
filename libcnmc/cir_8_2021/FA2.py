@@ -364,7 +364,7 @@ class FA2(StopMultiprocessBased):
                         o_potencia_instalada = gen['pot_instalada_gen']
 
                     # Autoconsum
-                    o_autoconsum = 1 # Es força a valor fixe 1
+                    o_autoconsum = 2 # Es força a valor fixe 2
 
                     # CAU
                     o_cau = cau
