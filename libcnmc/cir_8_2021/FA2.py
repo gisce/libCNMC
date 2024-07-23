@@ -356,7 +356,7 @@ class FA2(StopMultiprocessBased):
                         get_tipus_connexio(O, esco_id) if esco_id else '')
 
                     # Tensió
-                    o_tension = tensio if tensio else ''
+                    o_tension = tensio / 1000.0 if tensio else ''
 
                     # Potència instalada
                     o_potencia_instalada = ''
@@ -400,7 +400,7 @@ class FA2(StopMultiprocessBased):
                         o_provincia,                                    # Provincia
                         o_zona,                                         # Zona
                         o_connexion,                                    # Connexió
-                        ('{}'.format(o_tension)).replace('.', ','),     # Tensió
+                        format_f(o_tension, decimals=3),                # Tensió
                         o_potencia_instalada,                           # Potència instalada
                         format_f(o_energia_activa_producida, decimals=3),   # Energia activa produida
                         format_f(o_energia_activa_consumida, decimals=3),   # Energia activa consumida
