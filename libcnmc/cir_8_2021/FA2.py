@@ -402,10 +402,10 @@ class FA2(StopMultiprocessBased):
                         o_connexion,                                    # Connexió
                         ('{}'.format(o_tension)).replace('.', ','),     # Tensió
                         o_potencia_instalada,                           # Potència instalada
-                        o_energia_activa_producida,                     # Energia activa produida
-                        o_energia_activa_consumida,                     # Energia activa consumida
-                        o_energia_reactiva_producida,                   # Energia reactiva produida
-                        o_energia_reactiva_consumida,                   # Energia reactiva consumida
+                        format_f(o_energia_activa_producida, decimals=3),   # Energia activa produida
+                        format_f(o_energia_activa_consumida, decimals=3),   # Energia activa consumida
+                        format_f(o_energia_reactiva_producida, decimals=3), # Energia reactiva produida
+                        format_f(o_energia_reactiva_consumida, decimals=3), # Energia reactiva consumida
                         o_autoconsum,                                   # Autoconsum
                         o_cau,                                          # CAU
                         o_cups_ssaa                                     # Serveis auxiliars
