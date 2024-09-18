@@ -40,6 +40,7 @@ class FB2(StopMultiprocessBased):
         self.base_object = 'CTS'
         self.report_name = 'Formulario B2: Centros de Transformación'
         self.extended = kwargs.get("extended", False)
+        self.elements_baixa = kwargs.pop('elements_baixa', False)
 
     def get_sequence(self):
         """
@@ -53,23 +54,31 @@ class FB2(StopMultiprocessBased):
         data_baixa = '{0}-01-01'.format(self.year)
         search_params += [('propietari', '=', True),
                           '|', ('data_pm', '=', False),
-                               ('data_pm', '<', data_pm),
-                          '|',
-                          '&', ('data_baixa', '>', data_baixa),
-                               ('ct_baixa', '=', True),
-                          '|',
-                               ('data_baixa', '=', False),
-                               ('ct_baixa', '=', False)
-                          ]
-        # Revisem que si està de baixa ha de tenir la data informada.
-        search_params += ['|',
-                          '&', ('active', '=', False),
-                               ('data_baixa', '!=', False),
-                          ('active', '=', True)]
-        # Excloure els registres que es troben de baixa i el model es 'M'
-        search_params += [
-            '|', ('model', '!=', 'M'), ('data_baixa', '=', False)
-        ]
+                          ('data_pm', '<', data_pm)]
+
+        # Si elements_baixa està actiu
+        if self.elements_baixa:
+            search_params += ['|',
+                              '&', ('data_baixa', '>', data_baixa),
+                              ('ct_baixa', '=', True),
+                              '|',
+                              ('data_baixa', '=', False),
+                              ('ct_baixa', '=', False)]
+
+            # Revisem que si està de baixa ha de tenir la data informada
+            search_params += ['|',
+                              '&', ('active', '=', False),
+                              ('data_baixa', '!=', False),
+                              ('active', '=', True)]
+
+            # Excloure els registres que es troben de baixa i el model es 'M'
+            search_params += [
+                '|', ('model', '!=', 'M'), ('data_baixa', '=', False)
+            ]
+        else:
+            # Si no está marcada la opció elements_baixa, excloure registres
+            # donats de baixa
+            search_params += [('data_baixa', '=', False)]
 
         forced_ids = get_forced_elements(self.connection, "giscedata.cts")
 

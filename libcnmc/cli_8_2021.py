@@ -375,6 +375,7 @@ def cir_8_2021_fb1_1(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('--elements-baixa/--no-elements-baixa', default=False, help="Afegir elements donats de baixa")
 def cir_8_2021_fb2(**kwargs):
     """
     Click entry to generate the B2: CTS
@@ -395,6 +396,7 @@ def cir_8_2021_fb2(**kwargs):
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
+        tensio_modcon=kwargs['elements_baixa']
     )
     proc.calc()
 
