@@ -78,7 +78,9 @@ class FB2(StopMultiprocessBased):
         else:
             # Si no está marcada la opció elements_baixa, excloure registres
             # donats de baixa
-            search_params += [('data_baixa', '=', False)]
+            search_params += [
+                ('data_baixa', '=', False), ('active', '=', True)
+            ]
 
         forced_ids = get_forced_elements(self.connection, "giscedata.cts")
 
