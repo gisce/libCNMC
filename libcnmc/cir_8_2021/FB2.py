@@ -40,7 +40,7 @@ class FB2(StopMultiprocessBased):
         self.base_object = 'CTS'
         self.report_name = 'Formulario B2: Centros de Transformación'
         self.extended = kwargs.get("extended", False)
-        self.elements_baixa = kwargs.pop('elements_baixa', False)
+        self.elements_baixa = kwargs.pop('elements_baixa', True)
 
     def get_sequence(self):
         """
