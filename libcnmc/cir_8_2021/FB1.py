@@ -145,7 +145,7 @@ class FB1(StopMultiprocessBased):
             'baixa', 'data_pm', 'data_industria', 'coeficient', 'cini', 'propietari', 'tensio_max_disseny_id', 'name',
             'origen', 'final', 'perc_financament', 'longitud_cad', 'cable', 'linia', 'model', 'punt_frontera',
             'tipus_instalacio_cnmc_id', 'data_baixa', 'baixa', 'longitud_cad', 'data_pm', 'circuits',
-            'id_regulatori', 'municipi',
+            'id_regulatori', 'municipi', 'operacion',
         ]
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
 
@@ -268,11 +268,8 @@ class FB1(StopMultiprocessBased):
 
                     # Operación
                     operacion = '1'
-                    if tram.get('operacion', False):
-                        if tram['operacion']:
-                            operacion = '1'
-                        else:
-                            operacion = '0'
+                    if not tram.get('operacion', False):
+                        operacion = '0'
 
                     # Causa baja
                     if tram.get('obra_id', False):
@@ -749,11 +746,8 @@ class FB1(StopMultiprocessBased):
 
                     # OPERACION
                     operacion = '1'
-                    if linia.get('operacion', False):
-                        if linia['operacion']:
-                            operacion = '1'
-                        else:    
-                            operacion = '0'
+                    if not linia.get('operacion', False):
+                        operacion = '0'
 
                     # FECHA BAJA
                     if linia.get('data_baixa'):
