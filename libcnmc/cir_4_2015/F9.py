@@ -4,10 +4,7 @@ import traceback
 from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import get_srid, convert_srid, format_f, parse_geom
 
-try:
-    from cStringIO import StringIO
-except:
-    from StringIO import StringIO
+from io import BytesIO
 
 
 class F9(StopMultiprocessBased):
@@ -229,7 +226,7 @@ class F9(StopMultiprocessBased):
         if self.file_output:
             fio = open(self.file_output, 'wb')
         else:
-            fio = StringIO()
+            fio = BytesIO()
         while True:
             try:
                 item = self.output_q.get()
@@ -257,7 +254,7 @@ class F9(StopMultiprocessBased):
         if self.file_modificaciones:
             fio_mod = open(self.file_modificaciones, 'wb')
         else:
-            fio_mod = StringIO()
+            fio_mod = BytesIO()
 
         while True:
             try:

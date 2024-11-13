@@ -4,10 +4,7 @@ import multiprocessing
 import os
 import sys
 from datetime import datetime
-try:
-    from cStringIO import StringIO
-except:
-    from StringIO import StringIO
+from io import BytesIO
 import traceback
 
 try:
@@ -141,7 +138,7 @@ class MultiprocessBased(object):
         if self.file_output:
             fio = open(self.file_output, 'wb')
         else:
-            fio = StringIO()
+            fio = BytesIO()
         fitxer = csv.writer(fio, delimiter=';', lineterminator='\n')
         if self.file_header:
             fitxer.writerow(self.file_header)
@@ -170,7 +167,7 @@ class MultiprocessBased(object):
         if self.file_modificaciones:
             fio_mod = open(self.file_modificaciones, 'wb')
         else:
-            fio_mod = StringIO()
+            fio_mod = BytesIO()
 
         while True:
             try:
@@ -217,7 +214,7 @@ class MultiprocessBased(object):
             sys.stderr.flush()
         if self.interactive:
             sys.stderr.write("Correcte? ")
-            raw_input()
+            input()
             sys.stderr.flush()
         start = datetime.now()
         processes = [multiprocessing.Process(target=self.consumer)
