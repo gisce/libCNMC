@@ -63,10 +63,13 @@ class MultiprocessBased(object):
         self.output_m = multiprocessing.JoinableQueue()
         self.progress_q = multiprocessing.Queue()
         self.quiet = kwargs.pop('quiet', False)
+        self.pipe = os.environ.get('CNMC_PIPE')
         self.interactive = kwargs.pop('interactive', False)
         self.report_name = ''
         self.base_object = ''
         self.file_header = []
+        if self.pipe:
+            self.quiet = True
         if 'SENTRY_DSN' in os.environ and Client:
             try:
                 raven = Client()
@@ -119,7 +122,11 @@ class MultiprocessBased(object):
         widgets = ['Informe %s: ' % self.report_name,
                    Percentage(), ' ', Bar(), ' ', ETA()]
         if total:
-            pbar = ProgressBar(widgets=widgets, maxval=total).start()
+            if self.pipe:
+                from libcnmc.utils import PipeProgressBar
+                pbar = PipeProgressBar(maxval=total).start()
+            else:
+                pbar = ProgressBar(widgets=widgets, maxval=total).start()
             done = 0
             while done < total:
                 self.progress_q.get()
@@ -219,7 +226,7 @@ class MultiprocessBased(object):
         start = datetime.now()
         processes = [multiprocessing.Process(target=self.consumer)
                      for _ in range(0, self.num_proc)]
-        if not self.quiet:
+        if not self.quiet or self.pipe:
             processes += [
                 multiprocessing.Process(
                     target=self.progress, args=(len(sequence),)
