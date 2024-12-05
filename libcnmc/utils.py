@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import multiprocessing
+import sys
 import tempfile
 
 from shapely import wkt
@@ -641,3 +642,23 @@ def get_serveis_aux(o, re_id):
                     serveis_aux = cups_data['cups']
 
     return serveis_aux
+
+
+class PipeProgressBar(object):
+    def __init__(self, maxval):
+        self.maxval = maxval
+        self.current = 0
+
+    def start(self):
+        self.current = 0
+        return self
+
+    def update(self, done):
+        self.current = done
+        sys.stdout.write("{}\n".format(int(((self.current * 1.0) / self.maxval) * 100)))
+        sys.stdout.flush()
+
+    def finish(self):
+        self.current = self.maxval
+        sys.stdout.write("100\n")
+        sys.stdout.flush()
