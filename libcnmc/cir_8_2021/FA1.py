@@ -359,7 +359,7 @@ class FA1(StopMultiprocessBased):
     def get_pot_adscrita(self, cups, year, o_potencia):
         O = self.connection
         o_pot_ads = 0
-        if cups['cups_estadistiques']:
+        if cups.get('cups_estadistiques'):
             search_params = [
                 ('year', '=', year),
                 ('id', 'in', cups['cups_estadistiques'])
