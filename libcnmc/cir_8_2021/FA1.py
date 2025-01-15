@@ -356,6 +356,49 @@ class FA1(StopMultiprocessBased):
 
         return tensio
 
+    def get_pot_adscrita(self, cups, year, o_potencia):
+        O = self.connection
+        o_pot_ads = 0
+        if cups.get('cups_estadistiques'):
+            search_params = [
+                ('year', '=', year),
+                ('id', 'in', cups['cups_estadistiques'])
+            ]
+            estadist_id = O.GiscedataCupsEstadistiques.search(
+                search_params,
+                0,
+                0,
+                False,
+                {'active_test': False}
+            )
+            if estadist_id:
+                estadist_id = estadist_id[0]
+                estadist = O.GiscedataCupsEstadistiques.read(estadist_id, ['potencia_adscrita'])
+                if estadist['potencia_adscrita']:
+                    o_pot_ads = estadist['potencia_adscrita']
+        else:
+            if cups['force_potencia_adscrita']:
+                o_pot_ads = cups['potencia_adscrita']
+            else:
+                # Buscar butlletins vigents en data circular i agafgar el màxim
+                current_date = '{}-01-01'.format(year)
+                but_ids = O.GiscedataButlleti.search(
+                    [('cups_id', '=', cups['id']), '|', '|', '|', '&',
+                        ('data', '=', False), ('data_vigencia', '=', False),
+                        '&', ('data', '<=', current_date),
+                        ('data_vigencia', '=', False), '&',
+                        ('data', '=', False),
+                        ('data_vigencia', '>=', current_date), '&',
+                        ('data', '<=', current_date),
+                        ('data_vigencia', '>=', current_date), ], 0, 0, False,
+                    {'active_test': False})
+                if but_ids:
+                    o_pot_ads = max(b['pot_max_admisible'] for b in
+                                    O.GiscedataButlleti.read(but_ids, ['pot_max_admisible']))
+            if o_pot_ads < o_potencia:
+                o_pot_ads = o_potencia
+        return o_pot_ads
+
     def get_baixa_cups(self, cups_id):
         """
         Devuelve si un CUPS ha estado de baja durante el año
@@ -447,6 +490,7 @@ class FA1(StopMultiprocessBased):
                     'cnmc_factures_estimades', 'cnmc_factures_total',
                     'cnmc_energia_autoconsumida', 'cnmc_energia_excedentaria',
                     'force_potencia_adscrita', 'cnmc_conexion_autoconsumo',
+                    'cups_estadistiques'
                 ]
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 if not cups or not cups.get('name'):
@@ -704,28 +748,7 @@ class FA1(StopMultiprocessBased):
                             o_cod_tfa = self.default_o_cod_tfa
 
                 # potencia adscrita
-                o_pot_ads = 0
-
-                if cups['force_potencia_adscrita']:
-                    o_pot_ads = cups['potencia_adscrita']
-                else:
-                    # Buscar butlletins vigents en data circular i agafgar el màxim
-                    current_date = '{}-01-01'.format(self.year)
-                    but_ids = self.connection.GiscedataButlleti.search([
-                        ('cups_id', '=', cups['id']),
-                        '|', '|', '|',
-                        '&', ('data', '=', False), ('data_vigencia', '=', False),
-                        '&', ('data', '<=', current_date), ('data_vigencia', '=', False),
-                        '&', ('data', '=', False), ('data_vigencia', '>=', current_date),
-                        '&', ('data', '<=', current_date), ('data_vigencia', '>=', current_date),
-                    ], 0, 0, False, {'active_test': False})
-                    if but_ids:
-                        o_pot_ads = max(
-                            b['pot_max_admisible']
-                            for b in self.connection.GiscedataButlleti.read(but_ids, ['pot_max_admisible'])
-                        )
-                if o_pot_ads < o_potencia:
-                    o_pot_ads = o_potencia
+                o_pot_ads = self.get_pot_adscrita(cups, self.year, o_potencia)
 
                 res_srid = ['', '']
                 if vertex:
