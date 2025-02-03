@@ -395,8 +395,8 @@ class FA1(StopMultiprocessBased):
                 if but_ids:
                     o_pot_ads = max(b['pot_max_admisible'] for b in
                                     O.GiscedataButlleti.read(but_ids, ['pot_max_admisible']))
-            if o_pot_ads < o_potencia:
-                o_pot_ads = o_potencia
+        if o_pot_ads < o_potencia:
+            o_pot_ads = o_potencia
         return o_pot_ads
 
     def get_baixa_cups(self, cups_id):
@@ -715,7 +715,6 @@ class FA1(StopMultiprocessBased):
                         fields_to_read_modcon = [
                             'cnae',
                             'tarifa',
-                            # 'tensio',
                             'potencia',
                             'polissa_id',
                             'data_final'
