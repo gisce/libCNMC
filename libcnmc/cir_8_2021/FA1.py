@@ -197,10 +197,15 @@ class FA1(StopMultiprocessBased):
         :return: List of CUPS
         :rtype: list[int]
         """
-        data_ini = '%s-01-01' % (self.year + 1)
-        search_params = [('active', '=', True),
+        data_ini = '%s-01-01' % self.year
+        data_fi = '%s-12-31' % self.year
+        search_params = ['|',
+                         ('active', '=', True),
+                         '&',
+                         ('data_baixa', '>=', data_ini),
+                         ('data_baixa', '<=', data_fi),
                          '|',
-                         ('create_date', '<', data_ini),
+                         ('create_date', '<=', data_fi),
                          ('create_date', '=', False)]
 
         ret_cups_ids = self.connection.GiscedataCupsPs.search(
