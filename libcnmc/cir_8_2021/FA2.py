@@ -297,7 +297,7 @@ class FA2(StopMultiprocessBased):
                     o_nudo = ''
                     node_id = False
                     esco_id = False
-                    tensio = False
+                    tensio = 0.0
                     vertex = False
                     if gen.get('id_escomesa'):
                         esco_id = gen['id_escomesa'][0]
@@ -310,7 +310,7 @@ class FA2(StopMultiprocessBased):
                                 o_nudo = node[1]
                             # Preparar per camp TENSION
                             if esco_data.get('tensio'):
-                                tensio = esco_data['tensio']
+                                tensio = float(esco_data['tensio'])
                             if esco_data.get('geom'):
                                 geom = wkt.loads(esco_data['geom']).coords[0]
                                 vertex = {"x": geom[0], "y": geom[1]}
@@ -356,7 +356,7 @@ class FA2(StopMultiprocessBased):
                         get_tipus_connexio(O, esco_id) if esco_id else '')
 
                     # Tensió
-                    o_tension = tensio / 1000.0 if tensio else ''
+                    o_tension = tensio
 
                     # Potència instalada
                     o_potencia_instalada = ''
@@ -400,7 +400,7 @@ class FA2(StopMultiprocessBased):
                         o_provincia,                                    # Provincia
                         o_zona,                                         # Zona
                         o_connexion,                                    # Connexió
-                        format_f(o_tension, decimals=3),                # Tensió
+                        format_f(o_tension / 1000.0, decimals=3),           # Tensió
                         o_potencia_instalada,                           # Potència instalada
                         format_f(o_energia_activa_producida, decimals=3),   # Energia activa produida
                         format_f(o_energia_activa_consumida, decimals=3),   # Energia activa consumida
