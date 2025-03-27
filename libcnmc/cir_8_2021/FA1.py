@@ -462,6 +462,37 @@ class FA1(StopMultiprocessBased):
         else:
             return '1'
 
+    def get_modcon_tipus_subseccio_by_year(self, cups, year):
+        """
+        Returns the 'tipus_subseccio' value from the last 'Modcontractual' of
+        the year passed as parameter
+
+        :param cups: CUPS name
+        :param cups: str
+        :return: 'tipus_subseccio' code
+        :rtype: str
+        """
+        O = self.connection
+        year_first_day = '%s-01-01' % year
+        year_last_day = '%s-12-31' % year
+        modcon_obj = O.GiscedataPolissaModcontractual
+        modcon_ids = modcon_obj.search(
+            [('cups', 'ilike', cups)], context={'active_test':False})
+        modcon_data = sorted(
+            modcon_obj.read(
+                modcon_ids, ['data_final', 'data_inici', 'tipus_subseccio']),
+            key=lambda x: datetime.strptime(x['data_final'], '%Y-%m-%d'),
+            reverse=True)
+        tipus_subseccio = ''
+        for modcon in modcon_data:
+            if (modcon.get('data_final')
+                    and modcon.get('data_inici')
+                    and modcon.get('tipus_subseccio')):
+                if (modcon['data_final'] >= year_first_day
+                        and modcon['data_inici'] <= year_last_day):
+                    tipus_subseccio = modcon.get('tipus_subseccio')
+        return tipus_subseccio
+
     def consumer(self):
         """
         Consumer function to generate FA1
@@ -534,7 +565,13 @@ class FA1(StopMultiprocessBased):
                 o_conexion_autoconsumo = ''
 
                 cups_obj = O.GiscedataCupsPs
-                autoconsum_id_data = cups_obj.get_autoconsum_on_date(item, ultim_dia_any)
+                # check if AC is active in last modcontractual of self.year
+                autoconsum_id_data = None
+                tipus_subseccio = (
+                    self.get_modcon_tipus_subseccio_by_year(o_name, self.year))
+                if tipus_subseccio not in ('00', '0C'):
+                    autoconsum_id_data = (
+                        cups_obj.get_autoconsum_on_date(item, ultim_dia_any))
 
                 if autoconsum_id_data:
                     # AUTOCONSUMO
