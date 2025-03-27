@@ -464,12 +464,12 @@ class FA1(StopMultiprocessBased):
 
     def get_modcon_tipus_subseccio_by_year(self, cups, year):
         """
-        Returns the 'tipus_subseccio' value from the last 'Modcontractual' of
-        the year passed as parameter
+        Retorna el valor del 'tipus_subseccio' de la ultima 'Modcontractual' de
+        l'any passat per parametre
 
-        :param cups: CUPS name
+        :param cups: Nom CUPS
         :param cups: str
-        :return: 'tipus_subseccio' code
+        :return: Codi 'tipus_subseccio'
         :rtype: str
         """
         O = self.connection
@@ -477,7 +477,7 @@ class FA1(StopMultiprocessBased):
         year_last_day = '%s-12-31' % year
         modcon_obj = O.GiscedataPolissaModcontractual
         modcon_ids = modcon_obj.search(
-            [('cups', 'ilike', cups)], context={'active_test':False})
+            [('cups', 'ilike', cups)], 0, 0, False, {'active_test': False})
         modcon_data = sorted(
             modcon_obj.read(
                 modcon_ids, ['data_final', 'data_inici', 'tipus_subseccio']),
@@ -491,6 +491,8 @@ class FA1(StopMultiprocessBased):
                 if (modcon['data_final'] >= year_first_day
                         and modcon['data_inici'] <= year_last_day):
                     tipus_subseccio = modcon.get('tipus_subseccio')
+                    break # nomes volem la ultima activa en cas d'existir
+                          # varies aquell mateix any
         return tipus_subseccio
 
     def consumer(self):
