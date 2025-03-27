@@ -567,7 +567,8 @@ class FA1(StopMultiprocessBased):
                 o_conexion_autoconsumo = ''
 
                 cups_obj = O.GiscedataCupsPs
-                # check if AC is active in last modcontractual of self.year
+                # Revisar si l'autoconsum esta actiu a la ultima modcontractual
+                # de self.year
                 autoconsum_id_data = None
                 tipus_subseccio = (
                     self.get_modcon_tipus_subseccio_by_year(o_name, self.year))
