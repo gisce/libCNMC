@@ -401,7 +401,7 @@ class FA2(StopMultiprocessBased):
                         o_zona,                                         # Zona
                         o_connexion,                                    # Connexió
                         format_f(o_tension / 1000.0, decimals=3),           # Tensió
-                        o_potencia_instalada,                           # Potència instalada
+                        format_f(o_potencia_instalada, decimals=3),         # Potència instalada
                         format_f(o_energia_activa_producida, decimals=3),   # Energia activa produida
                         format_f(o_energia_activa_consumida, decimals=3),   # Energia activa consumida
                         format_f(o_energia_reactiva_producida, decimals=3), # Energia reactiva produida
