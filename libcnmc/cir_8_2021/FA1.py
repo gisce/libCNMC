@@ -462,7 +462,7 @@ class FA1(StopMultiprocessBased):
         else:
             return '1'
 
-    def get_modcon_tipus_subseccio_by_year(self, cups, year):
+    def get_autoconsum_code_by_year(self, cups_id, year):
         """
         Retorna el valor del 'tipus_subseccio' de la ultima 'Modcontractual' de
         l'any passat per parametre
@@ -473,27 +473,24 @@ class FA1(StopMultiprocessBased):
         :rtype: str
         """
         O = self.connection
-        year_first_day = '%s-01-01' % year
-        year_last_day = '%s-12-31' % year
+        cups_obj = O.GiscedataCupsPs
         modcon_obj = O.GiscedataPolissaModcontractual
-        modcon_ids = modcon_obj.search(
-            [('cups', 'ilike', cups)], 0, 0, False, {'active_test': False})
-        modcon_data = sorted(
-            modcon_obj.read(
-                modcon_ids, ['data_final', 'data_inici', 'tipus_subseccio']),
-            key=lambda x: datetime.strptime(x['data_final'], '%Y-%m-%d'),
-            reverse=True)
-        tipus_subseccio = ''
-        for modcon in modcon_data:
-            if (modcon.get('data_final')
-                    and modcon.get('data_inici')
-                    and modcon.get('tipus_subseccio')):
-                if (modcon['data_final'] >= year_first_day
-                        and modcon['data_inici'] <= year_last_day):
-                    tipus_subseccio = modcon.get('tipus_subseccio')
-                    break # nomes volem la ultima activa en cas d'existir
-                          # varies aquell mateix any
-        return tipus_subseccio
+        pol_obj = O.GiscedataPolissa
+
+        autoconsum_code = ''
+        year_last_day = '%s-12-31' % year
+
+        interval = cups_obj.get_modcontractual_intervals(
+            cups_id, '%s-12-30' % year, year_last_day)
+        if interval.get('id'):
+            pol_id = modcon_obj.read(
+                interval['id'], ['polissa_id'])['polissa_id'][0]
+            autoconsum_data = pol_obj.read(
+                pol_id, ['autoconsumo'], {'date': '2020-12-31'})
+            if autoconsum_data.get('autoconsumo'):
+                autoconsum_code = autoconsum_data['autoconsumo']
+
+        return autoconsum_code
 
     def consumer(self):
         """
@@ -570,9 +567,9 @@ class FA1(StopMultiprocessBased):
                 # Revisar si l'autoconsum esta actiu a la ultima modcontractual
                 # de self.year
                 autoconsum_id_data = None
-                tipus_subseccio = (
-                    self.get_modcon_tipus_subseccio_by_year(o_name, self.year))
-                if tipus_subseccio not in ('00', '0C'):
+                autoconsum_code = (
+                    self.get_autoconsum_code_by_year(item, self.year))
+                if autoconsum_code != '00':
                     autoconsum_id_data = (
                         cups_obj.get_autoconsum_on_date(item, ultim_dia_any))
 
