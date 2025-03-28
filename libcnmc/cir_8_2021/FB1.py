@@ -29,7 +29,7 @@ class FB1(StopMultiprocessBased):
         self.linia_tram_include = {}
         self.forced_ids = {}
         self.prefix_AT = kwargs.pop('prefix_at', 'A') or 'A'
-        self.prefix_BT = kwargs.pop('prefix_bt', 'B') or 'B'
+        self.prefix_BT = kwargs.pop('prefix_bt', None) or None
         self.dividir = kwargs.pop('div', False)
         self.tensions = fetch_tensions_norm(self.connection)
 
@@ -605,7 +605,8 @@ class FB1(StopMultiprocessBased):
                     if linia.get('id_regulatori', False):
                         identificador_tramo = linia['id_regulatori']
                     else:
-                        identificador_tramo = '{}{}'.format(self.prefix_BT, linia['name'])
+                        identificador_tramo = '{}{}'.format(
+                            self.prefix_BT or '', linia['name'])
 
                     # CINI
                     cini = ''
@@ -813,7 +814,8 @@ class FB1(StopMultiprocessBased):
                             if elem_data.get('id_regulatori', False):
                                 identificador_baja = elem_data['id_regulatori']
                             else:
-                                identificador_baja = '{}{}'.format(self.prefix_BT, elem_data['name'])
+                                identificador_baja = '{}{}'.format(
+                                    self.prefix_BT or '', elem_data['name'])
 
                         else:
                             identificador_baja = ''
