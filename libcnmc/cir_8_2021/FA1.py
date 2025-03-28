@@ -479,14 +479,16 @@ class FA1(StopMultiprocessBased):
 
         autoconsum_code = ''
         year_last_day = '%s-12-31' % year
+        day_before = '%s-12-30' % year
 
-        interval = cups_obj.get_modcontractual_intervals(
-            cups_id, '%s-12-30' % year, year_last_day)
+        date_data = cups_obj.get_modcontractual_intervals(
+            cups_id, day_before, year_last_day)
+        interval = date_data.get(day_before) or date_data.get(year_last_day)
         if interval.get('id'):
             pol_id = modcon_obj.read(
                 interval['id'], ['polissa_id'])['polissa_id'][0]
             autoconsum_data = pol_obj.read(
-                pol_id, ['autoconsumo'], {'date': '2020-12-31'})
+                pol_id, ['autoconsumo'], {'date': year_last_day})
             if autoconsum_data.get('autoconsumo'):
                 autoconsum_code = autoconsum_data['autoconsumo']
 
@@ -569,7 +571,7 @@ class FA1(StopMultiprocessBased):
                 autoconsum_id_data = None
                 autoconsum_code = (
                     self.get_autoconsum_code_by_year(item, self.year))
-                if autoconsum_code != '00':
+                if autoconsum_code and autoconsum_code != '00':
                     autoconsum_id_data = (
                         cups_obj.get_autoconsum_on_date(item, ultim_dia_any))
 
