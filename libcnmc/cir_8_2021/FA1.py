@@ -484,7 +484,7 @@ class FA1(StopMultiprocessBased):
         date_data = cups_obj.get_modcontractual_intervals(
             cups_id, day_before, year_last_day)
         interval = date_data.get(day_before) or date_data.get(year_last_day)
-        if interval.get('id'):
+        if interval and interval.get('id'):
             pol_id = modcon_obj.read(
                 interval['id'], ['polissa_id'])['polissa_id'][0]
             autoconsum_data = pol_obj.read(
