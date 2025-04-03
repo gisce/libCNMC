@@ -604,10 +604,13 @@ class FB1(StopMultiprocessBased):
                     # Identificador_tramo
                     if linia.get('id_regulatori', False):
                         suffix_tramo = linia['id_regulatori']
+                        if (self.prefix_BT
+                                and suffix_tramo.startswith(self.prefix_BT)):
+                            suffix_tramo = suffix_tramo[len(self.prefix_BT):]
                     else:
                         suffix_tramo = linia['name']
-                    identificador_tramo = '{}{}'.format(
-                        self.prefix_BT or '', suffix_tramo)
+                    identificador_tramo = (
+                        '{}{}'.format(self.prefix_BT or '', suffix_tramo))
 
                     # CINI
                     cini = ''
