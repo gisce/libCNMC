@@ -397,10 +397,9 @@ class FB1(StopMultiprocessBased):
 
                     # identificador_tramo
                     if tram.get('id_regulatori', False):
-                        suffix_tramo = tram['id_regulatori']
+                        o_tram = tram['id_regulatori']
                     else:
-                        suffix_tramo = tram['name']
-                    o_tram = '{}{}'.format(self.prefix_AT, suffix_tramo)
+                        o_tram = '{}{}'.format(self.prefix_AT, tram['name'])
 
                     if 'edge_id' in O.GiscedataAtTram.fields_get().keys():
                         tram_edge = O.GiscedataAtTram.read(
@@ -553,7 +552,7 @@ class FB1(StopMultiprocessBased):
                         data_ip = ''
 
                     output = [
-                        o_tram,                                 # IDENTIFICADOR
+                        o_tram,  # IDENTIFICADOR
                         tram.get('cini', '') or '',         # CINI
                         codi_ccuu or '',                    # CODIGO_CCUU
                         node_inicial or edge['start_node'][1],    # ORIGEN
