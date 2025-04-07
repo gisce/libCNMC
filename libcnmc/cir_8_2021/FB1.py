@@ -610,7 +610,7 @@ class FB1(StopMultiprocessBased):
                     else:
                         suffix_tramo = linia['name']
                     identificador_tramo = (
-                        '{}{}'.format(self.prefix_BT or '', suffix_tramo))
+                        '{}{}'.format(self.prefix_BT, suffix_tramo))
 
                     # CINI
                     cini = ''
