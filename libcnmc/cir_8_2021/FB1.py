@@ -29,7 +29,7 @@ class FB1(StopMultiprocessBased):
         self.linia_tram_include = {}
         self.forced_ids = {}
         self.prefix_AT = kwargs.pop('prefix_at', 'A') or 'A'
-        self.prefix_BT = kwargs.pop('prefix_bt', None) or None
+        self.prefix_BT = kwargs.pop('prefix_bt', '')
         self.dividir = kwargs.pop('div', False)
         self.tensions = fetch_tensions_norm(self.connection)
 
@@ -819,7 +819,7 @@ class FB1(StopMultiprocessBased):
                                 identificador_baja = elem_data['id_regulatori']
                             else:
                                 identificador_baja = '{}{}'.format(
-                                    self.prefix_BT or '', elem_data['name'])
+                                    self.prefix_BT, elem_data['name'])
 
                         else:
                             identificador_baja = ''
