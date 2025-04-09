@@ -437,13 +437,12 @@ class FB2(StopMultiprocessBased):
                     estado = '1'
 
                 # FINANCIADO
+                financiado = ''
                 if (isinstance(ct.get('perc_financament', False), float)
                         and tipo_inversion):
                     financiado = format_f(
                         100 - ct['perc_financament'], decimals=2
                     )
-                else:
-                    financiado = ''
 
                 # ESTADO no pot ser 2 si FECHA_APS < 2022
                 if not modelo == 'M':
