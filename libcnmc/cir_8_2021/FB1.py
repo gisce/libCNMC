@@ -813,8 +813,7 @@ class FB1(StopMultiprocessBased):
                             if elem_data.get('id_regulatori', False):
                                 identificador_baja = elem_data['id_regulatori']
                             else:
-                                identificador_baja = '{}{}'.format(
-                                    self.prefix_BT, elem_data['name'])
+                                identificador_baja = '{}{}'.format(self.prefix_BT, elem_data['name'])
 
                         else:
                             identificador_baja = ''
