@@ -29,7 +29,7 @@ class FB1(StopMultiprocessBased):
         self.linia_tram_include = {}
         self.forced_ids = {}
         self.prefix_AT = kwargs.pop('prefix_at', 'A') or 'A'
-        self.prefix_BT = kwargs.pop('prefix_bt', 'B') or 'B'
+        self.prefix_BT = kwargs.pop('prefix_bt', '')
         self.dividir = kwargs.pop('div', False)
         self.tensions = fetch_tensions_norm(self.connection)
 
