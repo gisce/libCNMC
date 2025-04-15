@@ -228,6 +228,7 @@ class FB2(StopMultiprocessBased):
                     cuenta_contable = ct_obra['cuenta_contable'] or ''
                     avifauna = int(ct_obra['avifauna'] == True)
                     causa_baja = ct_obra['causa_baja'] or '0'
+                    fecha_baja = ct_obra['fecha_baja'] or ''
                 else:
                     data_ip = ''
                     identificador_baja = ''
@@ -242,6 +243,7 @@ class FB2(StopMultiprocessBased):
                     cuenta_contable = ''
                     avifauna = ''
                     causa_baja = '0'
+                    fecha_baja = ''
 
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data IP sortirà en blanc
