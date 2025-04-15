@@ -247,11 +247,6 @@ class FB2(StopMultiprocessBased):
                     data_ip = '' if data_pm and int(data_pm.split('/')[2]) == int(data_ip.split('/')[2]) \
                     else data_ip
 
-                # FINANCIADO
-                financiado = ''
-                if isinstance(ct.get('perc_financament', False), float):
-                    financiado = 100 - ct['perc_financament']
-
                 #CCAA
                 #funció per trobar la ccaa desde el municipi
                 fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
@@ -441,6 +436,14 @@ class FB2(StopMultiprocessBased):
                     tipo_inversion = '0'
                     estado = '1'
 
+                # FINANCIADO
+                financiado = ''
+                if (isinstance(ct.get('perc_financament', False), float)
+                        and tipo_inversion):
+                    financiado = format_f(
+                        100 - ct['perc_financament'], decimals=2
+                    )
+
                 # ESTADO no pot ser 2 si FECHA_APS < 2022
                 if not modelo == 'M':
                     if data_pm:
@@ -488,7 +491,7 @@ class FB2(StopMultiprocessBased):
                     subvenciones_nacionales,                            # SUBVENCIONES NACIONALES
                     subvenciones_prtr,                                  # SUBVENCIONES PRTR
                     valor_auditado,                                     # VALOR AUDITADO
-                    format_f(financiado, decimals=2),                   # FINANCIADO
+                    financiado,                                         # FINANCIADO
                     cuenta_contable,                                    # CUENTA CONTABLE
                     motivacion,                                         # MOTIVACION
                     avifauna,                                           # AVIFAUNA
