@@ -227,6 +227,7 @@ class FB2(StopMultiprocessBased):
                         ct_obra['fecha_baja'] else ''
                     cuenta_contable = ct_obra['cuenta_contable'] or ''
                     avifauna = int(ct_obra['avifauna'] == True)
+                    causa_baja = ct_obra['causa_baja'] or '0'
                 else:
                     data_ip = ''
                     identificador_baja = ''
@@ -240,6 +241,7 @@ class FB2(StopMultiprocessBased):
                     motivacion = ''
                     cuenta_contable = ''
                     avifauna = ''
+                    causa_baja = '0'
 
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data IP sortirà en blanc
@@ -261,40 +263,6 @@ class FB2(StopMultiprocessBased):
                         id_comunitat[0], ['codi'])
                     if comunitat_vals:
                         comunitat_codi = comunitat_vals['codi']
-
-                #DATA_BAIXA, CAUSA_BAJA
-                if ct['data_baixa']:
-                    if ct['data_baixa'] < data_pm_limit:
-                        tmp_date = ''
-                        try:
-                            tmp_date = datetime.strptime(
-                                ct['data_baixa'], '%Y-%m-%d %H:%M:%S'
-                            )
-                        except ValueError:
-                            try:
-                                tmp_date = datetime.strptime(
-                                    ct['data_baixa'], '%Y-%m-%d'
-                                )
-                            except ValueError:
-                                traceback.print_exc()
-                                if self.raven:
-                                    self.raven.captureException()
-                        if tmp_date:
-                            fecha_baja = tmp_date.strftime('%d/%m/%Y')
-                            if (int(fecha_baja.split("/")[2])
-                                    - int(data_pm.split("/")[2]) >= 40):
-                                if identificador_baja != '':
-                                    causa_baja = 1
-                                else:
-                                    causa_baja = 2
-                            else:
-                                causa_baja = 3
-                    else:
-                        fecha_baja = ''
-                        causa_baja = 0
-                else:
-                    fecha_baja = ''
-                    causa_baja = 0
 
                 #CCUU
                 if ct['tipus_instalacio_cnmc_id']:
