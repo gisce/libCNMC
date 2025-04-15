@@ -289,7 +289,7 @@ class FB5(StopMultiprocessBased):
                     actual.diff(entregada))))
                 estado = '1'
         else:
-            estado = '2'
+            estado = '1' if modelo == 'E' else '2'
 
         if modelo == 'M':
             estado = ''
@@ -306,7 +306,6 @@ class FB5(StopMultiprocessBased):
 
         if modelo == 'E':
             tipo_inversion = '0'
-            estado = '1'
 
         # ESTADO no pot ser 2 si FECHA_APS < 2022
         if not modelo == 'M':
@@ -533,7 +532,7 @@ class FB5(StopMultiprocessBased):
                     actual.diff(entregada))))
                 estado = '1'
         else:
-            estado = '2'
+            estado = '1' if condensador['model'] == 'E' else '2'
 
         if condensador['model'] == 'M':
             estado = ''
@@ -558,7 +557,7 @@ class FB5(StopMultiprocessBased):
                 fecha_aps_year = int(o_fecha_aps.split('/')[2])
                 if estado == '2' and fecha_aps_year != int(self.year):
                     estado = '1'
-                elif fecha_aps_year == int(self.year):
+                elif fecha_aps_year == int(self.year) and condensador['modelo'] != 'E':
                     estado = '2'
             else:
                 estado = '1'

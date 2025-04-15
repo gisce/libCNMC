@@ -520,7 +520,7 @@ class FB1(StopMultiprocessBased):
                                 self.output_m.put("{} {}".format(tram["name"], adapt_diff(actual.diff(entregada))))
                                 estado = 1
                         else:
-                            estado = '2'
+                            estado = '1' if modelo == 'E' else '2'
 
                     if fecha_baja:
                         motivacion = ''
@@ -534,7 +534,6 @@ class FB1(StopMultiprocessBased):
 
                     if modelo == 'E':
                         tipo_inversion = '0'
-                        estado = '1'
 
                     # ESTADO no pot ser 2 si FECHA_APS < 2022
                     if not modelo == 'M':
@@ -542,7 +541,7 @@ class FB1(StopMultiprocessBased):
                             fecha_aps_year = int(fecha_aps.split('/')[2])
                             if estado == '2' and fecha_aps_year != int(self.year):
                                 estado = '1'
-                            elif fecha_aps_year == int(self.year):
+                            elif fecha_aps_year == int(self.year) and modelo != 'E':
                                 estado = '2'
                         else:
                             estado = '1'
@@ -917,7 +916,7 @@ class FB1(StopMultiprocessBased):
                                 self.output_m.put("{} {}".format(linia["name"], adapt_diff(actual.diff(entregada))))
                                 estado = '1'
                         else:
-                            estado = '2'
+                            estado = '1' if modelo == 'E' else '2'
 
                     if fecha_baja:
                         motivacion = ''
@@ -931,7 +930,6 @@ class FB1(StopMultiprocessBased):
 
                     if modelo == 'E':
                         tipo_inversion = '0'
-                        estado = '1'
 
                     # ESTADO no pot ser 2 si FECHA_APS < 2022
                     if not modelo == 'M':
@@ -939,7 +937,7 @@ class FB1(StopMultiprocessBased):
                             fecha_aps_year = int(fecha_aps.split('/')[2])
                             if estado == '2' and fecha_aps_year != int(self.year):
                                 estado = '1'
-                            elif fecha_aps_year == int(self.year):
+                            elif fecha_aps_year == int(self.year) and modelo != 'E':
                                 estado = '2'
                         else:
                             estado = '1'

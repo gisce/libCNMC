@@ -357,7 +357,7 @@ class FB4(StopMultiprocessBased):
                         self.output_m.put("{} {}".format(pos["name"], adapt_diff(actual.diff(entregada))))
                         estado = '1'
                 else:
-                    estado = '2'
+                    estado = '1' if modelo == 'E' else '2'
 
                 if pos['cini'][4] == '3' and data_pm < data_baixa_limit and pos_obra == '':
                     estado = '0'
@@ -378,7 +378,6 @@ class FB4(StopMultiprocessBased):
 
                 if modelo == 'E':
                     tipo_inversion = '0'
-                    estado = '1'
 
                 # ESTADO no pot ser 2 si FECHA_APS < 2022
                 if not modelo == 'M':
@@ -386,7 +385,7 @@ class FB4(StopMultiprocessBased):
                         fecha_aps_year = int(data_pm.split('/')[2])
                         if estado == '2' and fecha_aps_year != int(self.year):
                             estado = '1'
-                        elif fecha_aps_year == int(self.year):
+                        elif fecha_aps_year == int(self.year) and modelo != 'E':
                             estado = '2'
                     else:
                         estado = '1'
