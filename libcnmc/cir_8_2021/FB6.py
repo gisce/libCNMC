@@ -454,6 +454,8 @@ class FB6(StopMultiprocessBased):
                         estado = '1'
                 else:
                     estado = '1' if modelo == 'E' else '2'
+                    if data_pm and int(data_pm.split('/')[2]) != int(self.year):
+                        estado = '1'
 
                 if modelo == 'M':
                     estado = ''
@@ -470,17 +472,6 @@ class FB6(StopMultiprocessBased):
 
                 if modelo == 'E':
                     tipo_inversion = '0'
-
-                # ESTADO no pot ser 2 si FECHA_APS < 2022
-                if not modelo == 'M':
-                    if data_pm:
-                        fecha_aps_year = int(data_pm.split('/')[2])
-                        if estado == '2' and fecha_aps_year != int(self.year):
-                            estado = '1'
-                        elif fecha_aps_year == int(self.year) and modelo != 'E':
-                            estado = '2'
-                    else:
-                        estado = '1'
 
                 self.output_q.put([
                     o_fiabilitat,   # ELEMENTO FIABILIDAD
