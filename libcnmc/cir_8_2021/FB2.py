@@ -386,7 +386,9 @@ class FB2(StopMultiprocessBased):
                         self.output_m.put("{} {}".format(ct["name"], adapt_diff(actual.diff(entregada))))
                         estado = '1'
                 else:
-                    estado = '2'
+                    estado = '1' if modelo == 'E' else '2'
+                    if data_pm and int(data_pm.split('/')[2]) != int(self.year):
+                        estado = '1'
 
                 # Fecha APS / Estado
                 if modelo == 'M':
@@ -404,7 +406,6 @@ class FB2(StopMultiprocessBased):
 
                 if modelo == 'E':
                     tipo_inversion = '0'
-                    estado = '1'
 
                 # FINANCIADO
                 financiado = ''
@@ -413,17 +414,6 @@ class FB2(StopMultiprocessBased):
                     financiado = format_f(
                         100 - ct['perc_financament'], decimals=2
                     )
-
-                # ESTADO no pot ser 2 si FECHA_APS < 2022
-                if not modelo == 'M':
-                    if data_pm:
-                        fecha_aps_year = int(data_pm.split('/')[2])
-                        if estado == '2' and fecha_aps_year != int(self.year):
-                            estado = '1'
-                        elif fecha_aps_year == int(self.year):
-                            estado = '2'
-                    else:
-                        estado = '1'
 
                 # Buidem FECHA_IP si hi ha FECHA_BAJA
                 if fecha_baja:

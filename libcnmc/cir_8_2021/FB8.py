@@ -204,6 +204,8 @@ class FB8(StopMultiprocessBased):
                         estado = '1'
                 else:
                     estado = '2'
+                    if data_pm and int(data_pm.split('/')[2]) != int(self.year):
+                        estado = '1'
 
                 if despatx.get('coco', False):
                     descripcio = despatx['coco']
@@ -212,16 +214,6 @@ class FB8(StopMultiprocessBased):
 
                 # L'any 2022 no es declaren subvencions PRTR
                 subvenciones_prtr = ''
-
-                # ESTADO no pot ser 2 si FECHA_APS < 2022
-                if data_pm:
-                    fecha_aps_year = int(data_pm.split('/')[2])
-                    if estado == '2' and fecha_aps_year != int(self.year):
-                        estado = '1'
-                    elif fecha_aps_year == int(self.year):
-                        estado = '2'
-                else:
-                    estado = '1'
 
                 self.output_q.put([
                     despatx['name'],                    # IDENTIFICADOR
