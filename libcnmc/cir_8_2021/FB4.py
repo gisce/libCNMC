@@ -8,8 +8,9 @@ from __future__ import absolute_import
 from datetime import datetime
 import traceback
 from libcnmc.core import StopMultiprocessBased
-from libcnmc.utils import format_f_6181, get_name_ti, get_codi_actuacio, \
-    format_ccaa_code, convert_spanish_date, format_f, adapt_diff, get_forced_elements
+from libcnmc.utils import (format_f_6181, get_name_ti, get_codi_actuacio,
+    format_ccaa_code, convert_spanish_date, format_f, adapt_diff,
+    get_forced_elements, default_estado, calculate_estado)
 from libcnmc.models import F4Res4666
 
 INTERRUPTOR = {
@@ -349,17 +350,13 @@ class FB4(StopMultiprocessBased):
                         fecha_baja,
                         0
                     )
-                    if entregada == actual and fecha_baja == '':
-                        estado = '0'
-                        if pos_obra:
-                            estado = '1'
-                    else:
-                        self.output_m.put("{} {}".format(pos["name"], adapt_diff(actual.diff(entregada))))
-                        estado = '1'
+                    estado = calculate_estado(
+                        fecha_baja, actual, entregada, pos_obra)
+                    if estado == '1' and not pos_obra:
+                        self.output_m.put("{} {}".format(
+                            pos["name"], adapt_diff(actual.diff(entregada))))
                 else:
-                    estado = '1' if modelo == 'E' else '2'
-                    if data_pm and int(data_pm.split('/')[2]) != int(self.year):
-                        estado = '1'
+                    estado = default_estado(modelo, data_pm, int(self.year))
 
                 if pos['cini'][4] == '3' and data_pm < data_baixa_limit and pos_obra == '':
                     estado = '0'

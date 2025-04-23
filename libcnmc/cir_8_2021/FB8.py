@@ -11,7 +11,7 @@ from libcnmc.utils import format_f, convert_srid, get_srid
 from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import (
     format_f, get_id_municipi_from_company, get_forced_elements, adapt_diff, convert_srid, get_srid, format_f,
-    convert_spanish_date, get_name_ti, format_f_6181, get_codi_actuacio, get_ine
+    convert_spanish_date, get_name_ti, format_f_6181, get_codi_actuacio, get_ine, calculate_estado, default_estado
 )
 from libcnmc.models import F6Res4666
 
@@ -194,18 +194,18 @@ class FB8(StopMultiprocessBased):
                         '',
                         0
                     )
-                    if actual == entregada:
-                        estado = '0'
-                        if despatx_obra:
-                            estado = '1'
-                    else:
-                        self.output_m.put("{} {}".format(despatx["name"], adapt_diff(actual.diff(entregada))))
-                        self.output_m.put("Identificador:{} diff:{}".format(despatx["name"], actual.diff(entregada)))
-                        estado = '1'
+                    estado = calculate_estado(
+                        fecha_baja, actual, entregada, despatx_obra)
+                    if estado == '1' and not despatx_obra:
+                        self.output_m.put(
+                            "{} {}".format(
+                                despatx["name"],
+                                adapt_diff(actual.diff(entregada))))
+                        self.output_m.put(
+                            "Identificador:{} diff:{}".format(
+                                despatx["name"], actual.diff(entregada)))
                 else:
-                    estado = '2'
-                    if data_pm and int(data_pm.split('/')[2]) != int(self.year):
-                        estado = '1'
+                    estado = default_estado('I', data_pm, int(self.year))
 
                 if despatx.get('coco', False):
                     descripcio = despatx['coco']

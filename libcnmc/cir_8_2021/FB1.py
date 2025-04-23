@@ -5,7 +5,7 @@ from datetime import datetime
 import traceback
 from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import (format_f, tallar_text, format_f_6181, get_codi_actuacio, convert_spanish_date,
-                           get_forced_elements, adapt_diff, fetch_tensions_norm)
+                           get_forced_elements, adapt_diff, fetch_tensions_norm, calculate_estado, default_estado)
 from libcnmc.models import F1Res4666,F2Res4666
 
 class FB1(StopMultiprocessBased):
@@ -512,17 +512,15 @@ class FB1(StopMultiprocessBased):
                                 '',
                                 0
                             )
-                            if actual == entregada and fecha_baja == '':
-                                estado = '0'
-                                if tram_obra:
-                                    estado = '1'
-                            else:
-                                self.output_m.put("{} {}".format(tram["name"], adapt_diff(actual.diff(entregada))))
-                                estado = 1
+                            estado = calculate_estado(
+                                fecha_baja, actual, entregada, tram_obra)
+                            if estado == '1' and not tram_obra:
+                                self.output_m.put("{} {}".format(
+                                    tram["name"],
+                                    adapt_diff(actual.diff(entregada))))
                         else:
-                            estado = '1' if modelo == 'E' else '2'
-                            if fecha_aps and int(fecha_aps.split('/')[2]) != int(self.year):
-                                estado = '1'
+                            estado = default_estado(
+                                modelo, fecha_aps, int(self.year))
 
                     if fecha_baja:
                         motivacion = ''
@@ -899,17 +897,15 @@ class FB1(StopMultiprocessBased):
                                 '',
                                 0
                             )
-                            if actual == entregada and fecha_baja == '':
-                                estado = '0'
-                                if linia_obra:
-                                    estado = '1'
-                            else:
-                                self.output_m.put("{} {}".format(linia["name"], adapt_diff(actual.diff(entregada))))
-                                estado = '1'
+                            estado = calculate_estado(
+                                fecha_baja, actual, entregada, linia_obra)
+                            if estado == '1' and not linia_obra:
+                                self.output_m.put("{} {}".format(
+                                        linia["name"],
+                                        adapt_diff(actual.diff(entregada))))
                         else:
-                            estado = '1' if modelo == 'E' else '2'
-                            if fecha_aps and int(fecha_aps.split('/')[2]) != int(self.year):
-                                estado = '1'
+                            estado = default_estado(
+                                modelo, fecha_aps, int(self.year))
 
                     if fecha_baja:
                         motivacion = ''

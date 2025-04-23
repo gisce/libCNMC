@@ -644,6 +644,23 @@ def get_serveis_aux(o, re_id):
     return serveis_aux
 
 
+def default_estado(modelo, data_pm, any_act):
+    estado = '1' if modelo == 'E' else '2'
+    if data_pm and int(data_pm.split('/')[2]) != any_act:
+        estado = '1'
+    return estado
+
+
+def calculate_estado(data_baixa, rev_act, rev_entr, in_obra):
+    if rev_act == rev_entr and data_baixa == '':
+        estado = '0'
+        if in_obra:
+            estado = '1'
+    else:
+        estado = '1'
+    return estado
+
+
 class PipeProgressBar(object):
     def __init__(self, maxval):
         self.maxval = maxval

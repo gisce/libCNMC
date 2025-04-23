@@ -11,7 +11,7 @@ import traceback
 from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import (
     get_id_municipi_from_company, get_forced_elements, adapt_diff, convert_srid, get_srid, format_f,
-    convert_spanish_date, format_f_6181, get_codi_actuacio, get_ine
+    convert_spanish_date, format_f_6181, get_codi_actuacio, get_ine, calculate_estado, default_estado
 )
 from libcnmc.models import F8Res4666
 from shapely import wkt
@@ -376,17 +376,13 @@ class FB2(StopMultiprocessBased):
                         fecha_baja,
                         0
                     )
-                    if entregada == actual and fecha_baja == '':
-                        estado = '0'
-                        if ct_obra:
-                            estado = '1'
-                    else:
-                        self.output_m.put("{} {}".format(ct["name"], adapt_diff(actual.diff(entregada))))
-                        estado = '1'
+                    estado = calculate_estado(
+                        fecha_baja, actual, entregada, ct_obra)
+                    if estado == '1' and not ct_obra:
+                        self.output_m.put("{} {}".format(ct["name"], adapt_diff(
+                            actual.diff(entregada))))
                 else:
-                    estado = '1' if modelo == 'E' else '2'
-                    if data_pm and int(data_pm.split('/')[2]) != int(self.year):
-                        estado = '1'
+                    estado = default_estado(modelo, data_pm, int(self.year))
 
                 # Fecha APS / Estado
                 if modelo == 'M':
