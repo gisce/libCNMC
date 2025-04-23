@@ -11,7 +11,7 @@ from libcnmc.utils import format_f, convert_srid, get_srid, get_norm_tension
 from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import (
     format_f, get_id_municipi_from_company, get_forced_elements, adapt_diff, convert_srid, get_srid, format_f,
-    convert_spanish_date, get_name_ti, format_f_6181, get_codi_actuacio, get_ine
+    convert_spanish_date, get_name_ti, format_f_6181, get_codi_actuacio, get_ine, default_estado, calculate_estado
 )
 from libcnmc.models import F5Res4666
 from shapely import wkt
@@ -280,16 +280,12 @@ class FB5(StopMultiprocessBased):
                 '',
                 0
             )
-            if entregada == actual and fecha_baja == '':
-                estado = '0'
-                if trafo_obra:
-                    estado = '1'
-            else:
+            estado = calculate_estado(fecha_baja, actual, entregada, trafo_obra)
+            if estado == '1' and not trafo_obra:
                 self.output_m.put("{} {}".format(trafo["name"], adapt_diff(
                     actual.diff(entregada))))
-                estado = '1'
         else:
-            estado = '2'
+            estado = default_estado(modelo, data_pm, int(self.year))
 
         if modelo == 'M':
             estado = ''
@@ -306,18 +302,6 @@ class FB5(StopMultiprocessBased):
 
         if modelo == 'E':
             tipo_inversion = '0'
-            estado = '1'
-
-        # ESTADO no pot ser 2 si FECHA_APS < 2022
-        if not modelo == 'M':
-            if data_pm:
-                fecha_aps_year = int(data_pm.split('/')[2])
-                if estado == '2' and fecha_aps_year != int(self.year):
-                    estado = '1'
-                elif fecha_aps_year == int(self.year):
-                    estado = '2'
-            else:
-                estado = '1'
 
         # Buidem FECHA_IP si hi ha FECHA_BAJA
         if fecha_baja:
@@ -523,17 +507,13 @@ class FB5(StopMultiprocessBased):
                 '',
                 0
             )
-            if entregada == actual and fecha_baja == '':
-                estado = '0'
-                if obra:
-                    estado = '1'
-            else:
-                self.output_m.put("{} {}".format(condensador
-                                                 ["name"], adapt_diff(
-                    actual.diff(entregada))))
-                estado = '1'
+            estado = calculate_estado(fecha_baja, actual, entregada, obra)
+            if estado == '1' and not obra:
+                self.output_m.put("{} {}".format(
+                    condensador["name"], adapt_diff(actual.diff(entregada))))
         else:
-            estado = '2'
+            estado = default_estado(
+                condensador['model'], o_fecha_aps, int(self.year))
 
         if condensador['model'] == 'M':
             estado = ''
@@ -550,18 +530,6 @@ class FB5(StopMultiprocessBased):
 
         if condensador['model'] == 'E':
             tipo_inversion = '0'
-            estado = '1'
-
-        # ESTADO no pot ser 2 si FECHA_APS < 2022
-        if condensador['model'] != 'M':
-            if o_fecha_aps:
-                fecha_aps_year = int(o_fecha_aps.split('/')[2])
-                if estado == '2' and fecha_aps_year != int(self.year):
-                    estado = '1'
-                elif fecha_aps_year == int(self.year):
-                    estado = '2'
-            else:
-                estado = '1'
 
         # Buidem FECHA_IP si hi ha FECHA_BAJA
         if fecha_baja:

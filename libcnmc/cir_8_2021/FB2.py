@@ -11,7 +11,7 @@ import traceback
 from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import (
     get_id_municipi_from_company, get_forced_elements, adapt_diff, convert_srid, get_srid, format_f,
-    convert_spanish_date, format_f_6181, get_codi_actuacio, get_ine
+    convert_spanish_date, format_f_6181, get_codi_actuacio, get_ine, calculate_estado, default_estado
 )
 from libcnmc.models import F8Res4666
 from shapely import wkt
@@ -378,15 +378,13 @@ class FB2(StopMultiprocessBased):
                         fecha_baja,
                         0
                     )
-                    if entregada == actual and fecha_baja == '':
-                        estado = '0'
-                        if ct_obra:
-                            estado = '1'
-                    else:
-                        self.output_m.put("{} {}".format(ct["name"], adapt_diff(actual.diff(entregada))))
-                        estado = '1'
+                    estado = calculate_estado(
+                        fecha_baja, actual, entregada, ct_obra)
+                    if estado == '1' and not ct_obra:
+                        self.output_m.put("{} {}".format(ct["name"], adapt_diff(
+                            actual.diff(entregada))))
                 else:
-                    estado = '2'
+                    estado = default_estado(modelo, data_pm, int(self.year))
 
                 # Fecha APS / Estado
                 if modelo == 'M':
@@ -404,7 +402,6 @@ class FB2(StopMultiprocessBased):
 
                 if modelo == 'E':
                     tipo_inversion = '0'
-                    estado = '1'
 
                 # FINANCIADO
                 financiado = ''
@@ -413,17 +410,6 @@ class FB2(StopMultiprocessBased):
                     financiado = format_f(
                         100 - ct['perc_financament'], decimals=2
                     )
-
-                # ESTADO no pot ser 2 si FECHA_APS < 2022
-                if not modelo == 'M':
-                    if data_pm:
-                        fecha_aps_year = int(data_pm.split('/')[2])
-                        if estado == '2' and fecha_aps_year != int(self.year):
-                            estado = '1'
-                        elif fecha_aps_year == int(self.year):
-                            estado = '2'
-                    else:
-                        estado = '1'
 
                 # Buidem FECHA_IP si hi ha FECHA_BAJA
                 if fecha_baja:

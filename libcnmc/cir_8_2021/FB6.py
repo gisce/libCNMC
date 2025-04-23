@@ -7,7 +7,7 @@ INVENTARIO DE CNMC - Elementos de mejora de fiabilidad
 from datetime import datetime
 import traceback
 from libcnmc.utils import (format_f, convert_srid, get_srid, get_name_ti, format_f_6181, format_ccaa_code, get_ine,
-                           adapt_diff)
+                           adapt_diff, default_estado, calculate_estado)
 from libcnmc.core import StopMultiprocessBased
 from libcnmc.models import F7Res4666
 from shapely import wkt
@@ -445,15 +445,13 @@ class FB6(StopMultiprocessBased):
                         fecha_baja,
                         0
                     )
-                    if entregada == actual and fecha_baja == '':
-                        estado = '0'
-                        if cella_obra:
-                            estado = '1'
-                    else:
-                        self.output_m.put("{} {}".format(cella["name"], adapt_diff(actual.diff(entregada))))
-                        estado = '1'
+                    estado = calculate_estado(
+                        fecha_baja, actual, entregada, cella_obra)
+                    if estado == '1' and not cella_obra:
+                        self.output_m.put("{} {}".format(
+                            cella["name"],adapt_diff(actual.diff(entregada))))
                 else:
-                    estado = '2'
+                    estado = default_estado(modelo, data_pm, int(self.year))
 
                 if modelo == 'M':
                     estado = ''
@@ -470,18 +468,6 @@ class FB6(StopMultiprocessBased):
 
                 if modelo == 'E':
                     tipo_inversion = '0'
-                    estado = '1'
-
-                # ESTADO no pot ser 2 si FECHA_APS < 2022
-                if not modelo == 'M':
-                    if data_pm:
-                        fecha_aps_year = int(data_pm.split('/')[2])
-                        if estado == '2' and fecha_aps_year != int(self.year):
-                            estado = '1'
-                        elif fecha_aps_year == int(self.year):
-                            estado = '2'
-                    else:
-                        estado = '1'
 
                 self.output_q.put([
                     o_fiabilitat,   # ELEMENTO FIABILIDAD
