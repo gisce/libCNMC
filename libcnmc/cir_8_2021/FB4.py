@@ -76,7 +76,7 @@ class FB4(StopMultiprocessBased):
             ]
 
         data_pm = '%s-01-01' % (self.year + 1)
-        data_baixa = '%s-12-31' % self.year
+        data_baixa = '%s-01-01' % self.year
         search_params += ['|', ('data_pm', '=', False),
                           ('data_pm', '<', data_pm),
                           '|', ('data_baixa', '>', data_baixa),
@@ -85,7 +85,7 @@ class FB4(StopMultiprocessBased):
         # Revisem que si està de baixa ha de tenir la data informada.
         search_params += ['|',
                           '&', ('active', '=', False),
-                          ('data_baixa', '!=', False),
+                               ('data_baixa', '!=', False),
                           ('active', '=', True)]
         # Excloure els registres que es troben de baixa i el model es 'M'
         search_params += [
@@ -180,26 +180,14 @@ class FB4(StopMultiprocessBased):
                                                    '%Y-%m-%d')
                     data_pm = data_pm_ct.strftime('%d/%m/%Y')
 
-                # FECHA_BAJA, CAUSA_BAJA
-                if pos['data_baixa']:
-                    if pos['data_baixa'] < data_pm_limit:
-                        tmp_date = datetime.strptime(
-                            pos['data_baixa'], '%Y-%m-%d %H:%M:%S')
-                        fecha_baja = tmp_date.strftime('%d/%m/%Y')
-
-                        if int(fecha_baja.split("/")[2]) - int(data_pm.split("/")[2]) >= 40:
-                            if identificador_baja != '':
-                                causa_baja = 1
-                            else:
-                                causa_baja = 2
-                        else:
-                            causa_baja = 3
-                    else:
-                        fecha_baja = ''
-                        causa_baja = 0;
+                # FECHA_BAJA
+                fecha_baja = pos.get('data_baixa', '')
+                if fecha_baja and fecha_baja < data_pm_limit:
+                    tmp_date = datetime.strptime(
+                        fecha_baja, '%Y-%m-%d')
+                    fecha_baja = tmp_date.strftime('%d/%m/%Y')
                 else:
                     fecha_baja = ''
-                    causa_baja = 0;
 
                 # OBRES
                 pos_obra = ''
@@ -252,6 +240,8 @@ class FB4(StopMultiprocessBased):
                         get_inst_name(pos_obra['identificador_baja'][0])  # IDENTIFICADOR_BAJA
                         if pos_obra['identificador_baja'] else ''
                     )
+                    causa_baja = pos_obra.get('causa_baja', 0) if fecha_baja else 0
+
                 else:
                     data_ip = ''
                     identificador_baja = ''
@@ -266,6 +256,7 @@ class FB4(StopMultiprocessBased):
                     motivacion = ''
                     cuenta_contable = ''
                     financiado = ''
+                    causa_baja = 0
 
                 # Si el valor residual resulta en un float amb valor 0.0, en el
                 # seu lloc es forçarà a valor buit
