@@ -183,6 +183,7 @@ class FB4(StopMultiprocessBased):
                 # FECHA_BAJA
                 fecha_baja = pos.get('data_baixa', '')
                 if fecha_baja and fecha_baja < data_pm_limit:
+                    fecha_baja = fecha_baja.split(' ')[0]
                     tmp_date = datetime.strptime(
                         fecha_baja, '%Y-%m-%d')
                     fecha_baja = tmp_date.strftime('%d/%m/%Y')
