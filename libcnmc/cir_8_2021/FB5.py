@@ -26,8 +26,9 @@ class FB5(StopMultiprocessBased):
 
     def get_sequence(self):
         search_params = [
+            ('criteri_regulatori', '!=', 'excloure'),
             ('reductor', '=', True),
-            ('id_estat.cnmc_inventari', '=', True)
+            ('id_estat.cnmc_inventari', '=', True),
         ]
         trafo_ids = [
             'T.{}'.format(x)
@@ -38,6 +39,7 @@ class FB5(StopMultiprocessBased):
 
         # Condensadors
         search_params = [
+            ('criteri_regulatori', '!=', 'excloure'),
             ('ct_id.id_installacio.name', '=', 'SE'),
             ('tipus', '=', '2'),
         ]
