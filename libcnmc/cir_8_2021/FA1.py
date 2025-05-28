@@ -47,7 +47,9 @@ class FA1(StopMultiprocessBased):
                 id_res_like, ['value']
             )[0]['value']
 
-        valid_polissa_states = ['tall', 'activa', 'baixa', 'modcontractual']
+        valid_polissa_states = [
+            'tall', 'activa', 'baixa', 'modcontractual', 'impagament'
+        ]
 
         mod_all_year = self.connection.GiscedataPolissaModcontractual.search(
             [
