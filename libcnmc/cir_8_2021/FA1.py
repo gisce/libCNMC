@@ -38,48 +38,25 @@ class FA1(StopMultiprocessBased):
         self.layer = 'LBT\_%'
         self.ultim_dia_any = '{}-12-31'.format(self.year)
         self.tensio_modcon = kwargs.pop('tensio_modcon', False)
+
         id_res_like = self.connection.ResConfig.search(
             [('name', '=', 'giscegis_btlike_layer')]
         )
-        mod_all_year = self.connection.GiscedataPolissaModcontractual.search(
-            [
-                ("data_inici", "<=", "{}-01-01".format(self.year)),
-                ("data_final", ">=", "{}-12-31".format(self.year)),
-                ("tarifa.name", 'not ilike', '%RE%'),
-                ('polissa_id.state', 'in', ['tall', 'activa', 'baixa'])
-            ], 0, 0, False, {"active_test": False}
-        )
-        mods_ini = self.connection.GiscedataPolissaModcontractual.search(
-            [
-                ("data_inici", ">=", "{}-01-01".format(self.year)),
-                ("data_inici", "<=", "{}-12-31".format(self.year)),
-                ("tarifa.name", 'not ilike', '%RE%'),
-                ('polissa_id.state', 'in', ['tall', 'activa', 'baixa'])
-            ], 0, 0, False, {"active_test": False}
-        )
-        mods_fi = self.connection.GiscedataPolissaModcontractual.search(
-            [
-                ("data_final", ">=", "{}-01-01".format(self.year)),
-                ("data_final", "<=", "{}-12-31".format(self.year)),
-                ("tarifa.name", 'not ilike', '%RE%'),
-                ('polissa_id.state', 'in', ['tall', 'activa', 'baixa'])
-            ], 0, 0, False, {"active_test": False}
-        )
-
-        self.generate_derechos = kwargs.pop("derechos", False)
-
-        self.modcons_in_year = set(mods_fi + mods_ini + mod_all_year)
-
         if id_res_like:
             self.layer = self.connection.ResConfig.read(
                 id_res_like, ['value']
             )[0]['value']
+
+        valid_polissa_states = [
+            'tall', 'activa', 'baixa', 'modcontractual', 'impagament'
+        ]
+
         mod_all_year = self.connection.GiscedataPolissaModcontractual.search(
             [
                 ("data_inici", "<=", "{}-01-01".format(self.year)),
                 ("data_final", ">=", "{}-12-31".format(self.year)),
                 ("tarifa.name", 'not ilike', '%RE%'),
-                ('polissa_id.state', 'in', ['tall', 'activa', 'baixa'])
+                ('polissa_id.state', 'in', valid_polissa_states)
             ], 0, 0, False, {"active_test": False}
         )
         mods_ini = self.connection.GiscedataPolissaModcontractual.search(
@@ -87,7 +64,7 @@ class FA1(StopMultiprocessBased):
                 ("data_inici", ">=", "{}-01-01".format(self.year)),
                 ("data_inici", "<=", "{}-12-31".format(self.year)),
                 ("tarifa.name", 'not ilike', '%RE%'),
-                ('polissa_id.state', 'in', ['tall', 'activa', 'baixa'])
+                ('polissa_id.state', 'in', valid_polissa_states)
             ], 0, 0, False, {"active_test": False}
         )
         mods_fi = self.connection.GiscedataPolissaModcontractual.search(
@@ -95,21 +72,17 @@ class FA1(StopMultiprocessBased):
                 ("data_final", ">=", "{}-01-01".format(self.year)),
                 ("data_final", "<=", "{}-12-31".format(self.year)),
                 ("tarifa.name", 'not ilike', '%RE%'),
-                ('polissa_id.state', 'in', ['tall', 'activa', 'baixa'])
+                ('polissa_id.state', 'in', valid_polissa_states)
             ], 0, 0, False, {"active_test": False}
         )
         self.modcons_in_year = set(mods_fi + mods_ini + mod_all_year)
+
         self.default_o_cod_tfa = None
         self.default_o_cnae = None
-        search_params = [
-            ('name', '=', 'libcnmc_4_2015_default_f1')
-        ]
-        id_config = self.connection.ResConfig.search(
-            search_params
-        )
-
         self.generate_derechos = kwargs.pop("derechos", False)
 
+        search_params = [('name', '=', 'libcnmc_4_2015_default_f1')]
+        id_config = self.connection.ResConfig.search(search_params)
         if id_config:
             config = self.connection.ResConfig.read(id_config[0], [])
             default_values = literal_eval(config['value'])
