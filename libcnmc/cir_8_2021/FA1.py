@@ -13,6 +13,10 @@ import logging
 from shapely import wkt
 
 
+VALID_POLISSA_STATES = [
+    'tall', 'activa', 'baixa', 'modcontractual', 'impagament']
+
+
 class FA1(StopMultiprocessBased):
     def __init__(self, **kwargs):
         """
@@ -47,16 +51,13 @@ class FA1(StopMultiprocessBased):
                 id_res_like, ['value']
             )[0]['value']
 
-        valid_polissa_states = [
-            'tall', 'activa', 'baixa', 'modcontractual', 'impagament'
-        ]
 
         mod_all_year = self.connection.GiscedataPolissaModcontractual.search(
             [
                 ("data_inici", "<=", "{}-01-01".format(self.year)),
                 ("data_final", ">=", "{}-12-31".format(self.year)),
                 ("tarifa.name", 'not ilike', '%RE%'),
-                ('polissa_id.state', 'in', valid_polissa_states)
+                ('polissa_id.state', 'in', VALID_POLISSA_STATES)
             ], 0, 0, False, {"active_test": False}
         )
         mods_ini = self.connection.GiscedataPolissaModcontractual.search(
@@ -64,7 +65,7 @@ class FA1(StopMultiprocessBased):
                 ("data_inici", ">=", "{}-01-01".format(self.year)),
                 ("data_inici", "<=", "{}-12-31".format(self.year)),
                 ("tarifa.name", 'not ilike', '%RE%'),
-                ('polissa_id.state', 'in', valid_polissa_states)
+                ('polissa_id.state', 'in', VALID_POLISSA_STATES)
             ], 0, 0, False, {"active_test": False}
         )
         mods_fi = self.connection.GiscedataPolissaModcontractual.search(
@@ -72,7 +73,7 @@ class FA1(StopMultiprocessBased):
                 ("data_final", ">=", "{}-01-01".format(self.year)),
                 ("data_final", "<=", "{}-12-31".format(self.year)),
                 ("tarifa.name", 'not ilike', '%RE%'),
-                ('polissa_id.state', 'in', valid_polissa_states)
+                ('polissa_id.state', 'in', VALID_POLISSA_STATES)
             ], 0, 0, False, {"active_test": False}
         )
         self.modcons_in_year = set(mods_fi + mods_ini + mod_all_year)
@@ -207,7 +208,7 @@ class FA1(StopMultiprocessBased):
         }
         polissa_id = polissa_obj.search([
             ('cups', '=', cups_id),
-            ('state', 'in', ['tall', 'activa', 'baixa']),
+            ('state', 'in', VALID_POLISSA_STATES),
             ('data_alta', '<=', self.ultim_dia_any),
         ], 0, 1, 'data_alta desc', context)
         return polissa_id
@@ -313,7 +314,7 @@ class FA1(StopMultiprocessBased):
                     search_modcon = [('id', 'in', cups['polisses']),
                                      ('data_inici', '<=', ultim_dia_any), (
                                      'polissa_id.state', 'in',
-                                     ['tall', 'activa', 'baixa'])]
+                                     VALID_POLISSA_STATES)]
                     modcons = O.GiscedataPolissaModcontractual.search(search_modcon, 0,
                         1, 'data_inici desc', {'active_test': False})
                     if modcons:
@@ -398,7 +399,7 @@ class FA1(StopMultiprocessBased):
             ('cups', '=', cups_id),
             ('data_baixa', '>=', data_inici),
             ('data_baixa', '<', data_fi),
-            ('state', 'in', ['tall', 'activa', 'baixa']),
+            ('state', 'in', VALID_POLISSA_STATES),
         ]
         polisses_baixa_ids = polissa_obj.search(
             search_params, 0, False, False, {'active_test': False})
@@ -422,7 +423,7 @@ class FA1(StopMultiprocessBased):
         polisses_alta_ids = polissa_obj.search(
             [('cups', '=', cups_id),
              ('data_alta', 'in', dates_alta),
-             ('state', 'in', ['tall', 'activa', 'baixa']),
+             ('state', 'in', VALID_POLISSA_STATES),
              ],
             0, False, False, {'active_test': False}
         )
@@ -477,7 +478,7 @@ class FA1(StopMultiprocessBased):
         O = self.connection
         ultim_dia_any = '%s-12-31' % self.year
         search_glob = [
-            ('state', 'in', ['tall', 'activa', 'baixa']),
+            ('state', 'in', VALID_POLISSA_STATES),
             ('data_alta', '<=', ultim_dia_any),
             '|',
             ('data_baixa', '>=', ultim_dia_any),
@@ -719,7 +720,7 @@ class FA1(StopMultiprocessBased):
                     search_modcon = [
                         ('id', 'in', cups['polisses']),
                         ('data_inici', '<=', ultim_dia_any),
-                        ('polissa_id.state', 'in', ['tall', 'activa', 'baixa'])
+                        ('polissa_id.state', 'in', VALID_POLISSA_STATES)
                     ]
                     modcons = None
                     if len(cups['polisses']):
