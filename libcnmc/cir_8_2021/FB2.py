@@ -194,6 +194,8 @@ class FB2(StopMultiprocessBased):
                             break
 
                 tipo_inversion = ''
+                financiado = ''
+
                 #CAMPS OBRA
                 if ct_obra != '':
                     obra_year = data_finalitzacio.split('-')[0]
@@ -245,7 +247,6 @@ class FB2(StopMultiprocessBased):
                     avifauna = ''
                     causa_baja = '0'
                     fecha_baja = ''
-                    financiado = ''
 
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data IP sortirà en blanc
@@ -404,13 +405,6 @@ class FB2(StopMultiprocessBased):
 
                 if modelo == 'E':
                     tipo_inversion = '0'
-
-                # FINANCIADO
-                if (isinstance(ct.get('perc_financament', False), float)
-                        and not financiado and tipo_inversion):
-                    financiado = format_f(
-                        100 - ct['perc_financament'], decimals=2
-                    )
 
                 # Buidem FECHA_IP si hi ha FECHA_BAJA
                 if fecha_baja:
