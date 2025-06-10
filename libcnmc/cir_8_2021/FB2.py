@@ -229,6 +229,7 @@ class FB2(StopMultiprocessBased):
                     avifauna = int(ct_obra['avifauna'] == True)
                     causa_baja = ct_obra['causa_baja'] or '0'
                     fecha_baja = ct_obra['fecha_baja'] or ''
+                    financiado = format_f(ct_obra['financiado'], decimals=2) or ''
                 else:
                     data_ip = ''
                     identificador_baja = ''
@@ -244,6 +245,7 @@ class FB2(StopMultiprocessBased):
                     avifauna = ''
                     causa_baja = '0'
                     fecha_baja = ''
+                    financiado = ''
 
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data IP sortirà en blanc
@@ -404,9 +406,8 @@ class FB2(StopMultiprocessBased):
                     tipo_inversion = '0'
 
                 # FINANCIADO
-                financiado = ''
                 if (isinstance(ct.get('perc_financament', False), float)
-                        and tipo_inversion):
+                        and not financiado and tipo_inversion):
                     financiado = format_f(
                         100 - ct['perc_financament'], decimals=2
                     )
