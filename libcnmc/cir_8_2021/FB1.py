@@ -322,6 +322,8 @@ class FB1(StopMultiprocessBased):
                                 break
 
                     tipo_inversion = ''
+                    financiado = ''
+
                     # CAMPS OBRA
                     if tram_obra != '':
                         obra_year = data_finalitzacio.split('-')[0]
@@ -358,6 +360,7 @@ class FB1(StopMultiprocessBased):
                             tram_obra['fecha_baja'] else ''
                         cuenta_contable = tram_obra['cuenta_contable'] or ''
                         avifauna = int(tram_obra['avifauna'] == True)
+                        financiado = format_f(tram_obra['financiado'], decimals=2) or ''
                     else:
                         data_ip = ''
                         identificador_baja = ''
@@ -371,11 +374,6 @@ class FB1(StopMultiprocessBased):
                         motivacion = ''
                         cuenta_contable = ''
                         avifauna = ''
-
-                    # FINANCIADO
-                    financiado = ''
-                    if isinstance(tram.get('perc_financament', False), float):
-                        financiado = 100 - tram['perc_financament']
 
                     # CAUSA_BAJA
                     causa_baja = '0'
@@ -568,7 +566,7 @@ class FB1(StopMultiprocessBased):
                         im_construccion,                    # IM_CONSTRUCCION
                         im_trabajos,                        # IM_TRABAJOS
                         valor_auditado,  # VALOR AUDITADO
-                        format_f(financiado, decimals=2),   # FINANCIADO
+                        financiado,                         # FINANCIADO
                         subvenciones_europeas,              # SUBVENCIONES EUROPEAS
                         subvenciones_nacionales,            # SUBVENCIONES NACIONALES
                         subvenciones_prtr,                  # SUBVENCIONES PRTR
@@ -785,6 +783,8 @@ class FB1(StopMultiprocessBased):
                                 break
 
                     tipo_inversion = ''
+                    financiado = ''
+
                     # CAMPS OBRA
                     if linia_obra != '':
                         obra_year = data_finalitzacio.split('-')[0]
@@ -823,6 +823,8 @@ class FB1(StopMultiprocessBased):
                             linia_obra['fecha_baja'] else ''
                         cuenta_contable = linia_obra['cuenta_contable'] or ''
                         avifauna = int(linia_obra['avifauna'] == True)
+                        financiado = format_f(linia_obra['financiado'], decimals=2) or ''
+
                     else:
                         data_ip = ''
                         identificador_baja = ''
@@ -836,11 +838,6 @@ class FB1(StopMultiprocessBased):
                         motivacion = ''
                         cuenta_contable = ''
                         avifauna = ''
-
-                    # FINANCIADO
-                    financiado = ''
-                    if isinstance(linia.get('perc_financament', False), float):
-                        financiado = 100 - linia['perc_financament']
 
                     # CAUSA_BAJA
                     causa_baja = '0'
