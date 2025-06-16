@@ -194,6 +194,8 @@ class FB2(StopMultiprocessBased):
                             break
 
                 tipo_inversion = ''
+                financiado = ''
+
                 #CAMPS OBRA
                 if ct_obra != '':
                     obra_year = data_finalitzacio.split('-')[0]
@@ -229,6 +231,7 @@ class FB2(StopMultiprocessBased):
                     avifauna = int(ct_obra['avifauna'] == True)
                     causa_baja = ct_obra['causa_baja'] or '0'
                     fecha_baja = ct_obra['fecha_baja'] or ''
+                    financiado = format_f(ct_obra['financiado'], decimals=2) or ''
                 else:
                     data_ip = ''
                     identificador_baja = ''
@@ -402,14 +405,6 @@ class FB2(StopMultiprocessBased):
 
                 if modelo == 'E':
                     tipo_inversion = '0'
-
-                # FINANCIADO
-                financiado = ''
-                if (isinstance(ct.get('perc_financament', False), float)
-                        and tipo_inversion):
-                    financiado = format_f(
-                        100 - ct['perc_financament'], decimals=2
-                    )
 
                 # Buidem FECHA_IP si hi ha FECHA_BAJA
                 if fecha_baja:
