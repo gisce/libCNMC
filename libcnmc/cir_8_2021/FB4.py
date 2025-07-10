@@ -367,7 +367,7 @@ class FB4(StopMultiprocessBased):
                 if causa_baja == '0':
                     fecha_baja = ''
 
-                if modelo == 'E':
+                if modelo == 'E' and estado == '2':
                     tipo_inversion = '0'
 
                 # Buidem FECHA_IP si hi ha FECHA_BAJA
