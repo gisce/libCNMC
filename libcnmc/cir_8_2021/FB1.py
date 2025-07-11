@@ -395,23 +395,26 @@ class FB1(StopMultiprocessBased):
                                 o_nivell_tensio = self.tensions.get(tensio_data['tensio_id'][0], '')
 
                     # identificador_tramo
-                    regex = re.compile(r'^[^\d]+(?P<core>\d.*)$')
                     # Todo: Modificar este comportamiento cuando sea 100% seguro que el id regulatorio nunca tendra asignado un prefijo previamente
+                    regex = re.compile(r'^[^\d]+(?P<core>\d.*)$')
+                    name = ''
+                    if tram.get('name'):
+                        name = tram['name']
+
                     if tram.get('id_regulatori'):
                         original = tram['id_regulatori']
                         # Buscamos en el id regulatorio si existe algun prefijo asignado previamente
                         match = regex.match(original)
                         # Si encontramos que el codigo regulatorio
-                        # tiene asignado ya un prefijo entonces lo eliminamos
+                        # tiene asignado ya un prefijo entonces lo eliminamos y nos quedamos solo con el nombre
                         if match:
-                            core = match.group('core')
+                            name = match.group('core')
                         # Si no tiene lo dejamos igual
                         else:
-                            core = original
-                        # Al final únicamente añadimos el prefijo obtenido del asistente de la circular
-                        o_tram = '{}{}'.format(self.prefix_AT, core)
-                    else:
-                        o_tram = '{}{}'.format(self.prefix_AT, tram['name'])
+                            name = original
+
+                    # Al final únicamente añadimos el prefijo obtenido del asistente de la circular
+                    o_tram = '{}{}'.format(self.prefix_AT, name)
 
                     if 'edge_id' in O.GiscedataAtTram.fields_get().keys():
                         tram_edge = O.GiscedataAtTram.read(
