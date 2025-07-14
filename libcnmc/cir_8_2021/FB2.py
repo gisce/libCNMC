@@ -167,9 +167,6 @@ class FB2(StopMultiprocessBased):
             'identificador_baja',
         ]
 
-        data_pm_limit = '{0}-01-01'.format(self.year + 1)
-        data_baixa_limit = '{0}-01-01'.format(self.year)
-
         while True:
             try:
                 item = self.input_q.get()
@@ -288,7 +285,10 @@ class FB2(StopMultiprocessBased):
                     avifauna = int(ct_obra['avifauna'] == True)
                     causa_baja = ct_obra['causa_baja'] or '0'
                     fecha_baja = (
-                            ct_obra['fecha_baja'].strftime('%d/%m/%Y') or '')
+                        datetime.strptime(ct_obra['fecha_baja'], '%Y-%m-%d').strftime(
+                            '%d/%m/%Y')
+                        if ct_obra['fecha_baja'] else ''
+                    )
                     financiado = format_f(ct_obra['financiado'],
                                           decimals=2) or ''
 
