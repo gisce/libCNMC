@@ -10,8 +10,10 @@ import traceback
 
 from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import (
-    get_id_municipi_from_company, get_forced_elements, adapt_diff, convert_srid, get_srid, format_f,
-    convert_spanish_date, format_f_6181, get_codi_actuacio, get_ine, calculate_estado, default_estado
+    get_id_municipi_from_company, get_forced_elements, adapt_diff, convert_srid,
+    get_srid, format_f,
+    convert_spanish_date, format_f_6181, get_codi_actuacio, get_ine,
+    calculate_estado, default_estado
 )
 from libcnmc.models import F8Res4666
 from shapely import wkt
@@ -28,6 +30,7 @@ class FB2(StopMultiprocessBased):
     """
     Class that generates the CT file of the 4666
     """
+
     def __init__(self, **kwargs):
         """
         Class constructor
@@ -53,18 +56,17 @@ class FB2(StopMultiprocessBased):
         data_baixa = '{0}-01-01'.format(self.year)
         search_params += [('propietari', '=', True),
                           '|', ('data_pm', '=', False),
-                               ('data_pm', '<', data_pm),
+                          ('data_pm', '<', data_pm),
                           '|',
                           '&', ('data_baixa', '>', data_baixa),
-                               ('ct_baixa', '=', True),
+                          ('ct_baixa', '=', True),
                           '|',
-                               ('data_baixa', '=', False),
-                               ('ct_baixa', '=', False)
-                          ]
+                          ('data_baixa', '=', False),
+                          ('ct_baixa', '=', False)]
         # Revisem que si està de baixa ha de tenir la data informada.
         search_params += ['|',
                           '&', ('active', '=', False),
-                               ('data_baixa', '!=', False),
+                          ('data_baixa', '!=', False),
                           ('active', '=', True)]
         # Excloure els registres que es troben de baixa i el model es 'M'
         search_params += [
@@ -118,6 +120,22 @@ class FB2(StopMultiprocessBased):
         o = self.connection
         return o.GiscedataTensionsTensio.read(tensio_id, ['tensio'])['tensio']
 
+    def get_ccaa_code(self, ct):
+        o = self.connection
+        fun_ccaa = o.ResComunitat_autonoma.get_ccaa_from_municipi
+        if ct['id_municipi']:
+            id_municipi = ct['id_municipi'][0]
+        else:
+            id_municipi = get_id_municipi_from_company(o)
+        comunitat_codi = ''
+        if id_municipi:
+            id_comunitat = fun_ccaa(id_municipi)
+            comunitat_vals = o.ResComunitat_autonoma.read(
+                id_comunitat[0], ['codi'])
+            if comunitat_vals:
+                comunitat_codi = comunitat_vals['codi']
+        return comunitat_codi
+
     def consumer(self):
         """
         Method that generates the csv file
@@ -139,11 +157,14 @@ class FB2(StopMultiprocessBased):
         ]
 
         fields_to_read_obra = [
-            'name', 'cini', 'tipo_inversion', 'ccuu', 'codigo_ccaa', 'nivel_tension_explotacion', 'financiado',
-            'fecha_aps', 'fecha_baja', 'causa_baja', 'im_ingenieria', 'im_materiales', 'im_obracivil',
-            'im_trabajos', 'subvenciones_europeas', 'subvenciones_nacionales', 'subvenciones_prtr', 'avifauna',
-            'valor_auditado', 'valor_contabilidad', 'cuenta_contable', 'porcentaje_modificacion',
-            'motivacion', 'obra_id', 'identificador_baja',
+            'name', 'cini', 'tipo_inversion', 'ccuu', 'codigo_ccaa',
+            'nivel_tension_explotacion', 'financiado', 'fecha_aps',
+            'fecha_baja', 'causa_baja', 'im_ingenieria', 'im_materiales',
+            'im_obracivil', 'im_trabajos', 'subvenciones_europeas',
+            'subvenciones_nacionales', 'subvenciones_prtr', 'avifauna',
+            'valor_auditado', 'valor_contabilidad', 'cuenta_contable',
+            'porcentaje_modificacion', 'motivacion', 'obra_id',
+            'identificador_baja',
         ]
 
         data_pm_limit = '{0}-01-01'.format(self.year + 1)
@@ -175,21 +196,29 @@ class FB2(StopMultiprocessBased):
                 # OBRES
                 ct_obra = ''
                 obra_ti_ct_obj = O.GiscedataProjecteObraTiCts
-                obra_ti_ids = obra_ti_ct_obj.search([('element_ti_id', '=', ct['id'])])
+                obra_ti_ids = obra_ti_ct_obj.search(
+                    [('element_ti_id', '=', ct['id'])])
                 if obra_ti_ids:
                     for obra_ti_id in obra_ti_ids:
-                        obra_id_data = obra_ti_ct_obj.read(obra_ti_id, ['obra_id'])
+                        obra_id_data = obra_ti_ct_obj.read(
+                            obra_ti_id, ['obra_id'])
                         obra_id = obra_id_data['obra_id']
                         # Filtre d'obres finalitzades
-                        data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
+                        data_finalitzacio_data = O.GiscedataProjecteObra.read(
+                            obra_id[0], ['data_finalitzacio'])
                         if data_finalitzacio_data:
-                            if data_finalitzacio_data.get('data_finalitzacio', False):
-                                data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
+                            if data_finalitzacio_data.get(
+                                    'data_finalitzacio', False):
+                                data_finalitzacio = data_finalitzacio_data[
+                                    'data_finalitzacio']
 
                                 inici_any = '{}-01-01'.format(self.year)
                                 fi_any = '{}-12-31'.format(self.year)
-                                if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
-                                    ct_obra = obra_ti_ct_obj.read(obra_ti_id, fields_to_read_obra)
+                                if (obra_id and data_finalitzacio
+                                        and inici_any <= data_finalitzacio <=
+                                        fi_any):
+                                    ct_obra = obra_ti_ct_obj.read(
+                                        obra_ti_id, fields_to_read_obra)
                         if ct_obra:
                             break
 
@@ -197,79 +226,83 @@ class FB2(StopMultiprocessBased):
                 financiado = ''
 
                 #CAMPS OBRA
+                data_ip = ''
+                identificador_baja = ''
+                im_ingenieria = ''
+                im_construccion = ''
+                im_trabajos = ''
+                subvenciones_europeas = ''
+                subvenciones_nacionales = ''
+                valor_auditado = ''
+                motivacion = ''
+                cuenta_contable = ''
+                avifauna = ''
+                causa_baja = '0'
+                fecha_baja = ''
+
                 if ct_obra != '':
                     obra_year = data_finalitzacio.split('-')[0]
                     data_pm_year = data_pm.split('/')[2]
-                    if ct_obra['tipo_inversion'] != '0' and obra_year != data_pm_year:
+                    if ct_obra[
+                        'tipo_inversion'] != '0' and obra_year != data_pm_year:
                         data_ip = convert_spanish_date(data_finalitzacio)
                     else:
                         data_ip = ''
                     identificador_baja = ''
                     if ct_obra.get('identificador_baja', False):
                         ct_id = ct_obra['identificador_baja'][0]
-                        ct_data = O.GiscedataCts.read(ct_id, ['name', 'id_regulatori'])
+                        ct_data = O.GiscedataCts.read(ct_id,
+                                                      ['name', 'id_regulatori'])
                         if ct_data.get('id_regulatori', False):
                             identificador_baja = ct_data['id_regulatori']
                         else:
                             identificador_baja = ct_data['name']
 
                     tipo_inversion = ct_obra['tipo_inversion'] or ''
-                    im_ingenieria = format_f_6181(ct_obra['im_ingenieria'] or 0.0, float_type='euro')
-                    im_materiales = format_f_6181(ct_obra['im_materiales'] or 0.0, float_type='euro')
-                    im_obracivil = format_f_6181(ct_obra['im_obracivil'] or 0.0, float_type='euro')
+                    im_ingenieria = format_f_6181(
+                        ct_obra['im_ingenieria'] or 0.0, float_type='euro')
+                    im_materiales = format_f_6181(
+                        ct_obra['im_materiales'] or 0.0, float_type='euro')
+                    im_obracivil = format_f_6181(
+                        ct_obra['im_obracivil'] or 0.0, float_type='euro')
                     im_construccion = str(format_f(
-                        float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
-                    , 2)).replace(".", ",")
-                    im_trabajos = format_f_6181(ct_obra['im_trabajos'] or 0.0, float_type='euro')
-                    subvenciones_europeas = format_f_6181(ct_obra['subvenciones_europeas'] or 0.0, float_type='euro')
-                    subvenciones_nacionales = format_f_6181(ct_obra['subvenciones_nacionales'] or 0.0, float_type='euro')
-                    subvenciones_prtr = format_f_6181(ct_obra['subvenciones_prtr'] or 0.0, float_type='euro')
-                    valor_auditado = format_f_6181(ct_obra['valor_auditado'] or 0.0, float_type='euro')
-                    motivacion = get_codi_actuacio(O, ct_obra['motivacion'] and ct_obra['motivacion'][0]) if not \
-                        ct_obra['fecha_baja'] else ''
+                        float(im_materiales.replace(",", ".")) + float(
+                            im_obracivil.replace(",", "."))
+                        , 2)).replace(".", ",")
+                    im_trabajos = format_f_6181(ct_obra['im_trabajos'] or 0.0,
+                                                float_type='euro')
+                    subvenciones_europeas = format_f_6181(
+                        ct_obra['subvenciones_europeas'] or 0.0,
+                        float_type='euro')
+                    subvenciones_nacionales = format_f_6181(
+                        ct_obra['subvenciones_nacionales'] or 0.0,
+                        float_type='euro')
+                    valor_auditado = format_f_6181(
+                        ct_obra['valor_auditado'] or 0.0, float_type='euro')
+                    motivacion = (
+                        get_codi_actuacio(
+                            O, ct_obra['motivacion']
+                               and ct_obra['motivacion'][0])
+                        if not ct_obra['fecha_baja'] else '')
                     cuenta_contable = ct_obra['cuenta_contable'] or ''
                     avifauna = int(ct_obra['avifauna'] == True)
                     causa_baja = ct_obra['causa_baja'] or '0'
                     fecha_baja = ct_obra['fecha_baja'] or ''
-                    financiado = format_f(ct_obra['financiado'], decimals=2) or ''
-                else:
-                    data_ip = ''
-                    identificador_baja = ''
-                    im_ingenieria = ''
-                    im_construccion = ''
-                    im_trabajos = ''
-                    subvenciones_europeas = ''
-                    subvenciones_nacionales = ''
-                    subvenciones_prtr = ''
-                    valor_auditado = ''
-                    motivacion = ''
-                    cuenta_contable = ''
-                    avifauna = ''
-                    causa_baja = '0'
-                    fecha_baja = ''
+                    financiado = format_f(ct_obra['financiado'],
+                                          decimals=2) or ''
 
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data IP sortirà en blanc
                 if data_ip:
-                    data_ip = '' if data_pm and int(data_pm.split('/')[2]) == int(data_ip.split('/')[2]) \
-                    else data_ip
+                    data_ip = (
+                        '' if (data_pm and int(data_pm.split('/')[2])
+                               == int(data_ip.split('/')[2]))
+                        else data_ip)
 
-                #CCAA
-                #funció per trobar la ccaa desde el municipi
-                fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
-                if ct['id_municipi']:
-                    id_municipi = ct['id_municipi'][0]
-                else:
-                    id_municipi = get_id_municipi_from_company(O)
-                comunitat_codi = ''
-                if id_municipi:
-                    id_comunitat = fun_ccaa(id_municipi)
-                    comunitat_vals = O.ResComunitat_autonoma.read(
-                        id_comunitat[0], ['codi'])
-                    if comunitat_vals:
-                        comunitat_codi = comunitat_vals['codi']
+                # CCAA
+                comunitat_codi = self.get_ccaa_code(ct)
 
-                #CCUU
+                # CCUU
                 if ct['tipus_instalacio_cnmc_id']:
                     id_ti = ct['tipus_instalacio_cnmc_id'][0]
                     ti = O.GiscedataTipusInstallacio.read(
@@ -278,7 +311,7 @@ class FB2(StopMultiprocessBased):
                 else:
                     ti = ''
 
-                #NODE ALTA
+                # NODE ALTA
                 if ct.get("node_id"):
                     o_node = ct["node_id"][1]
                     node = O.GiscegisNodes.read(ct["node_id"][0], ["geom"])
@@ -288,7 +321,7 @@ class FB2(StopMultiprocessBased):
                     o_node, vertex = self.get_node_vertex(item)
                 o_node = o_node.replace('*', '')
 
-                #NODE BAIXA
+                # NODE BAIXA
                 if ct["node_baixa"]:
                     o_node_baixa = ct["node_baixa"][1]
                     if o_node_baixa == 0:
@@ -301,37 +334,39 @@ class FB2(StopMultiprocessBased):
                     if o_node and cini[7] == 'V' or cini[7] == 'Z':
                         o_node_baixa = o_node
 
-                #TENSIO
+                # TENSIO
                 o_tensio_p = 0.0
                 if ct.get('tensio_entrant'):
                     o_tensio_p = float(self.get_tensio(ct['tensio_entrant'][0]))
                 elif ct.get('tensio_p'):
                     o_tensio_p = float(ct['tensio_p'])
 
-                #TENSIO_CONST
+                # TENSIO_CONST
                 o_tensio_const = ''
                 if ct.get('tensio_const', False):
-                    o_tensio_const = format_f(float(ct['tensio_const'][1]) / 1000.0, decimals=3) or ''
+                    o_tensio_const = format_f(
+                        float(ct['tensio_const'][1]) / 1000.0, decimals=3) or ''
 
                 if o_tensio_const == o_tensio_p:
                     o_tensio_const = ''
 
-                #POTENCIA
+                # POTENCIA
                 o_potencia = str(format_f(
-                    float(self.get_potencia_trafos(item)), decimals=3)).replace('.',',')
+                    float(self.get_potencia_trafos(item)), decimals=3)).replace(
+                    '.', ',')
 
-                #X,Y,Z
+                # X,Y,Z
                 res_srid = ['', '']
                 if vertex:
                     res_srid = convert_srid(get_srid(O), vertex)
 
-                #MUNICIPI I PROVINCIA
+                # MUNICIPI I PROVINCIA
                 municipio = ''
                 provincia = ''
                 if ct.get('id_municipi', False):
                     provincia, municipio = self.get_ine(ct['id_municipi'][0])
 
-                #ZONA
+                # ZONA
                 if 'zona_id' in ct and ct['zona_id']:
                     zona = O.GiscedataCtsZona.read(
                         ct['zona_id'][0], ['name']
@@ -341,10 +376,10 @@ class FB2(StopMultiprocessBased):
                 else:
                     zona_name = ""
 
-                #PUNT_FRONTERA
+                # PUNT_FRONTERA
                 punto_frontera = int(ct['punt_frontera'] == True)
 
-                #MODELO
+                # MODELO
                 modelo = ''
                 if ct.get('model', False):
                     modelo = ct['model']
@@ -394,21 +429,19 @@ class FB2(StopMultiprocessBased):
                     estado = ''
                     data_pm = ''
 
-                if fecha_baja:
-                    tipo_inversion = ''
-
                 # L'any 2022 no es declaren subvencions PRTR
                 subvenciones_prtr = ''
 
                 if causa_baja == '0':
                     fecha_baja = ''
 
-                if modelo == 'E' and estado == '2':
-                    tipo_inversion = '0'
-
-                # Buidem FECHA_IP si hi ha FECHA_BAJA
+                # Buidem FECHA_IP + Tipo_inversion si hi ha FECHA_BAJA
                 if fecha_baja:
                     data_ip = ''
+                    tipo_inversion = ''
+
+                if modelo == 'E' and estado == '2':
+                    tipo_inversion = '0'
 
                 output = [
                     o_identificador_ct,                                 # IDENTIFICADOR
