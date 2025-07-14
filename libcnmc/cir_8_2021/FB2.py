@@ -230,7 +230,7 @@ class FB2(StopMultiprocessBased):
                     cuenta_contable = ct_obra['cuenta_contable'] or ''
                     avifauna = int(ct_obra['avifauna'] == True)
                     causa_baja = ct_obra['causa_baja'] or '0'
-                    fecha_baja = ct_obra['fecha_baja'] or ''
+                    fecha_baja = ct_obra['fecha_baja'].strftime('%d/%m/%Y') or ''
                     financiado = format_f(ct_obra['financiado'], decimals=2) or ''
                 else:
                     data_ip = ''
