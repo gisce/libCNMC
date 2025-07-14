@@ -7,7 +7,7 @@ from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import (format_f, tallar_text, format_f_6181, get_codi_actuacio, convert_spanish_date,
                            get_forced_elements, adapt_diff, fetch_tensions_norm, calculate_estado, default_estado)
 from libcnmc.models import F1Res4666,F2Res4666
-import re
+
 
 class FB1(StopMultiprocessBased):
     """
@@ -395,26 +395,10 @@ class FB1(StopMultiprocessBased):
                                 o_nivell_tensio = self.tensions.get(tensio_data['tensio_id'][0], '')
 
                     # identificador_tramo
-                    # Todo: Modificar este comportamiento cuando sea 100% seguro que el id regulatorio nunca tendra asignado un prefijo previamente
-                    regex = re.compile(r'^[^\d]+(?P<core>\d.*)$')
-                    name = ''
-                    if tram.get('name'):
-                        name = tram['name']
-
-                    if tram.get('id_regulatori'):
-                        original = tram['id_regulatori']
-                        # Buscamos en el id regulatorio si existe algun prefijo asignado previamente
-                        match = regex.match(original)
-                        # Si encontramos que el codigo regulatorio
-                        # tiene asignado ya un prefijo entonces lo eliminamos y nos quedamos solo con el nombre
-                        if match:
-                            name = match.group('core')
-                        # Si no tiene lo dejamos igual
-                        else:
-                            name = original
-
-                    # Al final únicamente añadimos el prefijo obtenido del asistente de la circular
-                    o_tram = '{}{}'.format(self.prefix_AT, name)
+                    if tram.get('id_regulatori', False):
+                        o_tram = tram['id_regulatori']
+                    else:
+                        o_tram = '{}{}'.format(self.prefix_AT, tram['name'])
 
                     if 'edge_id' in O.GiscedataAtTram.fields_get().keys():
                         tram_edge = O.GiscedataAtTram.read(
