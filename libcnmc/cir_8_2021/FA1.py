@@ -177,10 +177,7 @@ class FA1(StopMultiprocessBased):
                          ('active', '=', True),
                          '&',
                          ('data_baixa', '>=', data_ini),
-                         ('data_baixa', '<=', data_fi),
-                         '|',
-                         ('create_date', '<=', data_fi),
-                         ('create_date', '=', False)]
+                         ('data_baixa', '<=', data_fi)]
 
         ret_cups_ids = self.connection.GiscedataCupsPs.search(
             search_params, 0, 0, False, {'active_test': False})
