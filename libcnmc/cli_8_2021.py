@@ -457,6 +457,7 @@ def cir_8_2021_fb2_1(**kwargs):
               help='Contrasenya usuari ERP')
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
+@click.option('--incloure_fusat/--no-incloure_fusat', default=False, help="Incloure fusible AT")
 def cir_8_2021_fb2_2(**kwargs):
     """
     Click entry to generate the B2_2: CELDAS EN CTS
@@ -477,6 +478,8 @@ def cir_8_2021_fb2_2(**kwargs):
         num_proc=kwargs['num_proc'],
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
+        incloure_fusat=kwargs['incloure_fusat']
+
     )
     proc.calc()
 
