@@ -373,10 +373,10 @@ class FA2(StopMultiprocessBased):
                     o_cups_ssaa = '' # Es força a valor fixe buit
 
                     # Energies
-                    o_energia_activa_producida = ''
-                    o_energia_activa_consumida = ''
-                    o_energia_reactiva_producida = ''
-                    o_energia_reactiva_consumida = ''
+                    o_energia_activa_producida = '0,000'
+                    o_energia_activa_consumida = '0,000'
+                    o_energia_reactiva_producida = '0,000'
+                    o_energia_reactiva_consumida = '0,000'
 
                     if gen.get('cne_anual_activa_generada'):
                         o_energia_activa_producida = gen[
