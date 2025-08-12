@@ -314,6 +314,7 @@ class FB6(StopMultiprocessBased):
                 id_municipi = ''
                 linia_data = {}
                 ct_data = {}
+                suport_data = {}
                 if cella.get('installacio', False):
                     installacio_data = cella['installacio']
                     inst_model = installacio_data.split(',')[0]
@@ -327,7 +328,7 @@ class FB6(StopMultiprocessBased):
                                 o_identificador_elemento = tram_data['id_regulatori']
                             else:
                                 o_identificador_elemento = "{}{}".format(self.prefix_AT, tram_data['name'])
-                        suport_data = O.GiscedataAtSuport.read(inst_id, ['linies_at_ids'])
+                        suport_data = O.GiscedataAtSuport.read(inst_id, ['linies_at_ids', 'ine'])
                         if suport_data.get('linies_at_ids', False):
                             linia_id = suport_data['linies_at_ids'][0]
                             linia_data = self.obtenir_camps_linia_at(linia_id)
@@ -351,6 +352,9 @@ class FB6(StopMultiprocessBased):
                 elif ct_data.get('id_municipi'):
                     id_municipi = ct_data['id_municipi'][0]
                     o_provincia, o_municipi = self.get_ine(id_municipi)
+
+                if suport_data.get('ine', False):
+                    o_municipi = suport_data['ine']
 
                 # funció per trobar la ccaa desde el municipi
                 fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
