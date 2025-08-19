@@ -28,6 +28,7 @@ class FB2_2(StopMultiprocessBased):
         self.base_object = 'Cel·les'
         self.fiabilitat = kwargs.get("fiabilitat")
         self.doslmesp = kwargs.get("doslmesp")
+        self.incloure_fusat = kwargs.pop('incloure_fusat', False)
 
     def get_sequence(self):
         """
@@ -36,10 +37,9 @@ class FB2_2(StopMultiprocessBased):
         :return: None
         """
         cella_obj = self.connection.GiscedataCellesCella
-        search_params = [
-            ('cini', '=like', 'I28%'),
-            ("tipus_element.codi", "!=", "FUS_AT")
-        ]
+        search_params = [('cini', '=like', 'I28%')]
+        if not self.incloure_fusat:
+            search_params += [("tipus_element.codi", "!=", "FUS_AT")]
 
         data_pm = '{}-01-01'.format(self.year + 1)
         data_baixa = '{}-12-31'.format(self.year)
