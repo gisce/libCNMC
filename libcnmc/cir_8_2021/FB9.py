@@ -130,6 +130,7 @@ class FB9(StopMultiprocessBased):
                 at['2_F_16'] = df_f_to['10'].sum()
                 at['2_G_16'] = df_f_to['27'].sum()
                 at['2_H_16'] = at['2_G_16']
+                at['2_G_16_PARCIAL'] = (df_f_to['27'] * (df_f_to['28'] / 100)).sum()
 
                 # TIPO 1
                 df_f_t1 = df_f[df_f['22'] == 1]
@@ -137,11 +138,13 @@ class FB9(StopMultiprocessBased):
                 at['2_J_16'] = df_f_t1['10'].sum()
                 at['2_K_16'] = df_f_t1['27'].sum()
                 at['2_L_16'] = at['2_K_16']
+                at['2_K_16_PARCIAL'] = (df_f_t1['27'] * (df_f_t1['28'] / 100)).sum()
 
                 # TOTAL
                 at['2_M_16'] = at['2_E_16'] + at['2_I_16']
                 at['2_N_16'] = at['2_F_16'] + at['2_J_16']
                 at['2_O_16'] = at['2_G_16'] + at['2_K_16']
+                at['2_O_16_PARCIAL'] = (at['2_G_16_PARCIAL'] + at['2_K_16_PARCIAL'])
                 at['2_P_16'] = at['2_O_16']
 
                 # # FINANCIADO 100% # #
@@ -210,6 +213,7 @@ class FB9(StopMultiprocessBased):
                 bt['2_F_17'] = df_f_to['10'].sum()
                 bt['2_G_17'] = df_f_to['27'].sum()
                 bt['2_H_17'] = bt['2_G_17']
+                bt['2_G_17_PARCIAL'] = (df_f_to['27'] * (df_f_to['28'] / 100)).sum()
 
                 # TIPO 1
                 df_f_t1 = df_f[df_f['22'] == 1]
@@ -217,12 +221,14 @@ class FB9(StopMultiprocessBased):
                 bt['2_J_17'] = df_f_t1['10'].sum()
                 bt['2_K_17'] = df_f_t1['27'].sum()
                 bt['2_L_17'] = bt['2_K_17']
+                bt['2_K_17_PARCIAL'] = (df_f_t1['27'] * (df_f_t1['28'] / 100)).sum()
 
                 # TOTAL
                 bt['2_M_17'] = bt['2_E_17'] + bt['2_I_17']
                 bt['2_N_17'] = bt['2_F_17'] + bt['2_J_17']
                 bt['2_O_17'] = bt['2_G_17'] + bt['2_K_17']
                 bt['2_P_17'] = bt['2_O_17']
+                bt['2_O_17_PARCIAL'] = (bt['2_G_17_PARCIAL'] + bt['2_K_17_PARCIAL'])
 
                 # # FINANCIADO 100% # #
                 df_f100 = df[(df['28'] == 100) & ((df['22'] == 0) | (df['22'] == 1))]
@@ -289,6 +295,7 @@ class FB9(StopMultiprocessBased):
                 pos['2_F_18'] = 0
                 pos['2_G_18'] = df_f_to['18'].sum()
                 pos['2_H_18'] = pos['2_G_18']
+                pos['2_G_18_PARCIAL'] = (df['18'] * (df['24'] / 100)).sum()
 
                 # TIPO 1
                 df_f_t1 = df_f[df_f['14'] == 1]
@@ -296,11 +303,13 @@ class FB9(StopMultiprocessBased):
                 pos['2_J_18'] = 0
                 pos['2_K_18'] = df_f_t1['18'].sum()
                 pos['2_L_18'] = pos['2_K_18']
+                pos['2_K_18_PARCIAL'] = (df['18'] * (df['24'] / 100)).sum()
 
                 # TOTAL
                 pos['2_M_18'] = pos['2_E_18'] + pos['2_I_18']
                 pos['2_N_18'] = pos['2_F_18'] + pos['2_J_18']
                 pos['2_O_18'] = pos['2_G_18'] + pos['2_K_18']
+                pos['2_O_18_PARCIAL'] = (pos['2_G_18_PARCIAL'] + pos['2_K_18_PARCIAL'])
                 pos['2_P_18'] = pos['2_O_18']
 
                 # # FINANCIADO 100% # #
@@ -364,6 +373,7 @@ class FB9(StopMultiprocessBased):
                 trafo['2_F_19'] = df_f_to['5'].sum()
                 trafo['2_G_19'] = df_f_to['20'].sum()
                 trafo['2_H_19'] = trafo['2_G_19']
+                trafo['2_G_19_PARCIAL'] = (df_f_to['20'] * (df_f_to['21'] / 100)).sum()
 
                 # TIPO 1
                 df_f_t1 = df_f[df_f['12'] == 1]
@@ -371,11 +381,13 @@ class FB9(StopMultiprocessBased):
                 trafo['2_J_19'] = df_f_t1['5'].sum()
                 trafo['2_K_19'] = df_f_t1['20'].sum()
                 trafo['2_L_19'] = trafo['2_K_19']
+                trafo['2_K_19_PARCIAL'] = (df_f_t1['20'] * (df_f_t1['21'] / 100)).sum()
 
                 # TOTAL
                 trafo['2_M_19'] = trafo['2_E_19'] + trafo['2_I_19']
                 trafo['2_N_19'] = trafo['2_F_19'] + trafo['2_J_19']
                 trafo['2_O_19'] = trafo['2_G_19'] + trafo['2_K_19']
+                trafo['2_O_19_PARCIAL'] = (trafo['2_G_19_PARCIAL'] + trafo['2_K_19_PARCIAL'])
                 trafo['2_P_19'] = trafo['2_O_19']
 
                 # # FINANCIADO 100% # #
@@ -440,6 +452,8 @@ class FB9(StopMultiprocessBased):
                 cel['2_F_20'] = 0
                 cel['2_G_20'] = df_f_to['26'].sum()
                 cel['2_H_20'] = cel['2_G_20']
+                cel['2_G_20_PARCIAL'] = df_f_to['26'].sum() * (df['27'] / 100)
+                cel['2_G_20_PARCIAL'] = (df_f_to['26'] * (df_f_to['27'] / 100)).sum()
 
                 # TIPO 1
                 df_f_t1 = df_f[df_f['19'] == 1]
@@ -447,11 +461,13 @@ class FB9(StopMultiprocessBased):
                 cel['2_J_20'] = 0
                 cel['2_K_20'] = df_f_t1['26'].sum()
                 cel['2_L_20'] = cel['2_K_20']
+                cel['2_K_20_PARCIAL'] = (df_f_t1['26'] * (df_f_t1['27'] / 100)).sum()
 
                 # TOTAL
                 cel['2_M_20'] = cel['2_E_20'] + cel['2_I_20']
                 cel['2_N_20'] = cel['2_F_20'] + cel['2_J_20']
                 cel['2_O_20'] = cel['2_G_20'] + cel['2_K_20']
+                cel['2_O_20_PARCIAL'] = (cel['2_G_20_PARCIAL'] + cel['2_K_20_PARCIAL'])
                 cel['2_P_20'] = cel['2_O_20']
 
                 # # FINANCIADO 100% # #
@@ -517,6 +533,7 @@ class FB9(StopMultiprocessBased):
                 ct['2_F_21'] = df_f_to['8'].sum() / 1000
                 ct['2_G_21'] = df_f_to['30'].sum()
                 ct['2_H_21'] = ct['2_G_21']
+                ct['2_G_21_PARCIAL'] = (df_f_to['30'] * (df_f_to['31'] / 100)).sum()
 
                 # TIPO 1
                 df_f_t1 = df_f[df_f['23'] == 1]
@@ -524,11 +541,13 @@ class FB9(StopMultiprocessBased):
                 ct['2_J_21'] = df_f_t1['8'].sum() / 1000
                 ct['2_K_21'] = df_f_t1['30'].sum()
                 ct['2_L_21'] = ct['2_K_21']
+                ct['2_K_21_PARCIAL'] = (df_f_t1['30'] * (df_f_t1['31'] / 100)).sum()
 
                 # TOTAL
                 ct['2_M_21'] = ct['2_E_21'] + ct['2_I_21']
                 ct['2_N_21'] = ct['2_F_21'] + ct['2_J_21']
                 ct['2_O_21'] = ct['2_G_21'] + ct['2_K_21']
+                ct['2_O_21_PARCIAL'] = (ct['2_G_21_PARCIAL'] + ct['2_K_21_PARCIAL'] )
                 ct['2_P_21'] = ct['2_O_21']
 
                 # # FINANCIADO 100% # #
@@ -577,6 +596,7 @@ class FB9(StopMultiprocessBased):
                 inv_uf['2_E_22'] = at['2_E_16'] + bt['2_E_17'] + pos['2_E_18'] + trafo['2_E_19'] + cel['2_E_20'] + ct['2_E_21']
                 inv_uf['2_F_22'] = at['2_F_16'] + bt['2_F_17'] + trafo['2_F_19'] + ct['2_F_21']
                 inv_uf['2_G_22'] = at['2_G_16'] + bt['2_G_17'] + pos['2_G_18'] + trafo['2_G_19'] + cel['2_G_20'] + ct['2_G_21']
+                inv_uf['2_G_22_PARCIAL'] =  at['2_G_16_PARCIAL'] + bt['2_G_17_PARCIAL'] + pos['2_G_18_PARCIAL'] + trafo['2_G_19_PARCIAL'] + cel['2_G_20_PARCIAL'] + ct['2_G_21_PARCIAL']
                 inv_uf['2_H_22'] = at['2_H_16'] + bt['2_H_17'] + pos['2_H_18'] + trafo['2_H_19'] + cel['2_H_20'] + ct['2_H_21']
 
                 # TIPO 1
@@ -589,6 +609,7 @@ class FB9(StopMultiprocessBased):
                 inv_uf['2_M_22'] = at['2_M_16'] + bt['2_M_17'] + pos['2_M_18'] + trafo['2_M_19'] + cel['2_M_20'] + ct['2_M_21']
                 inv_uf['2_N_22'] = at['2_N_16'] + bt['2_N_17'] + trafo['2_N_19'] + ct['2_N_21']
                 inv_uf['2_O_22'] = at['2_O_16'] + bt['2_O_17'] + pos['2_O_18'] + trafo['2_O_19'] + cel['2_O_20'] + ct['2_O_21']
+                inv_uf['2_O_22_PARCIAL'] = at['2_O_16_PARCIAL'] + bt['2_O_17_PARCIAL'] + pos['2_O_18_PARCIAL'] + trafo['2_O_19_PARCIAL'] + cel['2_O_20_PARCIAL'] + ct['2_O_21_PARCIAL']
                 inv_uf['2_P_22'] = at['2_P_16'] + bt['2_P_17'] + pos['2_P_18'] + trafo['2_P_19'] + cel['2_P_20'] + ct['2_P_21']
 
                 # # FINANCIADO 100% # #
@@ -913,18 +934,21 @@ class FB9(StopMultiprocessBased):
                 desp['2A_D_13'] = df_f_des.shape[0]
                 desp['2A_E_13'] = df_f_des['14'].sum()
                 desp['2A_F_13'] = desp['2A_E_13']
+                desp['2A_E_13_PARCIAL'] =  (df_f_des['14'] * (df['15'] / 100)).sum()
 
                 # TERRENOS #
                 df_f_ter = df_f[df_f['2'] == 'TER']
                 desp['2A_D_14'] = df_f_ter.shape[0]
                 desp['2A_E_14'] = df_f_ter['14'].sum()
                 desp['2A_F_14'] = desp['2A_E_14']
+                desp['2A_E_14_PARCIAL'] = (df_f_ter['14'] * (df['15'] / 100)).sum()
 
                 # DIGITALIZACION #
                 df_f_dig = df_f[df_f['2'] == 'DIG']
                 desp['2A_D_15'] = df_f_dig.shape[0]
                 desp['2A_E_15'] = df_f_dig['14'].sum()
                 desp['2A_F_15'] = desp['2A_E_15']
+                desp['2A_E_15_PARCIAL'] = (df_f_dig['14'] * (df['15'] / 100)).sum()
 
                 # PRTR #
                 desp['2A_D_16'] = 0
@@ -936,15 +960,19 @@ class FB9(StopMultiprocessBased):
                 desp['2A_D_17'] = df_f_ibo.shape[0]
                 desp['2A_E_17'] = df_f_ibo['14'].sum()
                 desp['2A_F_17'] = desp['2A_E_17']
+                desp['2A_E_17_PARCIAL'] = (df_f_ibo['14'] * (df['15'] / 100)).sum()
 
                 # TOTAL #
                 desp['2A_D_18'] = desp['2A_D_13'] + desp['2A_D_14'] + desp['2A_D_15'] + desp['2A_D_16'] + desp['2A_D_17']
                 desp['2A_E_18'] = desp['2A_E_13'] + desp['2A_E_14'] + desp['2A_E_15'] + desp['2A_E_16'] + desp['2A_E_17']
+                desp['2A_E_18_PARCIAL'] = desp['2A_E_13_PARCIAL'] + desp['2A_E_14_PARCIAL'] + desp['2A_E_15_PARCIAL'] + desp['2A_E_16'] + desp['2A_E_17_PARCIAL']
                 desp['2A_F_18'] = desp['2A_F_13'] + desp['2A_F_14'] + desp['2A_F_15'] + desp['2A_F_16'] + desp['2A_F_17']
+                desp['2A_F_18_PARCIAL'] = desp['2A_E_13_PARCIAL'] + desp['2A_E_14_PARCIAL'] + desp['2A_E_15_PARCIAL'] + desp['2A_F_16']+ desp['2A_E_17_PARCIAL']
 
                 desp['2_E_24'] = desp['2A_D_18']
                 desp['2_F_24'] = 0
                 desp['2_G_24'] = desp['2A_E_18']
+                desp['2_G_24_PARCIAL'] = desp['2A_E_18_PARCIAL']
                 desp['2_H_24'] = desp['2A_F_18']
 
                 # # # CUADRO 2 - H # # #
@@ -957,6 +985,7 @@ class FB9(StopMultiprocessBased):
                 desp['2_M_24'] = desp['2_E_24']
                 desp['2_N_24'] = desp['2_F_24']
                 desp['2_O_24'] = desp['2_G_24']
+                desp['2_O_24_PARCIAL'] = desp['2_G_24_PARCIAL']
                 desp['2_P_24'] = desp['2_H_24']
 
                 # # # CUADRO 3 - H # # #
@@ -1019,6 +1048,7 @@ class FB9(StopMultiprocessBased):
                 inv['2_M_25'] = inv_uf['2_M_22'] + desp['2_M_24']
                 inv['2_N_25'] = inv_uf['2_N_22']
                 inv['2_O_25'] = inv_uf['2_O_22'] + desp['2_O_24']
+                inv['2_O_25_PARCIAL'] = inv_uf['2_O_22_PARCIAL'] + desp['2_O_24_PARCIAL']
                 inv['2_P_25'] = inv_uf['2_P_22'] + desp['2_P_24']
 
                 # # FINANCIADO 100% # #
@@ -1095,7 +1125,7 @@ class FB9(StopMultiprocessBased):
 
                 # INVERSIÓN INSTALACIONES FINANCIADAS
                 #  Parcialmente por terceros
-                resumen['5_G_8'] = inv['2_O_25'] + desp['2A_F_18']
+                resumen['5_G_8'] = inv['2_O_25_PARCIAL'] + desp['2A_F_18_PARCIAL']
                 #  Totalmente por terceros
                 resumen['5_G_9'] = inv['3_G_25']
 
