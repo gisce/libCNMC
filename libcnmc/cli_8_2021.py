@@ -756,6 +756,7 @@ def cir_8_2021_fb5(**kwargs):
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('--prefix_at', help="Prefix dels Trams AT")
+@click.option('--incloure_senyalitzadors/--no-incloure_senyalitzadors', default=False, help="Incloure senyalitzadors")
 def cir_8_2021_fb6(**kwargs):
     """
     Click entry to generate the B3_2: POSICIONES
@@ -779,6 +780,20 @@ def cir_8_2021_fb6(**kwargs):
         prefix_at=kwargs['prefix_at'],
     )
     proc.calc()
+
+    if kwargs.get('incloure_senyalitzadors', False):
+        print ('DEBUG', 'Calculant senyalitzadors...')
+        proc_2 = cir_8_2021.FB6Senyalitzadors(
+            quiet=kwargs['quiet'],
+            interactive=kwargs['interactive'],
+            output=kwargs['output'],
+            connection=O,
+            num_proc=kwargs['num_proc'],
+            codi_r1=kwargs['codi_r1'],
+            year=kwargs['year'],
+            prefix_at=kwargs['prefix_at'],
+        )
+        proc_2.calc()
 
 @cnmc_8_2021.command()
 @click.option('-q', '--quiet', default=False,
