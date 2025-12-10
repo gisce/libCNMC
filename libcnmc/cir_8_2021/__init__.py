@@ -15,7 +15,6 @@ from FB3_3 import FB3_3
 from FB4 import FB4
 from FB5 import FB5
 from FB6 import FB6
-from FB6_senyalitzadors import FB6Senyalitzadors
 from FB7 import FB7
 from FB8 import FB8
 from FB9 import FB9

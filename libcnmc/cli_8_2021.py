@@ -778,22 +778,9 @@ def cir_8_2021_fb6(**kwargs):
         codi_r1=kwargs['codi_r1'],
         year=kwargs['year'],
         prefix_at=kwargs['prefix_at'],
+        incloure_senyalitzadors=kwargs.get('incloure_senyalitzadors', False),
     )
     proc.calc()
-
-    if kwargs.get('incloure_senyalitzadors', False):
-        print ('DEBUG', 'Calculant senyalitzadors...')
-        proc_2 = cir_8_2021.FB6Senyalitzadors(
-            quiet=kwargs['quiet'],
-            interactive=kwargs['interactive'],
-            output=kwargs['output'],
-            connection=O,
-            num_proc=kwargs['num_proc'],
-            codi_r1=kwargs['codi_r1'],
-            year=kwargs['year'],
-            prefix_at=kwargs['prefix_at'],
-        )
-        proc_2.calc()
 
 @cnmc_8_2021.command()
 @click.option('-q', '--quiet', default=False,
