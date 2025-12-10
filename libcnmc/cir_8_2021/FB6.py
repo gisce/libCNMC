@@ -367,6 +367,8 @@ class FB6(StopMultiprocessBased):
         return ti
 
     def get_senyalitzador_node(self, senyalitzador_data, o_fiabilitat):
+        o_node = ''
+        vertex = ''
         if senyalitzador_data.get('node_id'):
             o_node = senyalitzador_data['node_id'][1]
             vertex = wkt.loads(senyalitzador_data['geom']).coords[0]
@@ -383,10 +385,11 @@ class FB6(StopMultiprocessBased):
             tram_data = connection.GiscedataAtTram.read(
                 senyalitzador_data['tram_id'][0], ['tensio_id']
             )
-            tensio = connection.GiscedataTensionsTensio.read(
-                tram_data['tensio_id'][0], ['tensio']
-            )
-            o_tensio = format_f(tensio['tensio'] / 1000.0, decimals=3)
+            if tram_data.get('tensio_id', False):
+                tensio = connection.GiscedataTensionsTensio.read(
+                    tram_data['tensio_id'][0], ['tensio']
+                )
+                o_tensio = format_f(tensio['tensio'] / 1000.0, decimals=3)
 
         if senyalitzador_data.get('tensio_construccio', False):
             o_tensio_const = format_f(float(senyalitzador_data['tensio_construccio'][1]) / 1000.0,
@@ -434,7 +437,7 @@ class FB6(StopMultiprocessBased):
         Function to put senyalitzadors data in the output in flag 'incloure_senyalitzadors' is True
         """
         fields_to_read_senyalitzador = [
-            'name', 'municipi_id', 'tram_id', 'data_pm', 'data_baixa', 'rao_baixa', 'tipus_instalacio_cnmc_id', 'tensio_construccio', 'punt_frontera', 'cini', 'model', 'tensio_construccio'
+            'name', 'municipi_id', 'tram_id', 'data_pm', 'data_baixa', 'rao_baixa', 'tipus_instalacio_cnmc_id', 'tensio_construccio', 'punt_frontera', 'cini', 'model', 'tensio_construccio', 'node_id', 'geom'
         ]
         senyalitzador_data = connection.GiscedataAtDetectors.read(
             det_id, fields_to_read_senyalitzador
