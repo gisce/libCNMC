@@ -51,9 +51,15 @@ class FB6(StopMultiprocessBased):
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-01-01' % self.year
 
-        search_params = []
+        search_params = [('criteri_regulatori', '!=', 'excloure'),
+                         '|', ('data_pm', '=', False),
+                              ('data_pm', '<', data_pm),
+                         '|', ('data_baixa', '>=', data_baixa),
+                              ('data_baixa', '=', False)]
 
         search_params += [
+            ('cini', '=like', 'I26%'),
+            ('inventari', '=', 'fiabilitat'),
         ]
         # Excloure els registres que es troben de baixa i el model es 'M'
         search_params += [
@@ -69,8 +75,6 @@ class FB6(StopMultiprocessBased):
             # NOTE: De moment només es poden exportar tots els senyalitzadors que estan actius
             search_det = [
                 ('active', '=', True),
-                '|', ('data_baixa', '=', False),
-                ('data_baixa', '>=', '%s-01-01' % self.year),
             ]
             det_ids = self.connection.GiscedataAtDetectors.search(
                 search_det, 0, 0, False, {'active_test': False}
@@ -242,31 +246,92 @@ class FB6(StopMultiprocessBased):
         return o_identificador_elemento, o_municipi, o_provincia, comunitat_codi
 
     def get_obres_senyalitzador(self, connection, senyalitzador_data, fields_to_read_obra):
-        # TODO: Pendent de dir per part de client si cal afegir associar obres als senyalitzadors
+        senyalitzador_obra = ''
+        obra_ti_pos_obj = connection.GiscedataProjecteObraTiCelles
+        obra_ti_ids = obra_ti_pos_obj.search(
+            [('element_ti_id', '=', senyalitzador_data['id'])])
+        if obra_ti_ids:
+            for obra_ti_id in obra_ti_ids:
+                obra_id_data = obra_ti_pos_obj.read(obra_ti_id, ['obra_id'])
+                obra_id = obra_id_data['obra_id']
+                # Filtre d'obres finalitzades
+                data_finalitzacio_data = connection.GiscedataProjecteObra.read(
+                    obra_id[0], ['data_finalitzacio'])
+                if data_finalitzacio_data:
+                    if data_finalitzacio_data.get('data_finalitzacio', False):
+                        data_finalitzacio = data_finalitzacio_data[
+                            'data_finalitzacio']
+
+                        inici_any = '{}-01-01'.format(self.year)
+                        fi_any = '{}-12-31'.format(self.year)
+                        if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
+                            senyalitzador_obra = connection.GiscedataProjecteObraTiCelles.read(
+                                obra_ti_id, fields_to_read_obra)
+                if senyalitzador_obra:
+                    break
+
         tipo_inversion = ''
-        ccuu = ''
-        ccaa = ''
-        im_ingenieria = ''
-        im_materiales = ''
-        im_obracivil = ''
-        im_trabajos = ''
-        im_construccion = ''
-        subvenciones_europeas = ''
-        subvenciones_nacionales = ''
-        valor_auditado = ''
-        valor_contabilidad = ''
-        cuenta_contable = ''
-        identificador_baja = ''
-        financiado = ''
-        avifauna = ''
-        subvenciones_prtr = ''
+        # CAMPS OBRA
+        if senyalitzador_obra != '':
+            tipo_inversion = senyalitzador_obra['tipo_inversion'] or ''
+            im_ingenieria = format_f_6181(senyalitzador_obra['im_ingenieria'] or 0.0,
+                                          float_type='euro')
+            im_materiales = format_f_6181(senyalitzador_obra['im_materiales'] or 0.0,
+                                          float_type='euro')
+            im_obracivil = format_f_6181(senyalitzador_obra['im_obracivil'] or 0.0,
+                                         float_type='euro')
+            im_trabajos = format_f_6181(senyalitzador_obra['im_trabajos'] or 0.0,
+                                        float_type='euro')
+            identificador_baja = ''
+            if senyalitzador_obra.get('identificador_baja', False):
+                cella_id = senyalitzador_obra['identificador_baja'][0]
+                cella_data = connection.GiscedataCellesCella.read(cella_id, ['name',
+                                                                    'id_regulatori'])
+                if cella_data.get('id_regulatori', False):
+                    identificador_baja = cella_data['id_regulatori']
+                else:
+                    identificador_baja = cella_data['name']
+            im_construccion = str(format_f(
+                float(im_materiales.replace(",", ".")) + float(
+                    im_obracivil.replace(",", "."))
+                , 2)).replace(".", ",")
+            subvenciones_europeas = format_f_6181(
+                senyalitzador_obra['subvenciones_europeas'] or 0.0, float_type='euro')
+            subvenciones_nacionales = format_f_6181(
+                senyalitzador_obra['subvenciones_nacionales'] or 0.0, float_type='euro')
+            subvenciones_prtr = format_f_6181(
+                senyalitzador_obra['subvenciones_prtr'] or 0.0, float_type='euro')
+            valor_auditado = format_f_6181(senyalitzador_obra['valor_auditado'] or 0.0,
+                                           float_type='euro')
+            valor_contabilidad = format_f_6181(
+                senyalitzador_obra['valor_contabilidad'] or 0.0, float_type='euro')
+            cuenta_contable = senyalitzador_obra['cuenta_contable'] or ''
+            avifauna = int(senyalitzador_obra['avifauna'] == True)
+            financiado = format_f(senyalitzador_obra.get('financiado') or 0.0, 2)
+        else:
+            ccuu = ''
+            ccaa = ''
+            im_ingenieria = ''
+            im_materiales = ''
+            im_obracivil = ''
+            im_trabajos = ''
+            im_construccion = ''
+            subvenciones_europeas = ''
+            subvenciones_nacionales = ''
+            valor_auditado = ''
+            valor_contabilidad = ''
+            cuenta_contable = ''
+            identificador_baja = ''
+            financiado = ''
+            avifauna = ''
+            subvenciones_prtr = ''
 
         return (tipo_inversion, im_ingenieria, im_materiales, im_obracivil, im_trabajos,
                 im_construccion, subvenciones_europeas,
                 subvenciones_nacionales, subvenciones_prtr,
                 valor_auditado, valor_contabilidad,
                 cuenta_contable, identificador_baja,
-                financiado, avifauna)
+                financiado, avifauna, senyalitzador_obra)
 
     def fecha_baja_causa_baja_senyalitzador(self, connection, senyalitzador_data):
         identificador_baja = '' # TODO: Cal afegir la cerca de l'identificador de baixa dels senyalitzadors a través de les obres
@@ -318,9 +383,14 @@ class FB6(StopMultiprocessBased):
             tram_data = connection.GiscedataAtTram.read(
                 senyalitzador_data['tram_id'][0], ['tensio']
             )
-            o_tensio = tram_data.get('tensio', '')
+            tensio = connection.GiscedataTensionsTensio.read(
+                tram_data['id'], ['tensio']
+            )
+            o_tensio = format_f(int(tensio['tensio']) / 1000.0, decimals=3)
 
-        o_tensio_const = senyalitzador_data.get('tensio_construccio', '')
+        if senyalitzador_data.get('tensio_construccio', False):
+            o_tensio_const = format_f(float(senyalitzador_data['tensio_construccio'][1]) / 1000.0,
+                                          decimals=3) or ''
 
         return o_tensio, o_tensio_const
 
@@ -364,10 +434,10 @@ class FB6(StopMultiprocessBased):
         Function to put senyalitzadors data in the output in flag 'incloure_senyalitzadors' is True
         """
         fields_to_read_senyalitzador = [
-            'name', 'municipi_id', 'tram_id', 'data_pm', 'data_baixa', 'rao_baixa', 'tipus_instalacio_cnmc_id', 'tensio_construccio', 'punt_frontera', 'cini', 'model',
+            'name', 'municipi_id', 'tram_id', 'data_pm', 'data_baixa', 'rao_baixa', 'tipus_instalacio_cnmc_id', 'tensio_construccio', 'punt_frontera', 'cini', 'model', 'tensio_construccio'
         ]
         senyalitzador_data = connection.GiscedataAtDetectors.read(
-            int(det_id), fields_to_read_senyalitzador
+            det_id, fields_to_read_senyalitzador
         )
         data_pm = self.get_data_pm(data=senyalitzador_data)
         o_fiabilitat = senyalitzador_data['name']
@@ -386,7 +456,7 @@ class FB6(StopMultiprocessBased):
          subvenciones_nacionales, subvenciones_prtr,
          valor_auditado, valor_contabilidad,
          cuenta_contable, identificador_baja,
-         financiado, avifauna) = self.get_obres_senyalitzador(
+         financiado, avifauna, senyalitzador_obra) = self.get_obres_senyalitzador(
             connection, senyalitzador_data, fields_to_read_obra=[]
         )
 
@@ -435,7 +505,7 @@ class FB6(StopMultiprocessBased):
             data_pm,
             fecha_baja,
             modelo,
-            senyalitzador_obra=False
+            senyalitzador_obra=senyalitzador_obra
         )
 
         if modelo == 'M':
