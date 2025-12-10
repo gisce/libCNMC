@@ -381,12 +381,12 @@ class FB6(StopMultiprocessBased):
         o_tensio_const = ''
         if senyalitzador_data.get('tram_id', False):
             tram_data = connection.GiscedataAtTram.read(
-                senyalitzador_data['tram_id'][0], ['tensio']
+                senyalitzador_data['tram_id'][0], ['tensio_id']
             )
             tensio = connection.GiscedataTensionsTensio.read(
-                tram_data['id'], ['tensio']
+                tram_data['tensio_id'][0], ['tensio']
             )
-            o_tensio = format_f(int(tensio['tensio']) / 1000.0, decimals=3)
+            o_tensio = format_f(tensio['tensio'] / 1000.0, decimals=3)
 
         if senyalitzador_data.get('tensio_construccio', False):
             o_tensio_const = format_f(float(senyalitzador_data['tensio_construccio'][1]) / 1000.0,
