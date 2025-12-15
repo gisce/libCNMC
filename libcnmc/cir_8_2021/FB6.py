@@ -247,7 +247,7 @@ class FB6(StopMultiprocessBased):
 
     def get_obres_senyalitzador(self, connection, senyalitzador_data, fields_to_read_obra):
         senyalitzador_obra = ''
-        obra_ti_pos_obj = connection.GiscedataProjecteObraTiCelles
+        obra_ti_pos_obj = connection.GiscedataProjecteObraTiDetectors
         obra_ti_ids = obra_ti_pos_obj.search(
             [('element_ti_id', '=', senyalitzador_data['id'])])
         if obra_ti_ids:
@@ -265,7 +265,7 @@ class FB6(StopMultiprocessBased):
                         inici_any = '{}-01-01'.format(self.year)
                         fi_any = '{}-12-31'.format(self.year)
                         if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
-                            senyalitzador_obra = connection.GiscedataProjecteObraTiCelles.read(
+                            senyalitzador_obra = connection.GiscedataProjecteObraTiDetectors.read(
                                 obra_ti_id, fields_to_read_obra)
                 if senyalitzador_obra:
                     break
