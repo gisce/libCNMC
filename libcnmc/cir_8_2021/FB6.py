@@ -223,19 +223,15 @@ class FB6(StopMultiprocessBased):
         o_municipi = ''
         o_provincia = ''
         comunitat_codi = ''
-        if senyalitzador_data.get('tram_id', False):
-            # Si el senyalitzador té
-            # tram associat, no es pot trobar la ubicació a través de la
-            # línia AT
-            o_provincia, o_municipi = self.get_ine(
-                senyalitzador_data['municipi_id'][0])
+        if senyalitzador_data.get('municipi_id', False):
+            o_provincia, o_municipi = self.get_ine(senyalitzador_data['municipi_id'][0])
             fun_ccaa = connection.ResComunitat_autonoma.get_ccaa_from_municipi
             id_comunitat = fun_ccaa(senyalitzador_data['municipi_id'][0])
-            comunitat_vals = connection.ResComunitat_autonoma.read(
-                id_comunitat[0], ['codi'])
-            if comunitat_vals:
-                comunitat_codi = comunitat_vals['codi']
+            if id_comunitat:
+                comunitat_vals = connection.ResComunitat_autonoma.read(id_comunitat[0], ['codi'])
+                comunitat_codi = comunitat_vals.get('codi', '')
 
+        if senyalitzador_data.get('tram_id', False):
             tram_data = connection.GiscedataAtTram.read(senyalitzador_data['tram_id'][0], ['name', 'id_regulatori'])
             if tram_data.get('id_regulatori', False):
                 o_identificador_elemento = tram_data['id_regulatori']
@@ -423,7 +419,7 @@ class FB6(StopMultiprocessBased):
                 0
             )
             estado = calculate_estado(
-                fecha_baja, actual, entregada, senyalitzador_obra=senyalitzador_obra)
+                fecha_baja, actual, entregada, senyalitzador_obra)
             if estado == '1' and not senyalitzador_obra:
                 self.output_m.put("{} {}".format(
                     senyalitzador_data["name"], adapt_diff(actual.diff(entregada))))
