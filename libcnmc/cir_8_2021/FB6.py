@@ -330,13 +330,12 @@ class FB6(StopMultiprocessBased):
                 financiado, avifauna, senyalitzador_obra)
 
     def fecha_baja_causa_baja_senyalitzador(self, connection, senyalitzador_data):
-        identificador_baja = '' # TODO: Cal afegir la cerca de l'identificador de baixa dels senyalitzadors a través de les obres
+        identificador_baja = ''
         if senyalitzador_data['data_baixa']:
             data_pm_limit = '{0}-01-01'.format(self.year + 1)
+            tmp_date = datetime.strptime(senyalitzador_data['data_baixa'],'%Y-%m-%d %H:%M:%S')
             data_pm = self.get_data_pm(data=senyalitzador_data)
-            if senyalitzador_data['data_baixa'] < data_pm_limit:
-                tmp_date = datetime.strptime(
-                    senyalitzador_data['data_baixa'], '%Y-%m-%d')
+            if tmp_date.strftime('%Y-%m-%d') < data_pm_limit:
                 fecha_baja = tmp_date.strftime('%d/%m/%Y')
                 if int(fecha_baja.split("/")[2]) - int(
                         data_pm.split("/")[2]) >= 40:
