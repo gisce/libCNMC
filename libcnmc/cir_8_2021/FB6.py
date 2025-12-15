@@ -284,13 +284,13 @@ class FB6(StopMultiprocessBased):
                                         float_type='euro')
             identificador_baja = ''
             if senyalitzador_obra.get('identificador_baja', False):
-                cella_id = senyalitzador_obra['identificador_baja'][0]
-                cella_data = connection.GiscedataCellesCella.read(cella_id, ['name',
+                senyalitzador_id = senyalitzador_obra['identificador_baja'][0]
+                senyalitzador_data = connection.GiscedataAtDetectors.read(senyalitzador_id, ['name',
                                                                     'id_regulatori'])
-                if cella_data.get('id_regulatori', False):
-                    identificador_baja = cella_data['id_regulatori']
+                if senyalitzador_data.get('id_regulatori', False):
+                    identificador_baja = senyalitzador_data['id_regulatori']
                 else:
-                    identificador_baja = cella_data['name']
+                    identificador_baja = senyalitzador_data['name']
             im_construccion = str(format_f(
                 float(im_materiales.replace(",", ".")) + float(
                     im_obracivil.replace(",", "."))
