@@ -337,8 +337,7 @@ class FB6(StopMultiprocessBased):
             data_pm = self.get_data_pm(data=senyalitzador_data)
             if tmp_date.strftime('%Y-%m-%d') < data_pm_limit:
                 fecha_baja = tmp_date.strftime('%d/%m/%Y')
-                if int(fecha_baja.split("/")[2]) - int(
-                        data_pm.split("/")[2]) >= 40:
+                if data_pm and int(fecha_baja.split("/")[2]) - int(data_pm.split("/")[2]) >= 40:
                     if identificador_baja != '':
                         causa_baja = 1
                     else:
