@@ -77,7 +77,7 @@ class FB6(StopMultiprocessBased):
                 ('active', '=', True),
             ]
             det_ids = self.connection.GiscedataAtDetectors.search(
-                search_det, 0, 0, False, {'active_test': False}
+                search_det, 0, 0, False,
             )
 
             for det_id in det_ids:
