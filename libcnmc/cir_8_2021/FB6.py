@@ -74,7 +74,6 @@ class FB6(StopMultiprocessBased):
         if self.incloure_senyalitzadors:
             # NOTE: De moment només es poden exportar tots els senyalitzadors que estan actius
             search_det = [
-                ('active', '=', True),
             ]
             det_ids = self.connection.GiscedataAtDetectors.search(
                 search_det, 0, 0, False,
