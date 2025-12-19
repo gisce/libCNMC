@@ -40,6 +40,7 @@ class FB6(StopMultiprocessBased):
         self.base_object = 'Elements de millora de fiabilitat'
         self.cod_dis = 'R1-{}'.format(self.codi_r1[-3:])
         self.prefix_AT = kwargs.pop('prefix_at', 'A') or 'A'
+        self.incloure_senyalitzadors = kwargs.pop('incloure_senyalitzadors', False)
 
     def get_sequence(self):
         """
@@ -64,7 +65,24 @@ class FB6(StopMultiprocessBased):
         search_params += [
             '|', ('model', '!=', 'M'), ('data_baixa', '=', False)
         ]
-        return self.connection.GiscedataCellesCella.search(search_params, 0, 0, False, {'active_test': False})
+
+        seq = []
+        celles_ids = self.connection.GiscedataCellesCella.search(search_params, 0, 0, False, {'active_test': False})
+        for cella_id in celles_ids:
+            seq.append("C_{cella_id}".format(cella_id=cella_id))
+
+        if self.incloure_senyalitzadors:
+            # NOTE: De moment només es poden exportar tots els senyalitzadors que estan actius
+            search_det = [
+            ]
+            det_ids = self.connection.GiscedataAtDetectors.search(
+                search_det, 0, 0, False,
+            )
+
+            for det_id in det_ids:
+                seq.append("D_{det_id}".format(det_id=det_id))
+
+        return seq
 
     def get_node_vertex(self, element_name):
         """
@@ -187,14 +205,350 @@ class FB6(StopMultiprocessBased):
                         return "{}{}".format(self.prefix_AT, tram_name)
         return ""
 
-    def consumer(self):
-        """
-        Function that generates each line of the file
 
-        :return: None
+    def get_data_pm(self, data):
         """
+        Function to get data_pm of data
+        """
+        data_pm = ''
+        if data.get('data_pm', False):
+            data_pm_ct = datetime.strptime(str(data['data_pm']),
+                                           '%Y-%m-%d')
+            data_pm = data_pm_ct.strftime('%d/%m/%Y')
+        return data_pm
 
-        O = self.connection
+    def get_senyalitzador_tram_municipi_provincia(self, connection, senyalitzador_data):
+        o_identificador_elemento = ''
+        o_municipi = ''
+        o_provincia = ''
+        comunitat_codi = ''
+        if senyalitzador_data.get('municipi_id', False):
+            o_provincia, o_municipi = self.get_ine(senyalitzador_data['municipi_id'][0])
+            fun_ccaa = connection.ResComunitat_autonoma.get_ccaa_from_municipi
+            id_comunitat = fun_ccaa(senyalitzador_data['municipi_id'][0])
+            if id_comunitat:
+                comunitat_vals = connection.ResComunitat_autonoma.read(id_comunitat[0], ['codi'])
+                comunitat_codi = comunitat_vals.get('codi', '')
+
+        if senyalitzador_data.get('tram_id', False):
+            tram_data = connection.GiscedataAtTram.read(senyalitzador_data['tram_id'][0], ['name', 'id_regulatori'])
+            if tram_data.get('id_regulatori', False):
+                o_identificador_elemento = tram_data['id_regulatori']
+            else:
+                o_identificador_elemento = "{}{}".format(self.prefix_AT,
+                                                         tram_data['name'])
+
+        return o_identificador_elemento, o_municipi, o_provincia, comunitat_codi
+
+    def get_obres_senyalitzador(self, connection, senyalitzador_data, fields_to_read_obra):
+        senyalitzador_obra = ''
+        obra_ti_pos_obj = connection.GiscedataProjecteObraTiDetectors
+        obra_ti_ids = obra_ti_pos_obj.search(
+            [('element_ti_id', '=', senyalitzador_data['id'])])
+        if obra_ti_ids:
+            for obra_ti_id in obra_ti_ids:
+                obra_id_data = obra_ti_pos_obj.read(obra_ti_id, ['obra_id'])
+                obra_id = obra_id_data['obra_id']
+                # Filtre d'obres finalitzades
+                data_finalitzacio_data = connection.GiscedataProjecteObra.read(
+                    obra_id[0], ['data_finalitzacio'])
+                if data_finalitzacio_data:
+                    if data_finalitzacio_data.get('data_finalitzacio', False):
+                        data_finalitzacio = data_finalitzacio_data[
+                            'data_finalitzacio']
+
+                        inici_any = '{}-01-01'.format(self.year)
+                        fi_any = '{}-12-31'.format(self.year)
+                        if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
+                            senyalitzador_obra = connection.GiscedataProjecteObraTiDetectors.read(
+                                obra_ti_id, fields_to_read_obra)
+                if senyalitzador_obra:
+                    break
+
+        tipo_inversion = ''
+        # CAMPS OBRA
+        if senyalitzador_obra != '':
+            tipo_inversion = senyalitzador_obra['tipo_inversion'] or ''
+            im_ingenieria = format_f_6181(senyalitzador_obra['im_ingenieria'] or 0.0,
+                                          float_type='euro')
+            im_materiales = format_f_6181(senyalitzador_obra['im_materiales'] or 0.0,
+                                          float_type='euro')
+            im_obracivil = format_f_6181(senyalitzador_obra['im_obracivil'] or 0.0,
+                                         float_type='euro')
+            im_trabajos = format_f_6181(senyalitzador_obra['im_trabajos'] or 0.0,
+                                        float_type='euro')
+            identificador_baja = ''
+            if senyalitzador_obra.get('identificador_baja', False):
+                senyalitzador_id = senyalitzador_obra['identificador_baja'][0]
+                senyalitzador_data = connection.GiscedataAtDetectors.read(senyalitzador_id, ['name',
+                                                                    'id_regulatori'])
+                if senyalitzador_data.get('id_regulatori', False):
+                    identificador_baja = senyalitzador_data['id_regulatori']
+                else:
+                    identificador_baja = senyalitzador_data['name']
+            im_construccion = str(format_f(
+                float(im_materiales.replace(",", ".")) + float(
+                    im_obracivil.replace(",", "."))
+                , 2)).replace(".", ",")
+            subvenciones_europeas = format_f_6181(
+                senyalitzador_obra['subvenciones_europeas'] or 0.0, float_type='euro')
+            subvenciones_nacionales = format_f_6181(
+                senyalitzador_obra['subvenciones_nacionales'] or 0.0, float_type='euro')
+            subvenciones_prtr = format_f_6181(
+                senyalitzador_obra['subvenciones_prtr'] or 0.0, float_type='euro')
+            valor_auditado = format_f_6181(senyalitzador_obra['valor_auditado'] or 0.0,
+                                           float_type='euro')
+            valor_contabilidad = format_f_6181(
+                senyalitzador_obra['valor_contabilidad'] or 0.0, float_type='euro')
+            cuenta_contable = senyalitzador_obra['cuenta_contable'] or ''
+            avifauna = int(senyalitzador_obra['avifauna'] == True)
+            financiado = format_f(senyalitzador_obra.get('financiado') or 0.0, 2)
+        else:
+            ccuu = ''
+            ccaa = ''
+            im_ingenieria = ''
+            im_materiales = ''
+            im_obracivil = ''
+            im_trabajos = ''
+            im_construccion = ''
+            subvenciones_europeas = ''
+            subvenciones_nacionales = ''
+            valor_auditado = ''
+            valor_contabilidad = ''
+            cuenta_contable = ''
+            identificador_baja = ''
+            financiado = ''
+            avifauna = ''
+            subvenciones_prtr = ''
+
+        return (tipo_inversion, im_ingenieria, im_materiales, im_obracivil, im_trabajos,
+                im_construccion, subvenciones_europeas,
+                subvenciones_nacionales, subvenciones_prtr,
+                valor_auditado, valor_contabilidad,
+                cuenta_contable, identificador_baja,
+                financiado, avifauna, senyalitzador_obra)
+
+    def fecha_baja_causa_baja_senyalitzador(self, connection, senyalitzador_data):
+        identificador_baja = ''
+        if senyalitzador_data['data_baixa']:
+            data_pm_limit = '{0}-01-01'.format(self.year + 1)
+            tmp_date = datetime.strptime(senyalitzador_data['data_baixa'],'%Y-%m-%d %H:%M:%S')
+            data_pm = self.get_data_pm(data=senyalitzador_data)
+            if tmp_date.strftime('%Y-%m-%d') < data_pm_limit:
+                fecha_baja = tmp_date.strftime('%d/%m/%Y')
+                if data_pm and int(fecha_baja.split("/")[2]) - int(data_pm.split("/")[2]) >= 40:
+                    if identificador_baja != '':
+                        causa_baja = 1
+                    else:
+                        causa_baja = 2
+                else:
+                    causa_baja = 3
+            else:
+                fecha_baja = ''
+                causa_baja = 0
+        else:
+            fecha_baja = ''
+            causa_baja = 0
+
+        return fecha_baja, causa_baja
+
+    def codigo_ccuu_senyalitzador(self, connection, senyalitzador_data):
+        ti = ''
+        if senyalitzador_data.get('tipus_instalacio_cnmc_id', False):
+            id_ti = senyalitzador_data['tipus_instalacio_cnmc_id'][0]
+            ti = connection.GiscedataTipusInstallacio.read(id_ti, ['name'])['name']
+        return ti
+
+    def get_senyalitzador_node(self, senyalitzador_data, o_fiabilitat):
+        o_node = ''
+        vertex = ''
+        if senyalitzador_data.get('node_id'):
+            o_node = senyalitzador_data['node_id'][1]
+            vertex = wkt.loads(senyalitzador_data['geom']).coords[0]
+        else:
+            o_node, vertex = self.get_node_vertex(o_fiabilitat)
+        o_node = o_node.replace('*', '')
+
+        return o_node, vertex
+
+    def get_tensio_senyalitzador(self, connection, senyalitzador_data):
+        o_tensio = ''
+        o_tensio_const = ''
+        if senyalitzador_data.get('tram_id', False):
+            tram_data = connection.GiscedataAtTram.read(
+                senyalitzador_data['tram_id'][0], ['tensio_id']
+            )
+            if tram_data.get('tensio_id', False):
+                tensio = connection.GiscedataTensionsTensio.read(
+                    tram_data['tensio_id'][0], ['tensio']
+                )
+                o_tensio = format_f(tensio['tensio'] / 1000.0, decimals=3)
+
+        if senyalitzador_data.get('tensio_construccio', False):
+            o_tensio_const = format_f(float(senyalitzador_data['tensio_construccio'][1]) / 1000.0,
+                                          decimals=3) or ''
+
+        return o_tensio, o_tensio_const
+
+    def get_estado_formulario_senyalitzador(self, connection, senyalitzador_data, o_fiabilitat, o_identificador_elemento, ti, comunitat_codi, data_pm, fecha_baja, modelo, senyalitzador_obra=False):
+        hist_obj = connection.model('circular.82021.historics.b6')
+        hist_ids = hist_obj.search([
+            ('identificador_em', '=', o_fiabilitat),
+            ('year', '=', self.year - 1)
+        ])
+        if hist_ids:
+            hist = hist_obj.read(hist_ids[0], [
+                'cini', 'codigo_ccuu', 'fecha_aps'
+            ])
+            entregada = F7Res4666(
+                cini=hist['cini'],
+                codigo_ccuu=hist['codigo_ccuu'],
+                fecha_aps=hist['fecha_aps']
+            )
+            actual = F7Res4666(
+                senyalitzador_data['name'],
+                senyalitzador_data['cini'],
+                o_identificador_elemento,
+                str(ti),
+                comunitat_codi,
+                data_pm,
+                fecha_baja,
+                0
+            )
+            estado = calculate_estado(
+                fecha_baja, actual, entregada, senyalitzador_obra)
+            if estado == '1' and not senyalitzador_obra:
+                self.output_m.put("{} {}".format(
+                    senyalitzador_data["name"], adapt_diff(actual.diff(entregada))))
+        else:
+            estado = default_estado(modelo, data_pm, int(self.year))
+
+        return estado
+
+    def process_detector(self, det_id, connection):
+        """
+        Function to put senyalitzadors data in the output in flag 'incloure_senyalitzadors' is True
+        """
+        fields_to_read_senyalitzador = [
+            'name', 'municipi_id', 'tram_id', 'data_pm', 'data_baixa', 'rao_baixa', 'tipus_instalacio_cnmc_id', 'tensio_construccio', 'punt_frontera', 'cini', 'model', 'tensio_construccio', 'node_id', 'geom'
+        ]
+        senyalitzador_data = connection.GiscedataAtDetectors.read(
+            det_id, fields_to_read_senyalitzador
+        )
+        data_pm = self.get_data_pm(data=senyalitzador_data)
+        o_fiabilitat = senyalitzador_data['name']
+        o_cini = senyalitzador_data['cini']
+
+        # MODEL
+        if senyalitzador_data['model']:
+            modelo = senyalitzador_data['model']
+        else:
+            modelo = ''
+
+        # OBRES (TODO: Pendent de dir per part de client si cal afegir associar obres als senyalitzadors)
+        senyalitzador_obra = ''
+        (tipo_inversion, im_ingenieria, im_materiales, im_obracivil, im_trabajos,
+         im_construccion, subvenciones_europeas,
+         subvenciones_nacionales, subvenciones_prtr,
+         valor_auditado, valor_contabilidad,
+         cuenta_contable, identificador_baja,
+         financiado, avifauna, senyalitzador_obra) = self.get_obres_senyalitzador(
+            connection, senyalitzador_data, fields_to_read_obra=[]
+        )
+
+        # TRAM, MUNICIPI I PROVINCIA
+        o_identificador_elemento, o_municipi, o_provincia, comunitat_codi = self.get_senyalitzador_tram_municipi_provincia(
+            connection, senyalitzador_data
+        )
+
+        # FECHA BAJA, CAUSA_BAJA
+        fecha_baja, causa_baja = self.fecha_baja_causa_baja_senyalitzador(
+            connection, senyalitzador_data
+        )
+
+        # CODIGO CCUU
+        ti = self.codigo_ccuu_senyalitzador(
+            connection, senyalitzador_data
+        )
+
+        # NODE
+        o_node, vertex = self.get_senyalitzador_node(
+            senyalitzador_data, o_fiabilitat
+        )
+
+        # Tensio
+        o_tensio, o_tensio_const = self.get_tensio_senyalitzador(
+            connection, senyalitzador_data
+        )
+
+        punto_frontera = int(senyalitzador_data['punt_frontera'] == True)
+        o_any = self.year
+        x = ''
+        y = ''
+        if vertex:
+            res_srid = convert_srid(get_srid(connection), vertex)
+            x = format_f(res_srid[0], decimals=3)
+            y = format_f(res_srid[1], decimals=3)
+
+        # Estado
+        estado = self.get_estado_formulario_senyalitzador(
+            connection,
+            senyalitzador_data,
+            o_fiabilitat,
+            o_identificador_elemento,
+            ti,
+            comunitat_codi,
+            data_pm,
+            fecha_baja,
+            modelo,
+            senyalitzador_obra=senyalitzador_obra
+        )
+
+        if modelo == 'M':
+            estado = ''
+            data_pm = ''
+
+        if causa_baja == '0':
+            fecha_baja = ''
+
+        if modelo == 'E' and estado == '2':
+            tipo_inversion = '0'
+
+        self.output_q.put([
+            o_fiabilitat,  # ELEMENTO FIABILIDAD
+            o_cini,  # CINI
+            o_identificador_elemento,  # IDENTIFICADOR_ELEMENTO
+            o_node,  # NUDO
+            x,  # X
+            y,  # Y
+            '0,000',  # Z
+            o_municipi,  # MUNICIPIO
+            o_provincia,  # PROVINCIA
+            comunitat_codi,  # CCAA
+            str(ti),  # CCUU
+            o_tensio,  # NIVEL TENSION EXPLOTACION
+            o_tensio_const,  # TENSION CONST
+            data_pm,  # FECHA_APS
+            fecha_baja,  # FECHA_BAJA
+            causa_baja,  # CAUSA_BAJA
+            estado,  # ESTADO
+            modelo,  # MODELO
+            punto_frontera,  # PUNT_FRONTERA
+            tipo_inversion,  # TIPO_INVERSION
+            im_ingenieria,  # IM_TRAMITES
+            im_construccion,  # IM_CONSTRUCCION
+            im_trabajos,  # IM_TRABAJOS
+            subvenciones_europeas,  # SUBVENCIONES_EUROPEAS
+            subvenciones_nacionales,  # SUBVENCIONES_NACIONALES
+            subvenciones_prtr,  # SUBVENCIONES_PRTR
+            valor_auditado,  # VALOR_AUDITADO
+            financiado,  # FINANCIADO
+            cuenta_contable,  # CUENTA
+            avifauna,  # AVIFAUNA
+            identificador_baja,  # IDENTIFICADOR_BAJA
+        ])
+
+    def process_cella(self, cella_id, connection):
 
         def get_inst_name(element_id):
             vals = self.connection.GiscedataCellesCella.read(
@@ -214,301 +568,348 @@ class FB6(StopMultiprocessBased):
             'obra_id', 'identificador_baja',
         ]
 
-        data_pm_limit = '{0}-01-01'.format(self.year + 1)
+        cella = connection.GiscedataCellesCella.read(
+            cella_id, fields_to_read
+        )
+
+        data_pm_limit  = self.get_data_pm(data=cella)
+
+        # MODEL
+        if cella['model']:
+            modelo = cella['model']
+        else:
+            modelo = ''
+
+        # FECHA_APS
+        data_pm = ''
+        if cella['data_pm']:
+            data_pm_ct = datetime.strptime(str(cella['data_pm']),
+                                           '%Y-%m-%d')
+            data_pm = data_pm_ct.strftime('%d/%m/%Y')
+
+        # OBRES
+        cella_obra = ''
+        obra_ti_pos_obj = connection.GiscedataProjecteObraTiCelles
+        obra_ti_ids = obra_ti_pos_obj.search(
+            [('element_ti_id', '=', cella['id'])])
+        if obra_ti_ids:
+            for obra_ti_id in obra_ti_ids:
+                obra_id_data = obra_ti_pos_obj.read(obra_ti_id, ['obra_id'])
+                obra_id = obra_id_data['obra_id']
+                # Filtre d'obres finalitzades
+                data_finalitzacio_data = connection.GiscedataProjecteObra.read(
+                    obra_id[0], ['data_finalitzacio'])
+                if data_finalitzacio_data:
+                    if data_finalitzacio_data.get('data_finalitzacio', False):
+                        data_finalitzacio = data_finalitzacio_data[
+                            'data_finalitzacio']
+
+                        inici_any = '{}-01-01'.format(self.year)
+                        fi_any = '{}-12-31'.format(self.year)
+                        if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
+                            cella_obra = connection.GiscedataProjecteObraTiCelles.read(
+                                obra_ti_id, fields_to_read_obra)
+                if cella_obra:
+                    break
+
+        tipo_inversion = ''
+        # CAMPS OBRA
+        if cella_obra != '':
+            tipo_inversion = cella_obra['tipo_inversion'] or ''
+            im_ingenieria = format_f_6181(cella_obra['im_ingenieria'] or 0.0,
+                                          float_type='euro')
+            im_materiales = format_f_6181(cella_obra['im_materiales'] or 0.0,
+                                          float_type='euro')
+            im_obracivil = format_f_6181(cella_obra['im_obracivil'] or 0.0,
+                                         float_type='euro')
+            im_trabajos = format_f_6181(cella_obra['im_trabajos'] or 0.0,
+                                        float_type='euro')
+            identificador_baja = ''
+            if cella_obra.get('identificador_baja', False):
+                cella_id = cella_obra['identificador_baja'][0]
+                cella_data = connection.GiscedataCellesCella.read(cella_id, ['name',
+                                                                    'id_regulatori'])
+                if cella_data.get('id_regulatori', False):
+                    identificador_baja = cella_data['id_regulatori']
+                else:
+                    identificador_baja = cella_data['name']
+            im_construccion = str(format_f(
+                float(im_materiales.replace(",", ".")) + float(
+                    im_obracivil.replace(",", "."))
+                , 2)).replace(".", ",")
+            subvenciones_europeas = format_f_6181(
+                cella_obra['subvenciones_europeas'] or 0.0, float_type='euro')
+            subvenciones_nacionales = format_f_6181(
+                cella_obra['subvenciones_nacionales'] or 0.0, float_type='euro')
+            subvenciones_prtr = format_f_6181(
+                cella_obra['subvenciones_prtr'] or 0.0, float_type='euro')
+            valor_auditado = format_f_6181(cella_obra['valor_auditado'] or 0.0,
+                                           float_type='euro')
+            valor_contabilidad = format_f_6181(
+                cella_obra['valor_contabilidad'] or 0.0, float_type='euro')
+            cuenta_contable = cella_obra['cuenta_contable'] or ''
+            avifauna = int(cella_obra['avifauna'] == True)
+            financiado = format_f(cella_obra.get('financiado') or 0.0, 2)
+        else:
+            ccuu = ''
+            ccaa = ''
+            im_ingenieria = ''
+            im_materiales = ''
+            im_obracivil = ''
+            im_trabajos = ''
+            im_construccion = ''
+            subvenciones_europeas = ''
+            subvenciones_nacionales = ''
+            valor_auditado = ''
+            valor_contabilidad = ''
+            cuenta_contable = ''
+            identificador_baja = ''
+            financiado = ''
+            avifauna = ''
+            subvenciones_prtr = ''
+
+        o_fiabilitat = cella['name']
+        o_cini = cella['cini']
+        o_prop = int(cella['propietari'])
+
+        # TRAM, MUNICIPI I PROVINCIA
+        o_identificador_elemento = ''
+        id_municipi = ''
+        linia_data = {}
+        ct_data = {}
+        suport_data = {}
+        if cella.get('installacio', False):
+            installacio_data = cella['installacio']
+            inst_model = installacio_data.split(',')[0]
+            inst_id = int(installacio_data.split(',')[1])
+            model_obj = connection.model(inst_model)
+
+            if inst_model == 'giscedata.at.suport':
+                if cella.get('tram_id', False):
+                    tram_data = connection.GiscedataAtTram.read(cella['tram_id'][0],
+                                                       ['name',
+                                                        'id_regulatori'])
+                    if tram_data.get('id_regulatori', False):
+                        o_identificador_elemento = tram_data['id_regulatori']
+                    else:
+                        o_identificador_elemento = "{}{}".format(self.prefix_AT,
+                                                                 tram_data[
+                                                                     'name'])
+                suport_data = connection.GiscedataAtSuport.read(inst_id,
+                                                       ['linies_at_ids', 'ine'])
+                if suport_data.get('linies_at_ids', False):
+                    linia_id = suport_data['linies_at_ids'][0]
+                    linia_data = self.obtenir_camps_linia_at(linia_id)
+
+            elif inst_model == 'giscedata.cts':
+                ct_data = model_obj.read(inst_id, ['name', 'id_regulatori',
+                                                   'id_municipi'])
+                if ct_data.get('id_regulatori', False):
+                    o_identificador_elemento = ct_data['id_regulatori']
+                else:
+                    o_identificador_elemento = ct_data['name']
+
+        else:
+            o_identificador_elemento = self.get_node_vertex_tram(o_fiabilitat)
+
+        o_municipi = ''
+        o_provincia = ''
+        comunitat_codi = ''
+        if linia_data.get('id_municipi', False):
+            id_municipi = linia_data['id_municipi']
+            o_provincia, o_municipi = self.get_ine(id_municipi)
+        elif ct_data.get('id_municipi'):
+            id_municipi = ct_data['id_municipi'][0]
+            o_provincia, o_municipi = self.get_ine(id_municipi)
+
+        if suport_data.get('ine', False):
+            o_municipi = suport_data['ine']
+
+        # funció per trobar la ccaa desde el municipi
+        fun_ccaa = connection.ResComunitat_autonoma.get_ccaa_from_municipi
+        if id_municipi:
+            id_comunitat = fun_ccaa(id_municipi)
+            comunitat_vals = connection.ResComunitat_autonoma.read(
+                id_comunitat[0], ['codi'])
+            if comunitat_vals:
+                comunitat_codi = comunitat_vals['codi']
+
+        # FECHA BAJA, CAUSA_BAJA
+        if cella['data_baixa']:
+            if cella['data_baixa'] < data_pm_limit:
+                tmp_date = datetime.strptime(
+                    cella['data_baixa'], '%Y-%m-%d')
+                fecha_baja = tmp_date.strftime('%d/%m/%Y')
+                if int(fecha_baja.split("/")[2]) - int(
+                        data_pm.split("/")[2]) >= 40:
+                    if identificador_baja != '':
+                        causa_baja = 1
+                    else:
+                        causa_baja = 2
+                else:
+                    causa_baja = 3
+            else:
+                fecha_baja = ''
+                causa_baja = 0
+        else:
+            fecha_baja = ''
+            causa_baja = 0
+
+        # CODIGO CCUU
+        ti = ''
+        if cella.get('tipus_instalacio_cnmc_id', False):
+            id_ti = cella['tipus_instalacio_cnmc_id'][0]
+            ti = connection.GiscedataTipusInstallacio.read(id_ti, ['name'])['name']
+
+        # NODE
+        if cella.get('node_id'):
+            o_node = cella['node_id'][1]
+            vertex = wkt.loads(cella['geom']).coords[0]
+        else:
+            o_node, vertex = self.get_node_vertex(o_fiabilitat)
+        o_node = o_node.replace('*', '')
+
+        if cella['tensio']:
+            tensio = connection.GiscedataTensionsTensio.read(
+                cella['tensio'][0], ['tensio']
+            )
+            o_tensio = format_f(int(tensio['tensio']) / 1000.0, decimals=3)
+        else:
+            o_tensio = linia_data.get('tensio', '0,000')
+
+        # TENSIO_CONST
+        o_tensio_const = ''
+        if cella.get('tensio_const', False):
+            o_tensio_const = format_f(float(cella['tensio_const'][1]) / 1000.0,
+                                      decimals=3) or ''
+
+        if o_tensio_const == o_tensio:
+            o_tensio_const = ''
+
+        punto_frontera = int(cella['punt_frontera'] == True)
+        o_any = self.year
+        x = ''
+        y = ''
+        if vertex:
+            res_srid = convert_srid(get_srid(connection), vertex)
+            x = format_f(res_srid[0], decimals=3)
+            y = format_f(res_srid[1], decimals=3)
+
+        # ESTADO
+        hist_obj = connection.model('circular.82021.historics.b6')
+        hist_ids = hist_obj.search([
+            ('identificador_em', '=', o_fiabilitat),
+            ('year', '=', self.year - 1)
+        ])
+        if hist_ids:
+            hist = hist_obj.read(hist_ids[0], [
+                'cini', 'codigo_ccuu', 'fecha_aps'
+            ])
+            entregada = F7Res4666(
+                cini=hist['cini'],
+                codigo_ccuu=hist['codigo_ccuu'],
+                fecha_aps=hist['fecha_aps']
+            )
+            actual = F7Res4666(
+                cella['name'],
+                cella['cini'],
+                o_identificador_elemento,
+                str(ti),
+                comunitat_codi,
+                data_pm,
+                fecha_baja,
+                0
+            )
+            estado = calculate_estado(
+                fecha_baja, actual, entregada, cella_obra)
+            if estado == '1' and not cella_obra:
+                self.output_m.put("{} {}".format(
+                    cella["name"], adapt_diff(actual.diff(entregada))))
+        else:
+            estado = default_estado(modelo, data_pm, int(self.year))
+
+        if modelo == 'M':
+            estado = ''
+            data_pm = ''
+
+        if causa_baja in [1, 3]:
+            tipo_inversion = ''
+
+        # L'any 2022 no es declaren subvencions PRTR
+        subvenciones_prtr = ''
+
+        if causa_baja == '0':
+            fecha_baja = ''
+
+        if modelo == 'E' and estado == '2':
+            tipo_inversion = '0'
+
+        self.output_q.put([
+            o_fiabilitat,  # ELEMENTO FIABILIDAD
+            o_cini,  # CINI
+            o_identificador_elemento,  # IDENTIFICADOR_ELEMENTO
+            o_node,  # NUDO
+            x,  # X
+            y,  # Y
+            '0,000',  # Z
+            o_municipi,  # MUNICIPIO
+            o_provincia,  # PROVINCIA
+            comunitat_codi,  # CCAA
+            str(ti),  # CCUU
+            o_tensio,  # NIVEL TENSION EXPLOTACION
+            o_tensio_const,  # TENSION CONST
+            data_pm,  # FECHA_APS
+            fecha_baja,  # FECHA_BAJA
+            causa_baja,  # CAUSA_BAJA
+            estado,  # ESTADO
+            modelo,  # MODELO
+            punto_frontera,  # PUNT_FRONTERA
+            tipo_inversion,  # TIPO_INVERSION
+            im_ingenieria,  # IM_TRAMITES
+            im_construccion,  # IM_CONSTRUCCION
+            im_trabajos,  # IM_TRABAJOS
+            subvenciones_europeas,  # SUBVENCIONES_EUROPEAS
+            subvenciones_nacionales,  # SUBVENCIONES_NACIONALES
+            subvenciones_prtr,  # SUBVENCIONES_PRTR
+            valor_auditado,  # VALOR_AUDITADO
+            financiado,  # FINANCIADO
+            cuenta_contable,  # CUENTA
+            avifauna,  # AVIFAUNA
+            identificador_baja,  # IDENTIFICADOR_BAJA
+        ])
+
+    def consumer(self):
+        """
+        Function that generates each line of the file
+
+        :return: None
+        """
+        O = self.connection
+
         while True:
             try:
                 item = self.input_q.get()
-                if item == 'STOP':
+
+                if item == "STOP":
                     self.input_q.task_done()
                     break
+
                 self.progress_q.put(item)
-                cella = O.GiscedataCellesCella.read(
-                    item, fields_to_read
-                )
 
-                # MODEL
-                if cella['model']:
-                    modelo = cella['model']
-                else:
-                    modelo = ''
+                # --- CEL·LA ---
+                if item.startswith("C_"):
+                    cella_id = int(item.split("_", 1)[1])
+                    self.process_cella(cella_id, connection=O)
 
-                # FECHA_APS
-                data_pm = ''
-                if cella['data_pm']:
-                    data_pm_ct = datetime.strptime(str(cella['data_pm']),
-                                                   '%Y-%m-%d')
-                    data_pm = data_pm_ct.strftime('%d/%m/%Y')
+                # --- DETECTOR ---
+                if item.startswith("D_"):
+                    det_id = int(item.split("_", 1)[1])
+                    self.process_detector(det_id, connection=O)
 
-                # OBRES
-                cella_obra = ''
-                obra_ti_pos_obj = O.GiscedataProjecteObraTiCelles
-                obra_ti_ids = obra_ti_pos_obj.search([('element_ti_id', '=', cella['id'])])
-                if obra_ti_ids:
-                    for obra_ti_id in obra_ti_ids:
-                        obra_id_data = obra_ti_pos_obj.read(obra_ti_id, ['obra_id'])
-                        obra_id = obra_id_data['obra_id']
-                        # Filtre d'obres finalitzades
-                        data_finalitzacio_data = O.GiscedataProjecteObra.read(obra_id[0], ['data_finalitzacio'])
-                        if data_finalitzacio_data:
-                            if data_finalitzacio_data.get('data_finalitzacio', False):
-                                data_finalitzacio = data_finalitzacio_data['data_finalitzacio']
-
-                                inici_any = '{}-01-01'.format(self.year)
-                                fi_any = '{}-12-31'.format(self.year)
-                                if obra_id and data_finalitzacio and inici_any <= data_finalitzacio <= fi_any:
-                                    cella_obra = O.GiscedataProjecteObraTiCelles.read(obra_ti_id, fields_to_read_obra)
-                        if cella_obra:
-                            break
-
-                tipo_inversion = ''
-                # CAMPS OBRA
-                if cella_obra != '':
-                    tipo_inversion = cella_obra['tipo_inversion'] or ''
-                    im_ingenieria = format_f_6181(cella_obra['im_ingenieria'] or 0.0, float_type='euro')
-                    im_materiales = format_f_6181(cella_obra['im_materiales'] or 0.0, float_type='euro')
-                    im_obracivil = format_f_6181(cella_obra['im_obracivil'] or 0.0, float_type='euro')
-                    im_trabajos = format_f_6181(cella_obra['im_trabajos'] or 0.0, float_type='euro')
-                    identificador_baja = ''
-                    if cella_obra.get('identificador_baja', False):
-                        cella_id = cella_obra['identificador_baja'][0]
-                        cella_data = O.GiscedataCellesCella.read(cella_id, ['name', 'id_regulatori'])
-                        if cella_data.get('id_regulatori', False):
-                            identificador_baja = cella_data['id_regulatori']
-                        else:
-                            identificador_baja = cella_data['name']
-                    im_construccion = str(format_f(
-                        float(im_materiales.replace(",", ".")) + float(im_obracivil.replace(",", "."))
-                    , 2)).replace(".", ",")
-                    subvenciones_europeas = format_f_6181(cella_obra['subvenciones_europeas'] or 0.0, float_type='euro')
-                    subvenciones_nacionales = format_f_6181(cella_obra['subvenciones_nacionales'] or 0.0, float_type='euro')
-                    subvenciones_prtr = format_f_6181(cella_obra['subvenciones_prtr'] or 0.0, float_type='euro')
-                    valor_auditado = format_f_6181(cella_obra['valor_auditado'] or 0.0, float_type='euro')
-                    valor_contabilidad = format_f_6181(cella_obra['valor_contabilidad'] or 0.0, float_type='euro')
-                    cuenta_contable = cella_obra['cuenta_contable'] or ''
-                    avifauna = int(cella_obra['avifauna'] == True)
-                    financiado = format_f(cella_obra.get('financiado') or 0.0, 2)
-                else:
-                    ccuu = ''
-                    ccaa = ''
-                    im_ingenieria = ''
-                    im_materiales = ''
-                    im_obracivil = ''
-                    im_trabajos = ''
-                    im_construccion = ''
-                    subvenciones_europeas = ''
-                    subvenciones_nacionales = ''
-                    valor_auditado = ''
-                    valor_contabilidad = ''
-                    cuenta_contable = ''
-                    identificador_baja = ''
-                    financiado = ''
-                    avifauna = ''
-                    subvenciones_prtr = ''
-
-                o_fiabilitat = cella['name']
-                o_cini = cella['cini']
-                o_prop = int(cella['propietari'])
-
-                # TRAM, MUNICIPI I PROVINCIA
-                o_identificador_elemento = ''
-                id_municipi = ''
-                linia_data = {}
-                ct_data = {}
-                suport_data = {}
-                if cella.get('installacio', False):
-                    installacio_data = cella['installacio']
-                    inst_model = installacio_data.split(',')[0]
-                    inst_id = int(installacio_data.split(',')[1])
-                    model_obj = O.model(inst_model)
-
-                    if inst_model == 'giscedata.at.suport':
-                        if cella.get('tram_id', False):
-                            tram_data = O.GiscedataAtTram.read(cella['tram_id'][0], ['name', 'id_regulatori'])
-                            if tram_data.get('id_regulatori', False):
-                                o_identificador_elemento = tram_data['id_regulatori']
-                            else:
-                                o_identificador_elemento = "{}{}".format(self.prefix_AT, tram_data['name'])
-                        suport_data = O.GiscedataAtSuport.read(inst_id, ['linies_at_ids', 'ine'])
-                        if suport_data.get('linies_at_ids', False):
-                            linia_id = suport_data['linies_at_ids'][0]
-                            linia_data = self.obtenir_camps_linia_at(linia_id)
-
-                    elif inst_model == 'giscedata.cts':
-                        ct_data = model_obj.read(inst_id, ['name', 'id_regulatori', 'id_municipi'])
-                        if ct_data.get('id_regulatori', False):
-                            o_identificador_elemento = ct_data['id_regulatori']
-                        else:
-                            o_identificador_elemento = ct_data['name']
-
-                else:
-                    o_identificador_elemento = self.get_node_vertex_tram(o_fiabilitat)
-
-                o_municipi = ''
-                o_provincia = ''
-                comunitat_codi = ''
-                if linia_data.get('id_municipi', False):
-                    id_municipi = linia_data['id_municipi']
-                    o_provincia, o_municipi = self.get_ine(id_municipi)
-                elif ct_data.get('id_municipi'):
-                    id_municipi = ct_data['id_municipi'][0]
-                    o_provincia, o_municipi = self.get_ine(id_municipi)
-
-                if suport_data.get('ine', False):
-                    o_municipi = suport_data['ine']
-
-                # funció per trobar la ccaa desde el municipi
-                fun_ccaa = O.ResComunitat_autonoma.get_ccaa_from_municipi
-                if id_municipi:
-                    id_comunitat = fun_ccaa(id_municipi)
-                    comunitat_vals = O.ResComunitat_autonoma.read(
-                        id_comunitat[0], ['codi'])
-                    if comunitat_vals:
-                        comunitat_codi = comunitat_vals['codi']
-
-                #FECHA BAJA, CAUSA_BAJA
-                if cella['data_baixa']:
-                    if cella['data_baixa'] < data_pm_limit:
-                        tmp_date = datetime.strptime(
-                            cella['data_baixa'], '%Y-%m-%d')
-                        fecha_baja = tmp_date.strftime('%d/%m/%Y')
-                        if int(fecha_baja.split("/")[2]) - int(data_pm.split("/")[2]) >= 40:
-                            if identificador_baja != '':
-                                causa_baja = 1
-                            else:
-                                causa_baja = 2
-                        else:
-                            causa_baja = 3
-                    else:
-                        fecha_baja = ''
-                        causa_baja = 0
-                else:
-                    fecha_baja = ''
-                    causa_baja = 0
-
-                #CODIGO CCUU
-                ti = ''
-                if cella.get('tipus_instalacio_cnmc_id', False):
-                    id_ti = cella['tipus_instalacio_cnmc_id'][0]
-                    ti = O.GiscedataTipusInstallacio.read(id_ti, ['name'])['name']
-
-                #NODE
-                if cella.get('node_id'):
-                    o_node = cella['node_id'][1]
-                    vertex = wkt.loads(cella['geom']).coords[0]
-                else:
-                    o_node, vertex = self.get_node_vertex(o_fiabilitat)
-                o_node = o_node.replace('*', '')
-
-                if cella['tensio']:
-                    tensio = O.GiscedataTensionsTensio.read(
-                        cella['tensio'][0], ['tensio']
-                    )
-                    o_tensio = format_f(int(tensio['tensio'])/1000.0, decimals=3)
-                else:
-                    o_tensio = linia_data.get('tensio', '0,000')
-
-                # TENSIO_CONST
-                o_tensio_const = ''
-                if cella.get('tensio_const', False):
-                    o_tensio_const = format_f(float(cella['tensio_const'][1]) / 1000.0, decimals=3) or ''
-
-                if o_tensio_const == o_tensio:
-                    o_tensio_const = ''
-
-                punto_frontera = int(cella['punt_frontera'] == True)
-                o_any = self.year
-                x = ''
-                y = ''
-                if vertex:
-                    res_srid = convert_srid(get_srid(O), vertex)
-                    x = format_f(res_srid[0], decimals=3)
-                    y = format_f(res_srid[1], decimals=3)
-
-                # ESTADO
-                hist_obj = O.model('circular.82021.historics.b6')
-                hist_ids = hist_obj.search([
-                    ('identificador_em', '=', o_fiabilitat),
-                    ('year', '=', self.year - 1)
-                ])
-                if hist_ids:
-                    hist = hist_obj.read(hist_ids[0], [
-                        'cini', 'codigo_ccuu', 'fecha_aps'
-                    ])
-                    entregada = F7Res4666(
-                        cini=hist['cini'],
-                        codigo_ccuu=hist['codigo_ccuu'],
-                        fecha_aps=hist['fecha_aps']
-                    )
-                    actual = F7Res4666(
-                        cella['name'],
-                        cella['cini'],
-                        o_identificador_elemento,
-                        str(ti),
-                        comunitat_codi,
-                        data_pm,
-                        fecha_baja,
-                        0
-                    )
-                    estado = calculate_estado(
-                        fecha_baja, actual, entregada, cella_obra)
-                    if estado == '1' and not cella_obra:
-                        self.output_m.put("{} {}".format(
-                            cella["name"],adapt_diff(actual.diff(entregada))))
-                else:
-                    estado = default_estado(modelo, data_pm, int(self.year))
-
-                if modelo == 'M':
-                    estado = ''
-                    data_pm = ''
-
-                if causa_baja in [1, 3]:
-                    tipo_inversion = ''
-
-                # L'any 2022 no es declaren subvencions PRTR
-                subvenciones_prtr = ''
-
-                if causa_baja == '0':
-                    fecha_baja = ''
-
-                if modelo == 'E' and estado == '2':
-                    tipo_inversion = '0'
-
-                self.output_q.put([
-                    o_fiabilitat,   # ELEMENTO FIABILIDAD
-                    o_cini,  # CINI
-                    o_identificador_elemento,  #IDENTIFICADOR_ELEMENTO
-                    o_node,  # NUDO
-                    x,              # X
-                    y,              # Y
-                    '0,000',              # Z
-                    o_municipi,     # MUNICIPIO
-                    o_provincia,    # PROVINCIA
-                    comunitat_codi,     #CCAA
-                    str(ti),     #CCUU
-                    o_tensio,       # NIVEL TENSION EXPLOTACION
-                    o_tensio_const,             # TENSION CONST
-                    data_pm,        #FECHA_APS
-                    fecha_baja,     #FECHA_BAJA
-                    causa_baja,     #CAUSA_BAJA
-                    estado,     #ESTADO
-                    modelo,      #MODELO
-                    punto_frontera,  #PUNT_FRONTERA
-                    tipo_inversion,     #TIPO_INVERSION
-                    im_ingenieria,    #IM_TRAMITES
-                    im_construccion,    #IM_CONSTRUCCION
-                    im_trabajos,    #IM_TRABAJOS
-                    subvenciones_europeas,      #SUBVENCIONES_EUROPEAS
-                    subvenciones_nacionales,     #SUBVENCIONES_NACIONALES
-                    subvenciones_prtr,  #SUBVENCIONES_PRTR
-                    valor_auditado,    #VALOR_AUDITADO
-                    financiado,                 #FINANCIADO
-                    cuenta_contable,    #CUENTA
-                    avifauna,   #AVIFAUNA
-                    identificador_baja,     #IDENTIFICADOR_BAJA
-                ])
                 self.input_q.task_done()
+
             except Exception:
-                self.input_q.task_done()
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
+                self.input_q.task_done()
