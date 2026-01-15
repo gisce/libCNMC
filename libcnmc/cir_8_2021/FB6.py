@@ -723,7 +723,7 @@ class FB6(StopMultiprocessBased):
             o_provincia, o_municipi = self.get_ine(id_municipi)
 
         if suport_data.get('ine', False):
-            o_municipi = suport_data['ine']
+            o_provincia, o_municipi = get_ine(connection, suport_data['ine'])
 
         # funció per trobar la ccaa desde el municipi
         fun_ccaa = connection.ResComunitat_autonoma.get_ccaa_from_municipi
