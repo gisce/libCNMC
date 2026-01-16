@@ -44,10 +44,10 @@ class FB6(StopMultiprocessBased):
 
     def get_sequence(self):
         """
-                Generates the sequence of ids to pass to the consume function
-                :return: List of ids to generate the
-                :rtype: list(int)
-                """
+        Generates the sequence of ids to pass to the consume function
+        :return: List of ids to generate the
+        :rtype: list(int)
+        """
         data_pm = '%s-01-01' % (self.year + 1)
         data_baixa = '%s-01-01' % self.year
 
@@ -74,6 +74,7 @@ class FB6(StopMultiprocessBased):
         if self.incloure_senyalitzadors:
             # NOTE: De moment només es poden exportar tots els senyalitzadors que estan actius
             search_det = [
+                ('cini', '=like', 'I26%'),
             ]
             det_ids = self.connection.GiscedataAtDetectors.search(
                 search_det, 0, 0, False,
@@ -437,7 +438,7 @@ class FB6(StopMultiprocessBased):
         )
         data_pm = self.get_data_pm(data=senyalitzador_data)
         o_fiabilitat = senyalitzador_data['name']
-        o_cini = senyalitzador_data['cini']
+        o_cini = senyalitzador_data['cini'] or ''
 
         # MODEL
         if senyalitzador_data['model']:
@@ -445,7 +446,7 @@ class FB6(StopMultiprocessBased):
         else:
             modelo = ''
 
-        # OBRES (TODO: Pendent de dir per part de client si cal afegir associar obres als senyalitzadors)
+        # OBRES
         senyalitzador_obra = ''
         (tipo_inversion, im_ingenieria, im_materiales, im_obracivil, im_trabajos,
          im_construccion, subvenciones_europeas,
