@@ -52,7 +52,6 @@ class FB6(StopMultiprocessBased):
         data_baixa = '%s-01-01' % self.year
 
         search_params = [('criteri_regulatori', '!=', 'excloure'),
-                         '|', ('data_pm', '=', False),
                               ('data_pm', '<', data_pm),
                          '|', ('data_baixa', '>=', data_baixa),
                               ('data_baixa', '=', False)]
@@ -75,6 +74,7 @@ class FB6(StopMultiprocessBased):
             # NOTE: De moment només es poden exportar tots els senyalitzadors que estan actius
             search_det = [
                 ('cini', '=like', 'I26%'),
+                ('data_pm', '<', data_pm),
             ]
             det_ids = self.connection.GiscedataAtDetectors.search(
                 search_det, 0, 0, False,
