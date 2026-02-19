@@ -556,8 +556,9 @@ class FB6(StopMultiprocessBased):
                 element_id, ['name'])
             return vals['name']
 
+        f_tensio_name = connection.GiscedataCellesCella.get_tensio_field_name()
         fields_to_read = [
-            'installacio', 'cini', 'propietari', 'name', 'tensio', 'node_id', 'perc_financament',
+            'installacio', 'cini', 'propietari', 'name', f_tensio_name, 'node_id', 'perc_financament',
             'tipus_instalacio_cnmc_id', 'punt_frontera', 'tensio_const', 'model',
             'geom', 'tram_id', 'id', 'data_pm', 'data_baixa',
         ]
