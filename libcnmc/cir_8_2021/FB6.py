@@ -217,7 +217,7 @@ class FB6(StopMultiprocessBased):
             try:
                 dt = parser.parse(str(data['data_pm']))
                 data_pm = dt.strftime('%d/%m/%Y')
-            except ValueError:
+            except Exception:
                 pass
 
         return data_pm
