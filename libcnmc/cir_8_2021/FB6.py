@@ -5,6 +5,7 @@
 INVENTARIO DE CNMC - Elementos de mejora de fiabilidad
 """
 from datetime import datetime
+from dateutil import parser
 import traceback
 from libcnmc.utils import (format_f, convert_srid, get_srid, get_name_ti, format_f_6181, format_ccaa_code, get_ine,
                            adapt_diff, default_estado, calculate_estado)
@@ -213,9 +214,12 @@ class FB6(StopMultiprocessBased):
         """
         data_pm = ''
         if data.get('data_pm', False):
-            data_pm_ct = datetime.strptime(str(data['data_pm']),
-                                           '%Y-%m-%d')
-            data_pm = data_pm_ct.strftime('%d/%m/%Y')
+            try:
+                dt = parser.parse(str(data['data_pm']))
+                data_pm = dt.strftime('%d/%m/%Y')
+            except ValueError:
+                pass
+
         return data_pm
 
     def get_senyalitzador_tram_municipi_provincia(self, connection, senyalitzador_data):
