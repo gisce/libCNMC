@@ -62,7 +62,7 @@ TARIFAS_BT = [
 ]
 
 SUPPORTED_FORMS_CIR_8_2021 = [
-    ('a1', 'A1'),
+    ('a1_old', 'A1-OLD'),
     ('a2', 'A2'),
     ('a3', 'A3'),
     ('a4', 'A4'),
