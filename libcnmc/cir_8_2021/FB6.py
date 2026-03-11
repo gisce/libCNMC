@@ -577,8 +577,6 @@ class FB6(StopMultiprocessBased):
             cella_id, fields_to_read
         )
 
-        data_pm_limit  = self.get_data_pm(data=cella)
-
         # MODEL
         if cella['model']:
             modelo = cella['model']
@@ -586,11 +584,7 @@ class FB6(StopMultiprocessBased):
             modelo = ''
 
         # FECHA_APS
-        data_pm = ''
-        if cella['data_pm']:
-            data_pm_ct = datetime.strptime(str(cella['data_pm']),
-                                           '%Y-%m-%d')
-            data_pm = data_pm_ct.strftime('%d/%m/%Y')
+        data_pm = self.get_data_pm(data=cella)
 
         # OBRES
         cella_obra = ''
@@ -741,6 +735,7 @@ class FB6(StopMultiprocessBased):
 
         # FECHA BAJA, CAUSA_BAJA
         if cella['data_baixa']:
+            data_pm_limit = '{0}-01-01'.format(self.year + 1)
             if cella['data_baixa'] < data_pm_limit:
                 tmp_date = datetime.strptime(
                     cella['data_baixa'], '%Y-%m-%d')
