@@ -770,7 +770,7 @@ class FB6(StopMultiprocessBased):
             o_node, vertex = self.get_node_vertex(o_fiabilitat)
         o_node = o_node.replace('*', '')
 
-        if cella[f_tensio_name]:
+        if cella.get(f_tensio_name):
             tensio = connection.GiscedataTensionsTensio.read(
                 cella[f_tensio_name], ['tensio']
             )
