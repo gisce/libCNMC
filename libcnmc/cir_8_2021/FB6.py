@@ -771,7 +771,7 @@ class FB6(StopMultiprocessBased):
 
         if cella['tensio']:
             tensio = connection.GiscedataTensionsTensio.read(
-                cella['tensio'][0], ['tensio']
+                cella['tensio'], ['tensio']
             )
             o_tensio = format_f(int(tensio['tensio']) / 1000.0, decimals=3)
         else:
