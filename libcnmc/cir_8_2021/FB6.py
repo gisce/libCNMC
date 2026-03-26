@@ -770,9 +770,9 @@ class FB6(StopMultiprocessBased):
             o_node, vertex = self.get_node_vertex(o_fiabilitat)
         o_node = o_node.replace('*', '')
 
-        if cella['tensio']:
+        if cella[f_tensio_name]:
             tensio = connection.GiscedataTensionsTensio.read(
-                cella['tensio'], ['tensio']
+                cella[f_tensio_name], ['tensio']
             )
             o_tensio = format_f(int(tensio['tensio']) / 1000.0, decimals=3)
         else:
