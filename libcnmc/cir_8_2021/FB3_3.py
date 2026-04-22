@@ -204,11 +204,13 @@ class FB3_3(StopMultiprocessBased):
 
     def process_condensador(self, condensador_id):
         fields_to_read = [
-            'ct_id', 'name', 'cini', 'parc_alta', 'parc_baixa', 'data_pm'
+            'ct_id', 'name', 'cini', 'parc_alta', 'parc_baixa', 'data_pm',
+            'operacio'
         ]
         condensador = self.connection.GiscedataCondensadors.read(
             condensador_id, fields_to_read
         )
+        operacio = condensador.get('operacio') or '1'
         return [
             condensador['ct_id'] and condensador['ct_id'][1] or '',
             condensador['name'],
@@ -216,7 +218,7 @@ class FB3_3(StopMultiprocessBased):
             condensador['parc_alta'] and condensador['parc_alta'][1] or '',
             condensador['parc_baixa'] and condensador['parc_baixa'][1] or '',
             condensador['data_pm'] and condensador['data_pm'].split('-')[0] or '',
-            1
+            operacio
         ]
 
     def consumer(self):
