@@ -1,5 +1,5 @@
 # coding=utf-8
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, call
 from mamba import description, context, it, before
 from expects import expect, equal
 
@@ -59,6 +59,28 @@ with description('FB3_3'):
                 }
                 self.fb3_3.connection.GiscedataCondensadors.read.return_value = (
                     condensador_data
+                )
+                result = self.fb3_3.process_condensador(1)
+                expect(result[6]).to(equal('1'))
+
+        with context('when ERP does not have the operacio field yet'):
+            with it('falls back to "1" (Operatiu) without crashing'):
+                condensador_data_no_operacio = {
+                    'ct_id': [1, 'SE-001'],
+                    'name': 'COND-004',
+                    'cini': 'I00004GH',
+                    'parc_alta': False,
+                    'parc_baixa': False,
+                    'data_pm': '2020-01-10',
+                }
+
+                def read_side_effect(record_id, fields):
+                    if 'operacio' in fields:
+                        raise Exception("field 'operacio' not found in model")
+                    return condensador_data_no_operacio
+
+                self.fb3_3.connection.GiscedataCondensadors.read.side_effect = (
+                    read_side_effect
                 )
                 result = self.fb3_3.process_condensador(1)
                 expect(result[6]).to(equal('1'))

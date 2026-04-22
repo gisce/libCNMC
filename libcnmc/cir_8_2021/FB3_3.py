@@ -203,13 +203,17 @@ class FB3_3(StopMultiprocessBased):
         ]
 
     def process_condensador(self, condensador_id):
-        fields_to_read = [
-            'ct_id', 'name', 'cini', 'parc_alta', 'parc_baixa', 'data_pm',
-            'operacio'
+        base_fields = [
+            'ct_id', 'name', 'cini', 'parc_alta', 'parc_baixa', 'data_pm'
         ]
-        condensador = self.connection.GiscedataCondensadors.read(
-            condensador_id, fields_to_read
-        )
+        try:
+            condensador = self.connection.GiscedataCondensadors.read(
+                condensador_id, base_fields + ['operacio']
+            )
+        except Exception:
+            condensador = self.connection.GiscedataCondensadors.read(
+                condensador_id, base_fields
+            )
         operacio = condensador.get('operacio') or '1'
         return [
             condensador['ct_id'] and condensador['ct_id'][1] or '',
