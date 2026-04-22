@@ -73,14 +73,8 @@ with description('FB3_3'):
                     'parc_baixa': False,
                     'data_pm': '2020-01-10',
                 }
-
-                def read_side_effect(record_id, fields):
-                    if 'operacio' in fields:
-                        raise Exception("field 'operacio' not found in model")
-                    return condensador_data_no_operacio
-
-                self.fb3_3.connection.GiscedataCondensadors.read.side_effect = (
-                    read_side_effect
+                self.fb3_3.connection.GiscedataCondensadors.read.return_value = (
+                    condensador_data_no_operacio
                 )
                 result = self.fb3_3.process_condensador(1)
                 expect(result[6]).to(equal('1'))
