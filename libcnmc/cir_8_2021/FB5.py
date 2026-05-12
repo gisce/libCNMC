@@ -29,6 +29,9 @@ class FB5(StopMultiprocessBased):
             ('criteri_regulatori', '!=', 'excloure'),
             ('reductor', '=', True),
             ('id_estat.cnmc_inventari', '=', True),
+            # Els trafos en reserva (operació '0') s'han de declarar
+            # únicament al formulari B3.3 (FAQ CNMC 2025, apartat B5).
+            ('id_estat.operacio', '!=', '0'),
         ]
         trafo_ids = [
             'T.{}'.format(x)
@@ -42,6 +45,9 @@ class FB5(StopMultiprocessBased):
             ('criteri_regulatori', '!=', 'excloure'),
             ('ct_id.id_installacio.name', '=', 'SE'),
             ('tipus', '=', '2'),
+            # Els condensadors en reserva s'han de declarar
+            # únicament al formulari B3.3 (FAQ CNMC 2025, apartat B5).
+            ('operacio', '!=', '0'),
         ]
 
         condensadors_ids = [
