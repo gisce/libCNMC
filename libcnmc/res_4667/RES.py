@@ -77,7 +77,7 @@ class RES(StopMultiprocessBased):
 
                 resumen = O.GiscedataCnmcResum_any.read(item, fields_to_read)
                 vpi_superado_prv = str(resumen["vpi_sup"]).upper()
-                demanda_empresa_p0 = format_f(resumen["demanda_empresa_p0"], 3)
+                demanda_empresa_p0 = format_f(resumen["demanda_empresa_p0"], 2)
                 if len(demanda_empresa_p0) > 8:
                     demanda_empresa_p0 = format_f(
                         resumen["demanda_empresa_p0"], 1

@@ -47,6 +47,9 @@ class FB2_1(StopMultiprocessBased):
             ('reductor', '=', False),
             ('id_estat.cnmc_inventari', '=', True),
             ('propietari', '=', True),
+            '|',
+            ('criteri_regulatori', '=', False),
+            ('criteri_regulatori', '!=', 'excloure'),
         ]
         search_params += ['|', ('data_pm', '=', False),
                           ('data_pm', '<', data_pm),

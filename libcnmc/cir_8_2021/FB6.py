@@ -5,6 +5,7 @@
 INVENTARIO DE CNMC - Elementos de mejora de fiabilidad
 """
 from datetime import datetime
+from dateutil import parser
 import traceback
 from libcnmc.utils import (format_f, convert_srid, get_srid, get_name_ti, format_f_6181, format_ccaa_code, get_ine,
                            adapt_diff, default_estado, calculate_estado)
@@ -213,9 +214,12 @@ class FB6(StopMultiprocessBased):
         """
         data_pm = ''
         if data.get('data_pm', False):
-            data_pm_ct = datetime.strptime(str(data['data_pm']),
-                                           '%Y-%m-%d')
-            data_pm = data_pm_ct.strftime('%d/%m/%Y')
+            try:
+                dt = parser.parse(str(data['data_pm']))
+                data_pm = dt.strftime('%d/%m/%Y')
+            except Exception:
+                pass
+
         return data_pm
 
     def get_senyalitzador_tram_municipi_provincia(self, connection, senyalitzador_data):
@@ -556,8 +560,9 @@ class FB6(StopMultiprocessBased):
                 element_id, ['name'])
             return vals['name']
 
+        f_tensio_name = connection.GiscedataCellesCella.get_tensio_field_name()
         fields_to_read = [
-            'installacio', 'cini', 'propietari', 'name', 'tensio', 'node_id', 'perc_financament',
+            'installacio', 'cini', 'propietari', 'name', f_tensio_name, 'node_id', 'perc_financament',
             'tipus_instalacio_cnmc_id', 'punt_frontera', 'tensio_const', 'model',
             'geom', 'tram_id', 'id', 'data_pm', 'data_baixa',
         ]
@@ -573,8 +578,6 @@ class FB6(StopMultiprocessBased):
             cella_id, fields_to_read
         )
 
-        data_pm_limit  = self.get_data_pm(data=cella)
-
         # MODEL
         if cella['model']:
             modelo = cella['model']
@@ -582,11 +585,7 @@ class FB6(StopMultiprocessBased):
             modelo = ''
 
         # FECHA_APS
-        data_pm = ''
-        if cella['data_pm']:
-            data_pm_ct = datetime.strptime(str(cella['data_pm']),
-                                           '%Y-%m-%d')
-            data_pm = data_pm_ct.strftime('%d/%m/%Y')
+        data_pm = self.get_data_pm(data=cella)
 
         # OBRES
         cella_obra = ''
@@ -737,6 +736,7 @@ class FB6(StopMultiprocessBased):
 
         # FECHA BAJA, CAUSA_BAJA
         if cella['data_baixa']:
+            data_pm_limit = '{0}-01-01'.format(self.year + 1)
             if cella['data_baixa'] < data_pm_limit:
                 tmp_date = datetime.strptime(
                     cella['data_baixa'], '%Y-%m-%d')
@@ -770,9 +770,9 @@ class FB6(StopMultiprocessBased):
             o_node, vertex = self.get_node_vertex(o_fiabilitat)
         o_node = o_node.replace('*', '')
 
-        if cella['tensio']:
+        if cella.get(f_tensio_name):
             tensio = connection.GiscedataTensionsTensio.read(
-                cella['tensio'][0], ['tensio']
+                cella[f_tensio_name], ['tensio']
             )
             o_tensio = format_f(int(tensio['tensio']) / 1000.0, decimals=3)
         else:
