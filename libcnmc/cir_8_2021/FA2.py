@@ -179,7 +179,7 @@ class FA2(StopMultiprocessBased):
                 if model == 're':
                     fields_to_read = [
                         'provincia', 'cini', 'cups', 'potencia_nominal', 'cil',
-                        'cups_serveis_aux_id'
+                        'cups_serveis_aux_id', 'pot_instalada_gen'
                     ]
                     recore = O.GiscedataRe.read(id_, fields_to_read)
                     cups = recore['cups']
@@ -235,7 +235,8 @@ class FA2(StopMultiprocessBased):
                     o_tension = self.get_tension(cups)
 
                     # Potència instalada
-                    o_potencia_instalada = format_f(recore['potencia_nominal'], decimals=3)
+                    pot_instalada = recore.get('potencia_nominal') or recore.get('pot_instalada_gen')
+                    o_potencia_instalada = format_f(pot_instalada, decimals=3)
 
                     # Autoconsum + CAU
                     autoconsum = self.get_autoconsum(cups)
