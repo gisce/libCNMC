@@ -48,10 +48,14 @@ class FA2(StopMultiprocessBased):
             re_ids[elem] = 're.{}'.format(re_ids[elem])
 
         search_params_ac = [
-            ('data_alta', '<', data_pm), ('collectiu', '=', True)
+            ('data_alta', '<', data_pm),
+            ('collectiu', '=', True),
+            '|',
+            ('data_baixa', '=', False),
+            ('data_baixa', '>', data_pm),
         ]
         autoconsum_ids = O.GiscedataAutoconsum.search(
-            search_params_ac, 0, 0, False, {"active_test": False})
+            search_params_ac, 0, 0, False)
         search_params_gen = [('autoconsum_id', 'in', autoconsum_ids)]
         generador_ids = O.GiscedataAutoconsumGenerador.search(
             search_params_gen, 0, 0, False, {"active_test": False})
