@@ -17,6 +17,19 @@ VALID_POLISSA_STATES = [
     'tall', 'activa', 'baixa', 'modcontractual', 'impagament']
 
 
+def format_cnae(cnae):
+    """
+    Dona format al CNAE afegint el punt separador (NN.NN).
+    El RD 10/2025 (CNAE-2025) i la FAQ 2026 de la Circular 8/2021
+    (seccio 4.1.1) exigeixen aquest format a les declaracions.
+    Els codis de 3 digits o menys (grups estructurals inactius)
+    es deixen tal qual per seguretat, tot i que no haurien d'apareixer.
+    """
+    if isinstance(cnae, basestring) and len(cnae) == 4:
+        return cnae[:2] + '.' + cnae[2:]
+    return cnae
+
+
 class FA1(StopMultiprocessBased):
     def __init__(self, **kwargs):
         """
@@ -781,7 +794,7 @@ class FA1(StopMultiprocessBased):
                     format_f(res_srid[0], decimals=3),                  # X
                     format_f(res_srid[1], decimals=3),                  # Y
                     '0,000',                                            # Z
-                    o_cnae,                                             # CNAE
+                    format_cnae(o_cnae),                                # CNAE
                     o_cod_tfa,                                          # Codigo de tarifa
                     o_name,                                             # CUPS
                     o_codi_ine_mun,                                     # Municipio
