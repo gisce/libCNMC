@@ -794,7 +794,7 @@ class FA1(StopMultiprocessBased):
                     format_f(res_srid[0], decimals=3),                  # X
                     format_f(res_srid[1], decimals=3),                  # Y
                     '0,000',                                            # Z
-                    format_cnae(o_cnae),                                    # CNAE
+                    format_cnae(o_cnae),                                # CNAE
                     o_cod_tfa,                                          # Codigo de tarifa
                     o_name,                                             # CUPS
                     o_codi_ine_mun,                                     # Municipio
