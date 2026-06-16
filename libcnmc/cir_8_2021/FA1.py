@@ -142,7 +142,7 @@ class FA1(StopMultiprocessBased):
         polisses_baixa_id = O.GiscedataPolissa.search(
             [
                 ("data_baixa", "<=", "{}-12-31".format(self.year - 1)),
-                ("data_baixa", ">", "{}-01-01".format(self.year - years)),
+                ("data_baixa", ">=", "{}-01-01".format(self.year - years)),
                 ("tarifa", "in", tarifas)
             ],
             0, 0, False, {'active_test': False}
@@ -204,8 +204,8 @@ class FA1(StopMultiprocessBased):
             if set(cups['polisses']).intersection(self.modcons_in_year):
                 ret_cups.append(cups["id"])
         if self.generate_derechos:
-            cups_derechos_bt = self.get_derechos(TARIFAS_BT, 2)
-            cups_derechos_at = self.get_derechos(TARIFAS_AT, 4)
+            cups_derechos_bt = self.get_derechos(TARIFAS_BT, 3)
+            cups_derechos_at = self.get_derechos(TARIFAS_AT, 5)
             return list(set(ret_cups + cups_derechos_at + cups_derechos_bt))
         else:
             return ret_cups
