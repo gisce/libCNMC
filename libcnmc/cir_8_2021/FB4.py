@@ -229,7 +229,8 @@ class FB4(StopMultiprocessBased):
                     im_trabajos = format_f_6181(pos_obra['im_trabajos'] or 0.0, float_type='euro')
                     tipo_inversion = pos_obra['tipo_inversion'] or ''
                     valor_auditado = format_f_6181(pos_obra['valor_auditado'] or 0.0, float_type='euro')
-                    valor_residual = format_f_6181(pos_obra['valor_residual'] or 0.0, float_type='euro')
+                    raw_valor_residual = pos_obra['valor_residual']
+                    valor_residual = format_f_6181(raw_valor_residual, float_type='euro') if raw_valor_residual else ''
                     subvenciones_europeas = format_f_6181(pos_obra['subvenciones_europeas'] or 0.0, float_type='euro')
                     subvenciones_nacionales = format_f_6181(pos_obra['subvenciones_nacionales'] or 0.0, float_type='euro')
                     subvenciones_prtr = format_f_6181(pos_obra['subvenciones_prtr'] or 0.0, float_type='euro')
@@ -258,11 +259,6 @@ class FB4(StopMultiprocessBased):
                     cuenta_contable = ''
                     financiado = ''
                     causa_baja = 0
-
-                # Si el valor residual resulta en un float amb valor 0.0, en el
-                # seu lloc es forçarà a valor buit
-                if valor_residual == 0.0:
-                    valor_residual = ''
 
                 # Si la data APS es igual a l'any de la generació del fitxer,
                 # la data IP sortirà en blanc
