@@ -52,6 +52,7 @@ class FA2(StopMultiprocessBased):
             ('collectiu', '=', True),
             '|',
             ('data_baixa', '=', False),
+            '&',
             ("data_baixa", ">=", "{}-01-01".format(self.year)),
             ("data_baixa", "<=", "{}-12-31".format(self.year)),
         ]
