@@ -564,7 +564,7 @@ class FB6(StopMultiprocessBased):
         fields_to_read = [
             'installacio', 'cini', 'propietari', 'name', f_tensio_name, 'node_id', 'perc_financament',
             'tipus_instalacio_cnmc_id', 'punt_frontera', 'tensio_const', 'model',
-            'geom', 'tram_id', 'id', 'data_pm', 'data_baixa',
+            'geom', 'tram_id', 'id', 'data_pm', 'data_baixa', 'municipi_id'
         ]
         fields_to_read_obra = [
             'name', 'cini', 'tipo_inversion', 'ccuu', 'codigo_ccaa', 'nivel_tension_explotacion', 'elemento_act',
@@ -715,12 +715,16 @@ class FB6(StopMultiprocessBased):
         o_municipi = ''
         o_provincia = ''
         comunitat_codi = ''
-        if linia_data.get('id_municipi', False):
-            id_municipi = linia_data['id_municipi']
+        if cella.get('municipi_id', False):
+            id_municipi = cella['municipi_id'][0]
             o_provincia, o_municipi = self.get_ine(id_municipi)
-        elif ct_data.get('id_municipi'):
-            id_municipi = ct_data['id_municipi'][0]
-            o_provincia, o_municipi = self.get_ine(id_municipi)
+        else:
+            if linia_data.get('id_municipi', False):
+                id_municipi = linia_data['id_municipi']
+                o_provincia, o_municipi = self.get_ine(id_municipi)
+            elif ct_data.get('id_municipi'):
+                id_municipi = ct_data['id_municipi'][0]
+                o_provincia, o_municipi = self.get_ine(id_municipi)
 
         if suport_data.get('ine', False):
             o_provincia, o_municipi = get_ine(connection, suport_data['ine'])
