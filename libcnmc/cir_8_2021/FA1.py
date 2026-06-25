@@ -142,7 +142,7 @@ class FA1(StopMultiprocessBased):
         polisses_baixa_id = O.GiscedataPolissa.search(
             [
                 ("data_baixa", "<=", "{}-12-31".format(self.year - 1)),
-                ("data_baixa", ">=", "{}-01-01".format(self.year - years)),
+                ("data_baixa", ">", "{}-01-01".format(self.year - years)),
                 ("tarifa", "in", tarifas)
             ],
             0, 0, False, {'active_test': False}
