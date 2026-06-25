@@ -58,7 +58,7 @@ class FA2(StopMultiprocessBased):
         ]
         autoconsum_ids = O.GiscedataAutoconsum.search(
             search_params_ac, 0, 0, False, {"active_test": False})
-        search_params_gen = [('autoconsum_id', 'in', autoconsum_ids)]
+        search_params_gen = [('autoconsum_id', 'in', autoconsum_ids), ('criteri_regulatori', '!=', 'excloure')]
         generador_ids = O.GiscedataAutoconsumGenerador.search(
             search_params_gen, 0, 0, False, {"active_test": False})
 
