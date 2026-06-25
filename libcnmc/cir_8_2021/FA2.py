@@ -55,10 +55,11 @@ class FA2(StopMultiprocessBased):
             '&',
             ("data_baixa", ">=", "{}-01-01".format(self.year)),
             ("data_baixa", "<=", "{}-12-31".format(self.year)),
+            ('criteri_regulatori', '!=', 'excloure')
         ]
         autoconsum_ids = O.GiscedataAutoconsum.search(
             search_params_ac, 0, 0, False, {"active_test": False})
-        search_params_gen = [('autoconsum_id', 'in', autoconsum_ids), ('criteri_regulatori', '!=', 'excloure')]
+        search_params_gen = [('autoconsum_id', 'in', autoconsum_ids)]
         generador_ids = O.GiscedataAutoconsumGenerador.search(
             search_params_gen, 0, 0, False, {"active_test": False})
 
