@@ -92,15 +92,9 @@ class FA4(StopMultiprocessBased):
         return cups_derechos
 
     def get_sequence(self):
-        data_ini = '%s-01-01' % (self.year + 1)
-        # data_baixa = '%s-12-31' % self.year
-        search_params = [('active', '=', True),
-                         '|',
-                         ('create_date', '<', data_ini),
-                         ('create_date', '=', False)]
 
         ret_cups_ids = self.connection.GiscedataCupsPs.search(
-            search_params, 0, 0, False, {'active_test': False})
+            [], 0, 0, False, {'active_test': False})
 
         ret_cups_tmp = self.connection.GiscedataCupsPs.read(
             ret_cups_ids, ["polisses"]
