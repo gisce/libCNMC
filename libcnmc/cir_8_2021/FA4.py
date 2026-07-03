@@ -5,6 +5,9 @@ from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import TARIFAS_BT, TARIFAS_AT
 
 
+VALID_POLISSA_STATES = [
+    'tall', 'activa', 'baixa', 'modcontractual', 'impagament']
+
 class FA4(StopMultiprocessBased):
     def __init__(self, **kwargs):
         super(FA4, self).__init__(**kwargs)
@@ -19,15 +22,15 @@ class FA4(StopMultiprocessBased):
                 ("data_inici", "<=", "{}-01-01".format(self.year)),
                 ("data_final", ">=", "{}-12-31".format(self.year)),
                 ("tarifa.name", 'not ilike', '%RE%'),
-                ('polissa_id.state', 'in', ['tall', 'activa', 'baixa'])
+                ('polissa_id.state', 'in', VALID_POLISSA_STATES)
             ], 0, 0, False, {"active_test": False}
-                                )
+        )
         mods_ini = self.connection.GiscedataPolissaModcontractual.search(
             [
                 ("data_inici", ">=", "{}-01-01".format(self.year)),
                 ("data_inici", "<=", "{}-12-31".format(self.year)),
                 ("tarifa.name", 'not ilike', '%RE%'),
-                ('polissa_id.state', 'in', ['tall', 'activa', 'baixa'])
+                ('polissa_id.state', 'in', VALID_POLISSA_STATES)
             ], 0, 0, False, {"active_test": False}
         )
         mods_fi = self.connection.GiscedataPolissaModcontractual.search(
@@ -35,7 +38,7 @@ class FA4(StopMultiprocessBased):
                 ("data_final", ">=", "{}-01-01".format(self.year)),
                 ("data_final", "<=", "{}-12-31".format(self.year)),
                 ("tarifa.name", 'not ilike', '%RE%'),
-                ('polissa_id.state', 'in', ['tall', 'activa', 'baixa'])
+                ('polissa_id.state', 'in', VALID_POLISSA_STATES)
             ], 0, 0, False, {"active_test": False}
         )
 
@@ -119,7 +122,7 @@ class FA4(StopMultiprocessBased):
             cts = o.GiscedataCts.search([('name', '=', et)])
             if cts:
                 cini = o.GiscedataCts.read(cts[0], ['cini'])
-                valor = cini['cini']
+                valor = cini.get('cini', '')
         return valor
 
     def consumer(self):
@@ -143,11 +146,16 @@ class FA4(StopMultiprocessBased):
                 cups = o.GiscedataCupsPs.read(
                     item, fields_to_read
                 )
-                if cups['id_escomesa']:
-                    escomesa = o.GiscedataCupsEscomesa.read(cups['id_escomesa'][0], ['blockname', 'node_id'])
-                    # Si és un CONTA-AT hem de d'agafar el tram que li arriba
-                    # com a identificador i el seu CINI
-                    if escomesa['blockname'][1] == 'CONTA-AT' and escomesa['node_id']:
+
+                o_cini = ''
+                o_codi_ct = ''
+                id_escomesa = cups.get("id_escomesa")
+                if id_escomesa:
+                    escomesa = o.GiscedataCupsEscomesa.read(
+                        id_escomesa[0], ['blockname', 'node_id'])
+                    if (escomesa.get('blockname', False)
+                            and escomesa['blockname'][1] == 'CONTA-AT'
+                            and escomesa.get('node_id')):
                         edge_ids = o.GiscegisEdge.search([
                             '|',
                             ('start_node', '=', escomesa['node_id'][0]),
@@ -158,14 +166,17 @@ class FA4(StopMultiprocessBased):
                                 ('edge_id', '=', edge_ids[0])
                             ])
                             if tram_ids:
-                                tram = o.GiscedataAtTram.read(tram_ids[0], ['cini', 'name', 'id_regulatori'])
-                                o_cini = tram['cini']
-                                o_codi_ct = tram['id_regulatori'] or '{}{}'.format(self.prefix_at, tram['name'])
+                                tram = o.GiscedataAtTram.read(
+                                    tram_ids[0], ['cini', 'name', 'id_regulatori'])
+                                o_cini = tram.get('cini', '')
+                                o_codi_ct = tram.get('id_regulatori') or '{}{}'.format(
+                                    self.prefix_at, tram.get('name', ''))
                     else:
-                        o_cini = self.get_cini(cups['et'])
-                        if not o_cini:
-                            o_cini = ''
-                        o_codi_ct = cups['et']
+                        o_cini = self.get_cini(cups.get('et', ''))
+                        o_codi_ct = cups.get('et', '')
+                else:
+                    o_cini = self.get_cini(cups.get('et', ''))
+                    o_codi_ct = cups.get('et', '')
 
                 if self.reducir_cups:
                     o_cups = cups['name'][:20]
