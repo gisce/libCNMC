@@ -1,0 +1,25 @@
+name: Tests
+
+on:
+  pull_request:
+    branches: [ master ]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+jobs:
+  test:
+    name: libCNMC tests
+    if: contains(github.event.pull_request.labels.*.name, 'to be merged')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run tests with Python 2.7
+        run: |
+          docker run --rm -v "$PWD:/work" -w /work python:2.7 bash -lc "
+            python -m pip install --upgrade 'pip<21' 'setuptools<45' wheel &&
+            pip install mock &&
+            pip install -r requirements.txt &&
+            pip install -r requirements-dev.txt &&
+            pip install -e . &&
+            mamba --enable-coverage
+          "

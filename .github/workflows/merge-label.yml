@@ -1,0 +1,32 @@
+name: Require merge label
+
+on:
+  pull_request:
+    branches: [ master ]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+jobs:
+  require-merge-label:
+    name: Require merge label
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check merge label
+        env:
+          LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+          REQUIRED_LABEL: to be merged
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import sys
+
+          labels = json.loads(os.environ["LABELS"])
+          required_label = os.environ["REQUIRED_LABEL"]
+
+          if required_label in labels:
+              print("Required merge label found: {}".format(required_label))
+              sys.exit(0)
+
+          print("Missing required merge label: {}".format(required_label))
+          sys.exit(1)
+          PY
