@@ -1,0 +1,28 @@
+name: Tests
+
+on:
+  pull_request:
+    branches: [ master ]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+jobs:
+  test:
+    name: libCNMC tests
+    if: contains(github.event.pull_request.labels.*.name, 'to be merged')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run tests with Python 2.7
+        run: |
+          docker run --rm -v "$PWD:/work" -w /work python:2.7 bash -lc "
+            python -m pip install --upgrade 'pip<21' 'setuptools<45' wheel &&
+            pip install mock &&
+            pip install -r requirements.txt &&
+            pip install https://github.com/gisce/ooop/archive/xmlrpc_transaction.zip &&
+            pip install 'psycopg2-binary<2.9' 'pandas<0.25' 'mamba<0.11' expects &&
+            pip install --no-deps workalendar pyCalverter lunardate pyluach &&
+            pip install -e . &&
+            python -c 'import inspect, os, shutil, unittest, mock; shutil.copyfile(inspect.getsourcefile(mock), os.path.join(os.path.dirname(unittest.__file__), \"mock.py\"))' &&
+            mamba --enable-coverage
+          "
