@@ -19,6 +19,7 @@ jobs:
             python -m pip install --upgrade 'pip<21' 'setuptools<45' wheel &&
             pip install mock &&
             pip install -r requirements.txt &&
+            pip install https://github.com/gisce/ooop/archive/xmlrpc_transaction.zip &&
             pip install 'mamba<0.11' expects &&
             pip install -e . &&
             python -c 'import inspect, os, shutil, unittest, mock; shutil.copyfile(inspect.getsourcefile(mock), os.path.join(os.path.dirname(unittest.__file__), \"mock.py\"))' &&
