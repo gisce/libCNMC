@@ -21,6 +21,6 @@ jobs:
             pip install -r requirements.txt &&
             pip install 'mamba<0.11' &&
             pip install -e . &&
-            python -c 'import os, unittest; open(os.path.join(os.path.dirname(unittest.__file__), \"mock.py\"), \"w\").write(\"from mock import *\\n\")' &&
+            python -c 'import os, unittest; open(os.path.join(os.path.dirname(unittest.__file__), \"mock.py\"), \"w\").write(\"from mock import MagicMock, call\\n\")' &&
             mamba --enable-coverage
           "
