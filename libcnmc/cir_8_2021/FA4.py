@@ -91,6 +91,19 @@ class FA4(StopMultiprocessBased):
 
         return cups_derechos
 
+    def _filter_by_vigencia(self, cups_ids):
+        data_ini = '%s-01-01' % self.year
+        stats_ids = self.connection.GiscedataCupsEstadistiques.search([
+            ('cups_id', 'in', cups_ids),
+            ('data_vigencia', '>=', data_ini),
+        ], 0, 0, False, {'active_test': False})
+        if not stats_ids:
+            return []
+        return list(set(
+            s['cups_id'][0] for s in self.connection.GiscedataCupsEstadistiques.read(
+                stats_ids, ['cups_id'])
+        ))
+
     def get_sequence(self):
         data_ini = '%s-01-01' % (self.year + 1)
         # data_baixa = '%s-12-31' % self.year
@@ -111,12 +124,21 @@ class FA4(StopMultiprocessBased):
             if set(cups['polisses']).intersection(self.modcons_in_year):
                 ret_cups.append(cups["id"])
 
+        baixa_ini = '%s-12-31' % (self.year - 6)
+        baixa_fi = '%s-12-31' % (self.year - 1)
+        cups_donat_baixa = self.connection.GiscedataCupsPs.search([
+            ('data_baixa', '>=', baixa_ini),
+            ('data_baixa', '<=', baixa_fi),
+            ('polissa_polissa', '=', False),
+        ])
+        ret_cups += self._filter_by_vigencia(cups_donat_baixa)
+
         if self.generate_derechos:
             cups_derechos_bt = self.get_derechos(TARIFAS_BT, 2)
             cups_derechos_at = self.get_derechos(TARIFAS_AT, 4)
             return list(set(ret_cups + cups_derechos_at + cups_derechos_bt))
         else:
-            return ret_cups
+            return list(set(ret_cups))
 
     def get_cini(self, et):
         o = self.connection
