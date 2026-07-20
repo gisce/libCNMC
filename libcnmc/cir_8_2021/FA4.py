@@ -113,7 +113,7 @@ class FA4(StopMultiprocessBased):
             [], 0, 0, False, {'active_test': False})
 
         ret_cups_tmp = self.connection.GiscedataCupsPs.read(
-            ret_cups_ids, ["polisses", "active", "data_baixa"]
+            ret_cups_ids, ["polisses"]
         )
         ret_cups = []
 
