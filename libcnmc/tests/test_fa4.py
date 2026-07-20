@@ -363,6 +363,38 @@ class TestFormA4(unittest.TestCase):
         })
         self.assertEqual(form.get_sequence(), [])
 
+    def test_actiu_sense_polissa_amb_vigencia_no_apareix(self):
+        """CUPS actiu sense pòlissa (polissa_polissa=False)
+        amb vigència → NO apareix (font 2 és només per baixa)"""
+        form = self.mk_form({
+            'GiscedataCupsPs': [
+                make_cups(1, active=True, polissa_polissa=False,
+                          polisses=[]),
+            ],
+            'GiscedataPolissaModcontractual': [],
+            'GiscedataCupsEstadistiques': [
+                make_estadistica(1, 1, '2023-06-15'),
+            ],
+        })
+        self.assertEqual(form.get_sequence(), [])
+
+    def test_baixa_sense_modcon_any_amb_vigencia_no_apareix(self):
+        """CUPS baixat, polissa_polissa=False, amb vigència,
+        però sense cap modcon a l'any de report → NO apareix"""
+        form = self.mk_form({
+            'GiscedataCupsPs': [
+                make_cups(1, active=False, data_baixa='2022-06-15',
+                          polissa_polissa=False, polisses=[101]),
+            ],
+            'GiscedataPolissaModcontractual': [
+                make_modcon(101, '2022-01-01', '2022-12-31'),
+            ],
+            'GiscedataCupsEstadistiques': [
+                make_estadistica(1, 1, '2023-06-15'),
+            ],
+        })
+        self.assertEqual(form.get_sequence(), [])
+
     # ── Combinacions ───────────────────────────
 
     def test_actiu_i_baixa_amb_vigencia(self):
