@@ -3,6 +3,7 @@ import unittest
 import os
 import sys
 import types
+from datetime import datetime
 
 sys.path.insert(
     0,
@@ -34,11 +35,12 @@ if 'ooop' not in sys.modules:
     ooop.OOOP = FakeOOOP
     sys.modules['ooop'] = ooop
 
-from FA4 import FA4
+from FA1 import FA1
+from libcnmc.utils import TARIFAS_AT, TARIFAS_BT
 
 
 # ──────────────────────────────────────────────
-# Domain evaluator
+# Domain evaluador
 # ──────────────────────────────────────────────
 
 def _get_field_value(record, field_path):
@@ -93,6 +95,10 @@ def _eval_condition(record, cond):
 
 
 def _eval_domain(record, domain, start=0):
+    """
+    Avalua recursivament un domini OpenERP en prefix.
+    Retorna (resultat, proper_index).
+    """
     if start >= len(domain):
         return (True, start)
 
@@ -117,6 +123,8 @@ def _eval_domain(record, domain, start=0):
 
 
 def _eval_record(record, domain):
+    """Avalua un domini sencer contra un registre.
+    Les condicions de nivell superior s'ANDegen implÃ­citament."""
     result = True
     idx = 0
     while idx < len(domain):
@@ -126,10 +134,15 @@ def _eval_record(record, domain):
 
 
 # ──────────────────────────────────────────────
-# Fake models and connection
+# Models i connexiÃ³ falsa
 # ──────────────────────────────────────────────
 
 class FakeModel(object):
+    """
+    Emmagatzema registres i suporta search/read
+    amb avaluaciÃ³ real de dominis.
+    """
+
     def __init__(self, records):
         self._records = records
         self.search_calls = []
@@ -166,8 +179,15 @@ class FakeModel(object):
             result.append(row)
         return result
 
+    def add_record(self, record):
+        self._records.append(record)
+
 
 class FakeConnection(object):
+    """
+    ConnexiÃ³ falsa que exposa models ERP amb FakeModel.
+    """
+
     def __init__(self, records=None):
         if records is None:
             records = {}
@@ -186,7 +206,7 @@ class FakeConnection(object):
 
 
 # ──────────────────────────────────────────────
-# Test helpers
+# Helpers de test
 # ──────────────────────────────────────────────
 
 VALID_POLISSA_STATES = [
@@ -226,90 +246,81 @@ def make_estadistica(id, cups_id, data_vigencia):
 
 
 # ──────────────────────────────────────────────
-# Tests FA4
+# Tests FA1
 # ──────────────────────────────────────────────
 
-class TestFormA4(unittest.TestCase):
+class TestFormA1(unittest.TestCase):
     maxDiff = None
 
-    def mk_form(self, records=None):
+    def mk_form(self, records=None, generate_derechos=False):
         if records is None:
             records = {}
         conn = FakeConnection(records)
-        return FA4(
+        return FA1(
             connection=conn,
             codi_r1='R1-TEST',
             year=2023,
             quiet=True,
+            derechos=generate_derechos,
         )
 
-    # ── Font 1: CUPS actives ──────────────────
+    # ────────────────────────────────────────
+    # Font 1: CUPS actives
+    # ────────────────────────────────────────
 
     def test_actiu_amb_modcon_any_sencer(self):
         """CUPS actiu amb modcon que cobreix tot l'any → apareix"""
         form = self.mk_form({
             'GiscedataCupsPs': [
-                make_cups(1, active=True, polisses=[101]),
+                make_cups(1, active=True, polisses=[201]),
             ],
             'GiscedataPolissaModcontractual': [
-                make_modcon(101, '2023-01-01', '2023-12-31'),
+                make_modcon(201, '2023-01-01', '2023-12-31'),
             ],
             'GiscedataCupsEstadistiques': [],
         })
         self.assertEqual(form.get_sequence(), [1])
 
-    def test_actiu_sense_modcon(self):
+    def test_actiu_sense_modcon_any(self):
         """CUPS actiu sense cap modcon a l'any → NO apareix"""
         form = self.mk_form({
             'GiscedataCupsPs': [
-                make_cups(1, active=True, polisses=[101]),
+                make_cups(1, active=True, polisses=[201]),
             ],
             'GiscedataPolissaModcontractual': [
-                make_modcon(101, '2022-01-01', '2022-12-31'),
+                make_modcon(201, '2022-01-01', '2022-12-31'),
             ],
             'GiscedataCupsEstadistiques': [],
         })
         self.assertEqual(form.get_sequence(), [])
 
-    def test_actiu_amb_modcon_estat_invalid(self):
+    def test_actiu_amb_modcon_polissa_estat_invalid(self):
         """CUPS actiu modcon amb polissa en estat no vàlid → NO apareix"""
         form = self.mk_form({
             'GiscedataCupsPs': [
-                make_cups(1, active=True, polisses=[101]),
+                make_cups(1, active=True, polisses=[201]),
             ],
             'GiscedataPolissaModcontractual': [
-                make_modcon(101, '2023-01-01', '2023-12-31',
+                make_modcon(201, '2023-01-01', '2023-12-31',
                             polissa_state='esborrany'),
             ],
             'GiscedataCupsEstadistiques': [],
         })
         self.assertEqual(form.get_sequence(), [])
 
-    def test_actiu_amb_modcon_tarifa_re(self):
-        """Modcon amb tarifa que conté RE → exclòs"""
-        form = self.mk_form({
-            'GiscedataCupsPs': [
-                make_cups(1, active=True, polisses=[101]),
-            ],
-            'GiscedataPolissaModcontractual': [
-                make_modcon(101, '2023-01-01', '2023-12-31',
-                            tarifa_name='6.1BRE'),
-            ],
-            'GiscedataCupsEstadistiques': [],
-        })
-        self.assertEqual(form.get_sequence(), [])
-
-    # ── Font 1: CUPS baixades enguany ─────────
+    # ────────────────────────────────────────
+    # Font 1: CUPS baixades enguany (data_baixa dins l'any)
+    # ────────────────────────────────────────
 
     def test_baixada_enguany_amb_vigencia(self):
         """Baixa enguany + modcon + data_vigencia >= 01-01 → apareix"""
         form = self.mk_form({
             'GiscedataCupsPs': [
                 make_cups(1, active=False, data_baixa='2023-06-15',
-                          polisses=[101]),
+                          polisses=[201]),
             ],
             'GiscedataPolissaModcontractual': [
-                make_modcon(101, '2023-01-01', '2023-06-30'),
+                make_modcon(201, '2023-01-01', '2023-06-30'),
             ],
             'GiscedataCupsEstadistiques': [
                 make_estadistica(1, 1, '2023-06-15'),
@@ -322,26 +333,40 @@ class TestFormA4(unittest.TestCase):
         form = self.mk_form({
             'GiscedataCupsPs': [
                 make_cups(1, active=False, data_baixa='2023-06-15',
-                          polisses=[101]),
+                          polisses=[201]),
             ],
             'GiscedataPolissaModcontractual': [
-                make_modcon(101, '2023-01-01', '2023-06-30'),
+                make_modcon(201, '2023-01-01', '2023-06-30'),
             ],
             'GiscedataCupsEstadistiques': [],
         })
         self.assertEqual(form.get_sequence(), [])
 
-    # ── Font 2: CUPS sense pòlissa ─────────────
+    def test_baixada_enguany_sense_modcon(self):
+        """Baixa enguany sense modcon a l'any → NO apareix"""
+        form = self.mk_form({
+            'GiscedataCupsPs': [
+                make_cups(1, active=False, data_baixa='2023-06-15',
+                          polisses=[]),
+            ],
+            'GiscedataPolissaModcontractual': [],
+            'GiscedataCupsEstadistiques': [],
+        })
+        self.assertEqual(form.get_sequence(), [])
+
+    # ────────────────────────────────────────
+    # Font 2: CUPS sense pòlissa (polissa_polissa=False)
+    # ────────────────────────────────────────
 
     def test_sense_polissa_amb_vigencia(self):
-        """polissa_polissa=False + data_vigencia >= 01-01 → apareix"""
+        """polissa_polissa=False + data_vigencia >= 01-01 → apareix (cas ID 11)"""
         form = self.mk_form({
             'GiscedataCupsPs': [
                 make_cups(1, active=False, polissa_polissa=False,
-                          polisses=[101]),
+                          polisses=[201]),
             ],
             'GiscedataPolissaModcontractual': [
-                make_modcon(101, '2023-03-01', '2023-06-30'),
+                make_modcon(201, '2023-03-01', '2023-06-30'),
             ],
             'GiscedataCupsEstadistiques': [
                 make_estadistica(1, 1, '2023-03-01'),
@@ -354,28 +379,82 @@ class TestFormA4(unittest.TestCase):
         form = self.mk_form({
             'GiscedataCupsPs': [
                 make_cups(1, active=False, polissa_polissa=False,
-                          polisses=[101]),
+                          polisses=[201]),
             ],
             'GiscedataPolissaModcontractual': [
-                make_modcon(101, '2023-03-01', '2023-06-30'),
+                make_modcon(201, '2023-03-01', '2023-06-30'),
             ],
             'GiscedataCupsEstadistiques': [],
         })
         self.assertEqual(form.get_sequence(), [])
 
-    # ── Combinacions ───────────────────────────
+    def test_sense_polissa_data_vigencia_any_anterior(self):
+        """polissa_polissa=False + data_vigencia < 01-01 → NO apareix"""
+        form = self.mk_form({
+            'GiscedataCupsPs': [
+                make_cups(1, active=False, polissa_polissa=False,
+                          polisses=[201]),
+            ],
+            'GiscedataPolissaModcontractual': [
+                make_modcon(201, '2022-06-01', '2022-12-31'),
+            ],
+            'GiscedataCupsEstadistiques': [
+                make_estadistica(1, 1, '2022-12-31'),
+            ],
+        })
+        self.assertEqual(form.get_sequence(), [])
+
+    def test_amb_polissa_no_entra_per_font2(self):
+        """polissa_polissa != False → NO apareix per font 2"""
+        form = self.mk_form({
+            'GiscedataCupsPs': [
+                make_cups(1, active=True, polissa_polissa=101,
+                          polisses=[201]),
+            ],
+            'GiscedataPolissaModcontractual': [
+                make_modcon(201, '2023-01-01', '2023-12-31'),
+            ],
+            'GiscedataCupsEstadistiques': [],
+        })
+        # Font 1 el troba (active=True + modcon)
+        self.assertEqual(form.get_sequence(), [1])
+
+    # ────────────────────────────────────────
+    # Reactivació
+    # ────────────────────────────────────────
+
+    def test_reactivat_sense_vigencia(self):
+        """Reactivada: active=True, modcon històric dins l'any,
+        sense data_vigencia → apareix (no cal vigència als actius)"""
+        form = self.mk_form({
+            'GiscedataCupsPs': [
+                make_cups(1, active=True, polissa_polissa=101,
+                          polisses=[201]),
+            ],
+            'GiscedataPolissaModcontractual': [
+                make_modcon(201, '2023-03-01', '2023-06-30'),
+            ],
+            'GiscedataCupsEstadistiques': [],
+        })
+        self.assertEqual(form.get_sequence(), [1])
+
+    # ────────────────────────────────────────
+    # Combinacions
+    # ────────────────────────────────────────
 
     def test_actiu_i_baixa_amb_vigencia(self):
         """CUPS actiu + CUPS baixat amb vigència → tots dos apareixen"""
         form = self.mk_form({
             'GiscedataCupsPs': [
-                make_cups(1, active=True, polisses=[101]),
+                make_cups(1, active=True, polissa_polissa=101,
+                          polisses=[201]),
                 make_cups(2, active=False, data_baixa='2023-06-15',
-                          polisses=[102]),
+                          polissa_polissa=False,
+                          polisses=[202]),
             ],
             'GiscedataPolissaModcontractual': [
-                make_modcon(101, '2023-01-01', '2023-12-31'),
-                make_modcon(102, '2023-01-01', '2023-12-31'),
+                make_modcon(201, '2023-01-01', '2023-12-31'),
+                make_modcon(202, '2023-01-01', '2023-12-31'),
             ],
             'GiscedataCupsEstadistiques': [
                 make_estadistica(1, 2, '2023-06-15'),
@@ -387,17 +466,22 @@ class TestFormA4(unittest.TestCase):
         """Baixa sense vigència exclosa, actiu encara apareix"""
         form = self.mk_form({
             'GiscedataCupsPs': [
-                make_cups(1, active=True, polisses=[101]),
+                make_cups(1, active=True, polissa_polissa=101,
+                          polisses=[201]),
                 make_cups(2, active=False, data_baixa='2023-06-15',
-                          polisses=[102]),
+                          polissa_polissa=False,
+                          polisses=[202]),
             ],
             'GiscedataPolissaModcontractual': [
-                make_modcon(101, '2023-01-01', '2023-12-31'),
-                make_modcon(102, '2023-01-01', '2023-12-31'),
+                make_modcon(201, '2023-01-01', '2023-12-31'),
+                make_modcon(202, '2023-01-01', '2023-12-31'),
             ],
             'GiscedataCupsEstadistiques': [],
         })
         self.assertEqual(form.get_sequence(), [1])
+
+
+
 
 
 if __name__ == '__main__':

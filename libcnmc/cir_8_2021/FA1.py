@@ -209,22 +209,26 @@ class FA1(StopMultiprocessBased):
             search_params, 0, 0, False, {'active_test': False})
 
         ret_cups_tmp = self.connection.GiscedataCupsPs.read(
-            ret_cups_ids, ["polisses"]
+            ret_cups_ids, ["polisses", "active", "data_baixa"]
         )
-        ret_cups = []
+
+        ret_cups_actiu = []
+        ret_cups_baixa = []
 
         for cups in ret_cups_tmp:
             if set(cups['polisses']).intersection(self.modcons_in_year):
-                ret_cups.append(cups["id"])
+                if cups.get('active') and not cups.get('data_baixa'):
+                    ret_cups_actiu.append(cups["id"])
+                else:
+                    ret_cups_baixa.append(cups["id"])
 
-        baixa_ini = '%s-12-31' % (self.year - 6)
-        baixa_fi = '%s-12-31' % (self.year - 1)
         cups_donat_baixa = self.connection.GiscedataCupsPs.search([
-            ('data_baixa', '>=', baixa_ini),
-            ('data_baixa', '<=', baixa_fi),
             ('polissa_polissa', '=', False),
-        ])
-        ret_cups += self._filter_by_vigencia(cups_donat_baixa)
+        ], 0, 0, False, {'active_test': False})
+
+        ret_cups = ret_cups_actiu + self._filter_by_vigencia(
+            list(set(ret_cups_baixa + cups_donat_baixa))
+        )
 
         if self.generate_derechos:
             cups_derechos_bt = self.get_derechos(TARIFAS_BT, 2)
