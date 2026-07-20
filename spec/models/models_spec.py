@@ -1,6 +1,6 @@
 # coding=utf-8
 from decimal import Decimal
-from libcnmc.models.f2_4771 import F2Res4771
+from libcnmc.models.res_4771.f2_4771 import F2Res4771
 
 
 with description('Creating a model'):
