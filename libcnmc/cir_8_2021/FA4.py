@@ -115,32 +115,17 @@ class FA4(StopMultiprocessBased):
         ret_cups_tmp = self.connection.GiscedataCupsPs.read(
             ret_cups_ids, ["polisses", "active", "data_baixa"]
         )
-
-        ret_cups_actiu = []
-        ret_cups_baixa = []
+        ret_cups = []
 
         for cups in ret_cups_tmp:
             if set(cups['polisses']).intersection(self.modcons_in_year):
-                if cups.get('active') and not cups.get('data_baixa'):
-                    ret_cups_actiu.append(cups["id"])
-                else:
-                    ret_cups_baixa.append(cups["id"])
+                ret_cups.append(cups["id"])
 
         cups_donat_baixa_ids = self.connection.GiscedataCupsPs.search([
             ('polissa_polissa', '=', False),
-            ('active', '=', False),
         ], 0, 0, False, {'active_test': False})
 
-        cups_donat_baixa = [
-            c['id'] for c in self.connection.GiscedataCupsPs.read(
-                cups_donat_baixa_ids, ["polisses"]
-            )
-            if set(c['polisses']).intersection(self.modcons_in_year)
-        ]
-
-        ret_cups = ret_cups_actiu + self._filter_by_vigencia(
-            list(set(ret_cups_baixa + cups_donat_baixa))
-        )
+        ret_cups += self._filter_by_vigencia(cups_donat_baixa_ids)
 
         if self.generate_derechos:
             cups_derechos_bt = self.get_derechos(TARIFAS_BT, 2)

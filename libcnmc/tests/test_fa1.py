@@ -332,11 +332,11 @@ class TestFormA1(unittest.TestCase):
         """Baixa enguany + modcon + sense data_vigencia → NO apareix"""
         form = self.mk_form({
             'GiscedataCupsPs': [
-                make_cups(1, active=False, data_baixa='2023-06-15',
+                make_cups(1, active=False, data_baixa='2022-06-15',
                           polisses=[201]),
             ],
             'GiscedataPolissaModcontractual': [
-                make_modcon(201, '2023-01-01', '2023-06-30'),
+                make_modcon(201, '2022-01-01', '2022-06-30'),
             ],
             'GiscedataCupsEstadistiques': [],
         })
@@ -419,35 +419,61 @@ class TestFormA1(unittest.TestCase):
         # Font 1 el troba (active=True + modcon)
         self.assertEqual(form.get_sequence(), [1])
 
-    def test_actiu_sense_polissa_amb_vigencia_no_apareix(self):
-        """CUPS actiu sense pòlissa (polissa_polissa=False)
-        amb vigència → NO apareix (font 2 és només per baixa)"""
+    # ────────────────────────────────────────
+    # Font 2: ventana data_baixa [any-6, any-1]
+    # ────────────────────────────────────────
+
+    def test_baixa_ventana_dins_amb_vigencia(self):
+        """Baixat 2018 (dins ventana [2017,2022]) + vigència 2023 → apareix"""
         form = self.mk_form({
             'GiscedataCupsPs': [
-                make_cups(1, active=True, polissa_polissa=False,
-                          polisses=[]),
+                make_cups(1, active=False, data_baixa='2018-06-15',
+                          polissa_polissa=False, polisses=[]),
             ],
             'GiscedataPolissaModcontractual': [],
             'GiscedataCupsEstadistiques': [
                 make_estadistica(1, 1, '2023-06-15'),
             ],
         })
-        self.assertEqual(form.get_sequence(), [])
+        self.assertEqual(form.get_sequence(), [1])
 
-    def test_baixa_sense_modcon_any_amb_vigencia_no_apareix(self):
-        """CUPS baixat, polissa_polissa=False, amb vigència,
-        però sense cap modcon a l'any de report → NO apareix"""
+    def test_baixa_ventana_limit_inferior(self):
+        """Límit inferior ventana: data_baixa = any-6 → apareix"""
         form = self.mk_form({
             'GiscedataCupsPs': [
-                make_cups(1, active=False, data_baixa='2022-06-15',
-                          polissa_polissa=False, polisses=[101]),
+                make_cups(1, active=False, data_baixa='2017-01-01',
+                          polissa_polissa=False, polisses=[]),
             ],
-            'GiscedataPolissaModcontractual': [
-                make_modcon(101, '2022-01-01', '2022-12-31'),
-            ],
+            'GiscedataPolissaModcontractual': [],
             'GiscedataCupsEstadistiques': [
                 make_estadistica(1, 1, '2023-06-15'),
             ],
+        })
+        self.assertEqual(form.get_sequence(), [1])
+
+    def test_baixa_ventana_limit_superior(self):
+        """Límit superior ventana: data_baixa = any-1 → apareix"""
+        form = self.mk_form({
+            'GiscedataCupsPs': [
+                make_cups(1, active=False, data_baixa='2022-12-31',
+                          polissa_polissa=False, polisses=[]),
+            ],
+            'GiscedataPolissaModcontractual': [],
+            'GiscedataCupsEstadistiques': [
+                make_estadistica(1, 1, '2023-06-15'),
+            ],
+        })
+        self.assertEqual(form.get_sequence(), [1])
+
+    def test_baixa_ventana_sense_vigencia(self):
+        """Dins ventana però sense data_vigència → NO apareix"""
+        form = self.mk_form({
+            'GiscedataCupsPs': [
+                make_cups(1, active=False, data_baixa='2018-06-15',
+                          polissa_polissa=False, polisses=[]),
+            ],
+            'GiscedataPolissaModcontractual': [],
+            'GiscedataCupsEstadistiques': [],
         })
         self.assertEqual(form.get_sequence(), [])
 
@@ -480,7 +506,7 @@ class TestFormA1(unittest.TestCase):
             'GiscedataCupsPs': [
                 make_cups(1, active=True, polissa_polissa=101,
                           polisses=[201]),
-                make_cups(2, active=False, data_baixa='2023-06-15',
+                make_cups(2, active=False, data_baixa='2022-06-15',
                           polissa_polissa=False,
                           polisses=[202]),
             ],
@@ -489,7 +515,7 @@ class TestFormA1(unittest.TestCase):
                 make_modcon(202, '2023-01-01', '2023-12-31'),
             ],
             'GiscedataCupsEstadistiques': [
-                make_estadistica(1, 2, '2023-06-15'),
+                make_estadistica(1, 2, '2029-06-15'),
             ],
         })
         self.assertEqual(sorted(form.get_sequence()), [1, 2])
@@ -500,13 +526,13 @@ class TestFormA1(unittest.TestCase):
             'GiscedataCupsPs': [
                 make_cups(1, active=True, polissa_polissa=101,
                           polisses=[201]),
-                make_cups(2, active=False, data_baixa='2023-06-15',
+                make_cups(2, active=False, data_baixa='2022-06-15',
                           polissa_polissa=False,
                           polisses=[202]),
             ],
             'GiscedataPolissaModcontractual': [
                 make_modcon(201, '2023-01-01', '2023-12-31'),
-                make_modcon(202, '2023-01-01', '2023-12-31'),
+                make_modcon(202, '2022-01-01', '2022-12-31'),
             ],
             'GiscedataCupsEstadistiques': [],
         })
