@@ -3,7 +3,6 @@ import unittest
 import os
 import sys
 import types
-from datetime import datetime
 
 sys.path.insert(
     0,
@@ -35,9 +34,8 @@ if 'ooop' not in sys.modules:
     ooop.OOOP = FakeOOOP
     sys.modules['ooop'] = ooop
 
-from FA1 import FA1
-from libcnmc.utils import TARIFAS_AT, TARIFAS_BT
-
+from libcnmc.utils import TEMPORAL_POLISSA_STATES
+from libcnmc.cir_8_2021 import FA1
 
 # ──────────────────────────────────────────────
 # Domain evaluador
@@ -91,6 +89,10 @@ def _eval_condition(record, cond):
             return False
         pattern = value.replace('%', '').lower()
         return pattern in actual.lower()
+    elif operator == 'not in':
+        if actual is None or actual is False:
+            return True
+        return actual not in value
     return False
 
 
@@ -214,13 +216,14 @@ VALID_POLISSA_STATES = [
 
 
 def make_modcon(id, data_inici, data_final, tarifa_name='2.0A',
-                polissa_state='activa'):
+                polissa_state='activa', contract_type='01'):
     return {
         'id': id,
         'data_inici': data_inici,
         'data_final': data_final,
         'tarifa': {'id': id, 'name': tarifa_name},
         'polissa_id': {'id': id, 'state': polissa_state},
+        'contract_type': contract_type,
     }
 
 
@@ -538,8 +541,79 @@ class TestFormA1(unittest.TestCase):
         })
         self.assertEqual(form.get_sequence(), [1])
 
+    # ────────────────────────────────────────
+    # Exclusió per tipus de contracte temporal
+    # (FAQ 08/06/2026, apartat 4.1.2)
+    # ────────────────────────────────────────
 
+    def test_contract_type_excluded(self):
+        """CUPS amb modcon de tipus temporal → NO apareix"""
+        for contract_type in TEMPORAL_POLISSA_STATES:
+            form = self.mk_form({
+                'GiscedataCupsPs': [
+                    make_cups(1, active=True, polisses=[201]),
+                ],
+                'GiscedataPolissaModcontractual': [
+                    make_modcon(201, '2023-01-01', '2023-12-31',
+                                contract_type=contract_type),
+                ],
+                'GiscedataCupsEstadistiques': [],
+            })
+            self.assertEqual(
+                form.get_sequence(), [],
+                'contract_type={}'.format(contract_type)
+            )
 
+    def test_contract_type_non_excluded(self):
+        """CUPS amb modcon de tipus no temporal → apareix"""
+        non_excluded = ['01', '05', '08', '10', '11', '12']
+        for contract_type in non_excluded:
+            form = self.mk_form({
+                'GiscedataCupsPs': [
+                    make_cups(1, active=True, polisses=[201]),
+                ],
+                'GiscedataPolissaModcontractual': [
+                    make_modcon(201, '2023-01-01', '2023-12-31',
+                                contract_type=contract_type),
+                ],
+                'GiscedataCupsEstadistiques': [],
+            })
+            self.assertEqual(
+                form.get_sequence(), [1],
+                'contract_type={}'.format(contract_type)
+            )
+
+    def test_mixt_exclou_si_tots_exclouen(self):
+        """CUPS amb dos modcons, ambdós exclosos → NO apareix"""
+        form = self.mk_form({
+            'GiscedataCupsPs': [
+                make_cups(1, active=True, polisses=[201, 202]),
+            ],
+            'GiscedataPolissaModcontractual': [
+                make_modcon(201, '2023-01-01', '2023-06-30',
+                            contract_type='02'),
+                make_modcon(202, '2023-07-01', '2023-12-31',
+                            contract_type='07'),
+            ],
+            'GiscedataCupsEstadistiques': [],
+        })
+        self.assertEqual(form.get_sequence(), [])
+
+    def test_mixt_inclou_si_algun_permes(self):
+        """CUPS amb modcon exclòs + modcon permès → apareix"""
+        form = self.mk_form({
+            'GiscedataCupsPs': [
+                make_cups(1, active=True, polisses=[201, 202]),
+            ],
+            'GiscedataPolissaModcontractual': [
+                make_modcon(201, '2023-01-01', '2023-06-30',
+                            contract_type='02'),
+                make_modcon(202, '2023-07-01', '2023-12-31',
+                            contract_type='01'),
+            ],
+            'GiscedataCupsEstadistiques': [],
+        })
+        self.assertEqual(form.get_sequence(), [1])
 
 
 if __name__ == '__main__':
