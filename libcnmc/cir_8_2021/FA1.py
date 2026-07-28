@@ -17,6 +17,19 @@ VALID_POLISSA_STATES = [
     'tall', 'activa', 'baixa', 'modcontractual', 'impagament']
 
 
+def format_cnae(cnae):
+    """
+    Dona format al CNAE afegint el punt separador (NN.NN).
+    El RD 10/2025 (CNAE-2025) i la FAQ 2026 de la Circular 8/2021
+    (seccio 4.1.1) exigeixen aquest format a les declaracions.
+    Els codis de 3 digits o menys (grups estructurals inactius)
+    es deixen tal qual per seguretat, tot i que no haurien d'apareixer.
+    """
+    if isinstance(cnae, basestring) and len(cnae) == 4:
+        return cnae[:2] + '.' + cnae[2:]
+    return cnae
+
+
 class FA1(StopMultiprocessBased):
     def __init__(self, **kwargs):
         """
@@ -164,6 +177,19 @@ class FA1(StopMultiprocessBased):
 
         return cups_derechos
 
+    def _filter_by_vigencia(self, cups_ids):
+        data_ini = '%s-01-01' % self.year
+        stats_ids = self.connection.GiscedataCupsEstadistiques.search([
+            ('cups_id', 'in', cups_ids),
+            ('data_vigencia', '>=', data_ini),
+        ], 0, 0, False, {'active_test': False})
+        if not stats_ids:
+            return []
+        return list(set(
+            s['cups_id'][0] for s in self.connection.GiscedataCupsEstadistiques.read(
+                stats_ids, ['cups_id'])
+        ))
+
     def get_sequence(self):
         """
         Generates the list of cups to generate the FA1
@@ -190,12 +216,19 @@ class FA1(StopMultiprocessBased):
         for cups in ret_cups_tmp:
             if set(cups['polisses']).intersection(self.modcons_in_year):
                 ret_cups.append(cups["id"])
+
+        cups_donat_baixa_ids = self.connection.GiscedataCupsPs.search([
+            ('polissa_polissa', '=', False),
+        ], 0, 0, False, {'active_test': False})
+
+        ret_cups += self._filter_by_vigencia(cups_donat_baixa_ids)
+
         if self.generate_derechos:
             cups_derechos_bt = self.get_derechos(TARIFAS_BT, 2)
             cups_derechos_at = self.get_derechos(TARIFAS_AT, 4)
             return list(set(ret_cups + cups_derechos_at + cups_derechos_bt))
         else:
-            return ret_cups
+            return list(set(ret_cups))
 
     def get_polissa(self, cups_id):
         polissa_obj = self.connection.GiscedataPolissa
@@ -781,7 +814,7 @@ class FA1(StopMultiprocessBased):
                     format_f(res_srid[0], decimals=3),                  # X
                     format_f(res_srid[1], decimals=3),                  # Y
                     '0,000',                                            # Z
-                    o_cnae,                                             # CNAE
+                    format_cnae(o_cnae),                                # CNAE
                     o_cod_tfa,                                          # Codigo de tarifa
                     o_name,                                             # CUPS
                     o_codi_ine_mun,                                     # Municipio
