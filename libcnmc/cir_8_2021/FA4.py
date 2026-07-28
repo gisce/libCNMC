@@ -3,7 +3,6 @@ from datetime import datetime
 import traceback
 from libcnmc.core import StopMultiprocessBased
 from libcnmc.utils import TARIFAS_BT, TARIFAS_AT
-from libcnmc.utils import TEMPORAL_POLISSA_STATES
 
 
 VALID_POLISSA_STATES = [
@@ -23,8 +22,7 @@ class FA4(StopMultiprocessBased):
                 ("data_inici", "<=", "{}-01-01".format(self.year)),
                 ("data_final", ">=", "{}-12-31".format(self.year)),
                 ("tarifa.name", 'not ilike', '%RE%'),
-                ('polissa_id.state', 'in', VALID_POLISSA_STATES),
-                ('polissa_id.contract_type', 'not in', TEMPORAL_POLISSA_STATES)
+                ('polissa_id.state', 'in', VALID_POLISSA_STATES)
             ], 0, 0, False, {"active_test": False}
         )
         mods_ini = self.connection.GiscedataPolissaModcontractual.search(
@@ -32,8 +30,7 @@ class FA4(StopMultiprocessBased):
                 ("data_inici", ">=", "{}-01-01".format(self.year)),
                 ("data_inici", "<=", "{}-12-31".format(self.year)),
                 ("tarifa.name", 'not ilike', '%RE%'),
-                ('polissa_id.state', 'in', VALID_POLISSA_STATES),
-                ('polissa_id.contract_type', 'not in', TEMPORAL_POLISSA_STATES)
+                ('polissa_id.state', 'in', VALID_POLISSA_STATES)
             ], 0, 0, False, {"active_test": False}
         )
         mods_fi = self.connection.GiscedataPolissaModcontractual.search(
@@ -41,8 +38,7 @@ class FA4(StopMultiprocessBased):
                 ("data_final", ">=", "{}-01-01".format(self.year)),
                 ("data_final", "<=", "{}-12-31".format(self.year)),
                 ("tarifa.name", 'not ilike', '%RE%'),
-                ('polissa_id.state', 'in', VALID_POLISSA_STATES),
-                ('polissa_id.contract_type', 'not in', TEMPORAL_POLISSA_STATES)
+                ('polissa_id.state', 'in', VALID_POLISSA_STATES)
             ], 0, 0, False, {"active_test": False}
         )
 
