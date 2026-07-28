@@ -204,8 +204,7 @@ def make_modcon(id, data_inici, data_final, tarifa_name='2.0A',
         'data_inici': data_inici,
         'data_final': data_final,
         'tarifa': {'id': id, 'name': tarifa_name},
-        'polissa_id': {'id': id, 'state': polissa_state},
-        'contract_type': contract_type,
+        'polissa_id': {'id': id, 'state': polissa_state, 'contract_type': contract_type},
     }
 
 

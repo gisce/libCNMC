@@ -72,7 +72,7 @@ class FA1(StopMultiprocessBased):
                 ("data_final", ">=", "{}-12-31".format(self.year)),
                 ("tarifa.name", 'not ilike', '%RE%'),
                 ('polissa_id.state', 'in', VALID_POLISSA_STATES),
-                ('contract_type', 'not in', TEMPORAL_POLISSA_STATES)
+                ('polissa_id.contract_type', 'not in', TEMPORAL_POLISSA_STATES)
             ], 0, 0, False, {"active_test": False}
         )
         mods_ini = self.connection.GiscedataPolissaModcontractual.search(
@@ -81,7 +81,7 @@ class FA1(StopMultiprocessBased):
                 ("data_inici", "<=", "{}-12-31".format(self.year)),
                 ("tarifa.name", 'not ilike', '%RE%'),
                 ('polissa_id.state', 'in', VALID_POLISSA_STATES),
-                ('contract_type', 'not in', TEMPORAL_POLISSA_STATES)
+                ('polissa_id.contract_type', 'not in', TEMPORAL_POLISSA_STATES)
             ], 0, 0, False, {"active_test": False}
         )
         mods_fi = self.connection.GiscedataPolissaModcontractual.search(
@@ -90,7 +90,7 @@ class FA1(StopMultiprocessBased):
                 ("data_final", "<=", "{}-12-31".format(self.year)),
                 ("tarifa.name", 'not ilike', '%RE%'),
                 ('polissa_id.state', 'in', VALID_POLISSA_STATES),
-                ('contract_type', 'not in', TEMPORAL_POLISSA_STATES)
+                ('polissa_id.contract_type', 'not in', TEMPORAL_POLISSA_STATES)
             ], 0, 0, False, {"active_test": False}
         )
         self.modcons_in_year = set(mods_fi + mods_ini + mod_all_year)
