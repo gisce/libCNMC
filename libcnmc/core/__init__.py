@@ -325,7 +325,23 @@ class UpdateCNMCStats(UpdateFile):
             'cnmc_factures_total', 'cnmc_factures_estimades',
         ]
         self.search_keys = [('cups', 'name')]
-        self.object = self.connection.GiscedataCupsPs
+        self.object = self.connection.GiscedataCupsEstadistques
+        self.year = datetime.today().year - 1
+
+    def search_and_update(self, vals):
+        """
+        Overwrite the behavior to consider CUPS name to GiscedataCupsPs
+        And write the rest of columns in GiscedataCupsEstadistques
+        """
+        search_params = []
+        for header_key, bbdd_key in self.search_keys:
+            value = vals.pop(header_key)
+            search_params += [(bbdd_key, '=', value)]
+
+        cups_ids = self.connection.GiscedataCupsPs.search(search_params)
+        ids = self.object.search([('cups_id', 'in', cups_ids), ('year', '=', self.year)])
+        if ids:
+            self.object.write(ids, vals)
 
 
 class UpdateCINISComptador(UpdateFile):
