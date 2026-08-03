@@ -47,10 +47,10 @@ class FA2(StopMultiprocessBased):
         for elem in range(0, len(re_ids)):
             re_ids[elem] = 're.{}'.format(re_ids[elem])
 
-        company = O.ResCompany.search(1, ['partner_id'])
+        company = O.ResCompany.read(1, ['partner_id'])
 
         partner_id = company['partner_id'][0]
-        participant_ids = O.GiscemiscParticipant.read([('partner_id', '=', partner_id)])
+        participant_ids = O.GiscemiscParticipant.search([('partner_id', '=', partner_id)])
 
         participant_id = participant_ids[0]
         search_params_ac = [
