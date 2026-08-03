@@ -325,8 +325,8 @@ class UpdateCNMCStats(UpdateFile):
             'cnmc_factures_total', 'cnmc_factures_estimades',
         ]
         self.search_keys = [('cups', 'name')]
-        self.object = self.connection.GiscedataCupsEstadistques
-        self.year = datetime.today().year - 1
+        self.object = self.connection.GiscedataCupsEstadistiques
+        self.year = kwargs.pop('year', datetime.today().year - 1)
 
     def search_and_update(self, vals):
         """
