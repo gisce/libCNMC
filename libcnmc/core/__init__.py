@@ -331,7 +331,7 @@ class UpdateCNMCStats(UpdateFile):
     def search_and_update(self, vals):
         """
         Overwrite the behavior to consider CUPS name to GiscedataCupsPs
-        And write the rest of columns in GiscedataCupsEstadistques
+        And write the rest of columns in GiscedataCupsEstadistiques
         """
         search_params = []
         for header_key, bbdd_key in self.search_keys:
@@ -339,7 +339,14 @@ class UpdateCNMCStats(UpdateFile):
             search_params += [(bbdd_key, '=', value)]
 
         cups_ids = self.connection.GiscedataCupsPs.search(search_params)
-        ids = self.object.search([('cups_id', 'in', cups_ids), ('year', '=', self.year)])
+        if not cups_ids:
+            return
+        self.object.ensure_year(
+            self.year, cups_ids=cups_ids
+        )
+        ids = self.object.search([
+            ('cups_id', 'in', cups_ids), ('year', '=', self.year)
+        ])
         if ids:
             self.object.write(ids, vals)
 
