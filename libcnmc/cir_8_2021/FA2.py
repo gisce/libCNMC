@@ -56,12 +56,12 @@ class FA2(StopMultiprocessBased):
         search_params_ac = [
             ('data_alta', '<', data_pm),
             ('collectiu', '=', True),
+            ('participant_id', '=', participant_id),
             '|',
             ('data_baixa', '=', False),
             '&',
             ("data_baixa", ">=", "{}-01-01".format(self.year)),
             ("data_baixa", "<=", "{}-12-31".format(self.year)),
-            ('participant_id', '=', participant_id),
         ]
         autoconsum_ids = O.GiscedataAutoconsum.search(
             search_params_ac, 0, 0, False, {"active_test": False})
