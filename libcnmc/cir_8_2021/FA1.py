@@ -515,14 +515,14 @@ class FA1(StopMultiprocessBased):
                 fields_to_read = [
                     'name', 'id_escomesa', 'id_municipi',
                     'et', 'polisses', 'potencia_conveni', 'potencia_adscrita',
-                    'autoconsum_id', 'cnmc_numero_lectures',
+                    'autoconsum_id',
                     'force_potencia_adscrita', 'cnmc_conexion_autoconsumo',
                     'cups_estadistiques'
                 ]
 
                 fields_to_read_from_stats = [
                     'cnmc_factures_estimades', 'cnmc_factures_total', 'cnmc_energia_autoconsumida',
-                    'cnmc_energia_excedentaria',
+                    'cnmc_energia_excedentaria', 'cnmc_numero_lectures',
                     'cne_anual_activa', 'cne_anual_reactiva', 'cnmc_potencia_facturada', 'potencia_adscrita'
                 ]
                 stats_ids = O.GiscedataCupsEstadistiques.search(
@@ -808,7 +808,8 @@ class FA1(StopMultiprocessBased):
 
 
                 o_num_lectures = format_f(
-                    cups['cnmc_numero_lectures'], decimals=3) or '0'
+                    stats.get('cnmc_numero_lectures', 0.0),
+                    decimals=3)
                 o_titular = self.get_cambio_titularidad(cups['id'])
                 o_baixa = self.get_baixa_cups(cups['id'])
 

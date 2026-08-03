@@ -308,10 +308,13 @@ class F11(StopMultiprocessBased):
                 o_potencia = float(self.get_potencia_trafos(item))
 
                 cups = self.get_cups(ct['name'])
+                stats_ids = O.GiscedataCupsEstadistiques.search(
+                    [('cups_id', 'in', cups), ('year', '=', self.year)]
+                )
                 o_energia = sum(
-                    x['cne_anual_activa']
-                    for x in O.GiscedataCupsPs.read(
-                        cups, ['cne_anual_activa']
+                    (x.get('cne_anual_activa', 0.0))
+                    for x in O.GiscedataCupsEstadistiques.read(
+                        stats_ids, ['cne_anual_activa']
                     )
                 )
                 o_pic_activa = format_f(
