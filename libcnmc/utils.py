@@ -112,6 +112,13 @@ PROJ_TRANSFORMERS = {
         ).transform,
 }
 
+TEMPORAL_POLISSA_STATES = [
+    '02', # Eventual medido
+    '03', # Temporada
+    '07', # Suministro de Obras
+    '09', # Eventual a tanto alzado
+]
+
 def get_forced_elements(connection, model):
     """
     Returns the force include and force exclude ids of elements
