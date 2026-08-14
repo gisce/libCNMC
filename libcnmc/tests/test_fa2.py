@@ -46,6 +46,8 @@ class FakeModel(object):
 
     def search(self, domain, *args):
         self.search_calls.append((domain, args))
+        if callable(self.search_result):
+            return self.search_result(domain, *args)
         return self.search_result
 
     def read(self, ids, fields, *args):
@@ -58,8 +60,19 @@ class FakeConnection(object):
     def __init__(self):
         self.GiscedataRe = FakeModel()
         self.GiscedataReUprs = FakeModel()
-        self.GiscedataAutoconsum = FakeModel(search_result=[201, 202])
-        self.GiscedataAutoconsumGenerador = FakeModel(search_result=[301])
+        def autoconsum_search(domain, *args):
+            if ('participant_id', '=', 84) in domain:
+                return [201]
+            return [202]
+
+        self.GiscedataAutoconsum = FakeModel(search_result=autoconsum_search)
+        def generador_search(domain, *args):
+            if ('autoconsum_id', 'in', [201]) in domain:
+                return [301]
+            return []
+
+        self.GiscedataAutoconsumGenerador = FakeModel(search_result=generador_search)
+
         
         # We need to simulate the finding of participant
         def read_company(ids, fields, *args):
@@ -73,7 +86,12 @@ class FakeConnection(object):
                 return {'partner_id': [42, 'Company Partner']}
             return read_company(ids, fields)
 
-        self.ResCompany = FakeModel(search_result=[1], read_result=read_company_wrapper)
+        def company_search(domain, *args):
+            if ('codi_r1', '=', 'R1-TEST') in domain:
+                return [1]
+            return []
+
+        self.ResCompany = FakeModel(search_result=company_search, read_result=read_company_wrapper)
         
         def participant_search(domain, *args):
             # Return participant ID 84 for partner 42
