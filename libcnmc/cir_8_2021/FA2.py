@@ -47,10 +47,18 @@ class FA2(StopMultiprocessBased):
         for elem in range(0, len(re_ids)):
             re_ids[elem] = 're.{}'.format(re_ids[elem])
 
-        company = O.ResCompany.read(1, ['partner_id'])
+        company_ids = O.ResCompany.search([])
+        if not company_ids:
+            raise Exception("No es troba cap companyia.")
+        company = O.ResCompany.read(company_ids[0], ['partner_id'])
 
         partner_id = company['partner_id'][0]
         participant_ids = O.GiscemiscParticipant.search([('partner_id', '=', partner_id)])
+
+        if not participant_ids:
+            raise Exception("No s'ha trobat participant per al partner de la companyia (partner {}).".format(partner_id))
+        if len(participant_ids) > 1:
+            raise Exception("S'han trobat múltiples participants per al partner de la companyia (partner {}).".format(partner_id))
 
         participant_id = participant_ids[0]
         search_params_ac = [

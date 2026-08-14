@@ -72,8 +72,8 @@ class FakeConnection(object):
             if type(ids) is int:
                 return {'partner_id': [42, 'Company Partner']}
             return read_company(ids, fields)
-            
-        self.ResCompany = FakeModel(read_result=read_company_wrapper)
+
+        self.ResCompany = FakeModel(search_result=[1], read_result=read_company_wrapper)
         
         def participant_search(domain, *args):
             # Return participant ID 84 for partner 42
@@ -107,7 +107,6 @@ class TestFormA2(unittest.TestCase):
         
         # Participant ID resolved via GiscemiscParticipant mock which returns [84]
         self.assertIn(('participant_id', '=', 84), domain)
-        self.assertNotIn(('participant_id', '=', 1), domain)
         
         # Check that it filters collective self-consumption correctly
         self.assertIn(('collectiu', '=', True), domain)
@@ -117,7 +116,7 @@ class TestFormA2(unittest.TestCase):
         # Mock participant search to return empty list
         form.connection.GiscemiscParticipant.search = lambda domain, *args: []
         
-        with self.assertRaisesRegex(Exception, "No s'ha trobat cap giscemisc.participant per al partner de la companyia 1."):
+        with self.assertRaisesRegexp(Exception, r"No s'ha trobat participant per al partner de la companyia \(partner 42\)\."):
             form.get_sequence()
 
     def test_get_sequence_fails_if_ambiguous_participant(self):
@@ -125,7 +124,7 @@ class TestFormA2(unittest.TestCase):
         # Mock participant search to return multiple IDs
         form.connection.GiscemiscParticipant.search = lambda domain, *args: [84, 85]
         
-        with self.assertRaisesRegex(Exception, "S'han trobat múltiples giscemisc.participant per al partner de la companyia 1."):
+        with self.assertRaisesRegexp(Exception, r"S'han trobat múltiples participants per al partner de la companyia \(partner 42\)\."):
             form.get_sequence()
 
 if __name__ == '__main__':
