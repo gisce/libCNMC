@@ -50,6 +50,8 @@ class FA2(StopMultiprocessBased):
         company_ids = O.ResCompany.search([('codi_r1', '=', self.codi_r1)])
         if not company_ids:
             raise Exception("No es troba cap companyia amb codi_r1 {}.".format(self.codi_r1))
+        if len(company_ids) > 1:
+            raise Exception("S'han trobat múltiples companyies amb codi_r1 {}.".format(self.codi_r1))
         company = O.ResCompany.read(company_ids[0], ['partner_id'])
 
         partner_id = company['partner_id'][0]

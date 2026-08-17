@@ -145,5 +145,19 @@ class TestFormA2(unittest.TestCase):
         with self.assertRaisesRegexp(Exception, r"S'han trobat múltiples participants per al partner de la companyia \(partner 42\)\."):
             form.get_sequence()
 
+    def test_get_sequence_fails_if_no_company_found(self):
+        form = self.get_form()
+        form.connection.ResCompany.search = lambda domain, *args: []
+
+        with self.assertRaisesRegexp(Exception, r"No es troba cap companyia amb codi_r1 R1-TEST\."):
+            form.get_sequence()
+
+    def test_get_sequence_fails_if_ambiguous_company(self):
+        form = self.get_form()
+        form.connection.ResCompany.search = lambda domain, *args: [1, 2]
+
+        with self.assertRaisesRegexp(Exception, r"S'han trobat múltiples companyies amb codi_r1 R1-TEST\."):
+            form.get_sequence()
+
 if __name__ == '__main__':
     unittest.main()
