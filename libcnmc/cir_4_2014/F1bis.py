@@ -99,8 +99,20 @@ class F1bis(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
                 fields_to_read = [
-                    'name', 'polissa_polissa', 'cnmc_numero_lectures'
+                    'name', 'polissa_polissa'
                 ]
+                fields_to_read_from_stats = ['cnmc_numero_lectures']
+                stats_ids = O.GiscedataCupsEstadistiques.search(
+                    [('cups_id', '=', item), ('year', '=', self.year)]
+                )
+
+                stats = {}
+                if stats_ids:
+                    stats_ids = stats_ids[0]
+                    stats = O.GiscedataCupsEstadistiques.read(
+                        stats_ids, fields_to_read_from_stats
+                    )
+
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 o_cups = cups['name'][:22]
                 polissa_id = self.get_polissa(cups['id'])
@@ -111,7 +123,7 @@ class F1bis(MultiprocessBased):
                 else:
                     o_comptador_cini = ''
                     o_comptador_data = ''
-                o_num_lectures = cups['cnmc_numero_lectures'] or ''
+                o_num_lectures = stats.get('cnmc_numero_lectures', '')
                 o_titular = self.get_cambio_titularidad(cups['id'])
                 o_baixa = self.get_baixa_cups(cups['id'])
                 o_year = datetime.now().year

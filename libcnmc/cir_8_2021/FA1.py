@@ -369,26 +369,11 @@ class FA1(StopMultiprocessBased):
 
         return tensio
 
-    def get_pot_adscrita(self, cups, year, o_potencia):
+    def get_pot_adscrita(self, cups, stats, year, o_potencia):
         O = self.connection
         o_pot_ads = 0
-        if cups.get('cups_estadistiques'):
-            search_params = [
-                ('year', '=', year),
-                ('id', 'in', cups['cups_estadistiques'])
-            ]
-            estadist_id = O.GiscedataCupsEstadistiques.search(
-                search_params,
-                0,
-                0,
-                False,
-                {'active_test': False}
-            )
-            if estadist_id:
-                estadist_id = estadist_id[0]
-                estadist = O.GiscedataCupsEstadistiques.read(estadist_id, ['potencia_adscrita'])
-                if estadist['potencia_adscrita']:
-                    o_pot_ads = estadist['potencia_adscrita']
+        if stats and stats.get('potencia_adscrita'):
+            o_pot_ads = stats['potencia_adscrita']
         else:
             if cups['force_potencia_adscrita']:
                 o_pot_ads = cups['potencia_adscrita']
@@ -528,15 +513,29 @@ class FA1(StopMultiprocessBased):
                     break
                 self.progress_q.put(item)
                 fields_to_read = [
-                    'name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
-                    'cne_anual_reactiva', 'cnmc_potencia_facturada', 'et',
-                    'polisses', 'potencia_conveni', 'potencia_adscrita',
-                    'autoconsum_id', 'cnmc_numero_lectures',
-                    'cnmc_factures_estimades', 'cnmc_factures_total',
-                    'cnmc_energia_autoconsumida', 'cnmc_energia_excedentaria',
+                    'name', 'id_escomesa', 'id_municipi',
+                    'et', 'polisses', 'potencia_conveni', 'potencia_adscrita',
+                    'autoconsum_id',
                     'force_potencia_adscrita', 'cnmc_conexion_autoconsumo',
                     'cups_estadistiques'
                 ]
+
+                fields_to_read_from_stats = [
+                    'cnmc_factures_estimades', 'cnmc_factures_total', 'cnmc_energia_autoconsumida',
+                    'cnmc_energia_excedentaria', 'cnmc_numero_lectures',
+                    'cne_anual_activa', 'cne_anual_reactiva', 'cnmc_potencia_facturada', 'potencia_adscrita'
+                ]
+                stats_ids = O.GiscedataCupsEstadistiques.search(
+                    [('cups_id', '=', item), ('year','=', self.year)]
+                )
+
+                stats = {}
+                if stats_ids:
+                    stats_ids = stats_ids[0]
+                    stats = O.GiscedataCupsEstadistiques.read(
+                        stats_ids, fields_to_read_from_stats
+                    )
+
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 if not cups or not cups.get('name'):
                     self.input_q.task_done()
@@ -548,23 +547,23 @@ class FA1(StopMultiprocessBased):
 
                 # FACTURAS ESTIMADAS
                 o_facturas_estimadas = 0
-                if cups.get('cnmc_factures_estimades', False):
-                    o_facturas_estimadas = cups['cnmc_factures_estimades']
+                if stats.get('cnmc_factures_estimades', False):
+                    o_facturas_estimadas = stats['cnmc_factures_estimades']
 
                 # FACTURAS TOTAL
                 o_facturas_total = 0
-                if cups.get('cnmc_factures_total', False):
-                    o_facturas_total = cups['cnmc_factures_total']
+                if stats.get('cnmc_factures_total', False):
+                    o_facturas_total = stats['cnmc_factures_total']
 
                 # ENERGIA_AUTOCONSUMIDA
                 o_energia_autoconsumida = ''
-                if cups.get('cnmc_energia_autoconsumida', False):
-                    o_energia_autoconsumida = cups['cnmc_energia_autoconsumida']
+                if stats.get('cnmc_energia_autoconsumida', False):
+                    o_energia_autoconsumida = stats['cnmc_energia_autoconsumida']
 
                 # ENERGIA_EXCEDENTARIA
                 o_energia_excedentaria = ''
-                if cups.get('cnmc_energia_excedentaria', False):
-                    o_energia_excedentaria = abs(cups['cnmc_energia_excedentaria'])
+                if stats.get('cnmc_energia_excedentaria', False):
+                    o_energia_excedentaria = abs(stats['cnmc_energia_excedentaria'])
 
                 # AUTOCONSUMO, CAU, COD_AUTO, COD_GENERACION_AUTO I CONEXION_AUTOCONSUMO
                 o_autoconsumo = 0
@@ -615,7 +614,7 @@ class FA1(StopMultiprocessBased):
                 o_codi_ine_prov = ''
                 o_zona = ''
                 o_potencia_facturada = format_f(
-                    cups['cnmc_potencia_facturada'], 3) or ''
+                    stats.get('cnmc_potencia_facturada', ''), 3)
                 if self.zona_qualitat:
                     o_zona = self.get_zona_qualitat(self.zona_qualitat, cups['et'], cups['id_municipi'])
                 if cups['id_municipi']:
@@ -665,9 +664,9 @@ class FA1(StopMultiprocessBased):
 
                 # energies consumides
                 o_anual_activa = format_f(
-                    cups['cne_anual_activa'] or 0.0, decimals=3)
+                    stats.get('cne_anual_activa', 0.0), decimals=3)
                 o_anual_reactiva = format_f(
-                    cups['cne_anual_reactiva'] or 0.0, decimals=3)
+                    stats.get('cne_anual_reactiva', 0.0), decimals=3)
 
                 # CINI_EQUIPO_MEDIDA / FECHA_INSTALACION
                 polissa_id_equipos = self.get_polissa(cups['id'])
@@ -799,7 +798,7 @@ class FA1(StopMultiprocessBased):
                             o_cod_tfa = self.default_o_cod_tfa
 
                 # potencia adscrita
-                o_pot_ads = self.get_pot_adscrita(cups, self.year, o_potencia)
+                o_pot_ads = self.get_pot_adscrita(cups, stats, self.year, o_potencia)
 
                 res_srid = ['', '']
                 if vertex:
@@ -809,7 +808,8 @@ class FA1(StopMultiprocessBased):
 
 
                 o_num_lectures = format_f(
-                    cups['cnmc_numero_lectures'], decimals=3) or '0'
+                    stats.get('cnmc_numero_lectures', 0.0),
+                    decimals=3)
                 o_titular = self.get_cambio_titularidad(cups['id'])
                 o_baixa = self.get_baixa_cups(cups['id'])
 

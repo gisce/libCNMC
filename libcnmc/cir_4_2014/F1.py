@@ -89,9 +89,22 @@ class F1(MultiprocessBased):
                 item = self.input_q.get()
                 self.progress_q.put(item)
                 fields_to_read = [
-                    'name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
-                    'cne_anual_reactiva', 'cnmc_potencia_facturada', 'et'
+                    'name', 'id_escomesa', 'id_municipi', 'et'
                 ]
+
+                fields_to_read_from_stats = [
+                    'cne_anual_activa', 'cne_anual_reactiva', 'cnmc_potencia_facturada'
+                ]
+                stats_ids = O.GiscedataCupsEstadistiques.search(
+                    [('cups_id', '=', item), ('year','=', self.year)]
+                )
+
+                stats = {}
+                if stats_ids:
+                    stats_ids = stats_ids[0]
+                    stats = O.GiscedataCupsEstadistiques.read(
+                        stats_ids, fields_to_read_from_stats
+                    )
 
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 if not cups or not cups.get('name'):
@@ -101,7 +114,7 @@ class F1(MultiprocessBased):
                 o_codi_ine = ''
                 o_codi_prov = ''
                 o_zona = ''
-                o_potencia_facturada = cups['cnmc_potencia_facturada'] or ''
+                o_potencia_facturada = stats.get('cnmc_potencia_facturada', '')
                 if 'et' in cups:
                     o_zona = self.get_zona_qualitat(cups['et'])
                 if cups['id_municipi']:
@@ -202,8 +215,8 @@ class F1(MultiprocessBased):
                     o_estat_contracte = 1
 
                 #energies consumides
-                o_anual_activa = cups['cne_anual_activa'] or 0.0
-                o_anual_reactiva = cups['cne_anual_reactiva'] or 0.0
+                o_anual_activa = stats.get('cne_anual_activa', 0.0)
+                o_anual_reactiva = stats.get('cne_anual_reactiva', 0.0)
                 o_any_incorporacio = self.year + 1
                 self.output_q.put([
                     o_nom_node,

@@ -345,11 +345,25 @@ class F1(StopMultiprocessBased):
                     break
                 self.progress_q.put(item)
                 fields_to_read = [
-                    'name', 'id_escomesa', 'id_municipi', 'cne_anual_activa',
-                    'cne_anual_reactiva', 'cnmc_potencia_facturada', 'et',
+                    'name', 'id_escomesa', 'id_municipi', 'et',
                     'polisses', 'potencia_conveni', 'potencia_adscrita',
                     "node_id"
                 ]
+                fields_to_read_from_stats = [
+                    'cne_anual_activa', 'cne_anual_reactiva',
+                    'cnmc_potencia_facturada'
+                ]
+                stats_ids = O.GiscedataCupsEstadistiques.search(
+                    [('cups_id', '=', item), ('year', '=', self.year)]
+                )
+
+                stats = {}
+                if stats_ids:
+                    stats_ids = stats_ids[0]
+                    stats = O.GiscedataCupsEstadistiques.read(
+                        stats_ids, fields_to_read_from_stats
+                    )
+
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 if not cups or not cups.get('name'):
                     self.input_q.task_done()
@@ -362,7 +376,7 @@ class F1(StopMultiprocessBased):
                 o_codi_ine_prov = ''
                 o_zona = ''
                 o_potencia_facturada = format_f(
-                    cups['cnmc_potencia_facturada'], 3) or ''
+                    stats.get('cnmc_potencia_facturada', ''), 3)
                 if self.zona_qualitat:
                     o_zona = self.get_zona_qualitat(self.zona_qualitat, cups['et'], cups['id_municipi'])
                 if cups['id_municipi']:
@@ -413,9 +427,9 @@ class F1(StopMultiprocessBased):
                 o_estat_contracte = 0
                 # energies consumides
                 o_anual_activa = format_f(
-                    cups['cne_anual_activa'] or 0.0, decimals=3)
+                    stats.get('cne_anual_activa', 0.0), decimals=3)
                 o_anual_reactiva = format_f(
-                    cups['cne_anual_reactiva'] or 0.0, decimals=3)
+                    stats.get('cne_anual_reactiva', 0.0), decimals=3)
 
                 if polissa_id:
                     fields_to_read = [
