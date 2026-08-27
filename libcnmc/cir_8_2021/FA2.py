@@ -47,32 +47,27 @@ class FA2(StopMultiprocessBased):
         for elem in range(0, len(re_ids)):
             re_ids[elem] = 're.{}'.format(re_ids[elem])
 
-        company_ids = O.ResCompany.search([('codi_r1', '=', self.codi_r1)])
-        if not company_ids:
-            raise Exception("No es troba cap companyia amb codi_r1 {}.".format(self.codi_r1))
-        if len(company_ids) > 1:
-            raise Exception("S'han trobat múltiples companyies amb codi_r1 {}.".format(self.codi_r1))
-        company = O.ResCompany.read(company_ids[0], ['partner_id'])
-
-        partner_id = company['partner_id'][0]
-        participant_ids = O.GiscemiscParticipant.search([('partner_id', '=', partner_id)])
-
-        if not participant_ids:
-            raise Exception("No s'ha trobat participant per al partner de la companyia (partner {}).".format(partner_id))
-        if len(participant_ids) > 1:
-            raise Exception("S'han trobat múltiples participants per al partner de la companyia (partner {}).".format(partner_id))
-
-        participant_id = participant_ids[0]
         search_params_ac = [
             ('data_alta', '<', data_pm),
             ('collectiu', '=', True),
-            ('participant_id', '=', participant_id),
             '|',
             ('data_baixa', '=', False),
             '&',
             ("data_baixa", ">=", "{}-01-01".format(self.year)),
             ("data_baixa", "<=", "{}-12-31".format(self.year)),
         ]
+        company_ids = O.ResCompany.search([('codi_r1', '=', self.codi_r1)])
+        if len(company_ids) == 1:
+            company = O.ResCompany.read(company_ids[0], ['partner_id'])
+            partner_id = company.get('partner_id')
+            if partner_id:
+                participant_ids = O.GiscemiscParticipant.search([
+                    ('partner_id', '=', partner_id[0])
+                ])
+                if len(participant_ids) == 1:
+                    search_params_ac.append(
+                        ('participant_id', '!=', participant_ids[0])
+                    )
         autoconsum_ids = O.GiscedataAutoconsum.search(
             search_params_ac, 0, 0, False, {"active_test": False})
         search_params_gen = [('autoconsum_id', 'in', autoconsum_ids)]
@@ -440,4 +435,3 @@ class FA2(StopMultiprocessBased):
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
-
