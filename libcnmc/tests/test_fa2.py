@@ -61,8 +61,8 @@ class FakeConnection(object):
         self.GiscedataRe = FakeModel()
         self.GiscedataReUprs = FakeModel()
         def autoconsum_search(domain, *args):
-            if ('participant_id', '!=', 84) in domain:
-                return [202]
+            if ('participant_id', '=', 84) in domain:
+                return [201]
             return [201, 202]
 
         self.GiscedataAutoconsum = FakeModel(search_result=autoconsum_search)
@@ -114,13 +114,13 @@ class TestFormA2(unittest.TestCase):
             quiet=True
         )
 
-    def test_get_sequence_excludes_autoconsums_by_resolved_participant(self):
+    def test_get_sequence_only_includes_autoconsums_by_resolved_participant(self):
         form = self.get_form()
         
         sequence = form.get_sequence()
         
-        self.assertNotIn('gac.301', sequence)
-        self.assertIn('gac.302', sequence)
+        self.assertIn('gac.301', sequence)
+        self.assertNotIn('gac.302', sequence)
         
         # Verify that participant_id was resolved and used in the search
         search_calls = form.connection.GiscedataAutoconsum.search_calls
@@ -128,7 +128,7 @@ class TestFormA2(unittest.TestCase):
         domain, args = search_calls[0]
         
         # Participant ID resolved via GiscemiscParticipant mock which returns [84]
-        self.assertIn(('participant_id', '!=', 84), domain)
+        self.assertIn(('participant_id', '=', 84), domain)
         
         # Check that it filters collective self-consumption correctly
         self.assertIn(('collectiu', '=', True), domain)

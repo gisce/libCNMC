@@ -66,7 +66,7 @@ class FA2(StopMultiprocessBased):
                 ])
                 if len(participant_ids) == 1:
                     search_params_ac.append(
-                        ('participant_id', '!=', participant_ids[0])
+                        ('participant_id', '=', participant_ids[0])
                     )
         autoconsum_ids = O.GiscedataAutoconsum.search(
             search_params_ac, 0, 0, False, {"active_test": False})
