@@ -38,9 +38,10 @@ if 'ooop' not in sys.modules:
 from FA2 import FA2
 
 class FakeModel(object):
-    def __init__(self, search_result=None, read_result=None):
+    def __init__(self, search_result=None, read_result=None, fields_get_result=None):
         self.search_result = search_result or []
         self.read_result = read_result or []
+        self.fields_get_result = fields_get_result or {}
         self.search_calls = []
         self.read_calls = []
 
@@ -56,6 +57,9 @@ class FakeModel(object):
             return self.read_result(ids, fields)
         return self.read_result
 
+    def fields_get(self, *args, **kwargs):
+        return self.fields_get_result
+
 class FakeConnection(object):
     def __init__(self):
         self.GiscedataRe = FakeModel()
@@ -65,7 +69,10 @@ class FakeConnection(object):
                 return [201]
             return [201, 202]
 
-        self.GiscedataAutoconsum = FakeModel(search_result=autoconsum_search)
+        self.GiscedataAutoconsum = FakeModel(
+            search_result=autoconsum_search,
+            fields_get_result={'participant_id': {}, 'data_alta': {}, 'collectiu': {}, 'data_baixa': {}}
+        )
         def generador_search(domain, *args):
             autoconsum_ids = dict(
                 (operator, value)
@@ -166,6 +173,19 @@ class TestFormA2(unittest.TestCase):
         sequence = form.get_sequence()
         self.assertIn('gac.301', sequence)
         self.assertIn('gac.302', sequence)
+
+    def test_get_sequence_no_participant_filter_if_field_not_in_model(self):
+        form = self.get_form()
+        form.connection.GiscedataAutoconsum.fields_get_result = {'data_alta': {}, 'collectiu': {}, 'data_baixa': {}}
+
+        sequence = form.get_sequence()
+        self.assertIn('gac.301', sequence)
+        self.assertIn('gac.302', sequence)
+
+        search_calls = form.connection.GiscedataAutoconsum.search_calls
+        self.assertEqual(len(search_calls), 1)
+        domain, args = search_calls[0]
+        self.assertNotIn(('participant_id', '=', 84), domain)
 
 if __name__ == '__main__':
     unittest.main()
