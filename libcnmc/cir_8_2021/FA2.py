@@ -28,30 +28,29 @@ class FA2(StopMultiprocessBased):
         self.report_name = 'Formulario A2: Información relativa a la generación conectada a sus redes de distribución'
         self.base_object = 'RE'
 
-    def _consider_participant_id(self, connection, search_params):
+    def _consider_participant_id(self, connection):
         """
         Considera participant en el filtrage d'autoconsum si existeix.
         """
+        res = False
+        partner_id = False
+        participant_ids = False
+
         company_ids = connection.ResCompany.search([('codi_r1', '=', self.codi_r1)])
-        if len(company_ids) != 1:
-            return
+        if len(company_ids) == 1:
+            company = connection.ResCompany.read(company_ids[0], ['partner_id'])
+            partner_id = company.get('partner_id', False)
 
-        company = connection.ResCompany.read(company_ids[0], ['partner_id'])
-        partner_id = company.get('partner_id')
-        if not partner_id:
-            return
+        if partner_id:
+            participant_ids = connection.GiscemiscParticipant.search([
+                    ('partner_id', '=', partner_id[0])
+                ]
+            )
 
-        participant_ids = connection.GiscemiscParticipant.search([
-                ('partner_id', '=', partner_id[0])
-            ]
-        )
+        if participant_ids and len(participant_ids) == 1:
+            res = participant_ids[0]
 
-        if len(participant_ids) != 1:
-            return
-
-        search_params.append(
-            ('participant_id', '=', participant_ids[0])
-        )
+        return res
 
     def get_sequence(self):
         O = self.connection
@@ -82,8 +81,11 @@ class FA2(StopMultiprocessBased):
             ("data_baixa", "<=", "{}-12-31".format(self.year)),
         ]
         ac_fields = O.GiscedataAutoconsum.fields_get().keys()
-        if 'participant_id' in ac_fields:
-            self._consider_participant_id(O, search_params_ac)
+        participant_id = self._consider_participant_id(O)
+        if 'participant_id' in ac_fields and participant_id:
+            search_params_ac.append(
+                ('participant_id', '=', participant_id)
+            )
 
         autoconsum_ids = O.GiscedataAutoconsum.search(
             search_params_ac, 0, 0, False, {"active_test": False})
