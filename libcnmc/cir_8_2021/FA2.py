@@ -8,7 +8,7 @@ from __future__ import absolute_import
 from datetime import datetime
 import traceback
 from libcnmc.core import StopMultiprocessBased
-from libcnmc.utils import get_tipus_connexio, format_f, get_ine, convert_srid, get_srid, get_serveis_aux
+from libcnmc.utils import get_tipus_connexio, format_f, get_ine, convert_srid, get_srid, get_serveis_aux, get_stats_values
 from shapely import wkt
 
 ZONA = {
@@ -147,29 +147,31 @@ class FA2(StopMultiprocessBased):
             'energia_reactiva_producida': '0,000',
             'energia_reactiva_consumida': '0,000',
         }
+        stats = get_stats_values(O, cups_ids=[cups[0]], year=self.year, requested_fields=[
+            'cne_anual_activa_generada', 'cne_anual_activa',
+            'cne_anual_reactiva_generada', 'cne_anual_reactiva',
+        ])
+        stats = stats[0]
+
         # Energia activa producida
-        energia_activa_prod_data = O.GiscedataCupsPs.read(
-            cups[0], ['cne_anual_activa_generada'])
-        if energia_activa_prod_data.get('cne_anual_activa_generada', False):
-            res['energia_activa_producida'] = format_f(energia_activa_prod_data['cne_anual_activa_generada'], decimals=3)
+        if stats.get('cne_anual_activa_generada', False):
+            res['energia_activa_producida'] = format_f(
+                stats['cne_anual_activa_generada'], decimals=3)
 
         # Energia activa consumida
-        energia_activa_consumida_data = O.GiscedataCupsPs.read(
-            cups[0], ['cne_anual_activa'])
-        if energia_activa_consumida_data.get('cne_anual_activa', False):
-            res['energia_activa_consumida'] = format_f(energia_activa_consumida_data['cne_anual_activa'], decimals=3)
+        if stats.get('cne_anual_activa', False):
+            res['energia_activa_consumida'] = format_f(
+                stats['cne_anual_activa'], decimals=3)
 
         # Energia reactiva producida
-        energia_reactiva_prod_data = O.GiscedataCupsPs.read(
-            cups[0], ['cne_anual_reactiva_generada'])
-        if energia_reactiva_prod_data.get('cne_anual_reactiva_generada', False):
-            res['energia_reactiva_producida'] = format_f(energia_reactiva_prod_data['cne_anual_reactiva_generada'], decimals=3)
+        if stats.get('cne_anual_reactiva_generada', False):
+            res['energia_reactiva_producida'] = format_f(
+                stats['cne_anual_reactiva_generada'], decimals=3)
 
         # Energia reactiva consumida
-        energia_reactiva_cons_data = O.GiscedataCupsPs.read(
-            cups[0], ['cne_anual_reactiva'])
-        if energia_reactiva_cons_data.get('cne_anual_reactiva', False):
-            res['energia_reactiva_consumida'] = format_f(energia_reactiva_cons_data['cne_anual_reactiva'], decimals=3)
+        if stats.get('cne_anual_reactiva', False):
+            res['energia_reactiva_consumida'] = format_f(
+                stats['cne_anual_reactiva'], decimals=3)
         return res
 
     def get_autoconsum(self, cups):

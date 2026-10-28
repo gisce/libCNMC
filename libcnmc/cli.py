@@ -39,6 +39,8 @@ def cnmc():
 @click.option('-d', '--database', help='Nom de la base de dades')
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 @click.option('-f', '--file-input', type=click.Path(exists=True))
+@click.option('-y', '--year', default=(datetime.now().year - 1),
+              type=click.INT, help=u'Any de les estadístiques')
 def update_cnmc_stats(**kwargs):
     """
     Click entry to update CNMC stats
@@ -57,7 +59,8 @@ def update_cnmc_stats(**kwargs):
         interactive=kwargs['interactive'],
         connection=O,
         num_proc=kwargs['num_proc'],
-        file_input=kwargs['file_input']
+        file_input=kwargs['file_input'],
+        year=kwargs['year']
     )
     proc.execute()
 
