@@ -4,7 +4,7 @@ from multiprocessing import Manager
 import traceback
 
 from libcnmc.utils import CODIS_TARIFA, CODIS_ZONA, CINI_TG_REGEXP, \
-    TARIFAS_AT, TARIFAS_BT
+    TARIFAS_AT, TARIFAS_BT, get_stats_values
 from libcnmc.utils import get_ine, get_comptador, format_f, get_srid,\
     convert_srid, get_tipus_connexio
 from libcnmc.core import StopMultiprocessBased
@@ -12,7 +12,6 @@ from ast import literal_eval
 import logging
 from shapely import wkt
 from libcnmc.utils import TEMPORAL_POLISSA_STATES
-
 
 VALID_POLISSA_STATES = [
     'tall', 'activa', 'baixa', 'modcontractual', 'impagament']
@@ -525,16 +524,8 @@ class FA1(StopMultiprocessBased):
                     'cnmc_energia_excedentaria', 'cnmc_numero_lectures',
                     'cne_anual_activa', 'cne_anual_reactiva', 'cnmc_potencia_facturada', 'potencia_adscrita'
                 ]
-                stats_ids = O.GiscedataCupsEstadistiques.search(
-                    [('cups_id', '=', item), ('year','=', self.year)]
-                )
-
-                stats = {}
-                if stats_ids:
-                    stats_ids = stats_ids[0]
-                    stats = O.GiscedataCupsEstadistiques.read(
-                        stats_ids, fields_to_read_from_stats
-                    )
+                stats = get_stats_values(O, cups_ids=[item], year=self.year, requested_fields=fields_to_read_from_stats)
+                stats = stats[0]
 
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 if not cups or not cups.get('name'):

@@ -8,7 +8,7 @@ from __future__ import absolute_import
 from datetime import datetime
 import traceback
 from libcnmc.core import StopMultiprocessBased
-from libcnmc.utils import get_tipus_connexio, format_f, get_ine, convert_srid, get_srid, get_serveis_aux
+from libcnmc.utils import get_tipus_connexio, format_f, get_ine, convert_srid, get_srid, get_serveis_aux, get_stats_values
 from shapely import wkt
 
 ZONA = {
@@ -147,17 +147,11 @@ class FA2(StopMultiprocessBased):
             'energia_reactiva_producida': '0,000',
             'energia_reactiva_consumida': '0,000',
         }
-        stats_ids = O.GiscedataCupsEstadistiques.search(
-            [('cups_id', '=', cups[0]), ('year', '=', self.year)]
-        )
-        if not stats_ids:
-            return res
-        stats = O.GiscedataCupsEstadistiques.read(
-            stats_ids[0], [
-                'cne_anual_activa_generada', 'cne_anual_activa',
-                'cne_anual_reactiva_generada', 'cne_anual_reactiva',
-            ]
-        )
+        stats = get_stats_values(O, cups_ids=[cups[0]], year=self.year, requested_fields=[
+            'cne_anual_activa_generada', 'cne_anual_activa',
+            'cne_anual_reactiva_generada', 'cne_anual_reactiva',
+        ])
+        stats = stats[0]
 
         # Energia activa producida
         if stats.get('cne_anual_activa_generada', False):
