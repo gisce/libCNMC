@@ -101,7 +101,6 @@ class F1bis(MultiprocessBased):
                 fields_to_read = [
                     'name', 'polissa_polissa', 'cnmc_numero_lectures'
                 ]
-
                 cups = O.GiscedataCupsPs.read(item, fields_to_read)
                 o_cups = cups['name'][:22]
                 polissa_id = self.get_polissa(cups['id'])
