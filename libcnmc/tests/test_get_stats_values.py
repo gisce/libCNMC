@@ -1,49 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
-
-
-# Assumim que la funció està en algun fitxer d'utilitats, per exemple:
-# from libcnmc.utils import get_stats_values
-
-# Definim la funció aquí mateix per a que el test sigui autocontingut
-def get_stats_values(connection, cups_ids, year, requested_fields):
-    cups_data = connection.GiscedataCupsPs.read(cups_ids, requested_fields)
-
-    stats_ids = connection.GiscedataCupsEstadistiques.search([
-        ('cups_id', 'in', cups_ids),
-        ('any', '=', year)
-    ]
-    )
-
-    if not stats_ids:
-        return cups_data
-
-    read_fields = requested_fields + ['cups_id']
-    stats_data = connection.GiscedataCupsEstadistiques.read(stats_ids,
-                                                            read_fields
-                                                            )
-
-    stats_by_cups = {}
-    for stat in stats_data:
-        c_id = stat.get('cups_id')
-        if c_id:
-            c_id_val = c_id[0] if isinstance(c_id, (list, tuple)) else c_id
-            stats_by_cups[c_id_val] = stat
-
-    for record in cups_data:
-        cup_id = record['id']
-        if cup_id in stats_by_cups:
-            stat_record = stats_by_cups[cup_id]
-            for field in requested_fields:
-                if field in stat_record:
-                    record[field] = stat_record[field]
-
-    return cups_data
-
-
-# ──────────────────────────────────────────────
-# Models i connexió falsa per simular l'ERP
-# ──────────────────────────────────────────────
+from libcnmc.utils import get_stats_values
 
 class FakeModel(object):
     def __init__(self, records=None):
@@ -53,7 +10,6 @@ class FakeModel(object):
 
     def search(self, domain):
         self.search_calls.append(domain)
-        # Mock de cerca simplificat específic per [('cups_id', 'in', [...]), ('any', '=', year)]
         cups_ids = domain[0][2]
         year = domain[1][2]
         result_ids = []
@@ -62,10 +18,9 @@ class FakeModel(object):
             c_id_val = rec.get('cups_id')
             if not c_id_val:
                 continue
-            c_id = c_id_val[0] if isinstance(c_id_val, (list, tuple)
-                                             ) else c_id_val
 
-            if c_id in cups_ids and rec.get('any') == year:
+            c_id = c_id_val[0] if isinstance(c_id_val, (list, tuple)) else c_id_val
+            if c_id in cups_ids and rec.get('year') == year:
                 result_ids.append(rec['id'])
 
         return result_ids
@@ -90,15 +45,10 @@ class FakeConnection(object):
         self.GiscedataCupsPs = FakeModel(cups_records)
         self.GiscedataCupsEstadistiques = FakeModel(stats_records)
 
-
-# ──────────────────────────────────────────────
-# Casos de Test
-# ──────────────────────────────────────────────
-
 class TestGetStatsValues(unittest.TestCase):
 
     def test_sense_estadistiques(self):
-        """Si no hi ha estadístiques de l'any, retorna directament els valors del CUPS"""
+        """Si no hi ha estadístiques de l'year, retorna directament els valors del CUPS"""
         cups_records = [
             {'id': 1, 'potencia_adscrita': 3.3, 'cne_anual_activa': 1000}]
         # Estadístiques buides
@@ -119,7 +69,7 @@ class TestGetStatsValues(unittest.TestCase):
         cups_records = [
             {'id': 1, 'potencia_adscrita': 3.3, 'cne_anual_activa': 1000}]
         stats_records = [
-            {'id': 14798, 'cups_id': 1, 'any': 2025, 'cne_anual_activa': 1200}
+            {'id': 14798, 'cups_id': 1, 'year': 2025, 'cne_anual_activa': 1200}
         ]
         conn = FakeConnection(cups_records=cups_records,
                               stats_records=stats_records
@@ -142,7 +92,7 @@ class TestGetStatsValues(unittest.TestCase):
         ]
         # Només el CUPS 2 té estadístiques pel 2025
         stats_records = [
-            {'id': 991, 'cups_id': 2, 'any': 2025, 'potencia_adscrita': 6.0}
+            {'id': 991, 'cups_id': 2, 'year': 2025, 'potencia_adscrita': 6.0}
         ]
         conn = FakeConnection(cups_records=cups_records,
                               stats_records=stats_records
@@ -164,7 +114,7 @@ class TestGetStatsValues(unittest.TestCase):
         """Assegura que l'extracció de l'ID quan Odoo retorna list/tuple [1, 'nom'] funciona bé"""
         cups_records = [{'id': 1, 'cne_anual_activa': 500}]
         stats_records = [
-            {'id': 14798, 'cups_id': [1, 'ES0345000000000001BR0F'], 'any': 2025,
+            {'id': 14798, 'cups_id': [1, 'ES0345000000000001BR0F'], 'year': 2025,
              'cne_anual_activa': 800
              }
         ]
@@ -180,7 +130,7 @@ class TestGetStatsValues(unittest.TestCase):
     def test_camp_no_existent_en_lloc(self):
         """Un camp demanat que no està ni a CUPS ni a Estadístiques no fa petar la funció i no surt al resultat"""
         cups_records = [{'id': 1, 'potencia_adscrita': 3.3}]
-        stats_records = [{'id': 14798, 'cups_id': 1, 'any': 2025}]
+        stats_records = [{'id': 14798, 'cups_id': 1, 'year': 2025}]
         conn = FakeConnection(cups_records=cups_records,
                               stats_records=stats_records
                               )

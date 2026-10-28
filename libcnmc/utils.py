@@ -676,7 +676,7 @@ def get_stats_values(connection, cups_ids, year, requested_fields):
     res = connection.GiscedataCupsPs.read(cups_ids, requested_fields)
     stats_ids = connection.GiscedataCupsEstadistiques.search([
             ('cups_id', 'in', cups_ids),
-            ('any', '=', year)
+            ('year', '=', year)
         ]
     )
 
@@ -688,7 +688,10 @@ def get_stats_values(connection, cups_ids, year, requested_fields):
 
     stats_by_cups = {}
     for stat in stats_data:
-        stats_by_cups[stat['cups_id'][0]] = stat
+        c_id = stat.get('cups_id')
+        if c_id:
+            c_id_val = c_id[0] if isinstance(c_id, (list, tuple)) else c_id
+            stats_by_cups[c_id_val] = stat
 
     for record in res:
         cup_id = record['id']
