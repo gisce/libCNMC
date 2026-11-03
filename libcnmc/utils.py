@@ -668,6 +668,42 @@ def calculate_estado(data_baixa, rev_act, rev_entr, in_obra):
     return estado
 
 
+def get_stats_values(connection, cups_ids, year, requested_fields):
+    """
+    Returns the requested stats fields for GiscedataCupsEstadistiques.
+    Missing fields are queried from the original model GiscedataCupsPs.
+    """
+    res = connection.GiscedataCupsPs.read(cups_ids, requested_fields)
+    stats_ids = connection.GiscedataCupsEstadistiques.search([
+            ('cups_id', 'in', cups_ids),
+            ('year', '=', year)
+        ]
+    )
+
+    if not stats_ids:
+        return res
+
+    read_fields = requested_fields + ['cups_id']
+    stats_data = connection.GiscedataCupsEstadistiques.read(stats_ids, read_fields)
+
+    stats_by_cups = {}
+    for stat in stats_data:
+        c_id = stat.get('cups_id')
+        if c_id:
+            c_id_val = c_id[0] if isinstance(c_id, (list, tuple)) else c_id
+            stats_by_cups[c_id_val] = stat
+
+    for record in res:
+        cup_id = record['id']
+        if cup_id in stats_by_cups:
+            stat_record = stats_by_cups[cup_id]
+            for field in requested_fields:
+                if field in stat_record:
+                    record[field] = stat_record[field]
+
+    return res
+
+
 class PipeProgressBar(object):
     def __init__(self, maxval):
         self.maxval = maxval
