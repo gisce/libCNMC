@@ -670,21 +670,44 @@ def calculate_estado(data_baixa, rev_act, rev_entr, in_obra):
 
 def get_stats_values(connection, cups_ids, year, requested_fields):
     """
-    Returns the requested stats fields for GiscedataCupsEstadistiques.
-    Missing fields are queried from the original model GiscedataCupsPs.
-    """
-    res = connection.GiscedataCupsPs.read(cups_ids, requested_fields)
-    stats_ids = connection.GiscedataCupsEstadistiques.search([
-            ('cups_id', 'in', cups_ids),
-            ('year', '=', year)
-        ]
-    )
+    Returns the requested stats fields, reading each field from the model
+    that actually defines it.
 
-    if not stats_ids:
+    During the progressive migration of the CNMC fields from
+    ``GiscedataCupsPs`` to ``GiscedataCupsEstadistiques``, a field may live
+    in either model. Fields present in both models are read from both and the
+    value coming from ``GiscedataCupsEstadistiques`` takes precedence (this
+    is legitimate for snapshot fields such as ``potencia_adscrita``).
+    Fields present in neither model are simply omitted.
+    """
+    cups_model = connection.GiscedataCupsPs
+    stats_model = connection.GiscedataCupsEstadistiques
+
+    cups_fields = [f for f in requested_fields if f in cups_model.fields_get()]
+    stats_fields = [f for f in requested_fields if f in stats_model.fields_get()]
+
+    # Base result coming from the CUPS model.
+    if cups_fields:
+        res = cups_model.read(cups_ids, cups_fields)
+    else:
+        res = [{'id': cups_id} for cups_id in cups_ids]
+
+    # Make sure every requested cup has a row even if cups returned nothing.
+    existing_ids = set(r['id'] for r in res)
+    for cups_id in cups_ids:
+        if cups_id not in existing_ids:
+            res.append({'id': cups_id})
+
+    stats_ids = stats_model.search([
+        ('cups_id', 'in', cups_ids),
+        ('year', '=', year)
+    ])
+
+    if not stats_ids or not stats_fields:
         return res
 
-    read_fields = requested_fields + ['cups_id']
-    stats_data = connection.GiscedataCupsEstadistiques.read(stats_ids, read_fields)
+    read_fields = list(stats_fields) + ['cups_id']
+    stats_data = stats_model.read(stats_ids, read_fields)
 
     stats_by_cups = {}
     for stat in stats_data:
@@ -697,7 +720,7 @@ def get_stats_values(connection, cups_ids, year, requested_fields):
         cup_id = record['id']
         if cup_id in stats_by_cups:
             stat_record = stats_by_cups[cup_id]
-            for field in requested_fields:
+            for field in stats_fields:
                 if field in stat_record:
                     record[field] = stat_record[field]
 
