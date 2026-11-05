@@ -19,6 +19,7 @@ except ImportError:
 from progressbar import ProgressBar, ETA, Percentage, Bar
 from libcnmc.utils import N_PROC
 from libcnmc import VERSION
+from logging import ERROR as LOG_ERROR
 
 
 class SentryCompatRaven(object):
@@ -330,8 +331,13 @@ class UpdateCNMCStats(UpdateFile):
 
     def search_and_update(self, vals):
         """
-        Overwrite the behavior to consider CUPS name to GiscedataCupsPs
-        And write the rest of columns in GiscedataCupsEstadistiques
+        Overwrite the behavior to consider CUPS name to GiscedataCupsPs.
+
+        The CNMC fields are split between GiscedataCupsPs and
+        GiscedataCupsEstadistiques depending on the migration state of the
+        ERP. Each field is written only to the model that actually defines
+        it. A field present in both models (or in none) is logged via raven and
+        skipped (not written to either model).
         """
         search_params = []
         for header_key, bbdd_key in self.search_keys:
@@ -341,14 +347,55 @@ class UpdateCNMCStats(UpdateFile):
         cups_ids = self.connection.GiscedataCupsPs.search(search_params)
         if not cups_ids:
             return
-        self.object.ensure_year(
-            self.year, cups_ids=cups_ids
-        )
-        ids = self.object.search([
-            ('cups_id', 'in', cups_ids), ('year', '=', self.year)
-        ])
-        if ids:
-            self.object.write(ids, vals)
+
+        cups_model = self.connection.GiscedataCupsPs
+        stats_model = self.connection.GiscedataCupsEstadistiques
+        cups_fields = set(cups_model.fields_get())
+        stats_fields = set(stats_model.fields_get())
+
+        stats_vals = {}
+        cups_vals = {}
+        overlap = []
+        missing = []
+
+        for field, value in vals.items():
+            in_cups = field in cups_fields
+            in_stats = field in stats_fields
+            if in_cups and in_stats:
+                overlap.append(field)
+            elif in_cups:
+                cups_vals[field] = value
+            elif in_stats:
+                stats_vals[field] = value
+            else:
+                missing.append(field)
+
+        if overlap and self.raven:
+            self.raven.captureMessage(
+                "CNMC field(s) present in both GiscedataCupsPs and "
+                "GiscedataCupsEstadistiques: %s. Skipping."
+                % ", ".join(sorted(overlap)),
+                level=LOG_ERROR
+            )
+
+        if missing and self.raven:
+            self.raven.captureMessage(
+                "CNMC field(s) present in neither GiscedataCupsPs nor "
+                "GiscedataCupsEstadistiques: %s. Skipping."
+                % ", ".join(sorted(missing)),
+                level=LOG_ERROR
+            )
+
+        if stats_vals:
+            stats_model.ensure_year(self.year, cups_ids=cups_ids)
+            ids = stats_model.search([
+                ('cups_id', 'in', cups_ids), ('year', '=', self.year)
+            ])
+            if ids:
+                stats_model.write(ids, stats_vals)
+
+        if cups_vals:
+            cups_model.write(cups_ids, cups_vals)
 
 
 class UpdateCINISComptador(UpdateFile):
