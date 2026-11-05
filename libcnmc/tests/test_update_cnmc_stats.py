@@ -227,7 +227,7 @@ class TestUpdateCNMCStats(unittest.TestCase):
         self.assertEqual(len(conn.GiscedataCupsPs.write_calls), 0)
 
     def test_overlap_logs_and_skips(self):
-        """Un camp present als dos models: log i s'escriu a estadistiques."""
+        """Un camp present als dos models: log i no s'escriu a cap model (esquema inconsistent)."""
         overlap_field = 'cne_anual_activa'
         stats_fields = {overlap_field}
         cups_fields = set(CNMC_FIELDS)  # overlap_field present a cups també

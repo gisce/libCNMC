@@ -35,10 +35,7 @@ class FakeModel(object):
         return result_ids
 
     def read(self, ids, fields):
-        # Simula l'ORM: petar si es demana un camp que no existeix al model
-        for f in fields:
-            if f not in self.fields_get():
-                raise ValueError("Field %s not in model" % f)
+        # L'ORM real no peta en camps inexistents: els omet silenciosament
         self.read_calls.append((list(ids), list(fields)))
         result = []
         for rec in self._records:
