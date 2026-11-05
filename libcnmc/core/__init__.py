@@ -336,7 +336,8 @@ class UpdateCNMCStats(UpdateFile):
         The CNMC fields are split between GiscedataCupsPs and
         GiscedataCupsEstadistiques depending on the migration state of the
         ERP. Each field is written only to the model that actually defines
-        it. A field present in both models (or in none) is considered an error.
+        it. A field present in both models (or in none) is logged via raven and
+        skipped (not written to either model).
         """
         search_params = []
         for header_key, bbdd_key in self.search_keys:
@@ -372,8 +373,7 @@ class UpdateCNMCStats(UpdateFile):
         if overlap and self.raven:
             self.raven.captureMessage(
                 "CNMC field(s) present in both GiscedataCupsPs and "
-                "GiscedataCupsEstadistiques: %s. "
-                "Writing to GiscedataCupsEstadistiques."
+                "GiscedataCupsEstadistiques: %s. Skipping."
                 % ", ".join(sorted(overlap)),
                 level=LOG_ERROR
             )
