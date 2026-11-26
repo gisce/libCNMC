@@ -42,8 +42,8 @@ class CINIMAQ(MultiprocessBased):
                     try:
                         tensio_primari = int(trafo['tensio_primari_actual'])
                     except:
-                        print "Error a {}, la tensio_primari no " \
-                              "es correcte".format(item)
+                        print("Error a {}, la tensio_primari no "
+                              "es correcte".format(item))
                     if tensio_primari <= 40000:
                         codi3 = '0'
                     elif 220000 <= tensio_primari < 400000:
@@ -61,14 +61,14 @@ class CINIMAQ(MultiprocessBased):
                         #pot fer la conversio a enter
                         tensio_b1 = int(trafo['tensio_b1'])
                     except:
-                        print "Error a {}, la tensio_b1 " \
-                              "no es correcte".format(item)
+                        print("Error a {}, la tensio_b1 "
+                              "no es correcte".format(item))
                         continue
                     try:
                         tensio_b2 = int(trafo['tensio_b2'])
                     except:
-                        print "Error a {}, la tensio_b2 " \
-                              "no es correcte".format(item)
+                        print("Error a {}, la tensio_b2 "
+                              "no es correcte".format(item))
                         continue
                     if tensio_b1:
                         if 110000 <= tensio_b1 < 220000:
@@ -99,8 +99,8 @@ class CINIMAQ(MultiprocessBased):
                     try:
                         pot_nominal = int(trafo['potencia_nominal'])
                     except:
-                        print "Error a {}, la potencia nominal" \
-                              "no es correcte".format(item)
+                        print("Error a {}, la potencia nominal"
+                              "no es correcte".format(item))
                         continue
                     if pot_nominal < 1000:
                         codi6 = 'A'
