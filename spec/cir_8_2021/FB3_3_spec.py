@@ -1,5 +1,9 @@
 # coding=utf-8
-from unittest.mock import MagicMock, call
+try:
+    from unittest.mock import MagicMock
+except ImportError:
+    from mock import MagicMock
+
 from mamba import description, context, it, before
 from expects import expect, equal
 

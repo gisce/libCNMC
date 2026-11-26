@@ -13,8 +13,6 @@ AVAILABLE_CPUS = max(multiprocessing.cpu_count() - os.getloadavg()[0], 0) + 1
 
 N_PROC = max(int(os.getenv('N_PROC', 0)), AVAILABLE_CPUS)
 
-from libcnmc.core.backend import OOOPFactory
-
 CODIS_TARIFA = {
     '2.0A': 416,
     '2.0DHA': 417,
@@ -484,6 +482,8 @@ def merge_procs(procs, **kwargs):
     :return: Result of the procs
     :rtype: str
     """
+
+    from libcnmc.core.backend import OOOPFactory
 
     O = OOOPFactory(dbname=kwargs['database'], user=kwargs['user'],
                     pwd=kwargs['password'], port=kwargs['port'],
