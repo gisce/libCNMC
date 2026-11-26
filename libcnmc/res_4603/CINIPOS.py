@@ -46,8 +46,8 @@ class CINIPOS(MultiprocessBased):
                                                                     ['tensio'])
                         tensio = int(obj_tensio['tensio'])
                     except:
-                        print "Error a {}, la tensio de la posicio no " \
-                              "es un enter", format(item)
+                        print("Error a {}, la tensio de la posicio no "
+                              "es un enter".format(item))
                         continue
 
                     if 110000 <= tensio < 220000:

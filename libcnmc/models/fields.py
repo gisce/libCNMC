@@ -1,5 +1,13 @@
 # coding=utf-8
-from UserDict import IterableUserDict
+try:
+    from collections import UserDict
+except ImportError:
+    from UserDict import IterableUserDict as UserDict
+
+try:
+    string_type = basestring
+except NameError:
+    string_type = str
 
 
 class DecimalCoerce(object):
@@ -13,13 +21,13 @@ class DecimalCoerce(object):
 
     def __call__(self, value):
         from decimal import Decimal
-        if isinstance(value, basestring):
+        if isinstance(value, string_type):
             value = value.replace(',', '.')
         value = Decimal(value).quantize(Decimal(10) ** self.deciamls)
         return value
 
 
-class Field(IterableUserDict):
+class Field(UserDict):
     """
     Base Field class
     """
