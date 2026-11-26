@@ -109,8 +109,8 @@ class F3(MultiprocessBased):
                     0,
                     self.year
                 ])
-            except Exception, e:
-                print e
+            except Exception as error:
+                print(error)
                 traceback.print_exc()
                 if self.raven:
                     self.raven.captureException()
