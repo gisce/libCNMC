@@ -630,7 +630,7 @@ def cir_8_2021_fb3_2(**kwargs):
 @click.option('--num-proc', default=N_PROC, type=click.INT)
 def cir_8_2021_fb3_3(**kwargs):
     """
-    Click entry to generate the B3_2: POSICIONES
+    Generate form B3.3 for substation transformers and capacitors.
 
     :param kwargs: Params to pas to the process
     :type kwargs: dict(str, str)
