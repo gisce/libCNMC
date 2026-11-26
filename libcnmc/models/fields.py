@@ -1,5 +1,13 @@
 # coding=utf-8
-from UserDict import IterableUserDict
+try:
+    from UserDict import IterableUserDict
+except ImportError:
+    from collections import UserDict as IterableUserDict
+
+try:
+    basestring
+except NameError:
+    basestring = str
 
 
 class DecimalCoerce(object):

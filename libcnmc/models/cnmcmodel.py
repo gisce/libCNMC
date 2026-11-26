@@ -85,3 +85,8 @@ class CNMCModel(object):
 
     def __cmp__(self, other):
         raise NotImplementedError
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return self.__cmp__(other) == 0
