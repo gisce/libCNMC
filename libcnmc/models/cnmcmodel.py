@@ -1,5 +1,6 @@
 from collections import namedtuple, OrderedDict
 import json
+import sys
 from decimal import Decimal, InvalidOperation
 
 from cerberus import Validator
@@ -85,3 +86,15 @@ class CNMCModel(object):
 
     def __cmp__(self, other):
         raise NotImplementedError
+
+    if sys.version_info[0] >= 3:
+        def __eq__(self, other):
+            if not isinstance(other, type(self)):
+                return NotImplemented
+            try:
+                comparison = self.__cmp__(other)
+            except NotImplementedError:
+                return NotImplemented
+            if comparison is NotImplemented:
+                return NotImplemented
+            return comparison == 0
